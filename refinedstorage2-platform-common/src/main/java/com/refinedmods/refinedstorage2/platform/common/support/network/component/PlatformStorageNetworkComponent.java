@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network.component;
 
-import com.refinedmods.refinedstorage2.api.network.impl.component.StorageNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.StorageNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.resource.list.ResourceListImpl;

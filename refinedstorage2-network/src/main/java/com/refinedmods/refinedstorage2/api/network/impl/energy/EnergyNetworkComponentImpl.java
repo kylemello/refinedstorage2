@@ -1,9 +1,8 @@
-package com.refinedmods.refinedstorage2.api.network.impl.component;
+package com.refinedmods.refinedstorage2.api.network.impl.energy;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
-import com.refinedmods.refinedstorage2.api.network.component.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
-import com.refinedmods.refinedstorage2.api.network.impl.energy.CompositeEnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
 
 public class EnergyNetworkComponentImpl implements EnergyNetworkComponent {

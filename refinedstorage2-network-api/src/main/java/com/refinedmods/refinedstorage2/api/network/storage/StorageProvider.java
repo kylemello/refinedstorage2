@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage2.api.network.component;
+package com.refinedmods.refinedstorage2.api.network.storage;
 
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 

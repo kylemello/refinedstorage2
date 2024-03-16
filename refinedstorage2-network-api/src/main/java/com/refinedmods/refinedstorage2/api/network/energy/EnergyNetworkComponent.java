@@ -1,4 +1,6 @@
-package com.refinedmods.refinedstorage2.api.network.component;
+package com.refinedmods.refinedstorage2.api.network.energy;
+
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 
 import org.apiguardian.api.API;
 

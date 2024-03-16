@@ -1,5 +1,6 @@
-package com.refinedmods.refinedstorage2.api.network.component;
+package com.refinedmods.refinedstorage2.api.network.storage;
 
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;

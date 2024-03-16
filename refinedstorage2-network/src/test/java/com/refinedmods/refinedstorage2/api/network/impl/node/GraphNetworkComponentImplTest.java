@@ -1,8 +1,7 @@
-package com.refinedmods.refinedstorage2.api.network.impl.component;
+package com.refinedmods.refinedstorage2.api.network.impl.node;
 
-import com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkImpl;
-import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage2.network.test.NetworkTestFixtures;

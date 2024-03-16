@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network;
 
 import com.refinedmods.refinedstorage2.api.core.component.ComponentAccessor;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
 
 import java.util.Set;

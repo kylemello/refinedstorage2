@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.node.container;
 
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 
 import javax.annotation.Nullable;
@@ -18,7 +19,7 @@ public interface NetworkNodeContainer {
      * If it changes after adding it into the graph, the container would not be removed from the key index when the
      * container is removed!
      * The container can be queried by
-     * {@link com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent#getContainer(Object)}.
+     * {@link GraphNetworkComponent#getContainer(Object)}.
      *
      * @return the key, or null if indexing is not required
      */

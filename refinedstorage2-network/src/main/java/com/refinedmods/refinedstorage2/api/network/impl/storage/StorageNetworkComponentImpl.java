@@ -1,8 +1,8 @@
-package com.refinedmods.refinedstorage2.api.network.impl.component;
+package com.refinedmods.refinedstorage2.api.network.impl.storage;
 
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.StorageProvider;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageProvider;
 import com.refinedmods.refinedstorage2.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
