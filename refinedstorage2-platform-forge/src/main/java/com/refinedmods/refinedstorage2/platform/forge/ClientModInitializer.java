@@ -11,6 +11,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerModelPredicateProvider;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardItemPropertyFunction;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.CompositeClientTooltipComponent;
@@ -244,6 +245,11 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             Items.INSTANCE.getNetworkCard(),
             NetworkCardItemPropertyFunction.NAME,
             new NetworkCardItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getSecurityCard(),
+            SecurityCardItemPropertyFunction.NAME,
+            new SecurityCardItemPropertyFunction()
         );
     }
 }

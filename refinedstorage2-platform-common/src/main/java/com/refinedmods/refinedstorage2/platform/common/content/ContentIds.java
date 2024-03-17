@@ -54,6 +54,7 @@ public final class ContentIds {
     public static final ResourceLocation NETWORK_TRANSMITTER = createIdentifier("network_transmitter");
     public static final ResourceLocation PORTABLE_GRID = createIdentifier("portable_grid");
     public static final ResourceLocation CREATIVE_PORTABLE_GRID = createIdentifier("creative_portable_grid");
+    public static final ResourceLocation SECURITY_CARD = createIdentifier("security_card");
 
     private ContentIds() {
     }

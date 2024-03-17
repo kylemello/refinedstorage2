@@ -55,6 +55,7 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -151,6 +152,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SILICON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_HOUSING;
@@ -360,6 +362,7 @@ public abstract class AbstractModInitializer {
             ConfigurationCardItem::new
         ));
         Items.INSTANCE.setNetworkCard(callback.register(ContentIds.NETWORK_CARD, NetworkCardItem::new));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, SecurityCardItem::new));
     }
 
     private void registerProcessor(final RegistryCallback<Item> callback, final ProcessorItem.Type type) {

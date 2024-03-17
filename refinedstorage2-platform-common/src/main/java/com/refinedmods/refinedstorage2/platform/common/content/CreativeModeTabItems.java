@@ -103,5 +103,6 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getCreativeWirelessGrid());
         itemConsumer.accept(Items.INSTANCE.getConfigurationCard());
         itemConsumer.accept(Items.INSTANCE.getNetworkCard());
+        itemConsumer.accept(Items.INSTANCE.getSecurityCard());
     }
 }

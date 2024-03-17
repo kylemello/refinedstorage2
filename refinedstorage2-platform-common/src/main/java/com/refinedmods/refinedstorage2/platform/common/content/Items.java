@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage2.platform.common.controller.ControllerBloc
 import com.refinedmods.refinedstorage2.platform.common.controller.CreativeControllerBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.misc.ProcessorItem;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
@@ -92,6 +93,8 @@ public final class Items {
     private Supplier<PortableGridBlockItem> portableGrid;
     @Nullable
     private Supplier<PortableGridBlockItem> creativePortableGrid;
+    @Nullable
+    private Supplier<SecurityCardItem> securityCard;
 
     private Items() {
     }
@@ -414,5 +417,13 @@ public final class Items {
 
     public void setCreativePortableGrid(final Supplier<PortableGridBlockItem> supplier) {
         this.creativePortableGrid = supplier;
+    }
+
+    public SecurityCardItem getSecurityCard() {
+        return requireNonNull(securityCard).get();
+    }
+
+    public void setSecurityCard(final Supplier<SecurityCardItem> securityCard) {
+        this.securityCard = securityCard;
     }
 }

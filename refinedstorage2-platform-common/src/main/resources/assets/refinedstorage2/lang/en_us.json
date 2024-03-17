@@ -219,6 +219,7 @@
   "item.refinedstorage2.network_card.unbound": "Unbound.",
   "item.refinedstorage2.network_card.bound_help": "Insert into a Network Transmitter. Use while crouching to clear binding.",
   "item.refinedstorage2.network_card.bound": "Bound to %d, %d, %d in %s.",
+  "item.refinedstorage2.security_card": "Security Card",
   "misc.refinedstorage2.stored": "Stored: %s",
   "misc.refinedstorage2.stored_with_capacity": "Stored: %s / %s (%d%%)",
   "misc.refinedstorage2.total": "%d total",
