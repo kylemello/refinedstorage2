@@ -20,6 +20,8 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
+import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -46,7 +48,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -144,11 +145,6 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public StorageMonitorInsertionStrategy getStorageMonitorInsertionStrategy() {
         return ensureLoaded().getStorageMonitorInsertionStrategy();
-    }
-
-    @Override
-    public MutableComponent createTranslation(final String category, final String value, final Object... args) {
-        return ensureLoaded().createTranslation(category, value, args);
     }
 
     @Override
@@ -355,6 +351,16 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public void useNetworkBoundItem(final Player player, final Item... items) {
         ensureLoaded().useNetworkBoundItem(player, items);
+    }
+
+    @Override
+    public BuiltinPermissions getBuiltinPermissions() {
+        return ensureLoaded().getBuiltinPermissions();
+    }
+
+    @Override
+    public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
+        return ensureLoaded().getPermissionRegistry();
     }
 
     private PlatformApi ensureLoaded() {

@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage2.api.network.impl.security;
 
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
-import com.refinedmods.refinedstorage2.api.network.security.Operation;
+import com.refinedmods.refinedstorage2.api.network.security.Permission;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecision;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecisionProvider;
@@ -28,9 +28,9 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
     }
 
     @Override
-    public boolean isAllowed(final Operation operation, final SecurityActor actor) {
+    public boolean isAllowed(final Permission permission, final SecurityActor actor) {
         for (final SecurityDecisionProvider provider : providers) {
-            final SecurityDecision decision = provider.isAllowed(operation, actor);
+            final SecurityDecision decision = provider.isAllowed(permission, actor);
             if (decision == SecurityDecision.DENY) {
                 return false;
             } else if (decision == SecurityDecision.ALLOW) {

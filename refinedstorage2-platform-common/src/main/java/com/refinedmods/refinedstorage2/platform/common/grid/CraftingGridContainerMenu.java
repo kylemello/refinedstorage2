@@ -41,7 +41,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, buf);
         this.source = new ClientCraftingGridSource();
         this.player = playerInventory.player;
-        addSlots(0);
+        initSlots(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
 
@@ -51,7 +51,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, grid);
         this.source = new CraftingGridSourceImpl(grid);
         this.player = playerInventory.player;
-        addSlots(0);
+        initSlots(0);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             grid::getRedstoneMode,
@@ -88,8 +88,8 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     @Override
-    public void addSlots(final int playerInventoryY) {
-        super.addSlots(playerInventoryY);
+    public void initSlots(final int playerInventoryY) {
+        super.initSlots(playerInventoryY);
         craftingMatrixSlots.clear();
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {

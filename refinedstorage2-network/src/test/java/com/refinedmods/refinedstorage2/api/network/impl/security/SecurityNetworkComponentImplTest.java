@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.impl.security;
 
-import com.refinedmods.refinedstorage2.api.network.security.Operation;
+import com.refinedmods.refinedstorage2.api.network.security.Permission;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
 
@@ -26,7 +26,7 @@ class SecurityNetworkComponentImplTest {
         assertThat(sut.isAllowed(permission, TestActors.Y)).isTrue();
     }
 
-    enum TestPermissions implements Operation {
+    enum TestPermissions implements Permission {
         A, B
     }
 

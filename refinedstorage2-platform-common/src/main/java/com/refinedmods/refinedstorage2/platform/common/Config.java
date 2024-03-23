@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage2.platform.common;
 
 import com.refinedmods.refinedstorage2.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridMatrixCloseBehavior;
-import com.refinedmods.refinedstorage2.platform.common.grid.GridSize;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSize;
 
 import java.util.Optional;
 
@@ -52,6 +52,14 @@ public interface Config {
 
     PortableGridEntry getPortableGrid();
 
+    boolean isSmoothScrolling();
+
+    ScreenSize getScreenSize();
+
+    void setScreenSize(ScreenSize size);
+
+    int getMaxRowsStretch();
+
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
     }
@@ -59,15 +67,11 @@ public interface Config {
     interface GridEntry extends SimpleEnergyUsageEntry {
         boolean isLargeFont();
 
-        int getMaxRowsStretch();
-
         boolean isPreventSortingWhileShiftIsDown();
 
         boolean isDetailedTooltip();
 
         boolean isRememberSearchQuery();
-
-        boolean isSmoothScrolling();
 
         boolean isAutoSelected();
 
@@ -86,10 +90,6 @@ public interface Config {
         GridSortingTypes getSortingType();
 
         void setSortingType(GridSortingTypes sortingType);
-
-        GridSize getSize();
-
-        void setSize(GridSize size);
 
         Optional<ResourceLocation> getResourceTypeId();
 

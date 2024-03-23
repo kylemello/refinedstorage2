@@ -1,13 +1,13 @@
-package com.refinedmods.refinedstorage2.platform.common.grid;
+package com.refinedmods.refinedstorage2.platform.common.support.stretching;
 
-public enum GridSize {
+public enum ScreenSize {
     STRETCH,
     SMALL,
     MEDIUM,
     LARGE,
     EXTRA_LARGE;
 
-    public GridSize toggle() {
+    public ScreenSize toggle() {
         return switch (this) {
             case STRETCH -> SMALL;
             case SMALL -> MEDIUM;

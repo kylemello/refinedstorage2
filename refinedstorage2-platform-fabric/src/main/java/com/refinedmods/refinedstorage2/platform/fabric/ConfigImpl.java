@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage2.platform.fabric;
 import com.refinedmods.refinedstorage2.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage2.platform.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridMatrixCloseBehavior;
-import com.refinedmods.refinedstorage2.platform.common.grid.GridSize;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSize;
 import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 
 import java.util.Optional;
@@ -88,8 +88,31 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @ConfigEntry.Gui.CollapsibleObject
     private PortableGridEntryImpl portableGrid = new PortableGridEntryImpl();
 
+    private boolean smoothScrolling = true;
+
+    private ScreenSize screenSize = ScreenSize.STRETCH;
+
+    @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
+    private int maxRowsStretch = 256;
+
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
+    }
+
+    @Override
+    public ScreenSize getScreenSize() {
+        return screenSize;
+    }
+
+    @Override
+    public void setScreenSize(final ScreenSize screenSize) {
+        this.screenSize = screenSize;
+        AutoConfig.getConfigHolder(ConfigImpl.class).save();
+    }
+
+    @Override
+    public int getMaxRowsStretch() {
+        return maxRowsStretch;
     }
 
     @Override
@@ -197,21 +220,21 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
         return portableGrid;
     }
 
+    @Override
+    public boolean isSmoothScrolling() {
+        return smoothScrolling;
+    }
+
     private static class GridEntryImpl implements GridEntry {
         private boolean largeFont = false;
 
         private long energyUsage = DefaultEnergyUsage.GRID;
-
-        @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
-        private int maxRowsStretch = 256;
 
         private boolean preventSortingWhileShiftIsDown = true;
 
         private boolean detailedTooltip = true;
 
         private boolean rememberSearchQuery = false;
-
-        private boolean smoothScrolling = true;
 
         private boolean autoSelected = false;
 
@@ -223,16 +246,9 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
 
         private GridSortingTypes sortingType = GridSortingTypes.QUANTITY;
 
-        private GridSize size = GridSize.STRETCH;
-
         @Override
         public boolean isLargeFont() {
             return largeFont;
-        }
-
-        @Override
-        public int getMaxRowsStretch() {
-            return maxRowsStretch;
         }
 
         @Override
@@ -253,11 +269,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
         @Override
         public long getEnergyUsage() {
             return energyUsage;
-        }
-
-        @Override
-        public boolean isSmoothScrolling() {
-            return smoothScrolling;
         }
 
         @Override
@@ -310,17 +321,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
         @Override
         public void setSortingType(final GridSortingTypes sortingType) {
             this.sortingType = sortingType;
-            save();
-        }
-
-        @Override
-        public GridSize getSize() {
-            return size;
-        }
-
-        @Override
-        public void setSize(final GridSize size) {
-            this.size = size;
             save();
         }
 

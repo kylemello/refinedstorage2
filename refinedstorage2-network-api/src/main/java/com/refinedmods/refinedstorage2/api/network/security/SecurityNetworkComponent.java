@@ -6,5 +6,5 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.5")
 public interface SecurityNetworkComponent extends NetworkComponent {
-    boolean isAllowed(Operation operation, SecurityActor actor);
+    boolean isAllowed(Permission permission, SecurityActor actor);
 }

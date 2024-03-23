@@ -65,8 +65,8 @@ public abstract class AbstractPortableGridContainerMenu extends AbstractGridCont
     }
 
     @Override
-    public void addSlots(final int playerInventoryY) {
-        super.addSlots(playerInventoryY);
+    public void initSlots(final int playerInventoryY) {
+        super.initSlots(playerInventoryY);
         diskSlot = new ValidatedSlot(
             diskInventory,
             0,

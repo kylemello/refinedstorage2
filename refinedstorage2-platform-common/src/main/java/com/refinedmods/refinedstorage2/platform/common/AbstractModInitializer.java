@@ -55,6 +55,8 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
@@ -183,6 +185,7 @@ public abstract class AbstractModInitializer {
         registerStorageMonitorExtractionStrategies();
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
+        registerPermissions();
     }
 
     private void registerAdditionalStorageTypes() {
@@ -252,6 +255,15 @@ public abstract class AbstractModInitializer {
         );
     }
 
+    private void registerPermissions() {
+        for (final BuiltinPermission permission : BuiltinPermission.values()) {
+            if (permission == BuiltinPermission.SECURITY) {
+                continue;
+            }
+            PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
+        }
+    }
+
     protected final void registerBlocks(
         final RegistryCallback<Block> callback,
         final BiFunction<BlockPos, BlockState, AbstractDiskDriveBlockEntity> diskDriveBlockEntityFactory,
@@ -307,7 +319,8 @@ public abstract class AbstractModInitializer {
         final Supplier<WirelessGridItem> wirelessGridItemSupplier,
         final Supplier<WirelessGridItem> creativeWirelessGridItemSupplier,
         final Supplier<PortableGridBlockItem> portableGridBlockItemSupplier,
-        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier
+        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier,
+        final Supplier<SecurityCardItem> securityCardItemSupplier
     ) {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
@@ -337,6 +350,7 @@ public abstract class AbstractModInitializer {
             CREATIVE_PORTABLE_GRID,
             creativePortableGridBlockItemSupplier
         ));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, securityCardItemSupplier));
     }
 
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
@@ -362,7 +376,6 @@ public abstract class AbstractModInitializer {
             ConfigurationCardItem::new
         ));
         Items.INSTANCE.setNetworkCard(callback.register(ContentIds.NETWORK_CARD, NetworkCardItem::new));
-        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, SecurityCardItem::new));
     }
 
     private void registerProcessor(final RegistryCallback<Item> callback, final ProcessorItem.Type type) {
@@ -713,6 +726,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setPortableGridItem(callback.register(
             createIdentifier("portable_grid_item"),
             () -> menuTypeFactory.create(PortableGridItemContainerMenu::new)
+        ));
+        Menus.INSTANCE.setSecurityCard(callback.register(
+            SECURITY_CARD,
+            () -> menuTypeFactory.create(SecurityCardContainerMenu::new)
         ));
     }
 

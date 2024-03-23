@@ -4,5 +4,5 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.5")
 public interface SecurityDecisionProvider {
-    SecurityDecision isAllowed(Operation operation, SecurityActor actor);
+    SecurityDecision isAllowed(Permission permission, SecurityActor actor);
 }

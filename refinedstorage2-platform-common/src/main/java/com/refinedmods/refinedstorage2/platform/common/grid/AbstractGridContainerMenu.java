@@ -33,6 +33,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridI
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.CompositeGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
 import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 import com.refinedmods.refinedstorage2.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage2.query.parser.ParserOperatorMappings;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMenu
-    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy {
+    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -82,8 +83,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     private GridExtractionStrategy extractionStrategy;
     @Nullable
     private GridScrollingStrategy scrollingStrategy;
-    @Nullable
-    private Runnable sizeChangedListener;
     private GridSynchronizer synchronizer;
     @Nullable
     private ResourceType resourceTypeFilter;
@@ -172,10 +171,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         view.onChange(resource, amount, trackedResource);
     }
 
-    public void setSizeChangedListener(@Nullable final Runnable sizeChangedListener) {
-        this.sizeChangedListener = sizeChangedListener;
-    }
-
     public GridSortingDirection getSortingDirection() {
         return Platform.INSTANCE.getConfig().getGrid().getSortingDirection();
     }
@@ -194,17 +189,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         Platform.INSTANCE.getConfig().getGrid().setSortingType(sortingType);
         view.setSortingType(sortingType);
         view.sort();
-    }
-
-    public GridSize getSize() {
-        return Platform.INSTANCE.getConfig().getGrid().getSize();
-    }
-
-    public void setSize(final GridSize size) {
-        Platform.INSTANCE.getConfig().getGrid().setSize(size);
-        if (sizeChangedListener != null) {
-            sizeChangedListener.run();
-        }
     }
 
     public void setSearchBox(final GridSearchBox searchBox) {
@@ -250,7 +234,8 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         }
     }
 
-    public void addSlots(final int playerInventoryY) {
+    @Override
+    public void initSlots(final int playerInventoryY) {
         resetSlots();
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }
