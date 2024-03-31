@@ -1,11 +1,11 @@
 package com.refinedmods.refinedstorage2.platform.common;
 
-import com.refinedmods.refinedstorage2.api.network.component.EnergyNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.impl.component.EnergyNetworkComponentImpl;
-import com.refinedmods.refinedstorage2.api.network.impl.component.GraphNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.impl.node.GraphNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
@@ -55,6 +55,11 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -138,6 +143,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_DRIVE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXPORTER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXTERNAL_STORAGE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FLUID_STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.IMPORTER;
@@ -151,6 +157,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SILICON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_HOUSING;
@@ -181,6 +188,7 @@ public abstract class AbstractModInitializer {
         registerStorageMonitorExtractionStrategies();
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
+        registerPermissions();
     }
 
     private void registerAdditionalStorageTypes() {
@@ -250,6 +258,15 @@ public abstract class AbstractModInitializer {
         );
     }
 
+    private void registerPermissions() {
+        for (final BuiltinPermission permission : BuiltinPermission.values()) {
+            if (permission == BuiltinPermission.SECURITY) {
+                continue;
+            }
+            PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
+        }
+    }
+
     protected final void registerBlocks(
         final RegistryCallback<Block> callback,
         final BiFunction<BlockPos, BlockState, AbstractDiskDriveBlockEntity> diskDriveBlockEntityFactory,
@@ -305,7 +322,9 @@ public abstract class AbstractModInitializer {
         final Supplier<WirelessGridItem> wirelessGridItemSupplier,
         final Supplier<WirelessGridItem> creativeWirelessGridItemSupplier,
         final Supplier<PortableGridBlockItem> portableGridBlockItemSupplier,
-        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier
+        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier,
+        final Supplier<SecurityCardItem> securityCardItemSupplier,
+        final Supplier<FallbackSecurityCardItem> fallbackSecurityCardItemSupplier
     ) {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
@@ -334,6 +353,11 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setCreativePortableGrid(callback.register(
             CREATIVE_PORTABLE_GRID,
             creativePortableGridBlockItemSupplier
+        ));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, securityCardItemSupplier));
+        Items.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            fallbackSecurityCardItemSupplier
         ));
     }
 
@@ -710,6 +734,14 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setPortableGridItem(callback.register(
             createIdentifier("portable_grid_item"),
             () -> menuTypeFactory.create(PortableGridItemContainerMenu::new)
+        ));
+        Menus.INSTANCE.setSecurityCard(callback.register(
+            SECURITY_CARD,
+            () -> menuTypeFactory.create(SecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
         ));
     }
 

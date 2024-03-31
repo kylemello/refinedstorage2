@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage2.platform.common.grid;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.impl.node.grid.GridNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.common.Platform;

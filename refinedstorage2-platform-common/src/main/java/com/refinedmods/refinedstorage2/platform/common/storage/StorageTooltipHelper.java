@@ -1,12 +1,12 @@
 package com.refinedmods.refinedstorage2.platform.common.storage;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-
 import java.util.List;
 import java.util.function.LongFunction;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 final class StorageTooltipHelper {
     private StorageTooltipHelper() {
@@ -15,7 +15,7 @@ final class StorageTooltipHelper {
     static void addAmountStoredWithoutCapacity(final List<Component> tooltip,
                                                final long stored,
                                                final LongFunction<String> quantityFormatter) {
-        tooltip.add(PlatformApi.INSTANCE.createTranslation(
+        tooltip.add(createTranslation(
             "misc",
             "stored",
             Component.literal(quantityFormatter.apply(stored)).withStyle(ChatFormatting.WHITE)
@@ -31,7 +31,7 @@ final class StorageTooltipHelper {
             return;
         }
         final int progress = (int) ((double) stored / capacity * 100D);
-        tooltip.add(PlatformApi.INSTANCE.createTranslation(
+        tooltip.add(createTranslation(
             "misc",
             "stored_with_capacity",
             Component.literal(quantityFormatter.apply(stored)).withStyle(ChatFormatting.WHITE),

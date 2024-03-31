@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage2.platform.common;
 import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkBuilder;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkFactory;
@@ -24,6 +24,8 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
+import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -52,6 +54,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGr
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.recipemod.CompositeIngredientConverter;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageRepositoryImpl;
@@ -72,7 +75,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeRegistryImpl;
-import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage2.platform.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.CompositeWirelessTransmitterRangeModifier;
 
@@ -92,7 +94,6 @@ import java.util.Set;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -164,6 +165,10 @@ public class PlatformApiImpl implements PlatformApi {
         InventorySlotReferenceFactory.INSTANCE
     );
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
+    private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>(
+        BuiltinPermission.SECURITY.getId(),
+        BuiltinPermission.SECURITY
+    );
 
     @Override
     public PlatformRegistry<StorageType> getStorageTypeRegistry() {
@@ -262,11 +267,6 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public StorageMonitorInsertionStrategy getStorageMonitorInsertionStrategy() {
         return storageMonitorInsertionStrategy;
-    }
-
-    @Override
-    public MutableComponent createTranslation(final String category, final String value, final Object... args) {
-        return IdentifierUtil.createTranslation(category, value, args);
     }
 
     @Override
@@ -526,5 +526,15 @@ public class PlatformApiImpl implements PlatformApi {
         slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(
             slotReference -> Platform.INSTANCE.getClientToServerCommunications().sendUseNetworkBoundItem(slotReference)
         );
+    }
+
+    @Override
+    public BuiltinPermissions getBuiltinPermissions() {
+        return BuiltinPermission.VIEW;
+    }
+
+    @Override
+    public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
+        return permissionRegistry;
     }
 }

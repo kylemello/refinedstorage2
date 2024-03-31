@@ -7,6 +7,19 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Security Card
+-   Fallback Security Card
+
+### Changed
+
+-   The permissions for a Security Card must be configured through the card itself, instead of via the Security Manager.
+-   The Security Card can be bound to other (currently online) players via its GUI.
+-   The binding of a Security Card can now be cleared.
+-   The Security Card tooltip and GUI now show whether the permission has been touched/changed in any way.
+-   A global (fallback) permission set for a network can be defined using the Fallback Security Card instead of using an "unbound" Security Card.
+
 ### Fixed
 
 -   Wireless Grid name not being correct in the GUI.

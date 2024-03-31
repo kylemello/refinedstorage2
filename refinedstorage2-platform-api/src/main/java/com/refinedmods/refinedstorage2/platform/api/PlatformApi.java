@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage2.platform.api;
 
 import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
@@ -20,6 +20,8 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
+import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -45,7 +47,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -90,8 +91,6 @@ public interface PlatformApi {
     void addStorageMonitorInsertionStrategy(StorageMonitorInsertionStrategy strategy);
 
     StorageMonitorInsertionStrategy getStorageMonitorInsertionStrategy();
-
-    MutableComponent createTranslation(String category, String value, Object... args);
 
     ComponentMapFactory<NetworkComponent, Network> getNetworkComponentMapFactory();
 
@@ -180,4 +179,8 @@ public interface PlatformApi {
     SlotReference createInventorySlotReference(Player player, InteractionHand hand);
 
     void useNetworkBoundItem(Player player, Item... items);
+
+    BuiltinPermissions getBuiltinPermissions();
+
+    PlatformRegistry<PlatformPermission> getPermissionRegistry();
 }

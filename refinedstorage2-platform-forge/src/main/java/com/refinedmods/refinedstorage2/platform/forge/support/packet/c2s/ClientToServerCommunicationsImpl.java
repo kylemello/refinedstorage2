@@ -13,8 +13,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ClientToServerCommunicationsImpl implements ClientToServerCommunications {
@@ -109,5 +111,20 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
     @Override
     public void sendUseNetworkBoundItem(final SlotReference slotReference) {
         sendPacket(new UseNetworkBoundItemPacket(slotReference));
+    }
+
+    @Override
+    public void sendSecurityCardPermission(final ResourceLocation permissionId, final boolean allowed) {
+        sendPacket(new SecurityCardPermissionPacket(permissionId, allowed));
+    }
+
+    @Override
+    public void sendSecurityCardResetPermission(final ResourceLocation permissionId) {
+        sendPacket(new SecurityCardResetPermissionPacket(permissionId));
+    }
+
+    @Override
+    public void sendSecurityCardBoundPlayer(@Nullable final UUID playerId) {
+        sendPacket(new SecurityCardBoundPlayerPacket(playerId));
     }
 }

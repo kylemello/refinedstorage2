@@ -5,6 +5,7 @@ import net.minecraft.network.chat.MutableComponent;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public final class ContentNames {
+    public static final MutableComponent MOD = createTranslation("itemGroup", "general");
     public static final MutableComponent CABLE = name("cable");
     public static final MutableComponent GRID = name("grid");
     public static final MutableComponent CRAFTING_GRID = name("crafting_grid");
@@ -25,6 +26,8 @@ public final class ContentNames {
     public static final MutableComponent NETWORK_RECEIVER = name("network_receiver");
     public static final MutableComponent NETWORK_TRANSMITTER = name("network_transmitter");
     public static final MutableComponent PORTABLE_GRID = name("portable_grid");
+    public static final MutableComponent SECURITY_CARD = createTranslation("item", "security_card");
+    public static final MutableComponent FALLBACK_SECURITY_CARD = createTranslation("item", "fallback_security_card");
 
     private ContentNames() {
     }

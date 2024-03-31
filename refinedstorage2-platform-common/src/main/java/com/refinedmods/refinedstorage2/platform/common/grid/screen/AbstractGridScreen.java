@@ -14,20 +14,18 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformRes
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.ItemGridResource;
-import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.AbstractStretchingScreen;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.widget.History;
 import com.refinedmods.refinedstorage2.platform.common.support.widget.RedstoneModeSideButtonWidget;
-import com.refinedmods.refinedstorage2.platform.common.support.widget.ScrollbarWidget;
 import com.refinedmods.refinedstorage2.query.lexer.SyntaxHighlighter;
 import com.refinedmods.refinedstorage2.query.lexer.SyntaxHighlighterColors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -43,16 +41,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+import static java.util.Objects.requireNonNullElse;
 
-public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractBaseScreen<T> {
+public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
 
-    private static final int TOP_HEIGHT = 19;
-    private static final int INVENTORY_INCLUDING_TITLE_HEIGHT = 99;
     private static final int COLUMNS = 9;
-    private static final int MIN_ROWS = 3;
 
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
     private static final int SELECTION_SLOT_COLOR = -2130706433;
@@ -63,10 +59,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     @Nullable
     GridSearchBoxWidget searchField;
 
-    @Nullable
-    private ScrollbarWidget scrollbar;
     private int totalRows;
-    private int visibleRows;
     private int currentGridSlotIndex;
 
     protected AbstractGridScreen(final T menu,
@@ -75,18 +68,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final int bottomHeight) {
         super(menu, playerInventory, text);
         this.bottomHeight = bottomHeight;
-        this.menu.setSizeChangedListener(this::init);
     }
 
     @Override
-    protected void init() {
+    protected void init(final int rows) {
         LOGGER.info("Initializing grid screen");
-
-        this.visibleRows = calculateVisibleRows();
-        this.imageHeight = TOP_HEIGHT + (visibleRows * 18) + bottomHeight;
-        this.inventoryLabelY = imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 4;
-
-        super.init();
 
         if (searchField == null) {
             searchField = new GridSearchBoxWidget(
@@ -103,14 +89,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
         getMenu().setSearchBox(searchField);
 
-        getMenu().addSlots(imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 17);
+        getMenu().getView().setListener(this::updateScrollbar);
+        updateScrollbar();
 
-        this.scrollbar = new ScrollbarWidget(leftPos + 174, topPos + 20, 12, (visibleRows * 18) - 2);
-        this.scrollbar.setScrollAnimation(Platform.INSTANCE.getConfig().getGrid().isSmoothScrolling());
-        this.getMenu().getView().setListener(this::resourcesChanged);
-        resourcesChanged();
-
-        addWidget(scrollbar);
         addWidget(searchField);
 
         if (getMenu().hasProperty(PropertyTypes.REDSTONE_MODE)) {
@@ -118,7 +99,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
         addSideButton(new SortingDirectionSideButtonWidget(getMenu()));
         addSideButton(new SortingTypeSideButtonWidget(getMenu()));
-        addSideButton(new SizeSideButtonWidget(getMenu()));
         addSideButton(new AutoSelectedSideButtonWidget(getMenu()));
         addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
 
@@ -150,70 +130,54 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         searchField.setValue(text);
     }
 
-    private void resourcesChanged() {
-        if (scrollbar == null) {
-            return;
-        }
-        totalRows = (int) Math.ceil((float) getMenu().getView().getViewList().size() / (float) COLUMNS);
-        scrollbar.setEnabled(totalRows > visibleRows);
-        final int rowsExcludingVisibleOnes = totalRows - visibleRows;
-        final int maxOffset = scrollbar.isScrollAnimation()
-            ? (rowsExcludingVisibleOnes * 18)
-            : rowsExcludingVisibleOnes;
-        scrollbar.setMaxOffset(maxOffset);
-    }
-
-    private int calculateVisibleRows() {
-        final int screenSpaceAvailable = height - TOP_HEIGHT - bottomHeight;
-        final int maxRows = getMaxRows();
-        return Math.max(MIN_ROWS, Math.min((screenSpaceAvailable / 18) - MIN_ROWS, maxRows));
-    }
-
-    private int getMaxRows() {
-        return switch (getMenu().getSize()) {
-            case STRETCH -> Platform.INSTANCE.getConfig().getGrid().getMaxRowsStretch();
-            case SMALL -> 3;
-            case MEDIUM -> 5;
-            case LARGE -> 8;
-            case EXTRA_LARGE -> 12;
-        };
+    private void updateScrollbar() {
+        this.totalRows = (int) Math.ceil((float) getMenu().getView().getViewList().size() / (float) COLUMNS);
+        updateScrollbar(totalRows);
     }
 
     private boolean isOverStorageArea(final int mouseX, final int mouseY) {
         final int relativeMouseX = mouseX - leftPos;
         final int relativeMouseY = mouseY - topPos;
         return relativeMouseX >= 7
-            && relativeMouseY >= TOP_HEIGHT
             && relativeMouseX <= 168
-            && relativeMouseY <= TOP_HEIGHT + (visibleRows * 18);
+            && isInStretchedArea(relativeMouseY);
     }
 
     @Override
-    protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
-        final int x = (width - imageWidth) / 2;
-        final int y = (height - imageHeight) / 2;
-
-        graphics.blit(getTexture(), x, y, 0, 0, imageWidth, TOP_HEIGHT);
-
-        for (int row = 0; row < visibleRows; ++row) {
+    protected void renderStretchingBackground(final GuiGraphics graphics, final int x, final int y, final int rows) {
+        for (int row = 0; row < rows; ++row) {
             int textureY = 37;
             if (row == 0) {
                 textureY = 19;
-            } else if (row == visibleRows - 1) {
+            } else if (row == rows - 1) {
                 textureY = 55;
             }
-            graphics.blit(getTexture(), x, y + TOP_HEIGHT + (18 * row), 0, textureY, imageWidth, 18);
+            graphics.blit(getTexture(), x, y + (ROW_SIZE * row), 0, textureY, imageWidth, ROW_SIZE);
         }
+    }
 
-        graphics.blit(getTexture(), x, y + TOP_HEIGHT + (18 * visibleRows), 0, 73, imageWidth, bottomHeight);
+    @Override
+    protected int getBottomHeight() {
+        return bottomHeight;
+    }
 
+    @Override
+    protected int getBottomV() {
+        return 73;
+    }
+
+    @Override
+    protected void renderRows(final GuiGraphics graphics,
+                              final int x,
+                              final int y,
+                              final int topHeight,
+                              final int rows,
+                              final int mouseX,
+                              final int mouseY) {
         currentGridSlotIndex = -1;
-
-        graphics.enableScissor(x + 7, y + TOP_HEIGHT, x + 7 + (18 * COLUMNS), y + TOP_HEIGHT + (visibleRows * 18));
-        for (int row = 0; row < Math.max(totalRows, visibleRows); ++row) {
-            renderRow(graphics, mouseX, mouseY, x, y, row);
+        for (int row = 0; row < Math.max(totalRows, rows); ++row) {
+            renderRow(graphics, mouseX, mouseY, x, y, topHeight, row, rows);
         }
-        graphics.disableScissor();
     }
 
     private void renderRow(final GuiGraphics graphics,
@@ -221,31 +185,20 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                            final int mouseY,
                            final int x,
                            final int y,
-                           final int row) {
+                           final int topHeight,
+                           final int row,
+                           final int visibleRows) {
         final int rowX = x + 7;
-        final int rowY = y + TOP_HEIGHT + (row * 18) - getScrollbarOffset();
-
-        final boolean isOutOfFrame = (rowY < y + TOP_HEIGHT - 18) || (rowY > y + TOP_HEIGHT + (visibleRows * 18));
+        final int rowY = y + topHeight + (row * ROW_SIZE) - getScrollbarOffset();
+        final boolean isOutOfFrame = (rowY < y + topHeight - ROW_SIZE)
+            || (rowY > y + topHeight + (ROW_SIZE * visibleRows));
         if (isOutOfFrame) {
             return;
         }
-
-        graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, 18);
-
+        graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);
         }
-    }
-
-    private int getScrollbarOffset() {
-        if (scrollbar == null) {
-            return 0;
-        }
-        final int scrollbarOffset = (int) scrollbar.getOffset();
-        if (!scrollbar.isScrollAnimation()) {
-            return scrollbarOffset * 18;
-        }
-        return scrollbarOffset;
     }
 
     private void renderCell(final GuiGraphics graphics,
@@ -256,7 +209,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                             final int idx,
                             final int column) {
         final GridView view = getMenu().getView();
-        final int slotX = rowX + 1 + (column * 18);
+        final int slotX = rowX + 1 + (column * ROW_SIZE);
         final int slotY = rowY + 1;
         if (!getMenu().isActive()) {
             renderDisabledSlot(graphics, slotX, slotY);
@@ -308,8 +261,8 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
         final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount();
         final int color = resource.isZeroed()
-            ? Objects.requireNonNullElse(ChatFormatting.RED.getColor(), 15)
-            : Objects.requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
+            ? requireNonNullElse(ChatFormatting.RED.getColor(), 15)
+            : requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
         final boolean large = (minecraft != null && minecraft.isEnforceUnicode())
             || Platform.INSTANCE.getConfig().getGrid().isLargeFont();
         renderAmount(graphics, slotX, slotY, text, color, large);
@@ -439,9 +392,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
-        if (scrollbar != null) {
-            scrollbar.render(graphics, mouseX, mouseY, partialTicks);
-        }
         if (searchField != null) {
             searchField.render(graphics, 0, 0, 0);
         }
@@ -449,10 +399,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     @Override
     public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
-        if (scrollbar != null && scrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
-            return true;
-        }
-
         final ItemStack carriedStack = getMenu().getCarried();
         final PlatformGridResource resource = getCurrentGridResource();
 
@@ -498,19 +444,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     @Override
-    public void mouseMoved(final double mx, final double my) {
-        if (scrollbar != null) {
-            scrollbar.mouseMoved(mx, my);
-        }
-        super.mouseMoved(mx, my);
-    }
-
-    @Override
-    public boolean mouseReleased(final double mx, final double my, final int button) {
-        return (scrollbar != null && scrollbar.mouseReleased(mx, my, button)) || super.mouseReleased(mx, my, button);
-    }
-
-    @Override
     public boolean mouseScrolled(final double x, final double y, final double z, final double delta) {
         final boolean up = delta > 0;
 
@@ -523,9 +456,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             mouseScrolledInInventory(up, hoveredSlot);
         }
 
-        final boolean didScrollbar =
-            scrollbar != null && !hasShiftDown() && !hasControlDown() && scrollbar.mouseScrolled(x, y, z, delta);
-        return didScrollbar || super.mouseScrolled(x, y, z, delta);
+        return super.mouseScrolled(x, y, z, delta);
     }
 
     private void mouseScrolledInInventory(final boolean up, final Slot slot) {

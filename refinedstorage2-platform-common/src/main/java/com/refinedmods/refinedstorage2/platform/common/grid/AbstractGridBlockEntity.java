@@ -2,9 +2,9 @@ package com.refinedmods.refinedstorage2.platform.common.grid;
 
 import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcher;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.impl.node.container.NetworkNodeContainerPriorities;
 import com.refinedmods.refinedstorage2.api.network.impl.node.grid.GridNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;

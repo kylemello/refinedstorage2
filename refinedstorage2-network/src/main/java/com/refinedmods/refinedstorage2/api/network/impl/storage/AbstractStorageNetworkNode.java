@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.impl.storage;
 
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;

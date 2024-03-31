@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage;
 
-import com.refinedmods.refinedstorage2.api.network.component.StorageProvider;
 import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractStorageNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.externalstorage.ExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageProvider;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.external.ExternalStorage;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageRepository;

@@ -6,6 +6,7 @@ import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.CreativeModeTabItems;
 import com.refinedmods.refinedstorage2.platform.common.content.DirectRegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
@@ -13,6 +14,8 @@ import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
@@ -37,6 +40,9 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.PropertyChange
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
@@ -84,7 +90,6 @@ import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
-import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class ModInitializerImpl extends AbstractModInitializer implements ModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModInitializerImpl.class);
@@ -241,6 +246,24 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                                                        final ItemStack newStack) {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
+            },
+            () -> new SecurityCardItem() {
+                @Override
+                public boolean allowNbtUpdateAnimation(final Player player,
+                                                       final InteractionHand hand,
+                                                       final ItemStack oldStack,
+                                                       final ItemStack newStack) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
+            },
+            () -> new FallbackSecurityCardItem() {
+                @Override
+                public boolean allowNbtUpdateAnimation(final Player player,
+                                                       final InteractionHand hand,
+                                                       final ItemStack oldStack,
+                                                       final ItemStack newStack) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
             }
         );
         registerUpgradeMappings();
@@ -272,7 +295,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             BuiltInRegistries.CREATIVE_MODE_TAB,
             createIdentifier("general"),
             CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-                .title(createTranslation("itemGroup", "general"))
+                .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))
                 .displayItems((params, output) -> CreativeModeTabItems.append(output::accept))
                 .build()
@@ -304,6 +327,18 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         );
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.SINGLE_AMOUNT_CHANGE, new SingleAmountChangePacket());
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.USE_NETWORK_BOUND_ITEM, new UseNetworkBoundItemPacket());
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            new SecurityCardPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            new SecurityCardResetPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_BOUND_PLAYER,
+            new SecurityCardBoundPlayerPacket()
+        );
     }
 
     private void registerSidedHandlers() {
