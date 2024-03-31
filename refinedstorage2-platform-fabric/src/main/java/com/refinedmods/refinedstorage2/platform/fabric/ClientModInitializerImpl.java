@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage2.platform.common.configurationcard.Configu
 import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerModelPredicateProvider;
@@ -74,7 +75,6 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class ClientModInitializerImpl extends AbstractClientModInitializer implements ClientModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientModInitializerImpl.class);
-    private static final String KEY_BINDINGS_TRANSLATION_KEY = createTranslationKey("category", "key_bindings");
 
     @Override
     public void onInitializeClient() {
@@ -365,13 +365,13 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             createTranslationKey("key", "focus_search_bar"),
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB,
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         )));
         KeyMappings.INSTANCE.setOpenWirelessGrid(KeyBindingHelper.registerKeyBinding(new KeyMapping(
             createTranslationKey("key", "open_wireless_grid"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         )));
         ClientTickEvents.END_CLIENT_TICK.register(client -> handleInputEvents());
     }

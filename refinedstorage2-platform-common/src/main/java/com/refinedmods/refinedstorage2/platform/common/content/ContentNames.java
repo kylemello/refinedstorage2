@@ -1,11 +1,14 @@
 package com.refinedmods.refinedstorage2.platform.common.content;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public final class ContentNames {
-    public static final MutableComponent MOD = createTranslation("itemGroup", "general");
+    public static final String MOD_TRANSLATION_KEY = "mod." + MOD_ID;
+    public static final MutableComponent MOD = Component.translatable(MOD_TRANSLATION_KEY);
     public static final MutableComponent CABLE = name("cable");
     public static final MutableComponent GRID = name("grid");
     public static final MutableComponent CRAFTING_GRID = name("crafting_grid");

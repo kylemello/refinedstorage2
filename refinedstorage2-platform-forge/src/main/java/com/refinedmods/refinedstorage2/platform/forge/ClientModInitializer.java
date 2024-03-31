@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerModelPredicateProvider;
@@ -60,7 +61,6 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public final class ClientModInitializer extends AbstractClientModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientModInitializer.class);
-    private static final String KEY_BINDINGS_TRANSLATION_KEY = createTranslationKey("category", "key_bindings");
 
     private ClientModInitializer() {
     }
@@ -116,7 +116,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             createTranslationKey("key", "focus_search_bar"),
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB,
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         );
         e.register(focusSearchBarKeyBinding);
         KeyMappings.INSTANCE.setFocusSearchBar(focusSearchBarKeyBinding);
@@ -127,7 +127,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             KeyModifier.CONTROL,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_X,
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         );
         e.register(clearCraftingGridMatrixToNetwork);
         KeyMappings.INSTANCE.setClearCraftingGridMatrixToNetwork(clearCraftingGridMatrixToNetwork);
@@ -135,7 +135,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         final KeyMapping clearCraftingGridMatrixToInventory = new KeyMapping(
             createTranslationKey("key", "clear_crafting_grid_matrix_to_inventory"),
             InputConstants.UNKNOWN.getValue(),
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         );
         e.register(clearCraftingGridMatrixToInventory);
         KeyMappings.INSTANCE.setClearCraftingGridMatrixToInventory(clearCraftingGridMatrixToInventory);
@@ -144,7 +144,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             createTranslationKey("key", "open_wireless_grid"),
             KeyConflictContext.IN_GAME,
             InputConstants.UNKNOWN,
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         );
         e.register(openWirelessGrid);
         KeyMappings.INSTANCE.setOpenWirelessGrid(openWirelessGrid);
