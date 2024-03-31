@@ -41,11 +41,17 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
 
         super.init();
 
-        addSideButton(new ScreenSizeSideButtonWidget(this));
-
         this.scrollbar = new ScrollbarWidget(leftPos + 174, topPos + 20, 12, (visibleRows * ROW_SIZE) - 2);
         this.scrollbar.setListener(offset -> scrollbarChanged(visibleRows));
         addWidget(scrollbar);
+
+        init(visibleRows);
+
+        addSideButton(new ScreenSizeSideButtonWidget(this));
+    }
+
+    protected void init(final int rows) {
+        // no op
     }
 
     protected final int getScrollbarOffset() {

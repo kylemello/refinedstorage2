@@ -15,6 +15,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -127,6 +128,32 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
             PacketIds.USE_NETWORK_BOUND_ITEM,
             buf -> PlatformApi.INSTANCE.writeSlotReference(slotReference, buf)
         );
+    }
+
+    @Override
+    public void sendSecurityCardPermission(final ResourceLocation permissionId, final boolean allowed) {
+        sendToServer(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            buf -> {
+                buf.writeResourceLocation(permissionId);
+                buf.writeBoolean(allowed);
+            }
+        );
+    }
+
+    @Override
+    public void sendSecurityCardResetPermission(final ResourceLocation permissionId) {
+        sendToServer(PacketIds.SECURITY_CARD_RESET_PERMISSION, buf -> buf.writeResourceLocation(permissionId));
+    }
+
+    @Override
+    public void sendSecurityCardBoundPlayer(@Nullable final UUID playerId) {
+        sendToServer(PacketIds.SECURITY_CARD_BOUND_PLAYER, buf -> {
+            buf.writeBoolean(playerId != null);
+            if (playerId != null) {
+                buf.writeUUID(playerId);
+            }
+        });
     }
 
     private static void sendToServer(final ResourceLocation id, final Consumer<FriendlyByteBuf> bufConsumer) {

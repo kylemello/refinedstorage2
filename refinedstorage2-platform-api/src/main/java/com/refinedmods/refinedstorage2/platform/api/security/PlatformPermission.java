@@ -12,4 +12,6 @@ public interface PlatformPermission extends Permission {
     Component getDescription();
 
     Component getOwnerName();
+
+    boolean isAllowedByDefault();
 }

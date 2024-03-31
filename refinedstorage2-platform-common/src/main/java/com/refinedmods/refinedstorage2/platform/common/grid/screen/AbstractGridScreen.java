@@ -71,10 +71,8 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     @Override
-    protected void init() {
+    protected void init(final int rows) {
         LOGGER.info("Initializing grid screen");
-
-        super.init();
 
         if (searchField == null) {
             searchField = new GridSearchBoxWidget(

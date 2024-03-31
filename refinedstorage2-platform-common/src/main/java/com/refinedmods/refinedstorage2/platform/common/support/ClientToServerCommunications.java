@@ -10,6 +10,9 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
+
+import net.minecraft.resources.ResourceLocation;
 
 public interface ClientToServerCommunications {
     void sendGridExtract(PlatformResourceKey resource, GridExtractMode mode, boolean cursor);
@@ -35,4 +38,10 @@ public interface ClientToServerCommunications {
     void sendSingleAmountChange(double amount);
 
     void sendUseNetworkBoundItem(SlotReference slotReference);
+
+    void sendSecurityCardPermission(ResourceLocation permissionId, boolean allowed);
+
+    void sendSecurityCardResetPermission(ResourceLocation permissionId);
+
+    void sendSecurityCardBoundPlayer(@Nullable UUID playerId);
 }

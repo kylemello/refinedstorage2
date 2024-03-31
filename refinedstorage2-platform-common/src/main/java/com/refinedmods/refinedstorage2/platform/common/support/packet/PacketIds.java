@@ -26,6 +26,11 @@ public final class PacketIds {
     public static final ResourceLocation SINGLE_AMOUNT_CHANGE = createIdentifier("detector_amount_change");
     public static final ResourceLocation USE_NETWORK_BOUND_ITEM = createIdentifier("use_network_bound_item");
     public static final ResourceLocation NETWORK_TRANSMITTER_STATUS = createIdentifier("network_transmitter_status");
+    public static final ResourceLocation SECURITY_CARD_PERMISSION = createIdentifier("security_card_permission");
+    public static final ResourceLocation SECURITY_CARD_RESET_PERMISSION = createIdentifier(
+        "security_card_reset_permission"
+    );
+    public static final ResourceLocation SECURITY_CARD_BOUND_PLAYER = createIdentifier("security_card_bound_player");
 
     private PacketIds() {
     }

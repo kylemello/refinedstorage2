@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -26,47 +27,54 @@ public class SecurityCardItem extends Item {
     private static final Component UNBOUND_HELP = createTranslation("item", "security_card.unbound.help");
     private static final Component BOUND_HELP = createTranslation("item", "security_card.bound.help");
 
-    private static final String TAG_BOUND_TO = "boundto";
-    private static final String TAG_BOUND_TO_NAME = "boundtoname";
-
     public SecurityCardItem() {
         super(new Item.Properties().stacksTo(1));
+    }
+
+    SecurityCardModel getModel(final ItemStack stack) {
+        return new SecurityCardModel(stack);
+    }
+
+    boolean isActive(final ItemStack stack) {
+        return SecurityCardModel.isActive(stack);
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            if (serverPlayer.isCrouching()) {
-                bindOrUnbind(serverPlayer, stack);
-            } else {
-                Platform.INSTANCE.getMenuOpener().openMenu(serverPlayer, new SecurityCardExtendedMenuProvider(
-                    PlatformApi.INSTANCE.createInventorySlotReference(player, hand)
-                ));
-            }
+            use(hand, serverPlayer, stack);
         }
         return InteractionResultHolder.consume(stack);
     }
 
-    private void bindOrUnbind(final ServerPlayer player, final ItemStack stack) {
+    private void use(final InteractionHand hand, final ServerPlayer player, final ItemStack stack) {
+        if (player.isCrouching()) {
+            bindOrClear(player, stack);
+            return;
+        }
+        Platform.INSTANCE.getMenuOpener().openMenu(player, new SecurityCardExtendedMenuProvider(
+            PlatformApi.INSTANCE.createInventorySlotReference(player, hand),
+            getModel(stack)
+        ));
+    }
+
+    private void bindOrClear(final ServerPlayer player, final ItemStack stack) {
         if (stack.hasTag()) {
-            unbind(player, stack);
+            clear(player, stack);
         } else {
             bind(player, stack);
         }
     }
 
-    private void unbind(final ServerPlayer player, final ItemStack stack) {
+    private void clear(final ServerPlayer player, final ItemStack stack) {
         stack.setTag(null);
-        player.sendSystemMessage(createTranslation(
-            "item",
-            "security_card.unbound"
-        ));
+        player.sendSystemMessage(createTranslation("item", "security_card.cleared"));
     }
 
     private void bind(final ServerPlayer player, final ItemStack stack) {
-        stack.getOrCreateTag().putUUID(TAG_BOUND_TO, player.getGameProfile().getId());
-        stack.getOrCreateTag().putString(TAG_BOUND_TO_NAME, player.getGameProfile().getName());
+        final SecurityCardModel model = getModel(stack);
+        model.setBoundPlayer(player);
         player.sendSystemMessage(createTranslation(
             "item",
             "security_card.bound",
@@ -80,25 +88,36 @@ public class SecurityCardItem extends Item {
                                 final List<Component> lines,
                                 final TooltipFlag flag) {
         super.appendHoverText(stack, level, lines, flag);
-        if (stack.getTag() == null) {
+        final SecurityCardModel model = getModel(stack);
+
+        final String boundPlayerName = model.getBoundPlayerName();
+        if (boundPlayerName == null) {
             lines.add(createTranslation("item", "security_card.unbound").withStyle(ChatFormatting.GRAY));
             return;
         }
-        final Component boundToName = Component.literal(stack.getTag().getString(TAG_BOUND_TO_NAME))
-            .withStyle(ChatFormatting.YELLOW);
+
         lines.add(createTranslation(
             "item",
             "security_card.bound",
-            boundToName
+            Component.literal(boundPlayerName).withStyle(ChatFormatting.YELLOW)
         ).withStyle(ChatFormatting.GRAY));
+
+        PlatformApi.INSTANCE.getPermissionRegistry().getAll().forEach(permission -> {
+            final boolean allowed = model.isAllowed(permission);
+            final boolean dirty = model.isDirty(permission);
+            final Style style = Style.EMPTY
+                .withColor(allowed ? ChatFormatting.GREEN : ChatFormatting.RED)
+                .withItalic(dirty);
+            final Component permissionTooltip = Component.literal(allowed ? "✓ " : "❌ ")
+                .append(permission.getName())
+                .append(dirty ? " (*)" : "")
+                .withStyle(style);
+            lines.add(permissionTooltip);
+        });
     }
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
         return Optional.of(new HelpTooltipComponent(isActive(stack) ? BOUND_HELP : UNBOUND_HELP));
-    }
-
-    boolean isActive(final ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().contains(TAG_BOUND_TO);
     }
 }

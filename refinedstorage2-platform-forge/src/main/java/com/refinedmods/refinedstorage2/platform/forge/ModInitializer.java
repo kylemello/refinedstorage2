@@ -46,6 +46,9 @@ import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.Propert
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.UseNetworkBoundItemPacket;
@@ -503,6 +506,21 @@ public class ModInitializer extends AbstractModInitializer {
             PacketIds.USE_NETWORK_BOUND_ITEM,
             UseNetworkBoundItemPacket::decode,
             handler -> handler.server(UseNetworkBoundItemPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            SecurityCardPermissionPacket::decode,
+            handler -> handler.server(SecurityCardPermissionPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            SecurityCardResetPermissionPacket::decode,
+            handler -> handler.server(SecurityCardResetPermissionPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_BOUND_PLAYER,
+            SecurityCardBoundPlayerPacket::decode,
+            handler -> handler.server(SecurityCardBoundPlayerPacket::handle)
         );
     }
 

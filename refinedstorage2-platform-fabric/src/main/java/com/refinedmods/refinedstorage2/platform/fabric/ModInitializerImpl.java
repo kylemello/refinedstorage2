@@ -39,6 +39,9 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.PropertyChange
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
@@ -314,6 +317,18 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         );
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.SINGLE_AMOUNT_CHANGE, new SingleAmountChangePacket());
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.USE_NETWORK_BOUND_ITEM, new UseNetworkBoundItemPacket());
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            new SecurityCardPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            new SecurityCardResetPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_BOUND_PLAYER,
+            new SecurityCardBoundPlayerPacket()
+        );
     }
 
     private void registerSidedHandlers() {

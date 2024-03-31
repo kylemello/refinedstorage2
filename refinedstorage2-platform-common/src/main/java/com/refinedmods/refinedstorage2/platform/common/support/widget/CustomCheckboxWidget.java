@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.common.support.widget;
 
+import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,6 +27,8 @@ public class CustomCheckboxWidget extends AbstractButton {
 
     private static final int BOX_SIZE = 9 + 8;
 
+    @Nullable
+    private OnPressed onPressed;
     private boolean selected;
 
     public CustomCheckboxWidget(final int x,
@@ -36,18 +40,25 @@ public class CustomCheckboxWidget extends AbstractButton {
         this.selected = selected;
     }
 
-    public void onPress() {
-        this.selected = !this.selected;
+    public void setOnPressed(@Nullable final OnPressed onPressed) {
+        this.onPressed = onPressed;
     }
 
-    public boolean selected() {
-        return this.selected;
+    public void onPress() {
+        this.selected = !this.selected;
+        if (onPressed != null) {
+            onPressed.onPressed(this, selected);
+        }
+    }
+
+    public void setSelected(final boolean selected) {
+        this.selected = selected;
     }
 
     public void updateWidgetNarration(final NarrationElementOutput output) {
-        output.add(NarratedElementType.TITLE, this.createNarrationMessage());
-        if (this.active) {
-            if (this.isFocused()) {
+        output.add(NarratedElementType.TITLE, createNarrationMessage());
+        if (active) {
+            if (isFocused()) {
                 output.add(NarratedElementType.USAGE, Component.translatable("narration.checkbox.usage.focused"));
             } else {
                 output.add(NarratedElementType.USAGE, Component.translatable("narration.checkbox.usage.hovered"));
@@ -72,5 +83,10 @@ public class CustomCheckboxWidget extends AbstractButton {
         graphics.blitSprite(sprite, getX(), getY(), BOX_SIZE, BOX_SIZE);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         graphics.drawString(font, getMessage(), x, y, 4210752, false);
+    }
+
+    @FunctionalInterface
+    public interface OnPressed {
+        void onPressed(CustomCheckboxWidget checkbox, boolean selected);
     }
 }

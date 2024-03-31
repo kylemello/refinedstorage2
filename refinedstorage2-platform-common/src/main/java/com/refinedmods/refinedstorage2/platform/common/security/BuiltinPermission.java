@@ -73,4 +73,9 @@ public enum BuiltinPermission implements PlatformPermission {
     public Component getOwnerName() {
         return ContentNames.MOD;
     }
+
+    @Override
+    public boolean isAllowedByDefault() {
+        return true;
+    }
 }
