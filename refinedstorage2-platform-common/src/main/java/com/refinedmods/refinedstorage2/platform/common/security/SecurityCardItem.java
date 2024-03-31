@@ -1,29 +1,21 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-public class SecurityCardItem extends Item {
+public class SecurityCardItem extends AbstractSecurityCardItem<PlayerSecurityCardModel> {
     private static final Component UNBOUND_HELP = createTranslation("item", "security_card.unbound.help");
     private static final Component BOUND_HELP = createTranslation("item", "security_card.bound.help");
 
@@ -31,49 +23,16 @@ public class SecurityCardItem extends Item {
         super(new Item.Properties().stacksTo(1));
     }
 
-    SecurityCardModel getModel(final ItemStack stack) {
-        return new SecurityCardModel(stack);
-    }
-
-    boolean isActive(final ItemStack stack) {
-        return SecurityCardModel.isActive(stack);
-    }
-
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
-        final ItemStack stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer) {
-            use(hand, serverPlayer, stack);
-        }
-        return InteractionResultHolder.consume(stack);
-    }
-
-    private void use(final InteractionHand hand, final ServerPlayer player, final ItemStack stack) {
-        if (player.isCrouching()) {
-            bindOrClear(player, stack);
+    void tryClear(final ServerPlayer player, final PlayerSecurityCardModel model) {
+        if (model.isCleared()) {
+            bind(player, model);
             return;
         }
-        Platform.INSTANCE.getMenuOpener().openMenu(player, new SecurityCardExtendedMenuProvider(
-            PlatformApi.INSTANCE.createInventorySlotReference(player, hand),
-            getModel(stack)
-        ));
+        super.tryClear(player, model);
     }
 
-    private void bindOrClear(final ServerPlayer player, final ItemStack stack) {
-        if (stack.hasTag()) {
-            clear(player, stack);
-        } else {
-            bind(player, stack);
-        }
-    }
-
-    private void clear(final ServerPlayer player, final ItemStack stack) {
-        stack.setTag(null);
-        player.sendSystemMessage(createTranslation("item", "security_card.cleared"));
-    }
-
-    private void bind(final ServerPlayer player, final ItemStack stack) {
-        final SecurityCardModel model = getModel(stack);
+    private void bind(final ServerPlayer player, final PlayerSecurityCardModel model) {
         model.setBoundPlayer(player);
         player.sendSystemMessage(createTranslation(
             "item",
@@ -83,41 +42,39 @@ public class SecurityCardItem extends Item {
     }
 
     @Override
-    public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
-                                final List<Component> lines,
-                                final TooltipFlag flag) {
-        super.appendHoverText(stack, level, lines, flag);
-        final SecurityCardModel model = getModel(stack);
-
+    protected boolean addTooltip(final ItemStack stack,
+                                 final List<Component> lines,
+                                 final PlayerSecurityCardModel model) {
         final String boundPlayerName = model.getBoundPlayerName();
         if (boundPlayerName == null) {
             lines.add(createTranslation("item", "security_card.unbound").withStyle(ChatFormatting.GRAY));
-            return;
+            return false;
         }
-
         lines.add(createTranslation(
             "item",
             "security_card.bound",
             Component.literal(boundPlayerName).withStyle(ChatFormatting.YELLOW)
         ).withStyle(ChatFormatting.GRAY));
-
-        PlatformApi.INSTANCE.getPermissionRegistry().getAll().forEach(permission -> {
-            final boolean allowed = model.isAllowed(permission);
-            final boolean dirty = model.isDirty(permission);
-            final Style style = Style.EMPTY
-                .withColor(allowed ? ChatFormatting.GREEN : ChatFormatting.RED)
-                .withItalic(dirty);
-            final Component permissionTooltip = Component.literal(allowed ? "✓ " : "❌ ")
-                .append(permission.getName())
-                .append(dirty ? " (*)" : "")
-                .withStyle(style);
-            lines.add(permissionTooltip);
-        });
+        return true;
     }
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
         return Optional.of(new HelpTooltipComponent(isActive(stack) ? BOUND_HELP : UNBOUND_HELP));
+    }
+
+    @Override
+    PlayerSecurityCardModel createModel(final ItemStack stack) {
+        return new PlayerSecurityCardModel(stack);
+    }
+
+    @Override
+    AbstractSecurityCardExtendedMenuProvider createMenuProvider(final SlotReference slotReference,
+                                                                final PlayerSecurityCardModel model) {
+        return new SecurityCardExtendedMenuProvider(slotReference, model);
+    }
+
+    boolean isActive(final ItemStack stack) {
+        return PlayerSecurityCardModel.isActive(stack);
     }
 }

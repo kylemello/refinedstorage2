@@ -56,6 +56,8 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceive
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
@@ -141,6 +143,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_DRIVE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXPORTER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXTERNAL_STORAGE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FLUID_STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.IMPORTER;
@@ -320,7 +323,8 @@ public abstract class AbstractModInitializer {
         final Supplier<WirelessGridItem> creativeWirelessGridItemSupplier,
         final Supplier<PortableGridBlockItem> portableGridBlockItemSupplier,
         final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier,
-        final Supplier<SecurityCardItem> securityCardItemSupplier
+        final Supplier<SecurityCardItem> securityCardItemSupplier,
+        final Supplier<FallbackSecurityCardItem> fallbackSecurityCardItemSupplier
     ) {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
@@ -351,6 +355,10 @@ public abstract class AbstractModInitializer {
             creativePortableGridBlockItemSupplier
         ));
         Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, securityCardItemSupplier));
+        Items.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            fallbackSecurityCardItemSupplier
+        ));
     }
 
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
@@ -730,6 +738,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setSecurityCard(callback.register(
             SECURITY_CARD,
             () -> menuTypeFactory.create(SecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
         ));
     }
 

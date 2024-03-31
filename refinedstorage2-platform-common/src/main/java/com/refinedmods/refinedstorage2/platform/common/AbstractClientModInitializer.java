@@ -17,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.FluidGri
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceScreen;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterScreen;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterScreen;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardScreen;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardScreen;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
@@ -69,6 +70,7 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getPortableGridBlock(), PortableGridScreen::new);
         registration.register(Menus.INSTANCE.getPortableGridItem(), PortableGridScreen::new);
         registration.register(Menus.INSTANCE.getSecurityCard(), SecurityCardScreen::new);
+        registration.register(Menus.INSTANCE.getFallbackSecurityCard(), FallbackSecurityCardScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {

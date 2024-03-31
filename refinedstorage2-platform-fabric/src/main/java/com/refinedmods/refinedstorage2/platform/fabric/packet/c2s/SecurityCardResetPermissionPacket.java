@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.fabric.packet.c2s;
 
-import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.AbstractSecurityCardContainerMenu;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -18,7 +18,7 @@ public class SecurityCardResetPermissionPacket implements ServerPlayNetworking.P
                         final FriendlyByteBuf buf,
                         final PacketSender responseSender) {
         final ResourceLocation permissionId = buf.readResourceLocation();
-        if (player.containerMenu instanceof SecurityCardContainerMenu securityCardContainerMenu) {
+        if (player.containerMenu instanceof AbstractSecurityCardContainerMenu securityCardContainerMenu) {
             server.execute(() -> securityCardContainerMenu.resetPermissionServer(permissionId));
         }
     }

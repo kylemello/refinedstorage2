@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s;
 
-import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.AbstractSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,7 +15,7 @@ public record SecurityCardResetPermissionPacket(ResourceLocation permissionId) i
 
     public static void handle(final SecurityCardResetPermissionPacket packet, final PlayPayloadContext ctx) {
         ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (player.containerMenu instanceof SecurityCardContainerMenu securityCardContainerMenu) {
+            if (player.containerMenu instanceof AbstractSecurityCardContainerMenu securityCardContainerMenu) {
                 securityCardContainerMenu.resetPermissionServer(packet.permissionId);
             }
         }));

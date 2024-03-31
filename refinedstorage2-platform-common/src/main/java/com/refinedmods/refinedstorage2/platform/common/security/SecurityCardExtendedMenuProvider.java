@@ -1,10 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,39 +9,30 @@ import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-class SecurityCardExtendedMenuProvider implements ExtendedMenuProvider {
+class SecurityCardExtendedMenuProvider extends AbstractSecurityCardExtendedMenuProvider {
     private final SlotReference slotReference;
-    private final SecurityCardModel model;
+    private final PlayerSecurityCardModel playerModel;
 
-    SecurityCardExtendedMenuProvider(final SlotReference slotReference, final SecurityCardModel model) {
+    SecurityCardExtendedMenuProvider(final SlotReference slotReference, final PlayerSecurityCardModel model) {
+        super(slotReference, model);
         this.slotReference = slotReference;
-        this.model = model;
+        this.playerModel = model;
     }
 
     @Override
     public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        PlatformApi.INSTANCE.writeSlotReference(slotReference, buf);
+        super.writeScreenOpeningData(player, buf);
 
-        final List<PlatformPermission> permissions = PlatformApi.INSTANCE.getPermissionRegistry().getAll();
-        buf.writeInt(permissions.size());
-        for (final PlatformPermission permission : permissions) {
-            final ResourceLocation id = PlatformApi.INSTANCE.getPermissionRegistry().getId(permission).orElseThrow();
-            buf.writeResourceLocation(id);
-            buf.writeBoolean(model.isAllowed(permission));
-            buf.writeBoolean(model.isDirty(permission));
-        }
-
-        final boolean bound = model.getBoundPlayerId() != null && model.getBoundPlayerName() != null;
+        final boolean bound = playerModel.getBoundPlayerId() != null && playerModel.getBoundPlayerName() != null;
         buf.writeBoolean(bound);
         if (bound) {
-            buf.writeUUID(model.getBoundPlayerId());
-            buf.writeUtf(model.getBoundPlayerName());
+            buf.writeUUID(playerModel.getBoundPlayerId());
+            buf.writeUtf(playerModel.getBoundPlayerName());
         }
 
         final List<ServerPlayer> players = player.getServer() == null
