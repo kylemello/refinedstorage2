@@ -115,7 +115,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerSlotReferenceProviders();
         registerWrenchingEvent();
 
-        LOGGER.info("Refined Storage 2 has loaded.");
+        LOGGER.debug("Refined Storage 2 has loaded.");
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {

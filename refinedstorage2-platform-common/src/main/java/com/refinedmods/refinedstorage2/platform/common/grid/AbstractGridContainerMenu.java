@@ -261,7 +261,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         if (!(resource instanceof PlatformResourceKey platformResource)) {
             return;
         }
-        LOGGER.info("{} received a change of {} for {}", this, change, resource);
+        LOGGER.debug("{} received a change of {} for {}", this, change, resource);
         Platform.INSTANCE.getServerToClientCommunications().sendGridUpdate(
             (ServerPlayer) playerInventory.player,
             platformResource,

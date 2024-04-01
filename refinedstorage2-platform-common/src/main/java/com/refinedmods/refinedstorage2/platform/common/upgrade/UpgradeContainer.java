@@ -82,7 +82,7 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     }
 
     private void updateIndex() {
-        LOGGER.info("Updating upgrade index for {}", destination);
+        LOGGER.debug("Updating upgrade index for {}", destination);
         index.clear();
         for (int i = 0; i < getContainerSize(); ++i) {
             updateIndex(i);
