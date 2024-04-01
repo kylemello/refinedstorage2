@@ -33,14 +33,13 @@ abstract class AbstractSecurityCardItem<T extends SecurityCardModel> extends Ite
                                 final TooltipFlag flag) {
         super.appendHoverText(stack, level, lines, flag);
         final T model = createModel(stack);
-        if (addTooltip(stack, lines, model)) {
+        addTooltip(lines, model);
+        if (model.isActive()) {
             addPermissions(lines, model);
         }
     }
 
-    protected boolean addTooltip(final ItemStack stack, final List<Component> lines, final T model) {
-        return true;
-    }
+    abstract void addTooltip(List<Component> lines, T model);
 
     private void addPermissions(final List<Component> lines, final SecurityCardModel model) {
         PlatformApi.INSTANCE.getPermissionRegistry().getAll().forEach(permission -> {

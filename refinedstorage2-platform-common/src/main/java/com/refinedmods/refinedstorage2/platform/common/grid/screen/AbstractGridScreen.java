@@ -178,25 +178,23 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                               final int mouseY) {
         currentGridSlotIndex = -1;
         for (int row = 0; row < Math.max(totalRows, rows); ++row) {
-            renderRow(graphics, mouseX, mouseY, x, y, topHeight, row, rows);
+            final int rowX = x + 7;
+            final int rowY = y + topHeight + (row * ROW_SIZE) - getScrollbarOffset();
+            final boolean isOutOfFrame = (rowY < y + topHeight - ROW_SIZE)
+                || (rowY > y + topHeight + (ROW_SIZE * rows));
+            if (isOutOfFrame) {
+                continue;
+            }
+            renderRow(graphics, mouseX, mouseY, rowX, rowY, row);
         }
     }
 
     private void renderRow(final GuiGraphics graphics,
                            final int mouseX,
                            final int mouseY,
-                           final int x,
-                           final int y,
-                           final int topHeight,
-                           final int row,
-                           final int visibleRows) {
-        final int rowX = x + 7;
-        final int rowY = y + topHeight + (row * ROW_SIZE) - getScrollbarOffset();
-        final boolean isOutOfFrame = (rowY < y + topHeight - ROW_SIZE)
-            || (rowY > y + topHeight + (ROW_SIZE * visibleRows));
-        if (isOutOfFrame) {
-            return;
-        }
+                           final int rowX,
+                           final int rowY,
+                           final int row) {
         graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);
