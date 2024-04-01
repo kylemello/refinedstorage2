@@ -98,6 +98,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
@@ -175,12 +176,13 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractModInitializer {
+    private static final String ITEM_REGISTRY_KEY = "item";
     private static final String FLUID_REGISTRY_KEY = "fluid";
 
     protected final void initializePlatformApi() {
         ((PlatformApiProxy) PlatformApi.INSTANCE).setDelegate(new PlatformApiImpl());
-        registerAdditionalStorageTypes();
-        registerAdditionalResourceTypes();
+        registerStorageTypes();
+        registerResourceTypes();
         registerAdditionalResourceFactories();
         registerDestructorStrategyFactories();
         registerConstructorStrategyFactories();
@@ -189,16 +191,25 @@ public abstract class AbstractModInitializer {
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
         registerPermissions();
+        registerSlotReferenceProviders();
     }
 
-    private void registerAdditionalStorageTypes() {
+    private void registerStorageTypes() {
+        PlatformApi.INSTANCE.getStorageTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            StorageTypes.ITEM
+        );
         PlatformApi.INSTANCE.getStorageTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             StorageTypes.FLUID
         );
     }
 
-    private void registerAdditionalResourceTypes() {
+    private void registerResourceTypes() {
+        PlatformApi.INSTANCE.getResourceTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            ResourceTypes.ITEM
+        );
         PlatformApi.INSTANCE.getResourceTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             ResourceTypes.FLUID
@@ -260,9 +271,6 @@ public abstract class AbstractModInitializer {
 
     private void registerPermissions() {
         for (final BuiltinPermission permission : BuiltinPermission.values()) {
-            if (permission == BuiltinPermission.SECURITY) {
-                continue;
-            }
             PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
         }
     }
@@ -771,6 +779,13 @@ public abstract class AbstractModInitializer {
         callback.register(
             createIdentifier("upgrade_with_enchanted_book"),
             UpgradeWithEnchantedBookRecipeSerializer::new
+        );
+    }
+
+    protected void registerSlotReferenceProviders() {
+        PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
+            createIdentifier("inventory"),
+            InventorySlotReferenceFactory.INSTANCE
         );
     }
 

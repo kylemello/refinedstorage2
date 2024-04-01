@@ -385,6 +385,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     }
 
     private void registerGridSynchronizers() {
+        registerBaseGridSynchronizer();
         final FabricLoader loader = FabricLoader.getInstance();
         if (loader.isModLoaded("roughlyenoughitems")) {
             registerReiGridSynchronizers();

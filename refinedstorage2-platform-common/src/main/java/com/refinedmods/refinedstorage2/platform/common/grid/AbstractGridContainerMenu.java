@@ -33,6 +33,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridI
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.CompositeGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
 import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 import com.refinedmods.refinedstorage2.query.lexer.LexerTokenMappings;
@@ -140,7 +141,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.grid = grid;
         this.grid.addWatcher(this, PlayerActor.class);
 
-        this.synchronizer = PlatformApi.INSTANCE.getGridSynchronizerRegistry().getDefault();
+        this.synchronizer = NoopGridSynchronizer.INSTANCE;
         initStrategies();
     }
 
@@ -322,7 +323,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             .getGrid()
             .getSynchronizer()
             .flatMap(id -> PlatformApi.INSTANCE.getGridSynchronizerRegistry().get(id))
-            .orElse(PlatformApi.INSTANCE.getGridSynchronizerRegistry().getDefault());
+            .orElse(NoopGridSynchronizer.INSTANCE);
     }
 
     @Nullable
@@ -347,20 +348,20 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     public void toggleSynchronizer() {
         final PlatformRegistry<GridSynchronizer> registry = PlatformApi.INSTANCE.getGridSynchronizerRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
-        final GridSynchronizer newSynchronizer = registry.next(getSynchronizer());
-        if (newSynchronizer == registry.getDefault()) {
+        final GridSynchronizer newSynchronizer = registry.nextOrNullIfLast(getSynchronizer());
+        if (newSynchronizer == null) {
             config.clearSynchronizer();
         } else {
             registry.getId(newSynchronizer).ifPresent(config::setSynchronizer);
         }
-        this.synchronizer = newSynchronizer;
+        this.synchronizer = newSynchronizer == null ? NoopGridSynchronizer.INSTANCE : newSynchronizer;
     }
 
     public void toggleResourceType() {
         final PlatformRegistry<ResourceType> registry = PlatformApi.INSTANCE.getResourceTypeRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
         final ResourceType newResourceType = resourceTypeFilter == null
-            ? registry.getDefault()
+            ? ResourceTypes.ITEM
             : registry.nextOrNullIfLast(resourceTypeFilter);
         if (newResourceType == null) {
             config.clearResourceType();

@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.core.CoreValidations;
 import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,7 @@ public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
     private final Map<ResourceLocation, T> idToValueMap = new HashMap<>();
     private final Map<T, ResourceLocation> valueToIdMap = new HashMap<>();
     private final List<T> order = new ArrayList<>();
-    private final T defaultValue;
-
-    public PlatformRegistryImpl(final ResourceLocation defaultValueId, final T defaultValue) {
-        this.register(defaultValueId, defaultValue);
-        this.defaultValue = defaultValue;
-    }
+    private final List<T> viewList = Collections.unmodifiableList(order);
 
     @Override
     public void register(final ResourceLocation id, final T value) {
@@ -36,11 +32,6 @@ public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
         idToValueMap.put(id, value);
         valueToIdMap.put(value, id);
         order.add(value);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return order.size() == 1;
     }
 
     @Override
@@ -56,28 +47,17 @@ public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
     }
 
     @Override
-    public T getDefault() {
-        return defaultValue;
-    }
-
-    @Override
     public List<T> getAll() {
-        return List.copyOf(order);
-    }
-
-    @Override
-    public T next(final T value) {
-        final T nextValue = nextOrNullIfLast(value);
-        if (nextValue == null) {
-            return order.get(0);
-        }
-        return nextValue;
+        return viewList;
     }
 
     @Nullable
     @Override
     public T nextOrNullIfLast(final T value) {
         CoreValidations.validateNotNull(value, VALUE_NOT_PRESENT_ERROR);
+        if (order.isEmpty()) {
+            return null;
+        }
         final int index = order.indexOf(value);
         final int nextIndex = index + 1;
         if (nextIndex >= order.size()) {

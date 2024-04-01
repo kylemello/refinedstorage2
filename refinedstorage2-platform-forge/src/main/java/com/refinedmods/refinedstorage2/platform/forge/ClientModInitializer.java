@@ -170,6 +170,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
     }
 
     private static void registerGridSynchronizers() {
+        registerBaseGridSynchronizer();
         final ModList list = ModList.get();
         // Give priority to REI, as REI requires a JEI compat mod on Forge.
         // This means that both JEI + REI support would be activated. We only want REI in that case.

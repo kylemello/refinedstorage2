@@ -7,12 +7,11 @@ import com.refinedmods.refinedstorage2.api.grid.view.GridView;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
-import com.refinedmods.refinedstorage2.platform.api.grid.GridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.api.grid.view.PlatformGridResource;
-import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.ItemGridResource;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
@@ -102,8 +101,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         addSideButton(new AutoSelectedSideButtonWidget(getMenu()));
         addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
 
-        final PlatformRegistry<GridSynchronizer> synchronizers = PlatformApi.INSTANCE.getGridSynchronizerRegistry();
-        if (!synchronizers.isEmpty()) {
+        final boolean onlyHasNoopSynchronizer = PlatformApi.INSTANCE.getGridSynchronizerRegistry()
+            .getAll()
+            .stream()
+            .allMatch(synchronizer -> synchronizer == NoopGridSynchronizer.INSTANCE);
+        if (!onlyHasNoopSynchronizer) {
             addSideButton(new SynchronizationSideButtonWidget(getMenu()));
             searchField.addListener(this::trySynchronizeFromGrid);
         }

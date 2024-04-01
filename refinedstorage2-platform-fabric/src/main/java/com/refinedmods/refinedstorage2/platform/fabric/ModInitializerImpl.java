@@ -112,7 +112,6 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerRecipeSerializers(new DirectRegistryCallback<>(BuiltInRegistries.RECIPE_SERIALIZER));
         registerSidedHandlers();
         registerTickHandler();
-        registerSlotReferenceProviders();
         registerWrenchingEvent();
 
         LOGGER.debug("Refined Storage 2 has loaded.");
@@ -405,7 +404,9 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerTickEvents.START_SERVER_TICK.register(server -> ServerEventQueue.runQueuedActions());
     }
 
-    private void registerSlotReferenceProviders() {
+    @Override
+    protected void registerSlotReferenceProviders() {
+        super.registerSlotReferenceProviders();
         TrinketsSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
             PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
                 createIdentifier("trinkets"),

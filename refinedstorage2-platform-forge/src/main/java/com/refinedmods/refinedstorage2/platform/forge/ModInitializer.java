@@ -131,7 +131,6 @@ public class ModInitializer extends AbstractModInitializer {
         registerSounds(eventBus);
         registerRecipeSerializers(eventBus);
         registerTickHandler();
-        registerSlotReferenceProviders();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             eventBus.addListener(ClientModInitializer::onClientSetup);
@@ -355,7 +354,9 @@ public class ModInitializer extends AbstractModInitializer {
         NeoForge.EVENT_BUS.addListener(this::onServerTick);
     }
 
+    @Override
     protected void registerSlotReferenceProviders() {
+        super.registerSlotReferenceProviders();
         CuriosSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
             PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
                 createIdentifier("curios"),
