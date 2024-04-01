@@ -7,12 +7,11 @@ import com.refinedmods.refinedstorage2.api.grid.view.GridView;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
-import com.refinedmods.refinedstorage2.platform.api.grid.GridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.api.grid.view.PlatformGridResource;
-import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.ItemGridResource;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
@@ -102,8 +101,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         addSideButton(new AutoSelectedSideButtonWidget(getMenu()));
         addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
 
-        final PlatformRegistry<GridSynchronizer> synchronizers = PlatformApi.INSTANCE.getGridSynchronizerRegistry();
-        if (!synchronizers.isEmpty()) {
+        final boolean onlyHasNoopSynchronizer = PlatformApi.INSTANCE.getGridSynchronizerRegistry()
+            .getAll()
+            .stream()
+            .allMatch(synchronizer -> synchronizer == NoopGridSynchronizer.INSTANCE);
+        if (!onlyHasNoopSynchronizer) {
             addSideButton(new SynchronizationSideButtonWidget(getMenu()));
             searchField.addListener(this::trySynchronizeFromGrid);
         }
@@ -176,25 +178,23 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                               final int mouseY) {
         currentGridSlotIndex = -1;
         for (int row = 0; row < Math.max(totalRows, rows); ++row) {
-            renderRow(graphics, mouseX, mouseY, x, y, topHeight, row, rows);
+            final int rowX = x + 7;
+            final int rowY = y + topHeight + (row * ROW_SIZE) - getScrollbarOffset();
+            final boolean isOutOfFrame = (rowY < y + topHeight - ROW_SIZE)
+                || (rowY > y + topHeight + (ROW_SIZE * rows));
+            if (isOutOfFrame) {
+                continue;
+            }
+            renderRow(graphics, mouseX, mouseY, rowX, rowY, row);
         }
     }
 
     private void renderRow(final GuiGraphics graphics,
                            final int mouseX,
                            final int mouseY,
-                           final int x,
-                           final int y,
-                           final int topHeight,
-                           final int row,
-                           final int visibleRows) {
-        final int rowX = x + 7;
-        final int rowY = y + topHeight + (row * ROW_SIZE) - getScrollbarOffset();
-        final boolean isOutOfFrame = (rowY < y + topHeight - ROW_SIZE)
-            || (rowY > y + topHeight + (ROW_SIZE * visibleRows));
-        if (isOutOfFrame) {
-            return;
-        }
+                           final int rowX,
+                           final int rowY,
+                           final int row) {
         graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);

@@ -12,7 +12,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-// A custom checkbox so we can change the font color.
+// A custom checkbox so that we can change the font color.
 public class CustomCheckboxWidget extends AbstractButton {
     private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = new ResourceLocation(
         "widget/checkbox_selected_highlighted"
@@ -66,6 +66,7 @@ public class CustomCheckboxWidget extends AbstractButton {
         }
     }
 
+    @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         final Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.enableDepthTest();

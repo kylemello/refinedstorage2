@@ -8,10 +8,11 @@ import com.refinedmods.refinedstorage2.platform.common.support.registry.Platform
 import net.minecraft.resources.ResourceLocation;
 
 public final class PlatformTestFixtures {
-    public static final PlatformRegistry<StorageType> STORAGE_TYPE_REGISTRY = new PlatformRegistryImpl<>(
-        new ResourceLocation("item"),
-        StorageTypes.ITEM
-    );
+    public static final PlatformRegistry<StorageType> STORAGE_TYPE_REGISTRY = new PlatformRegistryImpl<>();
+
+    static {
+        STORAGE_TYPE_REGISTRY.register(new ResourceLocation("item"), StorageTypes.ITEM);
+    }
 
     private PlatformTestFixtures() {
     }

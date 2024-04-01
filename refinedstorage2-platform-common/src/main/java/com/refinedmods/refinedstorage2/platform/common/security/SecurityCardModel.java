@@ -50,7 +50,7 @@ class SecurityCardModel {
     }
 
     boolean isActive() {
-        return stack.getTag() != null && stack.getTag().contains(TAG_PERMISSIONS);
+        return true;
     }
 
     boolean isCleared() {

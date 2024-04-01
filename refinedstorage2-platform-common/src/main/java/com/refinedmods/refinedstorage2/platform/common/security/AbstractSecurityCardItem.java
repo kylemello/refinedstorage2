@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-abstract class AbstractSecurityCardItem<M extends SecurityCardModel> extends Item {
+abstract class AbstractSecurityCardItem<T extends SecurityCardModel> extends Item {
     protected AbstractSecurityCardItem(final Properties properties) {
         super(properties);
     }
@@ -32,15 +32,14 @@ abstract class AbstractSecurityCardItem<M extends SecurityCardModel> extends Ite
                                 final List<Component> lines,
                                 final TooltipFlag flag) {
         super.appendHoverText(stack, level, lines, flag);
-        final M model = createModel(stack);
-        if (addTooltip(stack, lines, model)) {
+        final T model = createModel(stack);
+        addTooltip(lines, model);
+        if (model.isActive()) {
             addPermissions(lines, model);
         }
     }
 
-    protected boolean addTooltip(final ItemStack stack, final List<Component> lines, final M model) {
-        return true;
-    }
+    abstract void addTooltip(List<Component> lines, T model);
 
     private void addPermissions(final List<Component> lines, final SecurityCardModel model) {
         PlatformApi.INSTANCE.getPermissionRegistry().getAll().forEach(permission -> {
@@ -61,13 +60,13 @@ abstract class AbstractSecurityCardItem<M extends SecurityCardModel> extends Ite
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            final M model = createModel(stack);
-            use(hand, serverPlayer, stack, model);
+            final T model = createModel(stack);
+            use(hand, serverPlayer, model);
         }
         return InteractionResultHolder.consume(stack);
     }
 
-    private void use(final InteractionHand hand, final ServerPlayer player, final ItemStack stack, final M model) {
+    private void use(final InteractionHand hand, final ServerPlayer player, final T model) {
         if (player.isCrouching()) {
             tryClear(player, model);
             return;
@@ -78,15 +77,15 @@ abstract class AbstractSecurityCardItem<M extends SecurityCardModel> extends Ite
         ));
     }
 
-    void tryClear(final ServerPlayer player, final M model) {
+    void tryClear(final ServerPlayer player, final T model) {
         model.clear();
         player.sendSystemMessage(createTranslation("item", "security_card.cleared"));
     }
 
-    abstract M createModel(ItemStack stack);
+    abstract T createModel(ItemStack stack);
 
     abstract AbstractSecurityCardExtendedMenuProvider createMenuProvider(
         SlotReference slotReference,
-        M model
+        T model
     );
 }

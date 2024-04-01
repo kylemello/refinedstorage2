@@ -24,6 +24,20 @@ public class SecurityCardItem extends AbstractSecurityCardItem<PlayerSecurityCar
     }
 
     @Override
+    void addTooltip(final List<Component> lines, final PlayerSecurityCardModel model) {
+        final String boundPlayerName = model.getBoundPlayerName();
+        if (boundPlayerName == null) {
+            lines.add(createTranslation("item", "security_card.unbound").withStyle(ChatFormatting.GRAY));
+            return;
+        }
+        lines.add(createTranslation(
+            "item",
+            "security_card.bound",
+            Component.literal(boundPlayerName).withStyle(ChatFormatting.YELLOW)
+        ).withStyle(ChatFormatting.GRAY));
+    }
+
+    @Override
     void tryClear(final ServerPlayer player, final PlayerSecurityCardModel model) {
         if (model.isCleared()) {
             bind(player, model);
@@ -39,23 +53,6 @@ public class SecurityCardItem extends AbstractSecurityCardItem<PlayerSecurityCar
             "security_card.bound",
             Component.literal(player.getGameProfile().getName()).withStyle(ChatFormatting.YELLOW)
         ));
-    }
-
-    @Override
-    protected boolean addTooltip(final ItemStack stack,
-                                 final List<Component> lines,
-                                 final PlayerSecurityCardModel model) {
-        final String boundPlayerName = model.getBoundPlayerName();
-        if (boundPlayerName == null) {
-            lines.add(createTranslation("item", "security_card.unbound").withStyle(ChatFormatting.GRAY));
-            return false;
-        }
-        lines.add(createTranslation(
-            "item",
-            "security_card.bound",
-            Component.literal(boundPlayerName).withStyle(ChatFormatting.YELLOW)
-        ).withStyle(ChatFormatting.GRAY));
-        return true;
     }
 
     @Override

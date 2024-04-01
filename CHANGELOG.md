@@ -19,6 +19,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The binding of a Security Card can now be cleared.
 -   The Security Card tooltip and GUI now show whether the permission has been touched/changed in any way.
 -   A global (fallback) permission set for a network can be defined using the Fallback Security Card instead of using an "unbound" Security Card.
+-   Smooth scrolling, screen size and max row stretch are no longer Grid-specific settings, but are now global settings.
 
 ### Fixed
 

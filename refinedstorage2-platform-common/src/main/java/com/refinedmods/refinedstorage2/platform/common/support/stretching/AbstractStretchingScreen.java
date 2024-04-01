@@ -37,7 +37,7 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
         this.imageHeight = TOP_HEIGHT + (ROW_SIZE * visibleRows) + getBottomHeight();
         this.inventoryLabelY = imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 4;
 
-        getMenu().initSlots(imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 17);
+        getMenu().onScreenReady(imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 17);
 
         super.init();
 
@@ -66,7 +66,7 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
     }
 
     protected void scrollbarChanged(final int rows) {
-        // empty
+        // no op
     }
 
     @Override

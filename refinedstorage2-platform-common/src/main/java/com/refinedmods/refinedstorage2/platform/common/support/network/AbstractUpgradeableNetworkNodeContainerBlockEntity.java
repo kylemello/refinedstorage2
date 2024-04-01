@@ -103,7 +103,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     }
 
     private void configureAccordingToUpgrades() {
-        LOGGER.info("Reconfiguring {} for upgrades", getBlockPos());
+        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
         this.rateLimiter = createRateLimiter(amountOfSpeedUpgrades);
         this.setEnergyUsage(upgradeContainer.getEnergyUsage());

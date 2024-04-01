@@ -67,7 +67,7 @@ public class NetworkTransmitterBlockEntity
             setChanged();
             updateReceiverLocation();
             if (level != null) {
-                LOGGER.info("Network card was changed at {}, sending network update", worldPosition);
+                LOGGER.debug("Network card was changed at {}, sending network update", worldPosition);
                 PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
             }
         });
@@ -86,7 +86,7 @@ public class NetworkTransmitterBlockEntity
         final NetworkTransmitterState currentState = state.getValue(NetworkTransmitterBlock.STATE);
         final NetworkTransmitterState newState = getState();
         if (currentState != newState && level != null && stateChangeRateLimiter.tryAcquire()) {
-            LOGGER.info("Updating network transmitter at {} from {} to {}", worldPosition, currentState, newState);
+            LOGGER.debug("Updating network transmitter at {} from {} to {}", worldPosition, currentState, newState);
             level.setBlockAndUpdate(worldPosition, state.setValue(NetworkTransmitterBlock.STATE, newState));
         }
     }
@@ -142,7 +142,7 @@ public class NetworkTransmitterBlockEntity
         if (level == null) {
             return;
         }
-        LOGGER.info(
+        LOGGER.debug(
             "Receiver {} was not found in network for transmitter at {}, retrying and sending network update",
             receiverKey,
             worldPosition

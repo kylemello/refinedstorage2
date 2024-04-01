@@ -100,6 +100,13 @@ import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
@@ -131,7 +138,6 @@ public class ModInitializer extends AbstractModInitializer {
         registerSounds(eventBus);
         registerRecipeSerializers(eventBus);
         registerTickHandler();
-        registerSlotReferenceProviders();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             eventBus.addListener(ClientModInitializer::onClientSetup);
@@ -209,16 +215,33 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerItems(final IEventBus eventBus) {
-        registerItems(
-            new ForgeRegistryCallback<>(itemRegistry),
-            () -> new RegulatorUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry()) {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
+        final RegistryCallback<Item> callback = new ForgeRegistryCallback<>(itemRegistry);
+        registerItems(callback);
+        registerCustomItems(callback);
+        itemRegistry.register(eventBus);
+    }
+
+    private void registerCustomItems(final RegistryCallback<Item> callback) {
+        Items.INSTANCE.setRegulatorUpgrade(callback.register(REGULATOR_UPGRADE, () -> new RegulatorUpgradeItem(
+            PlatformApi.INSTANCE.getUpgradeRegistry()
+        ) {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativeWirelessGrid(callback.register(
+            CREATIVE_WIRELESS_GRID,
             () -> new WirelessGridItem() {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -226,23 +249,20 @@ public class ModInitializer extends AbstractModInitializer {
                                                            final boolean slotChanged) {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
-            },
-            () -> new WirelessGridItem() {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new PortableGridBlockItem(Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL) {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
+            }
+        ));
+        Items.INSTANCE.setPortableGrid(callback.register(PORTABLE_GRID, () -> new PortableGridBlockItem(
+            Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL
+        ) {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativePortableGrid(callback.register(
+            CREATIVE_PORTABLE_GRID,
             () -> new PortableGridBlockItem(Blocks.INSTANCE.getCreativePortableGrid(), PortableGridType.CREATIVE) {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -250,15 +270,18 @@ public class ModInitializer extends AbstractModInitializer {
                                                            final boolean slotChanged) {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
-            },
-            () -> new SecurityCardItem() {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
+            }
+        ));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, () -> new SecurityCardItem() {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
             () -> new FallbackSecurityCardItem() {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -267,8 +290,7 @@ public class ModInitializer extends AbstractModInitializer {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
             }
-        );
-        itemRegistry.register(eventBus);
+        ));
     }
 
     private void registerBlockEntities(final IEventBus eventBus) {
@@ -355,7 +377,9 @@ public class ModInitializer extends AbstractModInitializer {
         NeoForge.EVENT_BUS.addListener(this::onServerTick);
     }
 
+    @Override
     protected void registerSlotReferenceProviders() {
+        super.registerSlotReferenceProviders();
         CuriosSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
             PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
                 createIdentifier("curios"),

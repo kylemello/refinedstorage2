@@ -46,7 +46,6 @@ import com.refinedmods.refinedstorage2.platform.api.upgrade.BuiltinUpgradeDestin
 import com.refinedmods.refinedstorage2.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.ItemGridInsertionHint;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.SingleItemGridInsertionHint;
@@ -67,12 +66,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemEnergy
 import com.refinedmods.refinedstorage2.platform.common.support.network.ConnectionProviderImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReference;
-import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.registry.PlatformRegistryImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResourceFactory;
-import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeRegistryImpl;
 import com.refinedmods.refinedstorage2.platform.common.util.ServerEventQueue;
@@ -105,29 +102,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
-
 public class PlatformApiImpl implements PlatformApi {
-    private static final String ITEM_REGISTRY_KEY = "item";
-
     private final StorageRepository clientStorageRepository =
         new ClientStorageRepository(Platform.INSTANCE.getClientToServerCommunications()::sendStorageInfoRequest);
     private final ComponentMapFactory<NetworkComponent, Network> networkComponentMapFactory =
         new ComponentMapFactory<>();
     private final NetworkBuilder networkBuilder =
         new NetworkBuilderImpl(new NetworkFactory(networkComponentMapFactory));
-    private final PlatformRegistry<StorageType> storageTypeRegistry =
-        new PlatformRegistryImpl<>(createIdentifier(ITEM_REGISTRY_KEY), StorageTypes.ITEM);
-    private final PlatformRegistry<ResourceType> resourceTypeRegistry =
-        new PlatformRegistryImpl<>(createIdentifier(ITEM_REGISTRY_KEY), ResourceTypes.ITEM);
-    private final PlatformRegistry<GridSynchronizer> gridSynchronizerRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("off"), new NoopGridSynchronizer());
+    private final PlatformRegistry<StorageType> storageTypeRegistry = new PlatformRegistryImpl<>();
+    private final PlatformRegistry<ResourceType> resourceTypeRegistry = new PlatformRegistryImpl<>();
+    private final PlatformRegistry<GridSynchronizer> gridSynchronizerRegistry = new PlatformRegistryImpl<>();
     private final PlatformRegistry<ImporterTransferStrategyFactory> importerTransferStrategyRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("noop"),
-            (level, pos, direction, upgradeState, amountOverride) -> (filter, actor, network) -> false);
+        new PlatformRegistryImpl<>();
     private final PlatformRegistry<ExporterTransferStrategyFactory> exporterTransferStrategyRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("noop"),
-            (level, pos, direction, upgradeState, amountOverride, fuzzyMode) -> (resource, actor, network) -> false);
+        new PlatformRegistryImpl<>();
     private final UpgradeRegistry upgradeRegistry = new UpgradeRegistryImpl();
     private final BuiltinUpgradeDestinations builtinUpgradeDestinations = new BuiltinUpgradeDestinationsImpl();
     private final Queue<PlatformExternalStorageProviderFactory> externalStorageProviderFactories = new PriorityQueue<>(
@@ -160,15 +148,9 @@ public class PlatformApiImpl implements PlatformApi {
         new CompositeWirelessTransmitterRangeModifier();
     private final EnergyItemHelper energyItemHelper = new EnergyItemHelperImpl();
     private final NetworkBoundItemHelper networkBoundItemHelper = new NetworkBoundItemHelperImpl();
-    private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>(
-        createIdentifier("inventory"),
-        InventorySlotReferenceFactory.INSTANCE
-    );
+    private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>();
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
-    private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>(
-        BuiltinPermission.SECURITY.getId(),
-        BuiltinPermission.SECURITY
-    );
+    private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
 
     @Override
     public PlatformRegistry<StorageType> getStorageTypeRegistry() {

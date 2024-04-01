@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
@@ -16,11 +17,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ClientToServerCommunicationsImpl implements ClientToServerCommunications {
-    private void sendPacket(final CustomPacketPayload packet) {
+    private void sendToServer(final CustomPacketPayload packet) {
         PacketDistributor.SERVER.noArg().send(packet);
     }
 
@@ -29,14 +29,9 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
                                 final GridExtractMode mode,
                                 final boolean cursor) {
         final ResourceType resourceType = resource.getResourceType();
-        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType)
-            .ifPresent(id -> sendPacket(new GridExtractPacket(
-                resourceType,
-                id,
-                resource,
-                mode,
-                cursor
-            )));
+        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresent(id -> sendToServer(
+            new GridExtractPacket(resourceType, id, resource, mode, cursor)
+        ));
     }
 
     @Override
@@ -44,87 +39,80 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
                                final GridScrollMode mode,
                                final int slotIndex) {
         final ResourceType resourceType = resource.getResourceType();
-        PlatformApi.INSTANCE.getResourceTypeRegistry()
-            .getId(resourceType)
-            .ifPresent(id -> sendPacket(new GridScrollPacket(
-                resourceType,
-                id,
-                resource,
-                mode,
-                slotIndex
-            )));
+        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresent(id -> sendToServer(
+            new GridScrollPacket(resourceType, id, resource, mode, slotIndex)
+        ));
     }
 
     @Override
     public void sendGridInsert(final GridInsertMode mode, final boolean tryAlternatives) {
-        sendPacket(new GridInsertPacket(mode == GridInsertMode.SINGLE_RESOURCE, tryAlternatives));
+        sendToServer(new GridInsertPacket(mode == GridInsertMode.SINGLE_RESOURCE, tryAlternatives));
     }
 
     @Override
     public void sendCraftingGridClear(final boolean toPlayerInventory) {
-        sendPacket(new CraftingGridClearPacket(toPlayerInventory));
+        sendToServer(new CraftingGridClearPacket(toPlayerInventory));
     }
 
     @Override
     public void sendCraftingGridRecipeTransfer(final List<List<ItemResource>> recipe) {
-        sendPacket(new CraftingGridRecipeTransferPacket(recipe));
+        sendToServer(new CraftingGridRecipeTransferPacket(recipe));
     }
 
     @Override
     public <T> void sendPropertyChange(final PropertyType<T> type, final T value) {
-        sendPacket(new PropertyChangePacket(type.id(), type.serializer().apply(value)));
+        sendToServer(new PropertyChangePacket(type.id(), type.serializer().apply(value)));
     }
 
     @Override
     public void sendStorageInfoRequest(final UUID storageId) {
-        sendPacket(new StorageInfoRequestPacket(storageId));
+        sendToServer(new StorageInfoRequestPacket(storageId));
     }
 
     @Override
     public void sendResourceSlotChange(final int slotIndex, final boolean tryAlternatives) {
-        sendPacket(new ResourceSlotChangePacket(slotIndex, tryAlternatives));
+        sendToServer(new ResourceSlotChangePacket(slotIndex, tryAlternatives));
     }
 
     @Override
     public void sendResourceFilterSlotChange(final PlatformResourceKey resource, final int slotIndex) {
         final ResourceType resourceType = resource.getResourceType();
-        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresent(
-            id -> sendPacket(new ResourceFilterSlotChangePacket(
-                slotIndex,
-                resource,
-                resourceType,
-                id
-            ))
-        );
+        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresent(id -> sendToServer(
+            new ResourceFilterSlotChangePacket(slotIndex, resource, resourceType, id)
+        ));
     }
 
     @Override
     public void sendResourceSlotAmountChange(final int slotIndex, final long amount) {
-        sendPacket(new ResourceSlotAmountChangePacket(slotIndex, amount));
+        sendToServer(new ResourceSlotAmountChangePacket(slotIndex, amount));
     }
 
     @Override
     public void sendSingleAmountChange(final double amount) {
-        sendPacket(new SingleAmountChangePacket(amount));
+        sendToServer(new SingleAmountChangePacket(amount));
     }
 
     @Override
     public void sendUseNetworkBoundItem(final SlotReference slotReference) {
-        sendPacket(new UseNetworkBoundItemPacket(slotReference));
+        sendToServer(new UseNetworkBoundItemPacket(slotReference));
     }
 
     @Override
-    public void sendSecurityCardPermission(final ResourceLocation permissionId, final boolean allowed) {
-        sendPacket(new SecurityCardPermissionPacket(permissionId, allowed));
+    public void sendSecurityCardPermission(final PlatformPermission permission, final boolean allowed) {
+        PlatformApi.INSTANCE.getPermissionRegistry().getId(permission).ifPresent(id -> sendToServer(
+            new SecurityCardPermissionPacket(id, allowed)
+        ));
     }
 
     @Override
-    public void sendSecurityCardResetPermission(final ResourceLocation permissionId) {
-        sendPacket(new SecurityCardResetPermissionPacket(permissionId));
+    public void sendSecurityCardResetPermission(final PlatformPermission permission) {
+        PlatformApi.INSTANCE.getPermissionRegistry().getId(permission).ifPresent(id -> sendToServer(
+            new SecurityCardResetPermissionPacket(id)
+        ));
     }
 
     @Override
     public void sendSecurityCardBoundPlayer(@Nullable final UUID playerId) {
-        sendPacket(new SecurityCardBoundPlayerPacket(playerId));
+        sendToServer(new SecurityCardBoundPlayerPacket(playerId));
     }
 }

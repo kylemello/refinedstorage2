@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage2.platform.common.security;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 
+import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.network.chat.Component;
@@ -17,6 +18,11 @@ public class FallbackSecurityCardItem extends AbstractSecurityCardItem<SecurityC
 
     public FallbackSecurityCardItem() {
         super(new Item.Properties().stacksTo(1));
+    }
+
+    @Override
+    void addTooltip(final List<Component> lines, final SecurityCardModel model) {
+        // no op
     }
 
     @Override

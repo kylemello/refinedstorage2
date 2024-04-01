@@ -43,7 +43,6 @@ import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridContaine
 import com.refinedmods.refinedstorage2.platform.common.grid.GridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlock;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceContainerMenu;
@@ -57,9 +56,7 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmi
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -71,7 +68,6 @@ import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.E
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.AbstractPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridItemContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
@@ -98,6 +94,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
@@ -136,7 +133,6 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CRAFTING_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_CONTROLLER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
-import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DESTRUCTION_CORE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DESTRUCTOR;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DETECTOR;
@@ -175,12 +171,13 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractModInitializer {
+    private static final String ITEM_REGISTRY_KEY = "item";
     private static final String FLUID_REGISTRY_KEY = "fluid";
 
     protected final void initializePlatformApi() {
         ((PlatformApiProxy) PlatformApi.INSTANCE).setDelegate(new PlatformApiImpl());
-        registerAdditionalStorageTypes();
-        registerAdditionalResourceTypes();
+        registerStorageTypes();
+        registerResourceTypes();
         registerAdditionalResourceFactories();
         registerDestructorStrategyFactories();
         registerConstructorStrategyFactories();
@@ -189,16 +186,25 @@ public abstract class AbstractModInitializer {
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
         registerPermissions();
+        registerSlotReferenceProviders();
     }
 
-    private void registerAdditionalStorageTypes() {
+    private void registerStorageTypes() {
+        PlatformApi.INSTANCE.getStorageTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            StorageTypes.ITEM
+        );
         PlatformApi.INSTANCE.getStorageTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             StorageTypes.FLUID
         );
     }
 
-    private void registerAdditionalResourceTypes() {
+    private void registerResourceTypes() {
+        PlatformApi.INSTANCE.getResourceTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            ResourceTypes.ITEM
+        );
         PlatformApi.INSTANCE.getResourceTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             ResourceTypes.FLUID
@@ -260,9 +266,6 @@ public abstract class AbstractModInitializer {
 
     private void registerPermissions() {
         for (final BuiltinPermission permission : BuiltinPermission.values()) {
-            if (permission == BuiltinPermission.SECURITY) {
-                continue;
-            }
             PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
         }
     }
@@ -316,16 +319,7 @@ public abstract class AbstractModInitializer {
         )));
     }
 
-    protected final void registerItems(
-        final RegistryCallback<Item> callback,
-        final Supplier<AbstractUpgradeItem> regulatorUpgradeItemSupplier,
-        final Supplier<WirelessGridItem> wirelessGridItemSupplier,
-        final Supplier<WirelessGridItem> creativeWirelessGridItemSupplier,
-        final Supplier<PortableGridBlockItem> portableGridBlockItemSupplier,
-        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier,
-        final Supplier<SecurityCardItem> securityCardItemSupplier,
-        final Supplier<FallbackSecurityCardItem> fallbackSecurityCardItemSupplier
-    ) {
+    protected final void registerItems(final RegistryCallback<Item> callback) {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
         Blocks.INSTANCE.getCraftingGrid().registerItems(callback);
@@ -342,23 +336,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getNetworkReceiver().registerItems(callback, Items.INSTANCE::addNetworkReceiver);
         Blocks.INSTANCE.getNetworkTransmitter().registerItems(callback, Items.INSTANCE::addNetworkTransmitter);
         registerStorageItems(callback);
-        registerUpgrades(callback, regulatorUpgradeItemSupplier);
-        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, wirelessGridItemSupplier));
-        Items.INSTANCE.setCreativeWirelessGrid(callback.register(
-            CREATIVE_WIRELESS_GRID,
-            creativeWirelessGridItemSupplier
-        ));
-        callback.register(STORAGE_MONITOR, () -> new SimpleBlockItem(Blocks.INSTANCE.getStorageMonitor()));
-        Items.INSTANCE.setPortableGrid(callback.register(PORTABLE_GRID, portableGridBlockItemSupplier));
-        Items.INSTANCE.setCreativePortableGrid(callback.register(
-            CREATIVE_PORTABLE_GRID,
-            creativePortableGridBlockItemSupplier
-        ));
-        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, securityCardItemSupplier));
-        Items.INSTANCE.setFallbackSecurityCard(callback.register(
-            FALLBACK_SECURITY_CARD,
-            fallbackSecurityCardItemSupplier
-        ));
+        registerUpgrades(callback);
     }
 
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
@@ -373,6 +351,7 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setWrench(callback.register(WRENCH, WrenchItem::new));
         Items.INSTANCE.setStorageHousing(callback.register(STORAGE_HOUSING, SimpleItem::new));
         callback.register(MACHINE_CASING, () -> new SimpleBlockItem(Blocks.INSTANCE.getMachineCasing()));
+        callback.register(STORAGE_MONITOR, () -> new SimpleBlockItem(Blocks.INSTANCE.getStorageMonitor()));
         callback.register(INTERFACE, () -> Blocks.INSTANCE.getInterface().createBlockItem());
         Items.INSTANCE.setConstructionCore(callback.register(CONSTRUCTION_CORE, SimpleItem::new));
         Items.INSTANCE.setDestructionCore(callback.register(DESTRUCTION_CORE, SimpleItem::new));
@@ -435,10 +414,7 @@ public abstract class AbstractModInitializer {
         );
     }
 
-    private void registerUpgrades(
-        final RegistryCallback<Item> callback,
-        final Supplier<AbstractUpgradeItem> regulatorUpgradeItemSupplier
-    ) {
+    private void registerUpgrades(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setUpgrade(callback.register(
             ContentIds.UPGRADE,
             SimpleItem::new
@@ -485,10 +461,6 @@ public abstract class AbstractModInitializer {
             )
         );
         Items.INSTANCE.setSilkTouchUpgrade(silkTouchUpgrade);
-        Items.INSTANCE.setRegulatorUpgrade(callback.register(
-            ContentIds.REGULATOR_UPGRADE,
-            regulatorUpgradeItemSupplier
-        ));
         Items.INSTANCE.setRangeUpgrade(callback.register(
             ContentIds.RANGE_UPGRADE,
             () -> new RangeUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), false)
@@ -771,6 +743,13 @@ public abstract class AbstractModInitializer {
         callback.register(
             createIdentifier("upgrade_with_enchanted_book"),
             UpgradeWithEnchantedBookRecipeSerializer::new
+        );
+    }
+
+    protected void registerSlotReferenceProviders() {
+        PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
+            createIdentifier("inventory"),
+            InventorySlotReferenceFactory.INSTANCE
         );
     }
 

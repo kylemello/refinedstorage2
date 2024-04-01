@@ -69,7 +69,7 @@ public class RefinedStorageJeiModPlugin implements IModPlugin {
     }
 
     private void initializePlatform(final IPlatformFluidHelper<?> fluidHelper) {
-        LOGGER.info("Enabling JEI integration");
+        LOGGER.debug("Enabling JEI integration");
         registerIngredientConverters(fluidHelper);
         registerGridSynchronizers();
     }

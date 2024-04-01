@@ -22,11 +22,6 @@ public interface PlatformRegistry<T> {
     void register(ResourceLocation id, T value);
 
     /**
-     * @return whether if there is any other value, ignoring any default value
-     */
-    boolean isEmpty();
-
-    /**
      * @param value the value
      * @return the id of the value, if present
      */
@@ -39,27 +34,13 @@ public interface PlatformRegistry<T> {
     Optional<T> get(ResourceLocation id);
 
     /**
-     * @return the default value
-     */
-    T getDefault();
-
-    /**
      * @return an unmodifiable list of all values
      */
     List<T> getAll();
 
     /**
      * Returns the next value in the ordered list.
-     * If the value is not found, it will return the default value.
-     *
-     * @param value the given value
-     * @return the next value after the given value
-     */
-    T next(T value);
-
-    /**
-     * Returns the next value in the ordered list.
-     * If the value is not found, it will the default value.
+     * If the value is not found, it will return the first value.
      * If the value is the last value in the ordered list, it will return null.
      *
      * @param value the given value

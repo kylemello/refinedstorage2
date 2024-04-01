@@ -31,7 +31,7 @@ public class GridWatcherManagerImpl implements GridWatcherManager {
             attach(registration, storageChannel, false);
         }
         watchers.put(watcher, registration);
-        LOGGER.info("Added watcher {}, new count is {}", watcher, watchers.size());
+        LOGGER.debug("Added watcher {}, new count is {}", watcher, watchers.size());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GridWatcherManagerImpl implements GridWatcherManager {
         final StorageChannel storageChannel,
         final boolean replay
     ) {
-        LOGGER.info("Attaching {} to {}", registration, storageChannel);
+        LOGGER.debug("Attaching {} to {}", registration, storageChannel);
         registration.attach(storageChannel, replay);
     }
 
@@ -71,17 +71,17 @@ public class GridWatcherManagerImpl implements GridWatcherManager {
             detach(registration, storageChannel);
         }
         watchers.remove(watcher);
-        LOGGER.info("Removed watcher {}, remaining {}", watcher, watchers.size());
+        LOGGER.debug("Removed watcher {}, remaining {}", watcher, watchers.size());
     }
 
     @Override
     public void detachAll(final StorageChannel storageChannel) {
-        LOGGER.info("Detaching {} watchers", watchers.size());
+        LOGGER.debug("Detaching {} watchers", watchers.size());
         watchers.values().forEach(watcher -> detach(watcher, storageChannel));
     }
 
     private void detach(final GridWatcherRegistration registration, final StorageChannel storageChannel) {
-        LOGGER.info("Detaching {} from {}", registration, storageChannel);
+        LOGGER.debug("Detaching {} from {}", registration, storageChannel);
         registration.detach(storageChannel);
     }
 

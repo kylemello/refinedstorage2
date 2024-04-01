@@ -42,7 +42,7 @@ class PlayerSecurityCardModel extends SecurityCardModel {
 
     @Override
     boolean isActive() {
-        return super.isActive() && isActive(stack);
+        return isActive(stack);
     }
 
     static boolean isActive(final ItemStack stack) {
