@@ -48,6 +48,7 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         super(menuType, syncId);
         this.playerInventory = playerInventory;
         this.disabledSlot = disabledSlot;
+        onScreenReady(0);
     }
 
     List<Permission> getPermissions() {
@@ -93,7 +94,7 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardResetPermission(permission);
         return updatePermissionLocally(permission, allowed, false);
     }
-    
+
     Permission changePermission(final PlatformPermission permission, final boolean selected) {
         Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardPermission(permission, selected);
         return updatePermissionLocally(permission, selected, true);
