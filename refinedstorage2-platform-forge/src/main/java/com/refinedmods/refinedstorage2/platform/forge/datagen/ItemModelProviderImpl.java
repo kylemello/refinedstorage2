@@ -46,6 +46,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerWirelessTransmitters();
         registerNetworkReceivers();
         registerNetworkTransmitters();
+        registerSecurityManagers();
     }
 
     private void registerCables() {
@@ -174,6 +175,14 @@ public class ItemModelProviderImpl extends ItemModelProvider {
             base,
             CUTOUT_TEXTURE_KEY,
             createIdentifier("block/network_transmitter/cutouts/" + color.getName())
+        ));
+    }
+
+    private void registerSecurityManagers() {
+        final var blocks = Blocks.INSTANCE.getSecurityManager();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/security_manager/" + color.getName())
         ));
     }
 

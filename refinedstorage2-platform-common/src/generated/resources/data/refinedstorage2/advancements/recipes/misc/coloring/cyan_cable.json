@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_cables",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_cables"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/cyan_cable"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

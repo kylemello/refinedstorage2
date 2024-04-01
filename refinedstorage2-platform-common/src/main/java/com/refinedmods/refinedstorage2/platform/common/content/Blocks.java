@@ -17,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.CableBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveBlock;
@@ -135,6 +136,12 @@ public final class Blocks {
         NetworkTransmitterBlock::new,
         ContentIds.NETWORK_TRANSMITTER,
         ContentNames.NETWORK_TRANSMITTER,
+        COLOR
+    );
+    private final BlockColorMap<SecurityManagerBlock, NamedBlockItem> securityManager = new BlockColorMap<>(
+        SecurityManagerBlock::new,
+        ContentIds.SECURITY_MANAGER,
+        ContentNames.SECURITY_MANAGER,
         COLOR
     );
 
@@ -289,5 +296,9 @@ public final class Blocks {
 
     public void setCreativePortableGrid(final Supplier<PortableGridBlock> supplier) {
         this.creativePortableGrid = supplier;
+    }
+
+    public BlockColorMap<SecurityManagerBlock, NamedBlockItem> getSecurityManager() {
+        return securityManager;
     }
 }

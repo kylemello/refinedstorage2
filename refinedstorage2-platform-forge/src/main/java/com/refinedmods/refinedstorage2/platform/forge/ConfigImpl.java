@@ -19,6 +19,9 @@ public class ConfigImpl implements Config {
     private final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
     private final ModConfigSpec spec;
 
+    private final ModConfigSpec.EnumValue<ScreenSize> screenSize;
+    private final ModConfigSpec.BooleanValue smoothScrolling;
+    private final ModConfigSpec.IntValue maxRowsStretch;
     private final SimpleEnergyUsageEntry cable;
     private final ControllerEntry controller;
     private final DiskDriveEntry diskDrive;
@@ -40,11 +43,18 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry networkReceiver;
     private final SimpleEnergyUsageEntry networkTransmitter;
     private final PortableGridEntry portableGrid;
-    private final ModConfigSpec.BooleanValue smoothScrolling;
-    private final ModConfigSpec.EnumValue<ScreenSize> screenSize;
-    private final ModConfigSpec.IntValue maxRowsStretch;
+    private final SimpleEnergyUsageEntry securityManager;
 
     public ConfigImpl() {
+        screenSize = builder
+            .comment("The screen size")
+            .defineEnum("screenSize", ScreenSize.STRETCH);
+        smoothScrolling = builder
+            .comment("Whether scrollbars should use smooth scrolling")
+            .define("smoothScrolling", true);
+        maxRowsStretch = builder
+            .comment("The maximum amount of rows that can be displayed when the screen size is stretched")
+            .defineInRange("maxRowsStretch", 256, 3, 256);
         cable = new SimpleEnergyUsageEntryImpl("cable", "Cable", DefaultEnergyUsage.CABLE);
         controller = new ControllerEntryImpl();
         diskDrive = new DiskDriveEntryImpl();
@@ -82,15 +92,11 @@ public class ConfigImpl implements Config {
             DefaultEnergyUsage.NETWORK_TRANSMITTER
         );
         portableGrid = new PortableGridEntryImpl();
-        smoothScrolling = builder
-            .comment("Whether scrollbars should use smooth scrolling")
-            .define("smoothScrolling", true);
-        screenSize = builder
-            .comment("The screen size")
-            .defineEnum("screenSize", ScreenSize.STRETCH);
-        maxRowsStretch = builder
-            .comment("The maximum amount of rows that can be displayed when the screen size is stretched")
-            .defineInRange("maxRowsStretch", 256, 3, 256);
+        securityManager = new SimpleEnergyUsageEntryImpl(
+            "securityManager",
+            "Security Manager",
+            DefaultEnergyUsage.SECURITY_MANAGER
+        );
         spec = builder.build();
     }
 
@@ -101,6 +107,16 @@ public class ConfigImpl implements Config {
     @Override
     public ScreenSize getScreenSize() {
         return screenSize.get();
+    }
+
+    @Override
+    public boolean isSmoothScrolling() {
+        return smoothScrolling.get();
+    }
+
+    @Override
+    public int getMaxRowsStretch() {
+        return maxRowsStretch.get();
     }
 
     @Override
@@ -214,13 +230,8 @@ public class ConfigImpl implements Config {
     }
 
     @Override
-    public boolean isSmoothScrolling() {
-        return smoothScrolling.get();
-    }
-
-    @Override
-    public int getMaxRowsStretch() {
-        return maxRowsStretch.get();
+    public SimpleEnergyUsageEntry getSecurityManager() {
+        return securityManager;
     }
 
     private class SimpleEnergyUsageEntryImpl implements SimpleEnergyUsageEntry {

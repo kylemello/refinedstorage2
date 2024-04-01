@@ -15,6 +15,7 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
 
     @Override
     public void onContainerAdded(final NetworkNodeContainer container) {
+        // TODO: use getNode
         if (container instanceof SecurityDecisionProvider provider) {
             providers.add(provider);
         }
@@ -22,6 +23,7 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
 
     @Override
     public void onContainerRemoved(final NetworkNodeContainer container) {
+        // TODO: use getNode
         if (container instanceof SecurityDecisionProvider provider) {
             providers.remove(provider);
         }

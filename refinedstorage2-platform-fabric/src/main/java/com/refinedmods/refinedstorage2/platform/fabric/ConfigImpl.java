@@ -17,6 +17,13 @@ import net.minecraft.resources.ResourceLocation;
 
 @Config(name = IdentifierUtil.MOD_ID)
 public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.platform.common.Config {
+    private ScreenSize screenSize = ScreenSize.STRETCH;
+
+    private boolean smoothScrolling = true;
+
+    @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
+    private int maxRowsStretch = 256;
+    
     @ConfigEntry.Gui.CollapsibleObject
     private GridEntryImpl grid = new GridEntryImpl();
 
@@ -88,12 +95,10 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @ConfigEntry.Gui.CollapsibleObject
     private PortableGridEntryImpl portableGrid = new PortableGridEntryImpl();
 
-    private boolean smoothScrolling = true;
-
-    private ScreenSize screenSize = ScreenSize.STRETCH;
-
-    @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
-    private int maxRowsStretch = 256;
+    @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl securityManager = new SimpleEnergyUsageEntryImpl(
+        DefaultEnergyUsage.SECURITY_MANAGER
+    );
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -108,6 +113,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     public void setScreenSize(final ScreenSize screenSize) {
         this.screenSize = screenSize;
         AutoConfig.getConfigHolder(ConfigImpl.class).save();
+    }
+
+    @Override
+    public boolean isSmoothScrolling() {
+        return smoothScrolling;
     }
 
     @Override
@@ -221,8 +231,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     }
 
     @Override
-    public boolean isSmoothScrolling() {
-        return smoothScrolling;
+    public SimpleEnergyUsageEntry getSecurityManager() {
+        return securityManager;
     }
 
     private static class GridEntryImpl implements GridEntry {

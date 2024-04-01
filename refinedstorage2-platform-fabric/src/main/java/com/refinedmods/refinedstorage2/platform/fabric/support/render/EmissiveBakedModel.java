@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.fabric.support.render;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
@@ -15,9 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 class EmissiveBakedModel extends ForwardingBakedModel {
     private final EmissiveTransform transform;
 
-    EmissiveBakedModel(final BakedModel wrapped, final ResourceLocation emissiveSprite) {
+    EmissiveBakedModel(final BakedModel wrapped, final Set<ResourceLocation> emissiveSprites) {
         this.wrapped = wrapped;
-        this.transform = new EmissiveTransform(emissiveSprite);
+        this.transform = new EmissiveTransform(emissiveSprites);
     }
 
     @Override

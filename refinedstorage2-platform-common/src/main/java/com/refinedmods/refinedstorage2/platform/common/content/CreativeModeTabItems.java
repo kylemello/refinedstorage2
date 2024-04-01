@@ -53,6 +53,7 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Blocks.INSTANCE.getStorageMonitor());
         Items.INSTANCE.getNetworkTransmitters().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getNetworkReceivers().stream().map(Supplier::get).forEach(itemConsumer);
+        Items.INSTANCE.getSecurityManagers().stream().map(Supplier::get).forEach(itemConsumer);
     }
 
     private static void appendBlockColors(final Consumer<ItemStack> consumer, final BlockColorMap<?, ?> map) {

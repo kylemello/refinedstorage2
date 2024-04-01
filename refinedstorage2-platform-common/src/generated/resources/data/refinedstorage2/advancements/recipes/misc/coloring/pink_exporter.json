@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_exporters",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_exporters"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/pink_exporter"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

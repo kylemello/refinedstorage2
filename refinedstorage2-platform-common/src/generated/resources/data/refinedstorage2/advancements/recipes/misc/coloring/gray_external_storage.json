@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_external_storages",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_external_storages"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/gray_external_storage"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

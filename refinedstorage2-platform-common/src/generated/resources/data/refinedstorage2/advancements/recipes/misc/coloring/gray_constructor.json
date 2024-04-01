@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_constructors",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_constructors"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/gray_constructor"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

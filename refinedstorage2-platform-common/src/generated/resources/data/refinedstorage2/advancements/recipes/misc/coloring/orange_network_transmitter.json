@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_network_transmitters",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_network_transmitters"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/orange_network_transmitter"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

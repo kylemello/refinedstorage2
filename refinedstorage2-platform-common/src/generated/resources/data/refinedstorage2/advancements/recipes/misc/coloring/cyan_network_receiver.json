@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_network_receivers",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_network_receivers"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/cyan_network_receiver"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

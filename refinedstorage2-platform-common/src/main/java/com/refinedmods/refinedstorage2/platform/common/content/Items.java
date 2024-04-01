@@ -47,6 +47,7 @@ public final class Items {
     private final List<Supplier<NamedBlockItem>> allWirelessTransmitters = new ArrayList<>();
     private final List<Supplier<NamedBlockItem>> allNetworkReceivers = new ArrayList<>();
     private final List<Supplier<NamedBlockItem>> allNetworkTransmitters = new ArrayList<>();
+    private final List<Supplier<NamedBlockItem>> allSecurityManagers = new ArrayList<>();
     @Nullable
     private Supplier<Item> quartzEnrichedIron;
     @Nullable
@@ -396,6 +397,14 @@ public final class Items {
 
     public List<Supplier<NamedBlockItem>> getNetworkTransmitters() {
         return Collections.unmodifiableList(allNetworkTransmitters);
+    }
+
+    public void addSecurityManager(final Supplier<NamedBlockItem> supplier) {
+        allSecurityManagers.add(supplier);
+    }
+
+    public List<Supplier<NamedBlockItem>> getSecurityManagers() {
+        return Collections.unmodifiableList(allSecurityManagers);
     }
 
     public Item getNetworkCard() {
