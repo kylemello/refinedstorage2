@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage2.platform.common.support;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyType;
@@ -11,8 +12,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
-
-import net.minecraft.resources.ResourceLocation;
 
 public interface ClientToServerCommunications {
     void sendGridExtract(PlatformResourceKey resource, GridExtractMode mode, boolean cursor);
@@ -39,9 +38,9 @@ public interface ClientToServerCommunications {
 
     void sendUseNetworkBoundItem(SlotReference slotReference);
 
-    void sendSecurityCardPermission(ResourceLocation permissionId, boolean allowed);
+    void sendSecurityCardPermission(PlatformPermission permission, boolean allowed);
 
-    void sendSecurityCardResetPermission(ResourceLocation permissionId);
+    void sendSecurityCardResetPermission(PlatformPermission permission);
 
     void sendSecurityCardBoundPlayer(@Nullable UUID playerId);
 }

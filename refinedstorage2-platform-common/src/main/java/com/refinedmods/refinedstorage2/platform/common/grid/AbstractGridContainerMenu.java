@@ -236,7 +236,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     }
 
     @Override
-    public void initSlots(final int playerInventoryY) {
+    public void onScreenReady(final int playerInventoryY) {
         resetSlots();
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }

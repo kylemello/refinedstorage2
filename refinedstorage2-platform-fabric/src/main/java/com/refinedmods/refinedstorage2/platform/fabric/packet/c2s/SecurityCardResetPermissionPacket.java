@@ -19,7 +19,7 @@ public class SecurityCardResetPermissionPacket implements ServerPlayNetworking.P
                         final PacketSender responseSender) {
         final ResourceLocation permissionId = buf.readResourceLocation();
         if (player.containerMenu instanceof AbstractSecurityCardContainerMenu securityCardContainerMenu) {
-            server.execute(() -> securityCardContainerMenu.resetPermissionServer(permissionId));
+            server.execute(() -> securityCardContainerMenu.resetPermission(permissionId));
         }
     }
 }

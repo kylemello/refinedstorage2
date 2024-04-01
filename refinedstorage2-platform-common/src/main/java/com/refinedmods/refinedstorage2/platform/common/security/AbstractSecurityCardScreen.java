@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.common.support.stretching.AbstractStretchingScreen;
 import com.refinedmods.refinedstorage2.platform.common.support.widget.CustomCheckboxWidget;
 
@@ -85,14 +86,18 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
                                   final Button resetButton,
                                   final CustomCheckboxWidget checkbox,
                                   final boolean allowed) {
-        updateCheckboxAndResetButton(checkbox, resetButton, menu.changePermission(menuPermission.id(), allowed));
+        updateCheckboxAndResetButton(checkbox, resetButton, menu.changePermission(
+            menuPermission.platformPermission(),
+            allowed
+        ));
     }
 
     private Tooltip getPermissionTooltip(final AbstractSecurityCardContainerMenu.Permission menuPermission) {
-        final MutableComponent ownerName = menuPermission.ownerName().copy().withStyle(
+        final PlatformPermission permission = menuPermission.platformPermission();
+        final MutableComponent ownerName = permission.getOwnerName().copy().withStyle(
             Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY)
         );
-        final MutableComponent tooltip = menuPermission.description().copy().append("\n").append(ownerName);
+        final MutableComponent tooltip = permission.getDescription().copy().append("\n").append(ownerName);
         return Tooltip.create(menuPermission.dirty() ? tooltip.append("\n").append(MODIFIED_TITLE) : tooltip);
     }
 
@@ -112,7 +117,7 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
     private void resetPermission(final AbstractSecurityCardContainerMenu.Permission menuPermission,
                                  final CustomCheckboxWidget checkbox,
                                  final Button resetButton) {
-        updateCheckboxAndResetButton(checkbox, resetButton, menu.resetPermission(menuPermission.id()));
+        updateCheckboxAndResetButton(checkbox, resetButton, menu.resetPermission(menuPermission.platformPermission()));
     }
 
     private void updateCheckboxAndResetButton(final CustomCheckboxWidget checkbox,
@@ -125,10 +130,11 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
     }
 
     private Component getPermissionName(final AbstractSecurityCardContainerMenu.Permission menuPermission) {
+        final Component name = menuPermission.platformPermission().getName();
         if (!menuPermission.dirty()) {
-            return menuPermission.name();
+            return name;
         }
-        return menuPermission.name().copy().append(" (*)").setStyle(Style.EMPTY.withItalic(true));
+        return name.copy().append(" (*)").setStyle(Style.EMPTY.withItalic(true));
     }
 
     private int getPermissionY(final int index) {

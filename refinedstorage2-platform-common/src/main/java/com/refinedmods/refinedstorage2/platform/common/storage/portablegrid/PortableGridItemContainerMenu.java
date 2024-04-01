@@ -16,7 +16,7 @@ public class PortableGridItemContainerMenu extends AbstractPortableGridContainer
                                          final FriendlyByteBuf buf) {
         super(Menus.INSTANCE.getPortableGridItem(), syncId, playerInventory, buf);
         this.disabledSlot = PlatformApi.INSTANCE.getSlotReference(buf).orElse(null);
-        initSlots(0);
+        this.onScreenReady(0);
     }
 
     PortableGridItemContainerMenu(final int syncId,
@@ -34,6 +34,6 @@ public class PortableGridItemContainerMenu extends AbstractPortableGridContainer
             energyStorage
         );
         this.disabledSlot = slotReference;
-        initSlots(0);
+        this.onScreenReady(0);
     }
 }

@@ -16,7 +16,7 @@ public record SecurityCardResetPermissionPacket(ResourceLocation permissionId) i
     public static void handle(final SecurityCardResetPermissionPacket packet, final PlayPayloadContext ctx) {
         ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
             if (player.containerMenu instanceof AbstractSecurityCardContainerMenu securityCardContainerMenu) {
-                securityCardContainerMenu.resetPermissionServer(packet.permissionId);
+                securityCardContainerMenu.resetPermission(packet.permissionId);
             }
         }));
     }

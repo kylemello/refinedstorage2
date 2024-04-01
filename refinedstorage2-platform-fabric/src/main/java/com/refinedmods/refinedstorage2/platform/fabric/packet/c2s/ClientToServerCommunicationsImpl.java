@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
@@ -131,19 +132,22 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
     }
 
     @Override
-    public void sendSecurityCardPermission(final ResourceLocation permissionId, final boolean allowed) {
-        sendToServer(
+    public void sendSecurityCardPermission(final PlatformPermission permission, final boolean allowed) {
+        PlatformApi.INSTANCE.getPermissionRegistry().getId(permission).ifPresent(id -> sendToServer(
             PacketIds.SECURITY_CARD_PERMISSION,
             buf -> {
-                buf.writeResourceLocation(permissionId);
+                buf.writeResourceLocation(id);
                 buf.writeBoolean(allowed);
             }
-        );
+        ));
     }
 
     @Override
-    public void sendSecurityCardResetPermission(final ResourceLocation permissionId) {
-        sendToServer(PacketIds.SECURITY_CARD_RESET_PERMISSION, buf -> buf.writeResourceLocation(permissionId));
+    public void sendSecurityCardResetPermission(final PlatformPermission permission) {
+        PlatformApi.INSTANCE.getPermissionRegistry().getId(permission).ifPresent(id -> sendToServer(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            buf -> buf.writeResourceLocation(id)
+        ));
     }
 
     @Override
