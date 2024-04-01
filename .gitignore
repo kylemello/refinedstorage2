@@ -11,6 +11,7 @@ eclipse/
 *.ipr
 *.iws
 .idea/
+!.idea/dictionaries/refinedstorage2.xml
 out/
 /bin/
 logs/
