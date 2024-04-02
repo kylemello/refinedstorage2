@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage2.platform.common.importer.ImporterContaine
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockContainerMenu;
@@ -77,6 +78,8 @@ public final class Menus {
     private Supplier<MenuType<SecurityCardContainerMenu>> securityCard;
     @Nullable
     private Supplier<MenuType<FallbackSecurityCardContainerMenu>> fallbackSecurityCard;
+    @Nullable
+    private Supplier<MenuType<SecurityManagerContainerMenu>> securityManager;
 
     private Menus() {
     }
@@ -257,5 +260,13 @@ public final class Menus {
         final Supplier<MenuType<FallbackSecurityCardContainerMenu>> fallbackSecurityCard
     ) {
         this.fallbackSecurityCard = fallbackSecurityCard;
+    }
+
+    public MenuType<SecurityManagerContainerMenu> getSecurityManager() {
+        return requireNonNull(securityManager).get();
+    }
+
+    public void setSecurityManager(final Supplier<MenuType<SecurityManagerContainerMenu>> securityManager) {
+        this.securityManager = securityManager;
     }
 }

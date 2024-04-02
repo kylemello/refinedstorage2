@@ -58,6 +58,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermissio
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -725,6 +726,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setFallbackSecurityCard(callback.register(
             FALLBACK_SECURITY_CARD,
             () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setSecurityManager(callback.register(
+            SECURITY_MANAGER,
+            () -> menuTypeFactory.create(SecurityManagerContainerMenu::new)
         ));
     }
 
