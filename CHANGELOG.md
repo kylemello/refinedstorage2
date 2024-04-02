@@ -19,7 +19,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Security Card can be bound to other (currently online) players via its GUI.
 -   The binding of a Security Card can now be cleared.
 -   The Security Card tooltip and GUI now show whether the permission has been touched/changed in any way.
--   A global (fallback) permission set for a network can be defined using the Fallback Security Card (instead of using an "unbound" Security Card).
+-   As soon as a Security Manager is placed, the storage network will be locked down by default. Start adding Security Cards to allow or deny specific access to players.
+-   To not lock the entire network by default for players who do not have a matching Security Card, a Fallback Security Card can be used to configure this behavior.
 -   Smooth scrolling, screen size and max row stretch are no longer Grid-specific settings, but are now global settings.
 
 ### Fixed

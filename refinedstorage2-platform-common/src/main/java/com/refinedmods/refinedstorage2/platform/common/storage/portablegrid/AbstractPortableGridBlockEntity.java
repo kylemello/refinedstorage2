@@ -66,14 +66,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
         super(getBlockEntityType(type), pos, state);
         this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(), 1);
         this.energyStorage = createEnergyStorage(type, this);
-        this.grid = new PortableGrid(energyStorage, diskInventory, diskStateListener) {
-            @Override
-            public boolean isGridActive() {
-                return super.isGridActive()
-                    && level != null
-                    && redstoneMode.isActive(level.hasNeighborSignal(worldPosition));
-            }
-        };
+        this.grid = new InWorldPortableGrid(energyStorage, diskInventory, diskStateListener, this);
     }
 
     static void readDiskInventory(final CompoundTag tag, final DiskInventory diskInventory) {

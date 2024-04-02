@@ -1,11 +1,13 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
-import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.security.SecurityDecisionProviderImpl;
 import com.refinedmods.refinedstorage2.platform.api.security.SecurityPolicyContainerItem;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
+import com.refinedmods.refinedstorage2.platform.common.support.SimpleFilteredContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
@@ -26,42 +28,43 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SecurityManagerBlockEntity
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SecurityDecisionProviderProxyNetworkNode>
     implements BlockEntityWithDrops, ExtendedMenuProvider {
     static final int CARD_AMOUNT = 18;
 
     private static final String TAG_SECURITY_CARDS = "sc";
     private static final String TAG_FALLBACK_SECURITY_CARD = "fsc";
 
-    private final SimpleContainer securityCards = new SimpleContainer(CARD_AMOUNT) {
-        @Override
-        public boolean canPlaceItem(final int slot, final ItemStack stack) {
-            return isValidSecurityCard(stack);
-        }
-    };
+    private final SimpleContainer securityCards = new SimpleFilteredContainer(
+        CARD_AMOUNT,
+        SecurityManagerBlockEntity::isValidSecurityCard
+    );
+    private final SimpleContainer fallbackSecurityCard = new SimpleFilteredContainer(
+        1,
+        SecurityManagerBlockEntity::isValidFallbackSecurityCard
+    );
 
-    private final SimpleContainer fallbackSecurityCard = new SimpleContainer(1) {
-        @Override
-        public boolean canPlaceItem(final int slot, final ItemStack stack) {
-            return isValidFallbackSecurityCard(stack);
-        }
-    };
+    private final SecurityDecisionProviderImpl securityDecisionProvider = new SecurityDecisionProviderImpl();
 
     public SecurityManagerBlockEntity(final BlockPos pos, final BlockState state) {
         super(
             BlockEntities.INSTANCE.getSecurityManager(),
             pos,
             state,
-            new SimpleNetworkNode(Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage())
+            new SecurityDecisionProviderProxyNetworkNode(
+                Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage()
+            )
         );
         securityCards.addListener(c -> invalidate());
         fallbackSecurityCard.addListener(c -> invalidate());
+        getNode().setDelegate(securityDecisionProvider);
     }
 
     private void invalidate() {
         if (level != null) {
             setChanged();
         }
+        securityDecisionProvider.clearPolicies();
         long energyUsage = Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage();
         for (int i = 0; i < securityCards.getContainerSize(); ++i) {
             final ItemStack securityCard = securityCards.getItem(i);
@@ -69,12 +72,25 @@ public class SecurityManagerBlockEntity
                 continue;
             }
             energyUsage += securityPolicyContainerItem.getEnergyUsage();
+            securityPolicyContainerItem.getPolicy(securityCard).ifPresent(
+                policy -> securityPolicyContainerItem.getActor(securityCard).ifPresent(
+                    actor -> securityDecisionProvider.setPolicy(actor, policy)));
         }
+        energyUsage += updateDefaultPolicyAndGetEnergyUsage();
+        getNode().setEnergyUsage(energyUsage);
+    }
+
+    private long updateDefaultPolicyAndGetEnergyUsage() {
         final ItemStack fallbackSecurityCardStack = fallbackSecurityCard.getItem(0);
         if (fallbackSecurityCardStack.getItem() instanceof SecurityPolicyContainerItem securityPolicyContainerItem) {
-            energyUsage += securityPolicyContainerItem.getEnergyUsage();
+            securityPolicyContainerItem.getPolicy(fallbackSecurityCardStack).ifPresentOrElse(
+                securityDecisionProvider::setDefaultPolicy,
+                () -> securityDecisionProvider.setDefaultPolicy(null)
+            );
+            return securityPolicyContainerItem.getEnergyUsage();
         }
-        getNode().setEnergyUsage(energyUsage);
+        securityDecisionProvider.setDefaultPolicy(null);
+        return 0;
     }
 
     @Override

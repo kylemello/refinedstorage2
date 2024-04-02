@@ -6,13 +6,28 @@ import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecision;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecisionProvider;
 
+import javax.annotation.Nullable;
+
 public class SecurityDecisionProviderProxyNetworkNode extends AbstractNetworkNode implements SecurityDecisionProvider {
-    private final long energyUsage;
-    private final SecurityDecisionProvider delegate;
+    private long energyUsage;
+    @Nullable
+    private SecurityDecisionProvider delegate;
+
+    public SecurityDecisionProviderProxyNetworkNode(final long energyUsage) {
+        this.energyUsage = energyUsage;
+    }
 
     public SecurityDecisionProviderProxyNetworkNode(final long energyUsage, final SecurityDecisionProvider delegate) {
-        this.energyUsage = energyUsage;
+        this(energyUsage);
         this.delegate = delegate;
+    }
+
+    public void setDelegate(@Nullable final SecurityDecisionProvider delegate) {
+        this.delegate = delegate;
+    }
+
+    public void setEnergyUsage(final long energyUsage) {
+        this.energyUsage = energyUsage;
     }
 
     @Override
@@ -22,6 +37,17 @@ public class SecurityDecisionProviderProxyNetworkNode extends AbstractNetworkNod
 
     @Override
     public SecurityDecision isAllowed(final Permission permission, final SecurityActor actor) {
+        if (delegate == null) {
+            return SecurityDecision.PASS;
+        }
         return delegate.isAllowed(permission, actor);
+    }
+
+    @Override
+    public SecurityDecision isAllowed(final Permission permission) {
+        if (delegate == null) {
+            return SecurityDecision.PASS;
+        }
+        return delegate.isAllowed(permission);
     }
 }

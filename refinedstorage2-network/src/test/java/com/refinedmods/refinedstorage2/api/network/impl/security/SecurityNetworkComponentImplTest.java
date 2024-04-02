@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.impl.security;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode;
-import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.security.Permission;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
@@ -29,76 +28,132 @@ class SecurityNetworkComponentImplTest {
         // Act & assert
         assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isTrue();
         assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
-    }
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isFalse();
 
-    @Test
-    void shouldUseDefaultPolicyIfANotConfiguredSecurityDecisionProviderIsPresent() {
-        // Arrange
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
-
-        // Act & assert
-        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isTrue();
-        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
-    }
-
-    @Test
-    void shouldUseDefaultPolicyIfAConfiguredSecurityDecisionProviderIsPresentForAnotherActor() {
-        // Arrange
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
-        securityDecisionProvider.setPolicy(TestActors.B, policy(TestPermissions.OTHER));
-
-        // Act & assert
-        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isTrue();
-        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
-    }
-
-    @Test
-    void shouldDenyPermissionIfAConfiguredSecurityDecisionProviderIsPresentForTheActor() {
-        // Arrange
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
-        securityDecisionProvider.setPolicy(TestActors.B, policy(TestPermissions.OTHER));
-
-        // Act & assert
-        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isFalse();
-        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isTrue();
-    }
-
-    @Test
-    void shouldUseFirstSecurityDecisionProviderThatIsConfiguredForActor() {
-        // Arrange
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
-            .setPolicy(TestActors.A, policy(TestPermissions.OTHER2))));
-
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
-        securityDecisionProvider.setPolicy(TestActors.A, policy(TestPermissions.ALLOW_BY_DEFAULT)); // will be ignored
-        securityDecisionProvider.setPolicy(TestActors.B, policy(TestPermissions.OTHER));
-
-        // Act & assert
-        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isFalse();
-        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
-        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isTrue();
-
-        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isFalse();
-        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isFalse();
         assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isFalse();
     }
 
     @Test
-    void shouldRemoveSecurityDecisionProvider() {
+    void shouldDenyAllIfAtLeastOneSecurityDecisionProviderIsPresent() {
         // Arrange
-        final NetworkNode node = new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider);
-        sut.onContainerAdded(() -> node);
-        securityDecisionProvider.setPolicy(TestActors.B, policy(TestPermissions.OTHER));
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
 
-        // Act
-        sut.onContainerRemoved(() -> node);
-        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
-            .setPolicy(TestActors.B, policy(TestPermissions.OTHER2))));
+        // Act & assert
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isFalse();
 
-        // Assert
         assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isFalse();
         assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isFalse();
-        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isFalse();
+    }
+
+    @Test
+    void shouldAllowOrDeny() {
+        // Arrange
+        securityDecisionProvider.setPolicy(TestActors.A, policy(TestPermissions.OTHER));
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
+
+        // Act & assert
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isFalse();
+
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isFalse();
+    }
+
+    @Test
+    void shouldOnlyAllowIfAllSecurityDecisionProvidersAllow() {
+        // Arrange
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.A, policy(TestPermissions.OTHER))
+        ));
+
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.A, policy(TestPermissions.OTHER2))
+        ));
+
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.B, policy(TestPermissions.OTHER))
+        ));
+
+        // Act & assert
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isFalse();
+
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isFalse();
+
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.C)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.C)).isFalse();
+    }
+
+    @Test
+    void shouldUseDefaultPolicyOfSecurityDecisionProviderIfAllProvidersPassDecision() {
+        // Arrange
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.A, policy(TestPermissions.OTHER))
+            .setDefaultPolicy(policy(TestPermissions.ALLOW_BY_DEFAULT))
+        ));
+
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.A, policy(TestPermissions.OTHER))
+            .setDefaultPolicy(policy(TestPermissions.ALLOW_BY_DEFAULT, TestPermissions.OTHER2))
+        ));
+
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setPolicy(TestActors.C, policy(TestPermissions.OTHER))
+        ));
+
+        // Act & assert
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isFalse();
+
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.B)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.B)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.B)).isFalse();
+
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.C)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.C)).isTrue();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.C)).isFalse();
+    }
+
+    @Test
+    void shouldRemoveContainer() {
+        // Arrange
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setDefaultPolicy(policy(TestPermissions.ALLOW_BY_DEFAULT))
+        ));
+
+        final var removedNode = new SecurityDecisionProviderProxyNetworkNode(0, new SecurityDecisionProviderImpl()
+            .setDefaultPolicy(policy(TestPermissions.OTHER)));
+        sut.onContainerAdded(() -> removedNode);
+
+        // Act
+        sut.onContainerRemoved(() -> removedNode);
+
+        // Assert
+        assertThat(sut.isAllowed(TestPermissions.ALLOW_BY_DEFAULT, TestActors.A)).isTrue();
+    }
+
+    @Test
+    void shouldClearPolicies() {
+        // Arrange
+        sut.onContainerAdded(() -> new SecurityDecisionProviderProxyNetworkNode(0, securityDecisionProvider));
+        securityDecisionProvider.setPolicy(TestActors.A, policy(TestPermissions.OTHER));
+        securityDecisionProvider.setDefaultPolicy(policy(TestPermissions.OTHER2));
+
+        // Act
+        securityDecisionProvider.clearPolicies();
+
+        // Assert
+        assertThat(sut.isAllowed(TestPermissions.OTHER, TestActors.A)).isFalse();
+        assertThat(sut.isAllowed(TestPermissions.OTHER2, TestActors.A)).isTrue();
     }
 
     enum TestPermissions implements Permission {
@@ -106,7 +161,7 @@ class SecurityNetworkComponentImplTest {
     }
 
     enum TestActors implements SecurityActor {
-        A, B
+        A, B, C
     }
 
     private SecurityPolicy policy(final Permission... permissions) {
