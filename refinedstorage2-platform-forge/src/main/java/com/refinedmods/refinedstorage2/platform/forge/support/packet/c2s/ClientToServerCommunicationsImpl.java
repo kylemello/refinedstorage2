@@ -14,7 +14,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -112,7 +111,7 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
     }
 
     @Override
-    public void sendSecurityCardBoundPlayer(@Nullable final UUID playerId) {
+    public void sendSecurityCardBoundPlayer(final UUID playerId) {
         sendToServer(new SecurityCardBoundPlayerPacket(playerId));
     }
 }

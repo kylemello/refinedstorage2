@@ -11,7 +11,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 public interface ClientToServerCommunications {
     void sendGridExtract(PlatformResourceKey resource, GridExtractMode mode, boolean cursor);
@@ -42,5 +41,5 @@ public interface ClientToServerCommunications {
 
     void sendSecurityCardResetPermission(PlatformPermission permission);
 
-    void sendSecurityCardBoundPlayer(@Nullable UUID playerId);
+    void sendSecurityCardBoundPlayer(UUID playerId);
 }

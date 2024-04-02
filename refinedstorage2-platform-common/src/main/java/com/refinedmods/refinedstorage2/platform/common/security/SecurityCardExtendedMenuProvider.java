@@ -1,10 +1,14 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,24 +20,26 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 class SecurityCardExtendedMenuProvider extends AbstractSecurityCardExtendedMenuProvider {
     private final SlotReference slotReference;
-    private final PlayerSecurityCardModel playerModel;
+    private final UUID boundPlayerId;
+    private final String boundPlayerName;
 
-    SecurityCardExtendedMenuProvider(final SlotReference slotReference, final PlayerSecurityCardModel model) {
-        super(slotReference, model);
+    SecurityCardExtendedMenuProvider(final SlotReference slotReference,
+                                     final SecurityPolicy securityPolicy,
+                                     final Set<PlatformPermission> dirtyPermissions,
+                                     final UUID boundPlayerId,
+                                     final String boundPlayerName) {
+        super(slotReference, securityPolicy, dirtyPermissions);
         this.slotReference = slotReference;
-        this.playerModel = model;
+        this.boundPlayerId = boundPlayerId;
+        this.boundPlayerName = boundPlayerName;
     }
 
     @Override
     public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
         super.writeScreenOpeningData(player, buf);
 
-        final boolean bound = playerModel.getBoundPlayerId() != null && playerModel.getBoundPlayerName() != null;
-        buf.writeBoolean(bound);
-        if (bound) {
-            buf.writeUUID(playerModel.getBoundPlayerId());
-            buf.writeUtf(playerModel.getBoundPlayerName());
-        }
+        buf.writeUUID(boundPlayerId);
+        buf.writeUtf(boundPlayerName);
 
         final List<ServerPlayer> players = player.getServer() == null
             ? Collections.emptyList()

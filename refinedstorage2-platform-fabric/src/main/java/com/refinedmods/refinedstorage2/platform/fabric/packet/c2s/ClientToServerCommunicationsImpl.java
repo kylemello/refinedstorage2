@@ -16,7 +16,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -151,13 +150,8 @@ public class ClientToServerCommunicationsImpl implements ClientToServerCommunica
     }
 
     @Override
-    public void sendSecurityCardBoundPlayer(@Nullable final UUID playerId) {
-        sendToServer(PacketIds.SECURITY_CARD_BOUND_PLAYER, buf -> {
-            buf.writeBoolean(playerId != null);
-            if (playerId != null) {
-                buf.writeUUID(playerId);
-            }
-        });
+    public void sendSecurityCardBoundPlayer(final UUID playerId) {
+        sendToServer(PacketIds.SECURITY_CARD_BOUND_PLAYER, buf -> buf.writeUUID(playerId));
     }
 
     private static void sendToServer(final ResourceLocation id, final Consumer<FriendlyByteBuf> bufConsumer) {

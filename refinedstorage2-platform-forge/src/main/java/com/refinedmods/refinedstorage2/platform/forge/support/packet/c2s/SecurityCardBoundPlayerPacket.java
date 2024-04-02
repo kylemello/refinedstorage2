@@ -4,16 +4,15 @@ import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardCont
 import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
 
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-public record SecurityCardBoundPlayerPacket(@Nullable UUID playerId) implements CustomPacketPayload {
+public record SecurityCardBoundPlayerPacket(UUID playerId) implements CustomPacketPayload {
     public static SecurityCardBoundPlayerPacket decode(final FriendlyByteBuf buf) {
-        return new SecurityCardBoundPlayerPacket(buf.readBoolean() ? buf.readUUID() : null);
+        return new SecurityCardBoundPlayerPacket(buf.readUUID());
     }
 
     public static void handle(final SecurityCardBoundPlayerPacket packet, final PlayPayloadContext ctx) {
@@ -29,10 +28,7 @@ public record SecurityCardBoundPlayerPacket(@Nullable UUID playerId) implements 
 
     @Override
     public void write(final FriendlyByteBuf buf) {
-        buf.writeBoolean(playerId != null);
-        if (playerId != null) {
-            buf.writeUUID(playerId);
-        }
+        buf.writeUUID(playerId);
     }
 
     @Override
