@@ -54,8 +54,27 @@ public class SecurityManagerBlockEntity
             state,
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage())
         );
-        securityCards.addListener(c -> setChanged());
-        fallbackSecurityCard.addListener(c -> setChanged());
+        securityCards.addListener(c -> invalidate());
+        fallbackSecurityCard.addListener(c -> invalidate());
+    }
+
+    private void invalidate() {
+        if (level != null) {
+            setChanged();
+        }
+        long energyUsage = Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage();
+        for (int i = 0; i < securityCards.getContainerSize(); ++i) {
+            final ItemStack securityCard = securityCards.getItem(i);
+            if (!(securityCard.getItem() instanceof SecurityPolicyContainerItem securityPolicyContainerItem)) {
+                continue;
+            }
+            energyUsage += securityPolicyContainerItem.getEnergyUsage();
+        }
+        final ItemStack fallbackSecurityCardStack = fallbackSecurityCard.getItem(0);
+        if (fallbackSecurityCardStack.getItem() instanceof SecurityPolicyContainerItem securityPolicyContainerItem) {
+            energyUsage += securityPolicyContainerItem.getEnergyUsage();
+        }
+        getNode().setEnergyUsage(energyUsage);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage2.platform.common.Platform;
 
 import java.util.Optional;
 import java.util.Set;
@@ -39,5 +40,10 @@ public class FallbackSecurityCardItem extends AbstractSecurityCardItem {
     @Override
     public Optional<SecurityActor> getActor(final ItemStack stack) {
         return Optional.empty();
+    }
+
+    @Override
+    public long getEnergyUsage() {
+        return Platform.INSTANCE.getConfig().getFallbackSecurityCard().getEnergyUsage();
     }
 }

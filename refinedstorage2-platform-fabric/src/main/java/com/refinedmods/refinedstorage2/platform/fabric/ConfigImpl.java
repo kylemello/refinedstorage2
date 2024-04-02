@@ -23,7 +23,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
 
     @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
     private int maxRowsStretch = 256;
-    
+
     @ConfigEntry.Gui.CollapsibleObject
     private GridEntryImpl grid = new GridEntryImpl();
 
@@ -95,6 +95,14 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @ConfigEntry.Gui.CollapsibleObject
     private PortableGridEntryImpl portableGrid = new PortableGridEntryImpl();
 
+    @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl securityCard = new SimpleEnergyUsageEntryImpl(DefaultEnergyUsage.SECURITY_CARD);
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl fallbackSecurityCard = new SimpleEnergyUsageEntryImpl(
+        DefaultEnergyUsage.FALLBACK_SECURITY_CARD
+    );
+    
     @ConfigEntry.Gui.CollapsibleObject
     private SimpleEnergyUsageEntryImpl securityManager = new SimpleEnergyUsageEntryImpl(
         DefaultEnergyUsage.SECURITY_MANAGER
@@ -228,6 +236,16 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @Override
     public PortableGridEntry getPortableGrid() {
         return portableGrid;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getSecurityCard() {
+        return securityCard;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getFallbackSecurityCard() {
+        return fallbackSecurityCard;
     }
 
     @Override

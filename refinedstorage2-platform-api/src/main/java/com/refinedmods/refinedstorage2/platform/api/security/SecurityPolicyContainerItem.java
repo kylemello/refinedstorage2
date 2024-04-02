@@ -28,4 +28,6 @@ public interface SecurityPolicyContainerItem {
      * @return the policy, if present
      */
     Optional<SecurityPolicy> getPolicy(ItemStack stack);
+
+    long getEnergyUsage();
 }

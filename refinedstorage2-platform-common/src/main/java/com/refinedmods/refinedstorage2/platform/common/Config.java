@@ -17,7 +17,7 @@ public interface Config {
     boolean isSmoothScrolling();
 
     int getMaxRowsStretch();
-    
+
     GridEntry getGrid();
 
     CraftingGridEntry getCraftingGrid();
@@ -59,6 +59,10 @@ public interface Config {
     SimpleEnergyUsageEntry getNetworkTransmitter();
 
     PortableGridEntry getPortableGrid();
+
+    SimpleEnergyUsageEntry getSecurityCard();
+
+    SimpleEnergyUsageEntry getFallbackSecurityCard();
 
     SimpleEnergyUsageEntry getSecurityManager();
 

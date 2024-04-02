@@ -43,6 +43,8 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry networkReceiver;
     private final SimpleEnergyUsageEntry networkTransmitter;
     private final PortableGridEntry portableGrid;
+    private final SimpleEnergyUsageEntry securityCard;
+    private final SimpleEnergyUsageEntry fallbackSecurityCard;
     private final SimpleEnergyUsageEntry securityManager;
 
     public ConfigImpl() {
@@ -92,6 +94,16 @@ public class ConfigImpl implements Config {
             DefaultEnergyUsage.NETWORK_TRANSMITTER
         );
         portableGrid = new PortableGridEntryImpl();
+        securityCard = new SimpleEnergyUsageEntryImpl(
+            "securityCard",
+            "Security Card",
+            DefaultEnergyUsage.SECURITY_CARD
+        );
+        fallbackSecurityCard = new SimpleEnergyUsageEntryImpl(
+            "fallbackSecurityCard",
+            "Fallback Security Card",
+            DefaultEnergyUsage.FALLBACK_SECURITY_CARD
+        );
         securityManager = new SimpleEnergyUsageEntryImpl(
             "securityManager",
             "Security Manager",
@@ -227,6 +239,16 @@ public class ConfigImpl implements Config {
     @Override
     public PortableGridEntry getPortableGrid() {
         return portableGrid;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getSecurityCard() {
+        return securityCard;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getFallbackSecurityCard() {
+        return fallbackSecurityCard;
     }
 
     @Override

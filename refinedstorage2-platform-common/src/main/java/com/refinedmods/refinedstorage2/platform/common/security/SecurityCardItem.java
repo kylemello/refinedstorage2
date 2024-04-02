@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage2.platform.common.Platform;
 
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +100,11 @@ public class SecurityCardItem extends AbstractSecurityCardItem {
             return Optional.empty();
         }
         return Optional.of(new PlayerSecurityActor(playerId));
+    }
+
+    @Override
+    public long getEnergyUsage() {
+        return Platform.INSTANCE.getConfig().getSecurityCard().getEnergyUsage();
     }
 
     @Nullable
