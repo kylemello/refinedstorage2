@@ -253,6 +253,8 @@
   "misc.refinedstorage2.resource_type.item": "Item",
   "misc.refinedstorage2.resource_type.fluid": "Fluid",
   "misc.refinedstorage2.press_shift_for_help": "Press SHIFT for help",
+  "misc.refinedstorage2.no_permission": "No permission",
+  "misc.refinedstorage2.no_permission.cannot_modify": "You are not allowed to modify the %s.",
   "key.refinedstorage2.focus_search_bar": "Focus search bar",
   "key.refinedstorage2.clear_crafting_grid_matrix_to_network": "Clear Crafting Grid matrix to network",
   "key.refinedstorage2.clear_crafting_grid_matrix_to_inventory": "Clear Crafting Grid matrix to inventory",

@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridActivePack
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NoPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.WirelessTransmitterRangePacket;
@@ -312,6 +313,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             PacketIds.NETWORK_TRANSMITTER_STATUS,
             new NetworkTransmitterStatusPacket()
         );
+        ClientPlayNetworking.registerGlobalReceiver(PacketIds.NO_PERMISSION, new NoPermissionPacket());
     }
 
     private void registerBlockEntityRenderers() {

@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmi
 import java.util.UUID;
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface ServerToClientCommunications {
@@ -32,4 +33,6 @@ public interface ServerToClientCommunications {
     void sendStorageInfoResponse(ServerPlayer player, UUID id, StorageInfo storageInfo);
 
     void sendNetworkTransmitterStatus(ServerPlayer player, NetworkTransmitterStatus status);
+
+    void sendNoPermission(ServerPlayer player, Component message);
 }

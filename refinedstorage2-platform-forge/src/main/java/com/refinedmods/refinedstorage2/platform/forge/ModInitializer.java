@@ -58,6 +58,7 @@ import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridAct
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NoPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -476,6 +477,11 @@ public class ModInitializer extends AbstractModInitializer {
             PacketIds.WIRELESS_TRANSMITTER_RANGE,
             WirelessTransmitterRangePacket::decode,
             handler -> handler.client(WirelessTransmitterRangePacket::handle)
+        );
+        registrar.play(
+            PacketIds.NO_PERMISSION,
+            NoPermissionPacket::decode,
+            handler -> handler.client(NoPermissionPacket::handle)
         );
     }
 

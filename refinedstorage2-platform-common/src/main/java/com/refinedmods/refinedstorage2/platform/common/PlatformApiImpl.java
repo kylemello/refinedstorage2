@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkFactory;
-import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
@@ -56,7 +55,6 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGr
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.recipemod.CompositeIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
-import com.refinedmods.refinedstorage2.platform.common.security.PlayerSecurityActor;
 import com.refinedmods.refinedstorage2.platform.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageRepositoryImpl;
@@ -97,7 +95,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -531,10 +528,5 @@ public class PlatformApiImpl implements PlatformApi {
             .stream()
             .filter(PlatformPermission::isAllowedByDefault)
             .collect(Collectors.toSet()));
-    }
-
-    @Override
-    public SecurityActor createPlayerSecurityActor(final ServerPlayer player) {
-        return PlayerSecurityActor.of(player);
     }
 }

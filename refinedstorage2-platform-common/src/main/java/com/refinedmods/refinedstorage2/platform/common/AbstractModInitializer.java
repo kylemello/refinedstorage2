@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -56,6 +57,7 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmi
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.PlatformSecurityNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
@@ -256,6 +258,10 @@ public abstract class AbstractModInitializer {
         PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             StorageNetworkComponent.class,
             network -> new PlatformStorageNetworkComponent()
+        );
+        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+            PlatformSecurityNetworkComponent.class,
+            network -> new PlatformSecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
         );
     }
 

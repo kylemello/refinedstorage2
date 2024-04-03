@@ -11,6 +11,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.ServerToClientCom
 import java.util.UUID;
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -84,5 +85,10 @@ public class ServerToClientCommunicationsImpl implements ServerToClientCommunica
     @Override
     public void sendNetworkTransmitterStatus(final ServerPlayer player, final NetworkTransmitterStatus status) {
         sendToPlayer(player, new NetworkTransmitterStatusPacket(status.error(), status.message()));
+    }
+
+    @Override
+    public void sendNoPermission(final ServerPlayer player, final Component message) {
+        sendToPlayer(player, new NoPermissionPacket(message));
     }
 }
