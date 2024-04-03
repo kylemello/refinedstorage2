@@ -48,6 +48,7 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         super(menuType, syncId);
         this.playerInventory = playerInventory;
         this.disabledSlot = disabledSlot;
+        onScreenReady(0);
     }
 
     List<Permission> getPermissions() {
@@ -64,13 +65,12 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         if (disabledSlot == null) {
             return;
         }
-        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> setPermission(permissionId, allowed, stack));
+        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> setPermission(stack, permissionId, allowed));
     }
 
-    private void setPermission(final ResourceLocation permissionId, final boolean allowed, final ItemStack stack) {
-        if (stack.getItem() instanceof AbstractSecurityCardItem<?> securityCardItem) {
-            final SecurityCardModel model = securityCardItem.createModel(stack);
-            model.setPermission(permissionId, allowed);
+    private void setPermission(final ItemStack stack, final ResourceLocation permissionId, final boolean allowed) {
+        if (stack.getItem() instanceof AbstractSecurityCardItem securityCardItem) {
+            securityCardItem.setPermission(stack, permissionId, allowed);
         }
     }
 
@@ -78,13 +78,12 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         if (disabledSlot == null) {
             return;
         }
-        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> resetPermission(permissionId, stack));
+        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> resetPermission(stack, permissionId));
     }
 
-    private void resetPermission(final ResourceLocation permissionId, final ItemStack stack) {
-        if (stack.getItem() instanceof AbstractSecurityCardItem<?> securityCardItem) {
-            final SecurityCardModel model = securityCardItem.createModel(stack);
-            model.resetPermission(permissionId);
+    private void resetPermission(final ItemStack stack, final ResourceLocation permissionId) {
+        if (stack.getItem() instanceof AbstractSecurityCardItem securityCardItem) {
+            securityCardItem.resetPermission(stack, permissionId);
         }
     }
 
@@ -93,7 +92,7 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardResetPermission(permission);
         return updatePermissionLocally(permission, allowed, false);
     }
-    
+
     Permission changePermission(final PlatformPermission permission, final boolean selected) {
         Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardPermission(permission, selected);
         return updatePermissionLocally(permission, selected, true);

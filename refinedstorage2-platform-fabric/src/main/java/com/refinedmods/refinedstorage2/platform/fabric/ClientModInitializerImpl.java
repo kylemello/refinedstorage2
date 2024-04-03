@@ -118,6 +118,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getNetworkTransmitter());
         setCutout(Blocks.INSTANCE.getPortableGrid());
         setCutout(Blocks.INSTANCE.getCreativePortableGrid());
+        setCutout(Blocks.INSTANCE.getSecurityManager());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -159,6 +160,12 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
         Blocks.INSTANCE.getNetworkTransmitter().forEach(
             (color, id, block) -> registerEmissiveNetworkTransmitterModels(color, id)
+        );
+        Blocks.INSTANCE.getGrid().forEach(
+            (color, id, block) -> registerEmissiveGridModels(color, id)
+        );
+        Blocks.INSTANCE.getSecurityManager().forEach(
+            (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
         );
     }
 
@@ -266,6 +273,27 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         EmissiveModelRegistry.INSTANCE.register(
             id,
             createIdentifier("block/network_transmitter/cutouts/" + color.getName())
+        );
+    }
+
+    private void registerEmissiveSecurityManagerModels(final DyeColor color, final ResourceLocation id) {
+        // Block
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier("block/security_manager/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+        );
+        // Item
+        EmissiveModelRegistry.INSTANCE.register(
+            id,
+            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
         );
     }
 

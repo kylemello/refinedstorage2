@@ -17,7 +17,7 @@ public class SecurityCardItemPropertyFunction implements ClampedItemPropertyFunc
                                @Nullable final LivingEntity livingEntity,
                                final int i) {
         if (itemStack.getItem() instanceof SecurityCardItem cardItem) {
-            return cardItem.isActive(itemStack) ? 1 : 0;
+            return cardItem.isValid(itemStack) ? 1 : 0;
         }
         return 0;
     }

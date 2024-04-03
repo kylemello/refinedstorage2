@@ -35,7 +35,6 @@ public class GridBlock extends AbstractGridBlock<GridBlock, NamedBlockItem>
         super(name, color);
     }
 
-
     @Override
     public BlockColorMap<GridBlock, NamedBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getGrid();

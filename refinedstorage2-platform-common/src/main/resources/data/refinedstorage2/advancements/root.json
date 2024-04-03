@@ -4,7 +4,7 @@
       "item": "refinedstorage2:creative_controller"
     },
     "title": {
-      "translate": "itemGroup.refinedstorage2.general"
+      "translate": "mod.refinedstorage2"
     },
     "description": {
       "translate": "advancements.refinedstorage2.root.description"

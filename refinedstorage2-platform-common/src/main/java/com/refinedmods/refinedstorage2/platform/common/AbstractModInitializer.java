@@ -57,6 +57,8 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmi
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -154,6 +156,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_MANAGER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SILICON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_HOUSING;
@@ -317,6 +320,7 @@ public abstract class AbstractModInitializer {
             PortableGridType.CREATIVE,
             creativePortableGridBlockEntityFactory
         )));
+        Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -335,6 +339,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getWirelessTransmitter().registerItems(callback, Items.INSTANCE::addWirelessTransmitter);
         Blocks.INSTANCE.getNetworkReceiver().registerItems(callback, Items.INSTANCE::addNetworkReceiver);
         Blocks.INSTANCE.getNetworkTransmitter().registerItems(callback, Items.INSTANCE::addNetworkTransmitter);
+        Blocks.INSTANCE.getSecurityManager().registerItems(callback, Items.INSTANCE::addSecurityManager);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -623,6 +628,13 @@ public abstract class AbstractModInitializer {
                 Blocks.INSTANCE.getCreativePortableGrid()
             )
         ));
+        BlockEntities.INSTANCE.setSecurityManager(callback.register(
+            SECURITY_MANAGER,
+            () -> typeFactory.create(
+                SecurityManagerBlockEntity::new,
+                Blocks.INSTANCE.getSecurityManager().toArray()
+            )
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -714,6 +726,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setFallbackSecurityCard(callback.register(
             FALLBACK_SECURITY_CARD,
             () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setSecurityManager(callback.register(
+            SECURITY_MANAGER,
+            () -> menuTypeFactory.create(SecurityManagerContainerMenu::new)
         ));
     }
 

@@ -6,4 +6,8 @@ import org.apiguardian.api.API;
 @FunctionalInterface
 public interface SecurityDecisionProvider {
     SecurityDecision isAllowed(Permission permission, SecurityActor actor);
+
+    default SecurityDecision isAllowed(Permission permission) {
+        return SecurityDecision.PASS;
+    }
 }

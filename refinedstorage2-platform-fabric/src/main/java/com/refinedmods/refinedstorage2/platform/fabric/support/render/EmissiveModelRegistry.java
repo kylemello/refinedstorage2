@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage2.platform.fabric.support.render;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -38,7 +40,9 @@ public final class EmissiveModelRegistry {
     }
 
     public void register(final ResourceLocation location,
-                         final ResourceLocation spriteLocation) {
-        factories.put(location, bakedModel -> new EmissiveBakedModel(bakedModel, spriteLocation));
+                         final ResourceLocation... spriteLocations) {
+        factories.put(location, bakedModel -> new EmissiveBakedModel(bakedModel, new HashSet<>(
+            Arrays.asList(spriteLocations)
+        )));
     }
 }

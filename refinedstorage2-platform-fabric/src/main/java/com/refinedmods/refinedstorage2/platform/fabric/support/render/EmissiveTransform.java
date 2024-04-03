@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.fabric.support.render;
 
+import java.util.Set;
+
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.model.SpriteFinder;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
@@ -10,10 +12,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 class EmissiveTransform implements RenderContext.QuadTransform {
-    private final ResourceLocation emissiveSprite;
+    private final Set<ResourceLocation> emissiveSprites;
 
-    EmissiveTransform(final ResourceLocation emissiveSprite) {
-        this.emissiveSprite = emissiveSprite;
+    EmissiveTransform(final Set<ResourceLocation> emissiveSprites) {
+        this.emissiveSprites = emissiveSprites;
     }
 
     @Override
@@ -31,7 +33,7 @@ class EmissiveTransform implements RenderContext.QuadTransform {
         if (sprite == null) {
             return;
         }
-        if (!emissiveSprite.equals(sprite.contents().name())) {
+        if (!emissiveSprites.contains(sprite.contents().name())) {
             return;
         }
         applyLightmap(quad);

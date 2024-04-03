@@ -18,8 +18,7 @@ public class SecurityCardBoundPlayerPacket implements ServerPlayNetworking.PlayC
                         final ServerGamePacketListenerImpl handler,
                         final FriendlyByteBuf buf,
                         final PacketSender responseSender) {
-        final boolean hasPlayer = buf.readBoolean();
-        final UUID playerId = hasPlayer ? buf.readUUID() : null;
+        final UUID playerId = buf.readUUID();
         if (player.containerMenu instanceof SecurityCardContainerMenu securityCardContainerMenu) {
             server.execute(() -> securityCardContainerMenu.setBoundPlayer(server, playerId));
         }

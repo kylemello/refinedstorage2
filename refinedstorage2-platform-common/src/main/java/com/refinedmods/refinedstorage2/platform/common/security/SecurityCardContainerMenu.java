@@ -8,7 +8,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.stretching.Screen
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -18,17 +17,13 @@ import net.minecraft.world.item.ItemStack;
 
 public class SecurityCardContainerMenu extends AbstractSecurityCardContainerMenu implements ScreenSizeListener {
     private final List<Player> players = new ArrayList<>();
-
-    @Nullable
     private Player boundTo;
 
     public SecurityCardContainerMenu(final int syncId,
                                      final Inventory playerInventory,
                                      final FriendlyByteBuf buf) {
         super(Menus.INSTANCE.getSecurityCard(), syncId, playerInventory, buf);
-        if (buf.readBoolean()) {
-            this.boundTo = new Player(buf.readUUID(), buf.readUtf());
-        }
+        this.boundTo = new Player(buf.readUUID(), buf.readUtf());
         final int amountOfPlayers = buf.readInt();
         for (int i = 0; i < amountOfPlayers; ++i) {
             final UUID id = buf.readUUID();
@@ -39,36 +34,36 @@ public class SecurityCardContainerMenu extends AbstractSecurityCardContainerMenu
 
     SecurityCardContainerMenu(final int syncId, final Inventory playerInventory, final SlotReference disabledSlot) {
         super(Menus.INSTANCE.getSecurityCard(), syncId, playerInventory, disabledSlot);
+        this.boundTo = new Player(UUID.randomUUID(), "");
     }
 
     List<Player> getPlayers() {
         return players;
     }
 
-    @Nullable
     Player getBoundTo() {
         return boundTo;
     }
 
-    public void setBoundPlayer(final MinecraftServer server, @Nullable final UUID playerId) {
+    public void setBoundPlayer(final MinecraftServer server, final UUID playerId) {
         if (disabledSlot == null) {
             return;
         }
         disabledSlot.resolve(playerInventory.player).ifPresent(stack -> setBoundPlayer(server, playerId, stack));
     }
 
-    private void setBoundPlayer(final MinecraftServer server, @Nullable final UUID playerId, final ItemStack stack) {
+    private void setBoundPlayer(final MinecraftServer server, final UUID playerId, final ItemStack stack) {
         if (stack.getItem() instanceof SecurityCardItem securityCardItem) {
-            final ServerPlayer player = playerId == null ? null : server.getPlayerList().getPlayer(playerId);
-            final PlayerSecurityCardModel model = securityCardItem.createModel(stack);
-            model.setBoundPlayer(player);
+            final ServerPlayer player = server.getPlayerList().getPlayer(playerId);
+            if (player == null) {
+                return;
+            }
+            securityCardItem.setBoundPlayer(player, stack);
         }
     }
 
-    void changeBoundPlayer(@Nullable final Player player) {
-        Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardBoundPlayer(
-            player == null ? null : player.id()
-        );
+    void changeBoundPlayer(final Player player) {
+        Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardBoundPlayer(player.id());
         this.boundTo = player;
     }
 

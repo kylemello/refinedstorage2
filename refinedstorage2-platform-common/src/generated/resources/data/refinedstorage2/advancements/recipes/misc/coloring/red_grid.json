@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_grids",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_grids"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/red_grid"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

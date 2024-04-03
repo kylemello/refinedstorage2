@@ -1,10 +1,14 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
+import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage2.platform.common.Platform;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -13,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-public class FallbackSecurityCardItem extends AbstractSecurityCardItem<SecurityCardModel> {
+public class FallbackSecurityCardItem extends AbstractSecurityCardItem {
     private static final Component HELP = createTranslation("item", "fallback_security_card.help");
 
     public FallbackSecurityCardItem() {
@@ -21,23 +25,25 @@ public class FallbackSecurityCardItem extends AbstractSecurityCardItem<SecurityC
     }
 
     @Override
-    void addTooltip(final List<Component> lines, final SecurityCardModel model) {
-        // no op
-    }
-
-    @Override
-    SecurityCardModel createModel(final ItemStack stack) {
-        return new SecurityCardModel(stack);
-    }
-
-    @Override
     AbstractSecurityCardExtendedMenuProvider createMenuProvider(final SlotReference slotReference,
-                                                                final SecurityCardModel model) {
-        return new FallbackSecurityCardExtendedMenuProvider(slotReference, model);
+                                                                final SecurityPolicy policy,
+                                                                final Set<PlatformPermission> dirtyPermissions,
+                                                                final ItemStack stack) {
+        return new FallbackSecurityCardExtendedMenuProvider(slotReference, policy, dirtyPermissions, slotReference);
     }
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
         return Optional.of(new HelpTooltipComponent(HELP));
+    }
+
+    @Override
+    public Optional<SecurityActor> getActor(final ItemStack stack) {
+        return Optional.empty();
+    }
+
+    @Override
+    public long getEnergyUsage() {
+        return Platform.INSTANCE.getConfig().getFallbackSecurityCard().getEnergyUsage();
     }
 }

@@ -1,42 +1,69 @@
 package com.refinedmods.refinedstorage2.api.network.impl.security;
 
+import com.refinedmods.refinedstorage2.api.core.CoreValidations;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage2.api.network.security.Permission;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecision;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecisionProvider;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
-    private final Set<SecurityDecisionProvider> providers = new HashSet<>();
+    private final Set<SecurityDecisionProvider> providers = new LinkedHashSet<>();
+    private final SecurityPolicy defaultPolicy;
+
+    public SecurityNetworkComponentImpl(final SecurityPolicy defaultPolicy) {
+        this.defaultPolicy = defaultPolicy;
+    }
 
     @Override
     public void onContainerAdded(final NetworkNodeContainer container) {
-        if (container instanceof SecurityDecisionProvider provider) {
+        if (container.getNode() instanceof SecurityDecisionProvider provider) {
             providers.add(provider);
         }
     }
 
     @Override
     public void onContainerRemoved(final NetworkNodeContainer container) {
-        if (container instanceof SecurityDecisionProvider provider) {
+        if (container.getNode() instanceof SecurityDecisionProvider provider) {
             providers.remove(provider);
         }
     }
 
     @Override
     public boolean isAllowed(final Permission permission, final SecurityActor actor) {
-        for (final SecurityDecisionProvider provider : providers) {
-            final SecurityDecision decision = provider.isAllowed(permission, actor);
-            if (decision == SecurityDecision.DENY) {
-                return false;
-            } else if (decision == SecurityDecision.ALLOW) {
-                return true;
-            }
+        if (providers.isEmpty()) {
+            return defaultPolicy.isAllowed(permission);
         }
-        return true;
+        final Set<SecurityDecision> decisions = providers.stream().map(provider -> CoreValidations.validateNotNull(
+            provider.isAllowed(permission, actor),
+            "Decision cannot be null"
+        )).collect(Collectors.toSet());
+        final boolean anyDenied = decisions.stream().anyMatch(decision -> decision == SecurityDecision.DENY);
+        if (anyDenied) {
+            return false;
+        }
+        final boolean anyAllowed = decisions.stream().anyMatch(decision -> decision == SecurityDecision.ALLOW);
+        if (anyAllowed) {
+            return true;
+        }
+        return tryFallback(permission);
+    }
+
+    private boolean tryFallback(final Permission permission) {
+        final Set<SecurityDecision> decisions = providers.stream().map(provider -> CoreValidations.validateNotNull(
+            provider.isAllowed(permission),
+            "Decision cannot be null"
+        )).collect(Collectors.toSet());
+        final boolean anyDenied = decisions.stream().anyMatch(decision -> decision == SecurityDecision.DENY);
+        if (anyDenied) {
+            return false;
+        }
+        return decisions.stream().anyMatch(decision -> decision == SecurityDecision.ALLOW);
     }
 }

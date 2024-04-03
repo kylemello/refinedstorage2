@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntit
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
@@ -77,6 +78,8 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<AbstractPortableGridBlockEntity>> portableGrid;
     @Nullable
     private Supplier<BlockEntityType<AbstractPortableGridBlockEntity>> creativePortableGrid;
+    @Nullable
+    private Supplier<BlockEntityType<SecurityManagerBlockEntity>> securityManager;
 
     private BlockEntities() {
     }
@@ -251,5 +254,13 @@ public final class BlockEntities {
 
     public void setCreativePortableGrid(final Supplier<BlockEntityType<AbstractPortableGridBlockEntity>> supplier) {
         this.creativePortableGrid = supplier;
+    }
+
+    public BlockEntityType<SecurityManagerBlockEntity> getSecurityManager() {
+        return requireNonNull(securityManager).get();
+    }
+
+    public void setSecurityManager(final Supplier<BlockEntityType<SecurityManagerBlockEntity>> supplier) {
+        this.securityManager = supplier;
     }
 }

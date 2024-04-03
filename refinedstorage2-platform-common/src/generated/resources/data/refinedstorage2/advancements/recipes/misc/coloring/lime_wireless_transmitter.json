@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_wireless_transmitters",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_wireless_transmitters"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/lime_wireless_transmitter"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

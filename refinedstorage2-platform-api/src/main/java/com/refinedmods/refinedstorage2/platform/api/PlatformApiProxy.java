@@ -4,6 +4,8 @@ import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.DestructorStrategyFactory;
@@ -48,6 +50,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -361,6 +364,16 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
         return ensureLoaded().getPermissionRegistry();
+    }
+
+    @Override
+    public SecurityPolicy createDefaultSecurityPolicy() {
+        return ensureLoaded().createDefaultSecurityPolicy();
+    }
+
+    @Override
+    public SecurityActor createPlayerSecurityActor(final ServerPlayer player) {
+        return ensureLoaded().createPlayerSecurityActor(player);
     }
 
     private PlatformApi ensureLoaded() {
