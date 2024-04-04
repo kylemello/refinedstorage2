@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.5] - 2024-04-04
+
 ### Added
 
 -   Security Card
@@ -552,7 +554,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.4...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.5...HEAD
+
+[2.0.0-milestone.3.5]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.4...v2.0.0-milestone.3.5
 
 [2.0.0-milestone.3.4]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.3...v2.0.0-milestone.3.4
 
