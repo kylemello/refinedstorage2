@@ -27,7 +27,7 @@ public abstract class AbstractControllerBlock<I extends BlockItem>
         ControllerEnergyType.class
     );
 
-    protected final MutableComponent name;
+    private final MutableComponent name;
 
     private final ControllerType type;
     private final ControllerBlockEntityTicker ticker;

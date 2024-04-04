@@ -1,5 +1,10 @@
 package com.refinedmods.refinedstorage2.platform.common.support.widget;
 
+import com.refinedmods.refinedstorage2.platform.common.Platform;
+
+import java.util.function.DoubleConsumer;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -15,27 +20,31 @@ public class ScrollbarWidget extends AbstractWidget {
     private static final int ANIMATION_SCROLL_DURATION_IN_TICKS = 10;
     private static final double ANIMATION_SCROLL_HEIGHT_IN_PIXELS = 30;
 
+    private final boolean smoothScrolling;
+
     private double offset;
     private double maxOffset;
     private boolean enabled = true;
     private boolean clicked;
-    private boolean scrollAnimation;
 
     private int animationScrollDirection = 0;
     private double animationStartOffset;
     private double animationTickCounter;
     private int animationSpeed;
+    @Nullable
+    private DoubleConsumer listener;
 
     public ScrollbarWidget(final int x, final int y, final int width, final int height) {
         super(x, y, width, height, Component.empty());
+        this.smoothScrolling = Platform.INSTANCE.getConfig().isSmoothScrolling();
     }
 
-    public boolean isScrollAnimation() {
-        return scrollAnimation;
+    public void setListener(@Nullable final DoubleConsumer listener) {
+        this.listener = listener;
     }
 
-    public void setScrollAnimation(final boolean scrollAnimation) {
-        this.scrollAnimation = scrollAnimation;
+    public boolean isSmoothScrolling() {
+        return smoothScrolling;
     }
 
     public void setEnabled(final boolean enabled) {
@@ -127,7 +136,7 @@ public class ScrollbarWidget extends AbstractWidget {
     public boolean mouseScrolled(final double x, final double y, final double z, final double delta) {
         if (enabled) {
             final int scrollDirection = Math.max(Math.min(-(int) delta, 1), -1);
-            if (scrollAnimation) {
+            if (smoothScrolling) {
                 startScrollAnimation(scrollDirection);
             } else {
                 setOffset(offset + scrollDirection);
@@ -161,6 +170,9 @@ public class ScrollbarWidget extends AbstractWidget {
 
     public void setOffset(final double offset) {
         this.offset = Math.min(Math.max(0, offset), maxOffset);
+        if (listener != null) {
+            listener.accept(this.offset);
+        }
     }
 
     private void updateOffset(final double mouseY) {

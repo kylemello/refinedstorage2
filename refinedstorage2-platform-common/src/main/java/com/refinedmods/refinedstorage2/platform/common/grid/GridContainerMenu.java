@@ -12,13 +12,13 @@ import net.minecraft.world.entity.player.Inventory;
 public class GridContainerMenu extends AbstractGridContainerMenu {
     public GridContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
         super(Menus.INSTANCE.getGrid(), syncId, playerInventory, buf);
-        addSlots(0);
+        onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
 
     GridContainerMenu(final int syncId, final Inventory playerInventory, final GridBlockEntity grid) {
         super(Menus.INSTANCE.getGrid(), syncId, playerInventory, grid);
-        addSlots(0);
+        onScreenReady(0);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             grid::getRedstoneMode,

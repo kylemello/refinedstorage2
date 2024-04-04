@@ -15,7 +15,7 @@ public class PortableGridBlockContainerMenu extends AbstractPortableGridContaine
                                           final FriendlyByteBuf buf) {
         super(Menus.INSTANCE.getPortableGridBlock(), syncId, playerInventory, buf);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
-        addSlots(0);
+        this.onScreenReady(0);
     }
 
     PortableGridBlockContainerMenu(final int syncId,
@@ -34,6 +34,6 @@ public class PortableGridBlockContainerMenu extends AbstractPortableGridContaine
             portableGrid::getRedstoneMode,
             portableGrid::setRedstoneMode
         ));
-        addSlots(0);
+        this.onScreenReady(0);
     }
 }

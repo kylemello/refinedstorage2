@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_detectors",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_detectors"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/lime_detector"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

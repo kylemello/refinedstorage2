@@ -1,9 +1,12 @@
 package com.refinedmods.refinedstorage2.platform.api.support.network;
 
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.security.SecurityHelper;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
@@ -39,4 +42,8 @@ public interface PlatformNetworkNodeContainer extends NetworkNodeContainer {
     GlobalPos getContainerPosition();
 
     boolean isContainerRemoved();
+
+    default boolean canBreakOrRotate(final ServerPlayer player) {
+        return SecurityHelper.isAllowed(player, PlatformApi.INSTANCE.getBuiltinPermissions().build(), getNode());
+    }
 }

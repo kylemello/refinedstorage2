@@ -62,6 +62,9 @@ public class RecoloringRecipeProvider extends RecipeProvider {
         Blocks.INSTANCE.getNetworkTransmitter().forEach((color, id, block) ->
             recipe(Tags.NETWORK_TRANSMITTERS, block.get().asItem(), color)
                 .save(output, recipeId(color, "network_transmitter")));
+        Blocks.INSTANCE.getSecurityManager().forEach((color, id, block) ->
+            recipe(Tags.SECURITY_MANAGERS, block.get().asItem(), color)
+                .save(output, recipeId(color, "security_manager")));
     }
 
     private ResourceLocation recipeId(final DyeColor color, final String suffix) {

@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage2.platform.common.controller.ControllerScre
 import com.refinedmods.refinedstorage2.platform.common.detector.DetectorScreen;
 import com.refinedmods.refinedstorage2.platform.common.exporter.ExporterScreen;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.CraftingGridScreen;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.GridScreen;
@@ -17,6 +18,9 @@ import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.FluidGri
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceScreen;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterScreen;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterScreen;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardScreen;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardScreen;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerScreen;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveScreen;
@@ -46,6 +50,13 @@ import net.minecraft.world.inventory.MenuType;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractClientModInitializer {
+    protected static void registerBaseGridSynchronizer() {
+        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
+            createIdentifier("off"),
+            NoopGridSynchronizer.INSTANCE
+        );
+    }
+
     protected static void registerScreens(final ScreenRegistration registration) {
         registration.register(Menus.INSTANCE.getDiskDrive(), DiskDriveScreen::new);
         registration.register(Menus.INSTANCE.getGrid(), GridScreen<GridContainerMenu>::new);
@@ -67,6 +78,9 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getNetworkTransmitter(), NetworkTransmitterScreen::new);
         registration.register(Menus.INSTANCE.getPortableGridBlock(), PortableGridScreen::new);
         registration.register(Menus.INSTANCE.getPortableGridItem(), PortableGridScreen::new);
+        registration.register(Menus.INSTANCE.getSecurityCard(), SecurityCardScreen::new);
+        registration.register(Menus.INSTANCE.getFallbackSecurityCard(), FallbackSecurityCardScreen::new);
+        registration.register(Menus.INSTANCE.getSecurityManager(), SecurityManagerScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {

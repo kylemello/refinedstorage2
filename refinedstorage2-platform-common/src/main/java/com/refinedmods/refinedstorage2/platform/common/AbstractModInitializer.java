@@ -1,13 +1,14 @@
 package com.refinedmods.refinedstorage2.platform.common;
 
-import com.refinedmods.refinedstorage2.api.network.component.EnergyNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.impl.component.EnergyNetworkComponentImpl;
-import com.refinedmods.refinedstorage2.api.network.impl.component.GraphNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.impl.node.GraphNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -43,7 +44,6 @@ import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridContaine
 import com.refinedmods.refinedstorage2.platform.common.grid.GridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlock;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceContainerMenu;
@@ -55,6 +55,12 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.PlatformSecurityNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
@@ -66,7 +72,6 @@ import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.E
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.AbstractPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridItemContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
@@ -88,11 +93,13 @@ import com.refinedmods.refinedstorage2.platform.common.storagemonitor.ItemStorag
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlock;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
@@ -131,13 +138,13 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CRAFTING_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_CONTROLLER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
-import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DESTRUCTION_CORE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DESTRUCTOR;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DETECTOR;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_DRIVE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXPORTER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXTERNAL_STORAGE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FLUID_STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.IMPORTER;
@@ -151,6 +158,8 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_MANAGER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SILICON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.STORAGE_HOUSING;
@@ -168,12 +177,13 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractModInitializer {
+    private static final String ITEM_REGISTRY_KEY = "item";
     private static final String FLUID_REGISTRY_KEY = "fluid";
 
     protected final void initializePlatformApi() {
         ((PlatformApiProxy) PlatformApi.INSTANCE).setDelegate(new PlatformApiImpl());
-        registerAdditionalStorageTypes();
-        registerAdditionalResourceTypes();
+        registerStorageTypes();
+        registerResourceTypes();
         registerAdditionalResourceFactories();
         registerDestructorStrategyFactories();
         registerConstructorStrategyFactories();
@@ -181,16 +191,26 @@ public abstract class AbstractModInitializer {
         registerStorageMonitorExtractionStrategies();
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
+        registerPermissions();
+        registerSlotReferenceProviders();
     }
 
-    private void registerAdditionalStorageTypes() {
+    private void registerStorageTypes() {
+        PlatformApi.INSTANCE.getStorageTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            StorageTypes.ITEM
+        );
         PlatformApi.INSTANCE.getStorageTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             StorageTypes.FLUID
         );
     }
 
-    private void registerAdditionalResourceTypes() {
+    private void registerResourceTypes() {
+        PlatformApi.INSTANCE.getResourceTypeRegistry().register(
+            createIdentifier(ITEM_REGISTRY_KEY),
+            ResourceTypes.ITEM
+        );
         PlatformApi.INSTANCE.getResourceTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             ResourceTypes.FLUID
@@ -240,6 +260,10 @@ public abstract class AbstractModInitializer {
             StorageNetworkComponent.class,
             network -> new PlatformStorageNetworkComponent()
         );
+        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+            PlatformSecurityNetworkComponent.class,
+            network -> new PlatformSecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
+        );
     }
 
     private void registerWirelessTransmitterRangeModifiers() {
@@ -248,6 +272,12 @@ public abstract class AbstractModInitializer {
         PlatformApi.INSTANCE.addWirelessTransmitterRangeModifier(
             new CreativeRangeUpgradeWirelessTransmitterRangeModifier()
         );
+    }
+
+    private void registerPermissions() {
+        for (final BuiltinPermission permission : BuiltinPermission.values()) {
+            PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
+        }
     }
 
     protected final void registerBlocks(
@@ -297,16 +327,10 @@ public abstract class AbstractModInitializer {
             PortableGridType.CREATIVE,
             creativePortableGridBlockEntityFactory
         )));
+        Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
     }
 
-    protected final void registerItems(
-        final RegistryCallback<Item> callback,
-        final Supplier<AbstractUpgradeItem> regulatorUpgradeItemSupplier,
-        final Supplier<WirelessGridItem> wirelessGridItemSupplier,
-        final Supplier<WirelessGridItem> creativeWirelessGridItemSupplier,
-        final Supplier<PortableGridBlockItem> portableGridBlockItemSupplier,
-        final Supplier<PortableGridBlockItem> creativePortableGridBlockItemSupplier
-    ) {
+    protected final void registerItems(final RegistryCallback<Item> callback) {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
         Blocks.INSTANCE.getCraftingGrid().registerItems(callback);
@@ -322,33 +346,24 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getWirelessTransmitter().registerItems(callback, Items.INSTANCE::addWirelessTransmitter);
         Blocks.INSTANCE.getNetworkReceiver().registerItems(callback, Items.INSTANCE::addNetworkReceiver);
         Blocks.INSTANCE.getNetworkTransmitter().registerItems(callback, Items.INSTANCE::addNetworkTransmitter);
+        Blocks.INSTANCE.getSecurityManager().registerItems(callback, Items.INSTANCE::addSecurityManager);
         registerStorageItems(callback);
-        registerUpgrades(callback, regulatorUpgradeItemSupplier);
-        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, wirelessGridItemSupplier));
-        Items.INSTANCE.setCreativeWirelessGrid(callback.register(
-            CREATIVE_WIRELESS_GRID,
-            creativeWirelessGridItemSupplier
-        ));
-        callback.register(STORAGE_MONITOR, () -> new SimpleBlockItem(Blocks.INSTANCE.getStorageMonitor()));
-        Items.INSTANCE.setPortableGrid(callback.register(PORTABLE_GRID, portableGridBlockItemSupplier));
-        Items.INSTANCE.setCreativePortableGrid(callback.register(
-            CREATIVE_PORTABLE_GRID,
-            creativePortableGridBlockItemSupplier
-        ));
+        registerUpgrades(callback);
     }
 
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(QUARTZ_ENRICHED_IRON, SimpleItem::new));
         callback.register(
             QUARTZ_ENRICHED_IRON_BLOCK,
-            () -> new SimpleBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
+            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
         );
         Items.INSTANCE.setSilicon(callback.register(SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(PROCESSOR_BINDING, SimpleItem::new));
         callback.register(DISK_DRIVE, () -> Blocks.INSTANCE.getDiskDrive().createBlockItem());
         Items.INSTANCE.setWrench(callback.register(WRENCH, WrenchItem::new));
         Items.INSTANCE.setStorageHousing(callback.register(STORAGE_HOUSING, SimpleItem::new));
-        callback.register(MACHINE_CASING, () -> new SimpleBlockItem(Blocks.INSTANCE.getMachineCasing()));
+        callback.register(MACHINE_CASING, () -> new BaseBlockItem(Blocks.INSTANCE.getMachineCasing()));
+        callback.register(STORAGE_MONITOR, () -> new NetworkNodeBlockItem(Blocks.INSTANCE.getStorageMonitor()));
         callback.register(INTERFACE, () -> Blocks.INSTANCE.getInterface().createBlockItem());
         Items.INSTANCE.setConstructionCore(callback.register(CONSTRUCTION_CORE, SimpleItem::new));
         Items.INSTANCE.setDestructionCore(callback.register(DESTRUCTION_CORE, SimpleItem::new));
@@ -411,10 +426,7 @@ public abstract class AbstractModInitializer {
         );
     }
 
-    private void registerUpgrades(
-        final RegistryCallback<Item> callback,
-        final Supplier<AbstractUpgradeItem> regulatorUpgradeItemSupplier
-    ) {
+    private void registerUpgrades(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setUpgrade(callback.register(
             ContentIds.UPGRADE,
             SimpleItem::new
@@ -461,10 +473,6 @@ public abstract class AbstractModInitializer {
             )
         );
         Items.INSTANCE.setSilkTouchUpgrade(silkTouchUpgrade);
-        Items.INSTANCE.setRegulatorUpgrade(callback.register(
-            ContentIds.REGULATOR_UPGRADE,
-            regulatorUpgradeItemSupplier
-        ));
         Items.INSTANCE.setRangeUpgrade(callback.register(
             ContentIds.RANGE_UPGRADE,
             () -> new RangeUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), false)
@@ -627,6 +635,13 @@ public abstract class AbstractModInitializer {
                 Blocks.INSTANCE.getCreativePortableGrid()
             )
         ));
+        BlockEntities.INSTANCE.setSecurityManager(callback.register(
+            SECURITY_MANAGER,
+            () -> typeFactory.create(
+                SecurityManagerBlockEntity::new,
+                Blocks.INSTANCE.getSecurityManager().toArray()
+            )
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -711,6 +726,17 @@ public abstract class AbstractModInitializer {
             createIdentifier("portable_grid_item"),
             () -> menuTypeFactory.create(PortableGridItemContainerMenu::new)
         ));
+        Menus.INSTANCE.setSecurityCard(callback.register(
+            SECURITY_CARD,
+            () -> menuTypeFactory.create(SecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
+        ));
+        Menus.INSTANCE.setSecurityManager(callback.register(SECURITY_MANAGER, () -> menuTypeFactory.create(
+            (syncId, playerInventory, buf) -> new SecurityManagerContainerMenu(syncId, playerInventory)
+        )));
     }
 
     protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType> callback) {
@@ -739,6 +765,13 @@ public abstract class AbstractModInitializer {
         callback.register(
             createIdentifier("upgrade_with_enchanted_book"),
             UpgradeWithEnchantedBookRecipeSerializer::new
+        );
+    }
+
+    protected void registerSlotReferenceProviders() {
+        PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
+            createIdentifier("inventory"),
+            InventorySlotReferenceFactory.INSTANCE
         );
     }
 

@@ -95,6 +95,12 @@ public class RefinedStorageREIClientPlugin implements REIClientPlugin {
             ContentIds.NETWORK_TRANSMITTER,
             Tags.NETWORK_TRANSMITTERS
         );
+        groupItems(
+            registry,
+            Blocks.INSTANCE.getSecurityManager(),
+            ContentIds.SECURITY_MANAGER,
+            Tags.SECURITY_MANAGERS
+        );
     }
 
     @Override

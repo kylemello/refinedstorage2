@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -106,6 +107,11 @@ public class ServerToClientCommunicationsImpl implements ServerToClientCommunica
             buf.writeBoolean(status.error());
             buf.writeComponent(status.message());
         });
+    }
+
+    @Override
+    public void sendNoPermission(final ServerPlayer player, final Component message) {
+        sendToPlayer(player, PacketIds.NO_PERMISSION, buf -> buf.writeComponent(message));
     }
 
     private static void sendToPlayer(final ServerPlayer playerEntity,

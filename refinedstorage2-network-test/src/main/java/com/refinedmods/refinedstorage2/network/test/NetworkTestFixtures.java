@@ -2,13 +2,13 @@ package com.refinedmods.refinedstorage2.network.test;
 
 import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.component.EnergyNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.impl.component.EnergyNetworkComponentImpl;
-import com.refinedmods.refinedstorage2.api.network.impl.component.GraphNetworkComponentImpl;
-import com.refinedmods.refinedstorage2.api.network.impl.component.StorageNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.impl.node.GraphNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.StorageNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.list.ResourceListImpl;
 
 public final class NetworkTestFixtures {

@@ -6,13 +6,17 @@ import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.CreativeModeTabItems;
 import com.refinedmods.refinedstorage2.platform.common.content.DirectRegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
+import com.refinedmods.refinedstorage2.platform.common.content.RegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
@@ -37,9 +41,13 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.PropertyChange
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
@@ -58,6 +66,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -74,6 +83,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -83,8 +93,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
-import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class ModInitializerImpl extends AbstractModInitializer implements ModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModInitializerImpl.class);
@@ -107,10 +123,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerRecipeSerializers(new DirectRegistryCallback<>(BuiltInRegistries.RECIPE_SERIALIZER));
         registerSidedHandlers();
         registerTickHandler();
-        registerSlotReferenceProviders();
         registerWrenchingEvent();
+        registerSecurityBlockBreakEvent();
 
-        LOGGER.info("Refined Storage 2 has loaded.");
+        LOGGER.debug("Refined Storage 2 has loaded.");
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {
@@ -195,54 +211,9 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
         );
-        registerItems(
-            new DirectRegistryCallback<>(BuiltInRegistries.ITEM),
-            () -> new RegulatorUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry()) {
-                @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new WirelessGridItem() {
-                @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new WirelessGridItem() {
-                @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new PortableGridBlockItem(Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL) {
-                @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new PortableGridBlockItem(Blocks.INSTANCE.getCreativePortableGrid(), PortableGridType.CREATIVE) {
-                @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            }
-        );
+        final DirectRegistryCallback<Item> itemRegistryCallback = new DirectRegistryCallback<>(BuiltInRegistries.ITEM);
+        registerItems(itemRegistryCallback);
+        registerCustomItems(itemRegistryCallback);
         registerUpgradeMappings();
         registerCreativeModeTab();
         registerBlockEntities(
@@ -267,12 +238,91 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerLootFunctions(new DirectRegistryCallback<>(BuiltInRegistries.LOOT_FUNCTION_TYPE));
     }
 
+    private void registerCustomItems(final RegistryCallback<Item> callback) {
+        Items.INSTANCE.setRegulatorUpgrade(callback.register(REGULATOR_UPGRADE, () -> new RegulatorUpgradeItem(
+            PlatformApi.INSTANCE.getUpgradeRegistry()
+        ) {
+            @Override
+            public boolean allowNbtUpdateAnimation(final Player player,
+                                                   final InteractionHand hand,
+                                                   final ItemStack oldStack,
+                                                   final ItemStack newStack) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+            @Override
+            public boolean allowNbtUpdateAnimation(final Player player,
+                                                   final InteractionHand hand,
+                                                   final ItemStack oldStack,
+                                                   final ItemStack newStack) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativeWirelessGrid(callback.register(
+            CREATIVE_WIRELESS_GRID,
+            () -> new WirelessGridItem() {
+                @Override
+                public boolean allowNbtUpdateAnimation(final Player player,
+                                                       final InteractionHand hand,
+                                                       final ItemStack oldStack,
+                                                       final ItemStack newStack) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setPortableGrid(callback.register(PORTABLE_GRID, () -> new PortableGridBlockItem(
+            Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL
+        ) {
+            @Override
+            public boolean allowNbtUpdateAnimation(final Player player,
+                                                   final InteractionHand hand,
+                                                   final ItemStack oldStack,
+                                                   final ItemStack newStack) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativePortableGrid(callback.register(
+            CREATIVE_PORTABLE_GRID,
+            () -> new PortableGridBlockItem(Blocks.INSTANCE.getCreativePortableGrid(), PortableGridType.CREATIVE) {
+                @Override
+                public boolean allowNbtUpdateAnimation(final Player player,
+                                                       final InteractionHand hand,
+                                                       final ItemStack oldStack,
+                                                       final ItemStack newStack) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, () -> new SecurityCardItem() {
+            @Override
+            public boolean allowNbtUpdateAnimation(final Player player,
+                                                   final InteractionHand hand,
+                                                   final ItemStack oldStack,
+                                                   final ItemStack newStack) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            () -> new FallbackSecurityCardItem() {
+                @Override
+                public boolean allowNbtUpdateAnimation(final Player player,
+                                                       final InteractionHand hand,
+                                                       final ItemStack oldStack,
+                                                       final ItemStack newStack) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+    }
+
     private void registerCreativeModeTab() {
         Registry.register(
             BuiltInRegistries.CREATIVE_MODE_TAB,
             createIdentifier("general"),
             CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-                .title(createTranslation("itemGroup", "general"))
+                .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))
                 .displayItems((params, output) -> CreativeModeTabItems.append(output::accept))
                 .build()
@@ -304,6 +354,18 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         );
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.SINGLE_AMOUNT_CHANGE, new SingleAmountChangePacket());
         ServerPlayNetworking.registerGlobalReceiver(PacketIds.USE_NETWORK_BOUND_ITEM, new UseNetworkBoundItemPacket());
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            new SecurityCardPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            new SecurityCardResetPermissionPacket()
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PacketIds.SECURITY_CARD_BOUND_PLAYER,
+            new SecurityCardBoundPlayerPacket()
+        );
     }
 
     private void registerSidedHandlers() {
@@ -370,7 +432,9 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerTickEvents.START_SERVER_TICK.register(server -> ServerEventQueue.runQueuedActions());
     }
 
-    private void registerSlotReferenceProviders() {
+    @Override
+    protected void registerSlotReferenceProviders() {
+        super.registerSlotReferenceProviders();
         TrinketsSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
             PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
                 createIdentifier("trinkets"),
@@ -390,5 +454,9 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 .or(() -> block.tryUpdateColor(state, level, hitResult.getBlockPos(), player, hand))
                 .orElse(InteractionResult.PASS);
         });
+    }
+
+    private void registerSecurityBlockBreakEvent() {
+        PlayerBlockBreakEvents.BEFORE.register(new NetworkNodeBreakSecurityEventListener());
     }
 }

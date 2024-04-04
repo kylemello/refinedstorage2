@@ -12,7 +12,7 @@ public class WirelessGridContainerMenu extends AbstractGridContainerMenu {
     public WirelessGridContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
         super(Menus.INSTANCE.getWirelessGrid(), syncId, playerInventory, buf);
         this.disabledSlot = PlatformApi.INSTANCE.getSlotReference(buf).orElse(null);
-        addSlots(0);
+        onScreenReady(0);
     }
 
     WirelessGridContainerMenu(final int syncId,
@@ -21,6 +21,6 @@ public class WirelessGridContainerMenu extends AbstractGridContainerMenu {
                               final SlotReference slotReference) {
         super(Menus.INSTANCE.getWirelessGrid(), syncId, playerInventory, grid);
         this.disabledSlot = slotReference;
-        addSlots(0);
+        onScreenReady(0);
     }
 }

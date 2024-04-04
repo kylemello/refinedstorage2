@@ -3,10 +3,11 @@ package com.refinedmods.refinedstorage2.platform.common;
 import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkBuilder;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkFactory;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
@@ -24,6 +25,9 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
+import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -44,7 +48,6 @@ import com.refinedmods.refinedstorage2.platform.api.upgrade.BuiltinUpgradeDestin
 import com.refinedmods.refinedstorage2.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.ItemGridInsertionHint;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.SingleItemGridInsertionHint;
@@ -52,6 +55,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGr
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.recipemod.CompositeIngredientConverter;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageRepositoryImpl;
@@ -64,15 +68,12 @@ import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemEnergy
 import com.refinedmods.refinedstorage2.platform.common.support.network.ConnectionProviderImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReference;
-import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.registry.PlatformRegistryImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResourceFactory;
-import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeRegistryImpl;
-import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage2.platform.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.CompositeWirelessTransmitterRangeModifier;
 
@@ -89,44 +90,43 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class PlatformApiImpl implements PlatformApi {
-    private static final String ITEM_REGISTRY_KEY = "item";
-
     private final StorageRepository clientStorageRepository =
         new ClientStorageRepository(Platform.INSTANCE.getClientToServerCommunications()::sendStorageInfoRequest);
     private final ComponentMapFactory<NetworkComponent, Network> networkComponentMapFactory =
         new ComponentMapFactory<>();
     private final NetworkBuilder networkBuilder =
         new NetworkBuilderImpl(new NetworkFactory(networkComponentMapFactory));
-    private final PlatformRegistry<StorageType> storageTypeRegistry =
-        new PlatformRegistryImpl<>(createIdentifier(ITEM_REGISTRY_KEY), StorageTypes.ITEM);
-    private final PlatformRegistry<ResourceType> resourceTypeRegistry =
-        new PlatformRegistryImpl<>(createIdentifier(ITEM_REGISTRY_KEY), ResourceTypes.ITEM);
-    private final PlatformRegistry<GridSynchronizer> gridSynchronizerRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("off"), new NoopGridSynchronizer());
+    private final PlatformRegistry<StorageType> storageTypeRegistry = new PlatformRegistryImpl<>();
+    private final PlatformRegistry<ResourceType> resourceTypeRegistry = new PlatformRegistryImpl<>();
+    private final PlatformRegistry<GridSynchronizer> gridSynchronizerRegistry = new PlatformRegistryImpl<>();
     private final PlatformRegistry<ImporterTransferStrategyFactory> importerTransferStrategyRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("noop"),
-            (level, pos, direction, upgradeState, amountOverride) -> (filter, actor, network) -> false);
+        new PlatformRegistryImpl<>();
     private final PlatformRegistry<ExporterTransferStrategyFactory> exporterTransferStrategyRegistry =
-        new PlatformRegistryImpl<>(createIdentifier("noop"),
-            (level, pos, direction, upgradeState, amountOverride, fuzzyMode) -> (resource, actor, network) -> false);
+        new PlatformRegistryImpl<>();
     private final UpgradeRegistry upgradeRegistry = new UpgradeRegistryImpl();
     private final BuiltinUpgradeDestinations builtinUpgradeDestinations = new BuiltinUpgradeDestinationsImpl();
     private final Queue<PlatformExternalStorageProviderFactory> externalStorageProviderFactories = new PriorityQueue<>(
@@ -159,11 +159,9 @@ public class PlatformApiImpl implements PlatformApi {
         new CompositeWirelessTransmitterRangeModifier();
     private final EnergyItemHelper energyItemHelper = new EnergyItemHelperImpl();
     private final NetworkBoundItemHelper networkBoundItemHelper = new NetworkBoundItemHelperImpl();
-    private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>(
-        createIdentifier("inventory"),
-        InventorySlotReferenceFactory.INSTANCE
-    );
+    private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>();
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
+    private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
 
     @Override
     public PlatformRegistry<StorageType> getStorageTypeRegistry() {
@@ -265,11 +263,6 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public MutableComponent createTranslation(final String category, final String value, final Object... args) {
-        return IdentifierUtil.createTranslation(category, value, args);
-    }
-
-    @Override
     public ComponentMapFactory<NetworkComponent, Network> getNetworkComponentMapFactory() {
         return networkComponentMapFactory;
     }
@@ -335,7 +328,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridInsertionStrategy createGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return new CompositeGridInsertionStrategy(
             Platform.INSTANCE.getDefaultGridInsertionStrategyFactory().create(
@@ -368,7 +361,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                                               final Player player,
+                                                               final ServerPlayer player,
                                                                final Grid grid) {
         final List<GridExtractionStrategy> strategies = gridExtractionStrategyFactories
             .stream()
@@ -384,7 +377,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridScrollingStrategy createGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         final List<GridScrollingStrategy> strategies = gridScrollingStrategyFactories
             .stream()
@@ -526,5 +519,61 @@ public class PlatformApiImpl implements PlatformApi {
         slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(
             slotReference -> Platform.INSTANCE.getClientToServerCommunications().sendUseNetworkBoundItem(slotReference)
         );
+    }
+
+    @Override
+    public BuiltinPermissions getBuiltinPermissions() {
+        return BuiltinPermission.VIEW;
+    }
+
+    @Override
+    public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
+        return permissionRegistry;
+    }
+
+    @Override
+    public SecurityPolicy createDefaultSecurityPolicy() {
+        return new SecurityPolicy(permissionRegistry.getAll()
+            .stream()
+            .filter(PlatformPermission::isAllowedByDefault)
+            .collect(Collectors.toSet()));
+    }
+
+    @Override
+    public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
+        sendNoPermissionMessage(player, createTranslation("misc", "no_permission.open", target));
+    }
+
+    @Override
+    public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
+        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(player, message);
+    }
+
+    @Override
+    public boolean canPlaceNetworkNode(final ServerPlayer player,
+                                       final Level level,
+                                       final BlockPos pos,
+                                       final BlockState state) {
+        for (final Direction direction : Direction.values()) {
+            final BlockPos adjacentPos = pos.relative(direction);
+            final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
+            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)
+                || !platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)
+                || platformNetworkNodeContainer.getNode().getNetwork() == null) {
+                continue;
+            }
+            final PlatformSecurityNetworkComponent security = platformNetworkNodeContainer
+                .getNode()
+                .getNetwork()
+                .getComponent(PlatformSecurityNetworkComponent.class);
+            if (!security.isAllowed(BuiltinPermission.BUILD, player)) {
+                PlatformApi.INSTANCE.sendNoPermissionMessage(
+                    player,
+                    createTranslation("misc", "no_permission.build.place", state.getBlock().getName())
+                );
+                return false;
+            }
+        }
+        return true;
     }
 }

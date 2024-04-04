@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage2.platform.common.support;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyType;
@@ -35,4 +36,10 @@ public interface ClientToServerCommunications {
     void sendSingleAmountChange(double amount);
 
     void sendUseNetworkBoundItem(SlotReference slotReference);
+
+    void sendSecurityCardPermission(PlatformPermission permission, boolean allowed);
+
+    void sendSecurityCardResetPermission(PlatformPermission permission);
+
+    void sendSecurityCardBoundPlayer(UUID playerId);
 }

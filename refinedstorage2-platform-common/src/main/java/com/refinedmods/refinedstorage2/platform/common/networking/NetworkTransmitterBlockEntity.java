@@ -1,15 +1,15 @@
 package com.refinedmods.refinedstorage2.platform.common.networking;
 
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.component.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 
 import javax.annotation.Nullable;
@@ -37,7 +37,7 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class NetworkTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements ExtendedMenuProvider, BlockEntityWithDrops {
+    implements NetworkNodeMenuProvider, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 
     private static final NetworkTransmitterStatus INACTIVE = NetworkTransmitterStatus.message(
@@ -67,7 +67,7 @@ public class NetworkTransmitterBlockEntity
             setChanged();
             updateReceiverLocation();
             if (level != null) {
-                LOGGER.info("Network card was changed at {}, sending network update", worldPosition);
+                LOGGER.debug("Network card was changed at {}, sending network update", worldPosition);
                 PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
             }
         });
@@ -86,7 +86,7 @@ public class NetworkTransmitterBlockEntity
         final NetworkTransmitterState currentState = state.getValue(NetworkTransmitterBlock.STATE);
         final NetworkTransmitterState newState = getState();
         if (currentState != newState && level != null && stateChangeRateLimiter.tryAcquire()) {
-            LOGGER.info("Updating network transmitter at {} from {} to {}", worldPosition, currentState, newState);
+            LOGGER.debug("Updating network transmitter at {} from {} to {}", worldPosition, currentState, newState);
             level.setBlockAndUpdate(worldPosition, state.setValue(NetworkTransmitterBlock.STATE, newState));
         }
     }
@@ -142,7 +142,7 @@ public class NetworkTransmitterBlockEntity
         if (level == null) {
             return;
         }
-        LOGGER.info(
+        LOGGER.debug(
             "Receiver {} was not found in network for transmitter at {}, retrying and sending network update",
             receiverKey,
             worldPosition

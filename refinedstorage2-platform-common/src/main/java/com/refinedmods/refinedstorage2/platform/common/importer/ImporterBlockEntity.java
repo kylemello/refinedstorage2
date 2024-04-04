@@ -14,7 +14,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractUpgradeableNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class ImporterBlockEntity
     extends AbstractUpgradeableNetworkNodeContainerBlockEntity<ImporterNetworkNode>
-    implements AmountOverride, ExtendedMenuProvider {
+    implements AmountOverride, NetworkNodeMenuProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImporterBlockEntity.class);
 
     private static final String TAG_FILTER_MODE = "fim";

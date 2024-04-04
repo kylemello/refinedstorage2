@@ -33,6 +33,8 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridI
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.CompositeGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
 import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 import com.refinedmods.refinedstorage2.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage2.query.parser.ParserOperatorMappings;
@@ -57,7 +59,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMenu
-    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy {
+    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -82,8 +84,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     private GridExtractionStrategy extractionStrategy;
     @Nullable
     private GridScrollingStrategy scrollingStrategy;
-    @Nullable
-    private Runnable sizeChangedListener;
     private GridSynchronizer synchronizer;
     @Nullable
     private ResourceType resourceTypeFilter;
@@ -141,8 +141,8 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.grid = grid;
         this.grid.addWatcher(this, PlayerActor.class);
 
-        this.synchronizer = PlatformApi.INSTANCE.getGridSynchronizerRegistry().getDefault();
-        initStrategies();
+        this.synchronizer = NoopGridSynchronizer.INSTANCE;
+        initStrategies((ServerPlayer) playerInventory.player);
     }
 
     private Predicate<GridResource> filterStorageChannel() {
@@ -172,10 +172,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         view.onChange(resource, amount, trackedResource);
     }
 
-    public void setSizeChangedListener(@Nullable final Runnable sizeChangedListener) {
-        this.sizeChangedListener = sizeChangedListener;
-    }
-
     public GridSortingDirection getSortingDirection() {
         return Platform.INSTANCE.getConfig().getGrid().getSortingDirection();
     }
@@ -194,17 +190,6 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         Platform.INSTANCE.getConfig().getGrid().setSortingType(sortingType);
         view.setSortingType(sortingType);
         view.sort();
-    }
-
-    public GridSize getSize() {
-        return Platform.INSTANCE.getConfig().getGrid().getSize();
-    }
-
-    public void setSize(final GridSize size) {
-        Platform.INSTANCE.getConfig().getGrid().setSize(size);
-        if (sizeChangedListener != null) {
-            sizeChangedListener.run();
-        }
     }
 
     public void setSearchBox(final GridSearchBox searchBox) {
@@ -250,7 +235,8 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         }
     }
 
-    public void addSlots(final int playerInventoryY) {
+    @Override
+    public void onScreenReady(final int playerInventoryY) {
         resetSlots();
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }
@@ -276,7 +262,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         if (!(resource instanceof PlatformResourceKey platformResource)) {
             return;
         }
-        LOGGER.info("{} received a change of {} for {}", this, change, resource);
+        LOGGER.debug("{} received a change of {} for {}", this, change, resource);
         Platform.INSTANCE.getServerToClientCommunications().sendGridUpdate(
             (ServerPlayer) playerInventory.player,
             platformResource,
@@ -288,25 +274,25 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     @Override
     public void invalidate() {
         if (playerInventory.player instanceof ServerPlayer serverPlayer) {
-            initStrategies();
+            initStrategies(serverPlayer);
             Platform.INSTANCE.getServerToClientCommunications().sendGridClear(serverPlayer);
         }
     }
 
-    private void initStrategies() {
+    private void initStrategies(final ServerPlayer player) {
         this.insertionStrategy = PlatformApi.INSTANCE.createGridInsertionStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
         this.extractionStrategy = PlatformApi.INSTANCE.createGridExtractionStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
         this.scrollingStrategy = PlatformApi.INSTANCE.createGridScrollingStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
     }
@@ -337,7 +323,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             .getGrid()
             .getSynchronizer()
             .flatMap(id -> PlatformApi.INSTANCE.getGridSynchronizerRegistry().get(id))
-            .orElse(PlatformApi.INSTANCE.getGridSynchronizerRegistry().getDefault());
+            .orElse(NoopGridSynchronizer.INSTANCE);
     }
 
     @Nullable
@@ -362,20 +348,20 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     public void toggleSynchronizer() {
         final PlatformRegistry<GridSynchronizer> registry = PlatformApi.INSTANCE.getGridSynchronizerRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
-        final GridSynchronizer newSynchronizer = registry.next(getSynchronizer());
-        if (newSynchronizer == registry.getDefault()) {
+        final GridSynchronizer newSynchronizer = registry.nextOrNullIfLast(getSynchronizer());
+        if (newSynchronizer == null) {
             config.clearSynchronizer();
         } else {
             registry.getId(newSynchronizer).ifPresent(config::setSynchronizer);
         }
-        this.synchronizer = newSynchronizer;
+        this.synchronizer = newSynchronizer == null ? NoopGridSynchronizer.INSTANCE : newSynchronizer;
     }
 
     public void toggleResourceType() {
         final PlatformRegistry<ResourceType> registry = PlatformApi.INSTANCE.getResourceTypeRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
         final ResourceType newResourceType = resourceTypeFilter == null
-            ? registry.getDefault()
+            ? ResourceTypes.ITEM
             : registry.nextOrNullIfLast(resourceTypeFilter);
         if (newResourceType == null) {
             config.clearResourceType();

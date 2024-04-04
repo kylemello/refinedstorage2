@@ -5,13 +5,15 @@ import com.refinedmods.refinedstorage2.api.grid.operations.NoopGridOperations;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcherManager;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcherManagerImpl;
-import com.refinedmods.refinedstorage2.api.network.component.EnergyNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.component.StorageNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.NoopStorage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
+import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemSession;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
@@ -19,6 +21,8 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import net.minecraft.server.level.ServerPlayer;
 
 class WirelessGrid implements Grid {
     private final NetworkBoundItemSession session;
@@ -30,6 +34,10 @@ class WirelessGrid implements Grid {
 
     private Optional<StorageNetworkComponent> getStorage() {
         return session.resolveNetwork().map(network -> network.getComponent(StorageNetworkComponent.class));
+    }
+
+    private Optional<PlatformSecurityNetworkComponent> getSecurity() {
+        return session.resolveNetwork().map(network -> network.getComponent(PlatformSecurityNetworkComponent.class));
     }
 
     @Override
@@ -69,11 +77,20 @@ class WirelessGrid implements Grid {
     }
 
     @Override
-    public GridOperations createOperations(final ResourceType resourceType,
-                                           final Actor actor) {
+    public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         return getStorage()
-            .map(storageChannel -> resourceType.createGridOperations(storageChannel, actor))
+            .flatMap(storageChannel ->
+                getSecurity().map(security -> createGridOperations(resourceType, player, storageChannel, security)))
             .map(gridOperations -> (GridOperations) new WirelessGridOperations(gridOperations, session, watchers))
             .orElseGet(NoopGridOperations::new);
+    }
+
+    private GridOperations createGridOperations(final ResourceType resourceType,
+                                                final ServerPlayer player,
+                                                final StorageNetworkComponent storageChannel,
+                                                final PlatformSecurityNetworkComponent securityNetworkComponent) {
+        final PlayerActor playerActor = new PlayerActor(player);
+        final GridOperations operations = resourceType.createGridOperations(storageChannel, playerActor);
+        return new SecuredGridOperations(player, securityNetworkComponent, operations);
     }
 }

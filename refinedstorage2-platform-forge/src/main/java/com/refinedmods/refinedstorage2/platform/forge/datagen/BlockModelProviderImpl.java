@@ -17,10 +17,18 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     private static final String CUTOUT_TEXTURE = "cutout";
     private static final String BLOCK_PREFIX = "block";
 
+    private static final ResourceLocation EMISSIVE_CUTOUT = createIdentifier("block/emissive_cutout");
     private static final ResourceLocation EMISSIVE_ALL_CUTOUT = createIdentifier("block/emissive_all_cutout");
     private static final ResourceLocation EMISSIVE_NORTH_CUTOUT = createIdentifier("block/emissive_north_cutout");
-    private static final ResourceLocation NORTH_CUTOUT = createIdentifier("block/north_cutout");
+
+    private static final ResourceLocation CUTOUT = createIdentifier("block/cutout");
     private static final ResourceLocation ALL_CUTOUT = createIdentifier("block/all_cutout");
+    private static final ResourceLocation NORTH_CUTOUT = createIdentifier("block/north_cutout");
+
+    private static final String NORTH = "north";
+    private static final String SOUTH = "south";
+
+    private static final ResourceLocation BOTTOM_TEXTURE = createIdentifier("block/bottom");
 
     public BlockModelProviderImpl(final PackOutput output, final ExistingFileHelper existingFileHelper) {
         super(output, MOD_ID, existingFileHelper);
@@ -36,6 +44,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerWirelessTransmitters();
         registerNetworkReceivers();
         registerNetworkTransmitters();
+        registerSecurityManagers();
     }
 
     private void registerCables() {
@@ -82,15 +91,14 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         final ResourceLocation back = createIdentifier(BLOCK_PREFIX + "/" + name + "/back");
         final ResourceLocation front = createIdentifier(BLOCK_PREFIX + "/" + name + "/front");
         final ResourceLocation top = createIdentifier(BLOCK_PREFIX + "/" + name + "/top");
-        final ResourceLocation bottom = createIdentifier("block/bottom");
         withExistingParent(BLOCK_PREFIX + "/" + name + "/" + variantName, baseModel)
             .texture(PARTICLE_TEXTURE, right)
-            .texture("north", front)
+            .texture(NORTH, front)
             .texture("east", right)
-            .texture("south", back)
+            .texture(SOUTH, back)
             .texture("west", left)
             .texture("up", top)
-            .texture("down", bottom)
+            .texture("down", BOTTOM_TEXTURE)
             .texture(CUTOUT_TEXTURE, cutout);
     }
 
@@ -154,5 +162,63 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             .texture(PARTICLE_TEXTURE, baseTexture)
             .texture("all", baseTexture)
             .texture(CUTOUT_TEXTURE, createIdentifier("block/network_transmitter/cutouts/error"));
+    }
+
+    private void registerSecurityManagers() {
+        final ResourceLocation back = createIdentifier("block/security_manager/back");
+        final ResourceLocation front = createIdentifier("block/security_manager/front");
+        final ResourceLocation left = createIdentifier("block/security_manager/left");
+        final ResourceLocation right = createIdentifier("block/security_manager/right");
+        final ResourceLocation top = createIdentifier("block/security_manager/top");
+        Blocks.INSTANCE.getNetworkTransmitter().forEach((color, id, receiver) -> {
+            final ResourceLocation cutoutBack = createIdentifier(
+                "block/security_manager/cutouts/back/" + color.getName()
+            );
+            final ResourceLocation cutoutFront = createIdentifier(
+                "block/security_manager/cutouts/front/" + color.getName()
+            );
+            final ResourceLocation cutoutLeft = createIdentifier(
+                "block/security_manager/cutouts/left/" + color.getName()
+            );
+            final ResourceLocation cutoutRight = createIdentifier(
+                "block/security_manager/cutouts/right/" + color.getName()
+            );
+            final ResourceLocation cutoutTop = createIdentifier(
+                "block/security_manager/cutouts/top/" + color.getName()
+            );
+            withExistingParent("block/security_manager/" + color.getName(), EMISSIVE_CUTOUT)
+                .texture(PARTICLE_TEXTURE, back)
+                .texture(NORTH, front)
+                .texture("east", right)
+                .texture(SOUTH, back)
+                .texture("west", left)
+                .texture("up", top)
+                .texture("down", BOTTOM_TEXTURE)
+                .texture("cutout_north", cutoutFront)
+                .texture("cutout_east", cutoutRight)
+                .texture("cutout_south", cutoutBack)
+                .texture("cutout_west", cutoutLeft)
+                .texture("cutout_up", cutoutTop)
+                .texture("cutout_down", BOTTOM_TEXTURE);
+        });
+        final ResourceLocation cutoutBack = createIdentifier("block/security_manager/cutouts/back/inactive");
+        final ResourceLocation cutoutFront = createIdentifier("block/security_manager/cutouts/front/inactive");
+        final ResourceLocation cutoutLeft = createIdentifier("block/security_manager/cutouts/left/inactive");
+        final ResourceLocation cutoutRight = createIdentifier("block/security_manager/cutouts/right/inactive");
+        final ResourceLocation cutoutTop = createIdentifier("block/security_manager/cutouts/top/inactive");
+        withExistingParent("block/security_manager/inactive", CUTOUT)
+            .texture(PARTICLE_TEXTURE, back)
+            .texture(NORTH, front)
+            .texture("east", right)
+            .texture(SOUTH, back)
+            .texture("west", left)
+            .texture("up", top)
+            .texture("down", BOTTOM_TEXTURE)
+            .texture("cutout_north", cutoutFront)
+            .texture("cutout_east", cutoutRight)
+            .texture("cutout_south", cutoutBack)
+            .texture("cutout_west", cutoutLeft)
+            .texture("cutout_up", cutoutTop)
+            .texture("cutout_down", BOTTOM_TEXTURE);
     }
 }

@@ -2,8 +2,9 @@ package com.refinedmods.refinedstorage2.platform.api;
 
 import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.component.NetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.DestructorStrategyFactory;
@@ -20,6 +21,8 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
+import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -45,8 +48,10 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -54,6 +59,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PlatformApiProxy implements PlatformApi {
     @Nullable
@@ -147,11 +153,6 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public MutableComponent createTranslation(final String category, final String value, final Object... args) {
-        return ensureLoaded().createTranslation(category, value, args);
-    }
-
-    @Override
     public ComponentMapFactory<NetworkComponent, Network> getNetworkComponentMapFactory() {
         return ensureLoaded().getNetworkComponentMapFactory();
     }
@@ -195,7 +196,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridInsertionStrategy createGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return ensureLoaded().createGridInsertionStrategy(containerMenu, player, grid);
     }
@@ -217,7 +218,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                                               final Player player,
+                                                               final ServerPlayer player,
                                                                final Grid grid) {
         return ensureLoaded().createGridExtractionStrategy(containerMenu, player, grid);
     }
@@ -229,7 +230,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridScrollingStrategy createGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return ensureLoaded().createGridScrollingStrategy(containerMenu, player, grid);
     }
@@ -355,6 +356,39 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public void useNetworkBoundItem(final Player player, final Item... items) {
         ensureLoaded().useNetworkBoundItem(player, items);
+    }
+
+    @Override
+    public BuiltinPermissions getBuiltinPermissions() {
+        return ensureLoaded().getBuiltinPermissions();
+    }
+
+    @Override
+    public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
+        return ensureLoaded().getPermissionRegistry();
+    }
+
+    @Override
+    public SecurityPolicy createDefaultSecurityPolicy() {
+        return ensureLoaded().createDefaultSecurityPolicy();
+    }
+
+    @Override
+    public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
+        ensureLoaded().sendNoPermissionToOpenMessage(player, target);
+    }
+
+    @Override
+    public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
+        ensureLoaded().sendNoPermissionMessage(player, message);
+    }
+
+    @Override
+    public boolean canPlaceNetworkNode(final ServerPlayer player,
+                                       final Level level,
+                                       final BlockPos pos,
+                                       final BlockState state) {
+        return ensureLoaded().canPlaceNetworkNode(player, level, pos, state);
     }
 
     private PlatformApi ensureLoaded() {

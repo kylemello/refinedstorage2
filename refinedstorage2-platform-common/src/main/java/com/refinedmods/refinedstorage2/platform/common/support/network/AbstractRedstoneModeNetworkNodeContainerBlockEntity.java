@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.PlayerAwareBlockE
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneModeSettings;
 
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -85,5 +86,9 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
 
     protected final Player getFakePlayer(final ServerLevel serverLevel) {
         return Platform.INSTANCE.getFakePlayer(serverLevel, placedByPlayerId);
+    }
+
+    protected final boolean isPlacedBy(final UUID playerId) {
+        return Objects.equals(placedByPlayerId, playerId);
     }
 }

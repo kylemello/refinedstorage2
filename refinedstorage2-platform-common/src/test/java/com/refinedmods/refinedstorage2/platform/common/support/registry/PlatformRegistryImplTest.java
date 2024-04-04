@@ -12,31 +12,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlatformRegistryImplTest {
-    private static final ResourceLocation A = new ResourceLocation("minecraft:a");
-    private static final ResourceLocation B = new ResourceLocation("minecraft:b");
-    private static final ResourceLocation C = new ResourceLocation("minecraft:c");
+    private static final ResourceLocation A = new ResourceLocation("a");
+    private static final ResourceLocation B = new ResourceLocation("b");
+    private static final ResourceLocation C = new ResourceLocation("c");
 
     PlatformRegistry<Integer> sut;
 
     @BeforeEach
     void setUp() {
-        sut = new PlatformRegistryImpl<>(A, 10);
+        sut = new PlatformRegistryImpl<>();
     }
 
     @Test
     void testDefaults() {
         // Assert
-        assertThat(sut.getDefault()).isEqualTo(10);
-        assertThat(sut.getAll()).containsExactly(10);
-        assertThat(sut.get(A)).get().isEqualTo(10);
-        assertThat(sut.get(B)).isEmpty();
-        assertThat(sut.getId(10)).get().isEqualTo(A);
-        assertThat(sut.getId(20)).isEmpty();
-        assertThat(sut.next(10)).isEqualTo(10);
+        assertThat(sut.getAll()).isEmpty();
+        assertThat(sut.get(A)).isEmpty();
+        assertThat(sut.getId(10)).isEmpty();
         assertThat(sut.nextOrNullIfLast(10)).isNull();
-        assertThat(sut.next(20)).isEqualTo(10);
-        assertThat(sut.nextOrNullIfLast(20)).isEqualTo(10);
-        assertThat(sut.isEmpty()).isTrue();
     }
 
     @Test
@@ -46,25 +39,23 @@ class PlatformRegistryImplTest {
 
         // Act & assert
         assertThrows(UnsupportedOperationException.class, () -> list.add(1));
+        assertThrows(UnsupportedOperationException.class, () -> list.remove(1));
     }
 
     @Test
     void shouldRegisterAndRetrieve() {
         // Act
+        sut.register(A, 10);
         sut.register(B, 20);
 
         // Assert
-        assertThat(sut.getDefault()).isEqualTo(10);
         assertThat(sut.getAll()).containsExactly(10, 20);
         assertThat(sut.get(A)).get().isEqualTo(10);
         assertThat(sut.get(B)).get().isEqualTo(20);
         assertThat(sut.getId(10)).get().isEqualTo(A);
         assertThat(sut.getId(20)).get().isEqualTo(B);
-        assertThat(sut.next(10)).isEqualTo(20);
         assertThat(sut.nextOrNullIfLast(10)).isEqualTo(20);
-        assertThat(sut.next(20)).isEqualTo(10);
         assertThat(sut.nextOrNullIfLast(20)).isNull();
-        assertThat(sut.isEmpty()).isFalse();
     }
 
     @Test
@@ -74,7 +65,7 @@ class PlatformRegistryImplTest {
 
         // Act & assert
         assertThrows(IllegalArgumentException.class, () -> sut.register(B, 20));
-        assertThat(sut.getAll()).containsExactly(10, 20);
+        assertThat(sut.getAll()).containsExactly(20);
     }
 
     @Test
@@ -84,7 +75,7 @@ class PlatformRegistryImplTest {
 
         // Act & assert
         assertThrows(IllegalArgumentException.class, () -> sut.register(C, 20));
-        assertThat(sut.getAll()).containsExactly(10, 20);
+        assertThat(sut.getAll()).containsExactly(20);
     }
 
     @Test
@@ -98,17 +89,7 @@ class PlatformRegistryImplTest {
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    void testInvalidDefaults() {
-        // Act & assert
-        assertThrows(NullPointerException.class, () -> new PlatformRegistryImpl<>(null, 20));
-        assertThrows(NullPointerException.class, () -> new PlatformRegistryImpl<>(B, null));
-        assertThrows(NullPointerException.class, () -> new PlatformRegistryImpl<>(null, null));
-    }
-
-    @Test
-    @SuppressWarnings("ConstantConditions")
     void testInvalidNextValues() {
-        assertThrows(NullPointerException.class, () -> sut.next(null));
         assertThrows(NullPointerException.class, () -> sut.nextOrNullIfLast(null));
     }
 

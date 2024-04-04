@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExternalStorageBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ExternalStorageNetworkNode>
-    implements ExtendedMenuProvider {
+    implements NetworkNodeMenuProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalStorageBlockEntity.class);
     private static final String TAG_TRACKED_RESOURCES = "tr";
 

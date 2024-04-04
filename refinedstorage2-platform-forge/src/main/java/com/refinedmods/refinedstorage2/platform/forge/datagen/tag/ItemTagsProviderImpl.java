@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +34,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.Tags.GRIDS
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.IMPORTERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.NETWORK_RECEIVERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.NETWORK_TRANSMITTERS;
+import static com.refinedmods.refinedstorage2.platform.common.content.Tags.SECURITY_MANAGERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.STORAGE_DISKS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.WIRELESS_TRANSMITTERS;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
@@ -110,13 +111,17 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
             Blocks.INSTANCE.getNetworkTransmitter().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
+        addAllToTag(SECURITY_MANAGERS,
+            Blocks.INSTANCE.getSecurityManager().values().stream()
+                .map(block -> (Supplier<Item>) block::asItem)
+                .toList());
     }
 
     private <T extends Item> void addAllToTag(final TagKey<Item> t, final Collection<Supplier<T>> items) {
         tag(t).add(items.stream().map(Supplier::get).toArray(Item[]::new)).replace(false);
     }
 
-    private void addAllToTag2(final TagKey<Item> t, final Collection<Supplier<NamedBlockItem>> items) {
+    private void addAllToTag2(final TagKey<Item> t, final Collection<Supplier<BaseBlockItem>> items) {
         tag(t).add(items.stream().map(Supplier::get).toArray(Item[]::new)).replace(false);
     }
 }

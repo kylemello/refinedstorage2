@@ -2,11 +2,10 @@ package com.refinedmods.refinedstorage2.platform.common.support;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-public abstract class AbstractColoredBlock<T extends Block & BlockItemProvider<NamedBlockItem>>
-    extends AbstractBaseBlock implements ColorableBlock<T, NamedBlockItem>, BlockItemProvider<NamedBlockItem> {
+public abstract class AbstractColoredBlock<T extends Block & BlockItemProvider<BaseBlockItem>>
+    extends AbstractBaseBlock implements ColorableBlock<T, BaseBlockItem>, BlockItemProvider<BaseBlockItem> {
     private final DyeColor color;
     private final MutableComponent name;
 
@@ -24,10 +23,5 @@ public abstract class AbstractColoredBlock<T extends Block & BlockItemProvider<N
     @Override
     public DyeColor getColor() {
         return color;
-    }
-
-    @Override
-    public NamedBlockItem createBlockItem() {
-        return new NamedBlockItem(this, new Item.Properties(), name);
     }
 }

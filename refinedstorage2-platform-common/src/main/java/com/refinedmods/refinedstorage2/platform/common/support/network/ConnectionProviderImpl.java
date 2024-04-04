@@ -40,7 +40,11 @@ public class ConnectionProviderImpl implements ConnectionProvider {
             .filter(PlatformNetworkNodeContainer.class::isInstance)
             .map(PlatformNetworkNodeContainer.class::cast)
             .collect(Collectors.toSet());
-        LOGGER.info("Finding connections for pivot {} with {} existing connections", pivot, existingConnections.size());
+        LOGGER.debug(
+            "Finding connections for pivot {} with {} existing connections",
+            pivot,
+            existingConnections.size()
+        );
         final ScanState scanState = new ScanState(existingPlatformConnections);
         addStartContainer(pivot, scanState);
         PlatformNetworkNodeContainer currentContainer;
@@ -49,7 +53,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
             visit(scanState, new ScanEntry(currentContainer));
             requests++;
         }
-        LOGGER.info(
+        LOGGER.debug(
             "Processed {} requests for pivot {} with {} found entries ({} removed and {} new)",
             requests,
             pivot,

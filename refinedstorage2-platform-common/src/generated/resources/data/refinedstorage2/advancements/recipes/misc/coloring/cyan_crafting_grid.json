@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_crafting_grids",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_crafting_grids"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/cyan_crafting_grid"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

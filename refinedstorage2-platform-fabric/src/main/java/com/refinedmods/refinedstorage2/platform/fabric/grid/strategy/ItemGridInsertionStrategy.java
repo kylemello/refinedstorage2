@@ -5,7 +5,6 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 
@@ -15,7 +14,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -29,10 +28,10 @@ public class ItemGridInsertionStrategy implements GridInsertionStrategy {
     private final SingleSlotStorage<ItemVariant> playerCursorStorage;
 
     public ItemGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                     final Player player,
+                                     final ServerPlayer player,
                                      final Grid grid) {
         this.containerMenu = containerMenu;
-        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, player);
         this.playerCursorStorage = PlayerInventoryStorage.getCursorStorage(containerMenu);
     }
 

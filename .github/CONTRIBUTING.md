@@ -42,6 +42,10 @@ Valid examples are:
 - `fix/GH-123/add-branch-linting`
 - `docs/GH-123/cleanup`
 
+## Translations
+
+If you want to contribute to the translations of this project, please use [Crowdin](https://crowdin.com/project/refined-storage-2).
+
 ## Versioning
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

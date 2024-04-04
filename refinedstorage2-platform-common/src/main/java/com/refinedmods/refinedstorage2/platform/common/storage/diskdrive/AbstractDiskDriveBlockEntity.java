@@ -12,7 +12,7 @@ import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurat
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractDiskDriveBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<MultiStorageNetworkNode>
-    implements BlockEntityWithDrops, ExtendedMenuProvider {
+    implements BlockEntityWithDrops, NetworkNodeMenuProvider {
     public static final int AMOUNT_OF_DISKS = 8;
 
     private static final String TAG_DISK_INVENTORY = "inv";

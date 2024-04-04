@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceCon
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 abstract class AbstractStorageBlockBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<StorageNetworkNode>
-    implements ExtendedMenuProvider, ItemTransferableStorageBlockEntity {
+    implements NetworkNodeMenuProvider, ItemTransferableStorageBlockEntity {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageBlockBlockEntity.class);
 
     private static final String TAG_STORAGE_ID = "sid";

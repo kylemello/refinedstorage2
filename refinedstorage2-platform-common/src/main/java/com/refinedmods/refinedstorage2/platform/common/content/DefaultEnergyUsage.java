@@ -16,6 +16,7 @@ public final class DefaultEnergyUsage {
     public static final long STORAGE_MONITOR = 4;
     public static final long NETWORK_RECEIVER = 8;
     public static final long NETWORK_TRANSMITTER = 32;
+    public static final long SECURITY_MANAGER = 16;
 
     public static final long CONTROLLER_CAPACITY = 1000;
 
@@ -41,6 +42,8 @@ public final class DefaultEnergyUsage {
     public static final long RANGE_UPGRADE = 8;
     public static final long CREATIVE_RANGE_UPGRADE = 0;
     public static final int RANGE_UPGRADE_RANGE = 8;
+    public static final long SECURITY_CARD = 2;
+    public static final long FALLBACK_SECURITY_CARD = 4;
 
     public static final long WIRELESS_GRID_CAPACITY = 1000;
     public static final long WIRELESS_GRID_OPEN = 5;

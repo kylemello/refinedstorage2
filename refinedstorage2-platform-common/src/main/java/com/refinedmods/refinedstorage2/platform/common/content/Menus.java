@@ -11,6 +11,9 @@ import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContaine
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockContainerMenu;
@@ -71,6 +74,12 @@ public final class Menus {
     private Supplier<MenuType<PortableGridBlockContainerMenu>> portableGridBlock;
     @Nullable
     private Supplier<MenuType<PortableGridItemContainerMenu>> portableGridItem;
+    @Nullable
+    private Supplier<MenuType<SecurityCardContainerMenu>> securityCard;
+    @Nullable
+    private Supplier<MenuType<FallbackSecurityCardContainerMenu>> fallbackSecurityCard;
+    @Nullable
+    private Supplier<MenuType<SecurityManagerContainerMenu>> securityManager;
 
     private Menus() {
     }
@@ -233,5 +242,31 @@ public final class Menus {
 
     public void setPortableGridItem(final Supplier<MenuType<PortableGridItemContainerMenu>> portableGridItem) {
         this.portableGridItem = portableGridItem;
+    }
+
+    public MenuType<SecurityCardContainerMenu> getSecurityCard() {
+        return requireNonNull(securityCard).get();
+    }
+
+    public void setSecurityCard(final Supplier<MenuType<SecurityCardContainerMenu>> securityCard) {
+        this.securityCard = securityCard;
+    }
+
+    public MenuType<FallbackSecurityCardContainerMenu> getFallbackSecurityCard() {
+        return requireNonNull(fallbackSecurityCard).get();
+    }
+
+    public void setFallbackSecurityCard(
+        final Supplier<MenuType<FallbackSecurityCardContainerMenu>> fallbackSecurityCard
+    ) {
+        this.fallbackSecurityCard = fallbackSecurityCard;
+    }
+
+    public MenuType<SecurityManagerContainerMenu> getSecurityManager() {
+        return requireNonNull(securityManager).get();
+    }
+
+    public void setSecurityManager(final Supplier<MenuType<SecurityManagerContainerMenu>> securityManager) {
+        this.securityManager = securityManager;
     }
 }

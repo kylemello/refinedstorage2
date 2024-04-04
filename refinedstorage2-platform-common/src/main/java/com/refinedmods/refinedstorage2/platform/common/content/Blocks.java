@@ -17,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.CableBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveBlock;
@@ -25,7 +26,7 @@ import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.Port
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlock;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlock;
 
@@ -43,25 +44,25 @@ public final class Blocks {
     public static final DyeColor CABLE_LIKE_COLOR = DyeColor.GRAY;
     public static final Blocks INSTANCE = new Blocks();
 
-    private final BlockColorMap<CableBlock, NamedBlockItem> cable = new BlockColorMap<>(
+    private final BlockColorMap<CableBlock, BaseBlockItem> cable = new BlockColorMap<>(
         CableBlock::new,
         ContentIds.CABLE,
         ContentNames.CABLE,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<GridBlock, NamedBlockItem> grid = new BlockColorMap<>(
+    private final BlockColorMap<GridBlock, BaseBlockItem> grid = new BlockColorMap<>(
         GridBlock::new,
         ContentIds.GRID,
         ContentNames.GRID,
         COLOR
     );
-    private final BlockColorMap<CraftingGridBlock, NamedBlockItem> craftingGrid = new BlockColorMap<>(
+    private final BlockColorMap<CraftingGridBlock, BaseBlockItem> craftingGrid = new BlockColorMap<>(
         CraftingGridBlock::new,
         ContentIds.CRAFTING_GRID,
         ContentNames.CRAFTING_GRID,
         COLOR
     );
-    private final BlockColorMap<DetectorBlock, NamedBlockItem> detector = new BlockColorMap<>(
+    private final BlockColorMap<DetectorBlock, BaseBlockItem> detector = new BlockColorMap<>(
         DetectorBlock::new,
         ContentIds.DETECTOR,
         ContentNames.DETECTOR,
@@ -89,52 +90,58 @@ public final class Blocks {
             ContentNames.CREATIVE_CONTROLLER,
             COLOR
         );
-    private final BlockColorMap<ExporterBlock, NamedBlockItem> exporter = new BlockColorMap<>(
+    private final BlockColorMap<ExporterBlock, BaseBlockItem> exporter = new BlockColorMap<>(
         ExporterBlock::new,
         ContentIds.EXPORTER,
         ContentNames.EXPORTER,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<ImporterBlock, NamedBlockItem> importer = new BlockColorMap<>(
+    private final BlockColorMap<ImporterBlock, BaseBlockItem> importer = new BlockColorMap<>(
         ImporterBlock::new,
         ContentIds.IMPORTER,
         ContentNames.IMPORTER,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<ExternalStorageBlock, NamedBlockItem> externalStorage = new BlockColorMap<>(
+    private final BlockColorMap<ExternalStorageBlock, BaseBlockItem> externalStorage = new BlockColorMap<>(
         ExternalStorageBlock::new,
         ContentIds.EXTERNAL_STORAGE,
         ContentNames.EXTERNAL_STORAGE,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<DestructorBlock, NamedBlockItem> destructor = new BlockColorMap<>(
+    private final BlockColorMap<DestructorBlock, BaseBlockItem> destructor = new BlockColorMap<>(
         DestructorBlock::new,
         ContentIds.DESTRUCTOR,
         ContentNames.DESTRUCTOR,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<ConstructorBlock, NamedBlockItem> constructor = new BlockColorMap<>(
+    private final BlockColorMap<ConstructorBlock, BaseBlockItem> constructor = new BlockColorMap<>(
         ConstructorBlock::new,
         ContentIds.CONSTRUCTOR,
         ContentNames.CONSTRUCTOR,
         CABLE_LIKE_COLOR
     );
-    private final BlockColorMap<WirelessTransmitterBlock, NamedBlockItem> wirelessTransmitter = new BlockColorMap<>(
+    private final BlockColorMap<WirelessTransmitterBlock, BaseBlockItem> wirelessTransmitter = new BlockColorMap<>(
         WirelessTransmitterBlock::new,
         ContentIds.WIRELESS_TRANSMITTER,
         ContentNames.WIRELESS_TRANSMITTER,
         COLOR
     );
-    private final BlockColorMap<NetworkReceiverBlock, NamedBlockItem> networkReceiver = new BlockColorMap<>(
+    private final BlockColorMap<NetworkReceiverBlock, BaseBlockItem> networkReceiver = new BlockColorMap<>(
         NetworkReceiverBlock::new,
         ContentIds.NETWORK_RECEIVER,
         ContentNames.NETWORK_RECEIVER,
         COLOR
     );
-    private final BlockColorMap<NetworkTransmitterBlock, NamedBlockItem> networkTransmitter = new BlockColorMap<>(
+    private final BlockColorMap<NetworkTransmitterBlock, BaseBlockItem> networkTransmitter = new BlockColorMap<>(
         NetworkTransmitterBlock::new,
         ContentIds.NETWORK_TRANSMITTER,
         ContentNames.NETWORK_TRANSMITTER,
+        COLOR
+    );
+    private final BlockColorMap<SecurityManagerBlock, BaseBlockItem> securityManager = new BlockColorMap<>(
+        SecurityManagerBlock::new,
+        ContentIds.SECURITY_MANAGER,
+        ContentNames.SECURITY_MANAGER,
         COLOR
     );
 
@@ -160,7 +167,7 @@ public final class Blocks {
     private Blocks() {
     }
 
-    public BlockColorMap<CableBlock, NamedBlockItem> getCable() {
+    public BlockColorMap<CableBlock, BaseBlockItem> getCable() {
         return cable;
     }
 
@@ -176,11 +183,11 @@ public final class Blocks {
         return requireNonNull(machineCasing).get();
     }
 
-    public BlockColorMap<GridBlock, NamedBlockItem> getGrid() {
+    public BlockColorMap<GridBlock, BaseBlockItem> getGrid() {
         return grid;
     }
 
-    public BlockColorMap<CraftingGridBlock, NamedBlockItem> getCraftingGrid() {
+    public BlockColorMap<CraftingGridBlock, BaseBlockItem> getCraftingGrid() {
         return craftingGrid;
     }
 
@@ -223,11 +230,11 @@ public final class Blocks {
         return fluidStorageBlocks.get(variant).get();
     }
 
-    public BlockColorMap<ImporterBlock, NamedBlockItem> getImporter() {
+    public BlockColorMap<ImporterBlock, BaseBlockItem> getImporter() {
         return importer;
     }
 
-    public BlockColorMap<ExporterBlock, NamedBlockItem> getExporter() {
+    public BlockColorMap<ExporterBlock, BaseBlockItem> getExporter() {
         return exporter;
     }
 
@@ -239,23 +246,23 @@ public final class Blocks {
         return requireNonNull(iface).get();
     }
 
-    public BlockColorMap<ExternalStorageBlock, NamedBlockItem> getExternalStorage() {
+    public BlockColorMap<ExternalStorageBlock, BaseBlockItem> getExternalStorage() {
         return externalStorage;
     }
 
-    public BlockColorMap<DetectorBlock, NamedBlockItem> getDetector() {
+    public BlockColorMap<DetectorBlock, BaseBlockItem> getDetector() {
         return detector;
     }
 
-    public BlockColorMap<DestructorBlock, NamedBlockItem> getDestructor() {
+    public BlockColorMap<DestructorBlock, BaseBlockItem> getDestructor() {
         return destructor;
     }
 
-    public BlockColorMap<ConstructorBlock, NamedBlockItem> getConstructor() {
+    public BlockColorMap<ConstructorBlock, BaseBlockItem> getConstructor() {
         return constructor;
     }
 
-    public BlockColorMap<WirelessTransmitterBlock, NamedBlockItem> getWirelessTransmitter() {
+    public BlockColorMap<WirelessTransmitterBlock, BaseBlockItem> getWirelessTransmitter() {
         return wirelessTransmitter;
     }
 
@@ -267,11 +274,11 @@ public final class Blocks {
         return requireNonNull(storageMonitor).get();
     }
 
-    public BlockColorMap<NetworkReceiverBlock, NamedBlockItem> getNetworkReceiver() {
+    public BlockColorMap<NetworkReceiverBlock, BaseBlockItem> getNetworkReceiver() {
         return networkReceiver;
     }
 
-    public BlockColorMap<NetworkTransmitterBlock, NamedBlockItem> getNetworkTransmitter() {
+    public BlockColorMap<NetworkTransmitterBlock, BaseBlockItem> getNetworkTransmitter() {
         return networkTransmitter;
     }
 
@@ -289,5 +296,9 @@ public final class Blocks {
 
     public void setCreativePortableGrid(final Supplier<PortableGridBlock> supplier) {
         this.creativePortableGrid = supplier;
+    }
+
+    public BlockColorMap<SecurityManagerBlock, BaseBlockItem> getSecurityManager() {
+        return securityManager;
     }
 }

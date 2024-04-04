@@ -9,10 +9,12 @@ import com.refinedmods.refinedstorage2.platform.common.configurationcard.Configu
 import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerModelPredicateProvider;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardItemPropertyFunction;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
@@ -27,6 +29,7 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridActivePack
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NoPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.WirelessTransmitterRangePacket;
@@ -73,7 +76,6 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class ClientModInitializerImpl extends AbstractClientModInitializer implements ClientModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientModInitializerImpl.class);
-    private static final String KEY_BINDINGS_TRANSLATION_KEY = createTranslationKey("category", "key_bindings");
 
     @Override
     public void onInitializeClient() {
@@ -117,6 +119,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getNetworkTransmitter());
         setCutout(Blocks.INSTANCE.getPortableGrid());
         setCutout(Blocks.INSTANCE.getCreativePortableGrid());
+        setCutout(Blocks.INSTANCE.getSecurityManager());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -158,6 +161,12 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
         Blocks.INSTANCE.getNetworkTransmitter().forEach(
             (color, id, block) -> registerEmissiveNetworkTransmitterModels(color, id)
+        );
+        Blocks.INSTANCE.getGrid().forEach(
+            (color, id, block) -> registerEmissiveGridModels(color, id)
+        );
+        Blocks.INSTANCE.getSecurityManager().forEach(
+            (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
         );
     }
 
@@ -268,6 +277,27 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
     }
 
+    private void registerEmissiveSecurityManagerModels(final DyeColor color, final ResourceLocation id) {
+        // Block
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier("block/security_manager/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+        );
+        // Item
+        EmissiveModelRegistry.INSTANCE.register(
+            id,
+            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+        );
+    }
+
     private void registerPackets() {
         ClientPlayNetworking.registerGlobalReceiver(PacketIds.STORAGE_INFO_RESPONSE, new StorageInfoResponsePacket());
         ClientPlayNetworking.registerGlobalReceiver(PacketIds.GRID_UPDATE, new GridUpdatePacket());
@@ -283,6 +313,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             PacketIds.NETWORK_TRANSMITTER_STATUS,
             new NetworkTransmitterStatusPacket()
         );
+        ClientPlayNetworking.registerGlobalReceiver(PacketIds.NO_PERMISSION, new NoPermissionPacket());
     }
 
     private void registerBlockEntityRenderers() {
@@ -364,13 +395,13 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             createTranslationKey("key", "focus_search_bar"),
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB,
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         )));
         KeyMappings.INSTANCE.setOpenWirelessGrid(KeyBindingHelper.registerKeyBinding(new KeyMapping(
             createTranslationKey("key", "open_wireless_grid"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            KEY_BINDINGS_TRANSLATION_KEY
+            ContentNames.MOD_TRANSLATION_KEY
         )));
         ClientTickEvents.END_CLIENT_TICK.register(client -> handleInputEvents());
     }
@@ -384,6 +415,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     }
 
     private void registerGridSynchronizers() {
+        registerBaseGridSynchronizer();
         final FabricLoader loader = FabricLoader.getInstance();
         if (loader.isModLoaded("roughlyenoughitems")) {
             registerReiGridSynchronizers();
@@ -391,7 +423,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     }
 
     private void registerReiGridSynchronizers() {
-        LOGGER.info("Enabling REI grid synchronizers");
+        LOGGER.debug("Enabling REI grid synchronizers");
         // This is so the ingredient converters are only registered once
         // see https://github.com/refinedmods/refinedstorage2/pull/302#discussion_r1070015672
         RefinedStorageREIClientPlugin.registerIngredientConverters();
@@ -426,6 +458,11 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             Items.INSTANCE.getNetworkCard(),
             NetworkCardItemPropertyFunction.NAME,
             new NetworkCardItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getSecurityCard(),
+            SecurityCardItemPropertyFunction.NAME,
+            new SecurityCardItemPropertyFunction()
         );
     }
 }

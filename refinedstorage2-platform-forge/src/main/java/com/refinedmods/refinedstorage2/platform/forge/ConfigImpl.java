@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage2.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage2.platform.common.Config;
 import com.refinedmods.refinedstorage2.platform.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridMatrixCloseBehavior;
-import com.refinedmods.refinedstorage2.platform.common.grid.GridSize;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSize;
 
 import java.util.Optional;
 
@@ -19,6 +19,9 @@ public class ConfigImpl implements Config {
     private final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
     private final ModConfigSpec spec;
 
+    private final ModConfigSpec.EnumValue<ScreenSize> screenSize;
+    private final ModConfigSpec.BooleanValue smoothScrolling;
+    private final ModConfigSpec.IntValue maxRowsStretch;
     private final SimpleEnergyUsageEntry cable;
     private final ControllerEntry controller;
     private final DiskDriveEntry diskDrive;
@@ -40,8 +43,20 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry networkReceiver;
     private final SimpleEnergyUsageEntry networkTransmitter;
     private final PortableGridEntry portableGrid;
+    private final SimpleEnergyUsageEntry securityCard;
+    private final SimpleEnergyUsageEntry fallbackSecurityCard;
+    private final SimpleEnergyUsageEntry securityManager;
 
     public ConfigImpl() {
+        screenSize = builder
+            .comment("The screen size")
+            .defineEnum("screenSize", ScreenSize.STRETCH);
+        smoothScrolling = builder
+            .comment("Whether scrollbars should use smooth scrolling")
+            .define("smoothScrolling", true);
+        maxRowsStretch = builder
+            .comment("The maximum amount of rows that can be displayed when the screen size is stretched")
+            .defineInRange("maxRowsStretch", 256, 3, 256);
         cable = new SimpleEnergyUsageEntryImpl("cable", "Cable", DefaultEnergyUsage.CABLE);
         controller = new ControllerEntryImpl();
         diskDrive = new DiskDriveEntryImpl();
@@ -79,11 +94,46 @@ public class ConfigImpl implements Config {
             DefaultEnergyUsage.NETWORK_TRANSMITTER
         );
         portableGrid = new PortableGridEntryImpl();
+        securityCard = new SimpleEnergyUsageEntryImpl(
+            "securityCard",
+            "Security Card",
+            DefaultEnergyUsage.SECURITY_CARD
+        );
+        fallbackSecurityCard = new SimpleEnergyUsageEntryImpl(
+            "fallbackSecurityCard",
+            "Fallback Security Card",
+            DefaultEnergyUsage.FALLBACK_SECURITY_CARD
+        );
+        securityManager = new SimpleEnergyUsageEntryImpl(
+            "securityManager",
+            "Security Manager",
+            DefaultEnergyUsage.SECURITY_MANAGER
+        );
         spec = builder.build();
     }
 
     public ModConfigSpec getSpec() {
         return spec;
+    }
+
+    @Override
+    public ScreenSize getScreenSize() {
+        return screenSize.get();
+    }
+
+    @Override
+    public boolean isSmoothScrolling() {
+        return smoothScrolling.get();
+    }
+
+    @Override
+    public int getMaxRowsStretch() {
+        return maxRowsStretch.get();
+    }
+
+    @Override
+    public void setScreenSize(final ScreenSize screenSize) {
+        this.screenSize.set(screenSize);
     }
 
     @Override
@@ -191,6 +241,21 @@ public class ConfigImpl implements Config {
         return portableGrid;
     }
 
+    @Override
+    public SimpleEnergyUsageEntry getSecurityCard() {
+        return securityCard;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getFallbackSecurityCard() {
+        return fallbackSecurityCard;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getSecurityManager() {
+        return securityManager;
+    }
+
     private class SimpleEnergyUsageEntryImpl implements SimpleEnergyUsageEntry {
         private final ModConfigSpec.LongValue energyUsage;
 
@@ -250,27 +315,21 @@ public class ConfigImpl implements Config {
 
     private class GridEntryImpl implements GridEntry {
         private final ModConfigSpec.BooleanValue largeFont;
-        private final ModConfigSpec.IntValue maxRowsStretch;
         private final ModConfigSpec.BooleanValue preventSortingWhileShiftIsDown;
         private final ModConfigSpec.BooleanValue detailedTooltip;
         private final ModConfigSpec.BooleanValue rememberSearchQuery;
         private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.BooleanValue smoothScrolling;
         private final ModConfigSpec.BooleanValue autoSelected;
         private final ModConfigSpec.ConfigValue<String> synchronizer;
         private final ModConfigSpec.ConfigValue<String> resourceType;
         private final ModConfigSpec.EnumValue<GridSortingDirection> sortingDirection;
         private final ModConfigSpec.EnumValue<GridSortingTypes> sortingType;
-        private final ModConfigSpec.EnumValue<GridSize> size;
 
         GridEntryImpl() {
             builder.push("grid");
             largeFont = builder
                 .comment("Whether the Grid should use a large font for quantities")
                 .define("largeFont", false);
-            maxRowsStretch = builder
-                .comment("The maximum amount of rows that can be displayed when the Grid is in stretch view mode")
-                .defineInRange("maxRowsStretch", 256, 3, 256);
             preventSortingWhileShiftIsDown = builder
                 .comment("Whether the Grid should avoid sorting when shift is held down")
                 .define("preventSortingWhileShiftIsDown", true);
@@ -283,9 +342,6 @@ public class ConfigImpl implements Config {
             energyUsage = builder
                 .comment("The energy used by the Grid")
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.GRID, 0, Long.MAX_VALUE);
-            smoothScrolling = builder
-                .comment("Whether the Grid should use smooth scrolling")
-                .define("smoothScrolling", true);
             autoSelected = builder
                 .comment("Whether the Grid search box is auto selected")
                 .define("autoSelected", false);
@@ -301,20 +357,12 @@ public class ConfigImpl implements Config {
             sortingType = builder
                 .comment("The sorting type")
                 .defineEnum("sortingType", GridSortingTypes.QUANTITY);
-            size = builder
-                .comment("The size")
-                .defineEnum("size", GridSize.STRETCH);
             builder.pop();
         }
 
         @Override
         public boolean isLargeFont() {
             return largeFont.get();
-        }
-
-        @Override
-        public int getMaxRowsStretch() {
-            return maxRowsStretch.get();
         }
 
         @Override
@@ -335,11 +383,6 @@ public class ConfigImpl implements Config {
         @Override
         public long getEnergyUsage() {
             return energyUsage.get();
-        }
-
-        @Override
-        public boolean isSmoothScrolling() {
-            return smoothScrolling.get();
         }
 
         @Override
@@ -388,16 +431,6 @@ public class ConfigImpl implements Config {
         @Override
         public void setSortingType(final GridSortingTypes sortingType) {
             this.sortingType.set(sortingType);
-        }
-
-        @Override
-        public GridSize getSize() {
-            return this.size.get();
-        }
-
-        @Override
-        public void setSize(final GridSize size) {
-            this.size.set(size);
         }
 
         @Override

@@ -9,10 +9,12 @@ import com.refinedmods.refinedstorage2.platform.common.detector.DetectorBlock;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.CableBlockSupport;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlock;
 
 import java.util.EnumMap;
@@ -68,6 +70,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerConstructorDestructors(Blocks.INSTANCE.getDestructor(), "destructor");
         registerNetworkReceivers();
         registerNetworkTransmitters();
+        registerSecurityManagers();
     }
 
     private void registerCables() {
@@ -296,6 +299,27 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                     case ERROR -> model.modelFile(error);
                     case INACTIVE -> model.modelFile(inactive);
                 }
+                return model.build();
+            });
+        });
+    }
+
+    private void registerSecurityManagers() {
+        final ModelFile inactive = modelFile(createIdentifier("block/security_manager/inactive"));
+        Blocks.INSTANCE.getSecurityManager().forEach((color, id, block) -> {
+            final ModelFile active = modelFile(createIdentifier("block/security_manager/" + color.getName()));
+            final var builder = getVariantBuilder(block.get());
+            builder.forAllStates(blockState -> {
+                final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
+                if (Boolean.TRUE.equals(blockState.getValue(SecurityManagerBlock.ACTIVE))) {
+                    model.modelFile(active);
+                } else {
+                    model.modelFile(inactive);
+                }
+                final Direction direction = HorizontalDirectionType.INSTANCE.extractDirection(blockState.getValue(
+                    HorizontalDirectionType.INSTANCE.getProperty()
+                ));
+                addRotation(model, BiDirection.forHorizontal(direction));
                 return model.build();
             });
         });

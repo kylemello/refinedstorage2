@@ -6,9 +6,10 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
@@ -18,7 +19,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -36,8 +36,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class DetectorBlock extends AbstractDirectionalBlock<Direction>
-    implements ColorableBlock<DetectorBlock, NamedBlockItem>, SimpleWaterloggedBlock, EntityBlock,
-    BlockItemProvider<NamedBlockItem> {
+    implements ColorableBlock<DetectorBlock, BaseBlockItem>, SimpleWaterloggedBlock, EntityBlock,
+    BlockItemProvider<BaseBlockItem> {
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
     private static final Component HELP = createTranslation("item", "detector.help");
@@ -75,7 +75,7 @@ public class DetectorBlock extends AbstractDirectionalBlock<Direction>
     }
 
     @Override
-    public BlockColorMap<DetectorBlock, NamedBlockItem> getBlockColorMap() {
+    public BlockColorMap<DetectorBlock, BaseBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getDetector();
     }
 
@@ -137,7 +137,7 @@ public class DetectorBlock extends AbstractDirectionalBlock<Direction>
     }
 
     @Override
-    public NamedBlockItem createBlockItem() {
-        return new NamedBlockItem(this, new Item.Properties(), name, HELP);
+    public BaseBlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

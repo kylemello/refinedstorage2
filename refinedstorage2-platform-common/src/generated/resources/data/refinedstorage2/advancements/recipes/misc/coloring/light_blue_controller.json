@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_controllers",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_controllers"
     ]
   ],
   "rewards": {
     "recipes": [
       "refinedstorage2:coloring/light_blue_controller"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

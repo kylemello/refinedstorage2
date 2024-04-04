@@ -5,10 +5,11 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalCableBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.DirectionalCableBlockShapes;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class ExternalStorageBlock extends AbstractDirectionalCableBlock
-    implements ColorableBlock<ExternalStorageBlock, NamedBlockItem>, EntityBlock, BlockItemProvider<NamedBlockItem> {
+    implements ColorableBlock<ExternalStorageBlock, BaseBlockItem>, EntityBlock, BlockItemProvider<BaseBlockItem> {
     private static final Component HELP = createTranslation("item", "external_storage.help");
     private static final Map<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE = new HashMap<>();
     private static final AbstractBlockEntityTicker<ExternalStorageBlockEntity> TICKER =
@@ -87,7 +87,7 @@ public class ExternalStorageBlock extends AbstractDirectionalCableBlock
     }
 
     @Override
-    public BlockColorMap<ExternalStorageBlock, NamedBlockItem> getBlockColorMap() {
+    public BlockColorMap<ExternalStorageBlock, BaseBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getExternalStorage();
     }
 
@@ -109,7 +109,7 @@ public class ExternalStorageBlock extends AbstractDirectionalCableBlock
     }
 
     @Override
-    public NamedBlockItem createBlockItem() {
-        return new NamedBlockItem(this, new Item.Properties(), name, HELP);
+    public BaseBlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

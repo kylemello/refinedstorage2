@@ -1,11 +1,13 @@
 package com.refinedmods.refinedstorage2.platform.forge;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.CreativeModeTabItems;
 import com.refinedmods.refinedstorage2.platform.common.content.DirectRegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
@@ -13,6 +15,8 @@ import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.RegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
@@ -44,6 +48,9 @@ import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.Propert
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.UseNetworkBoundItemPacket;
@@ -52,6 +59,7 @@ import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridAct
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NoPermissionPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -64,6 +72,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -88,12 +97,20 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PORTABLE_GRID;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
@@ -126,7 +143,6 @@ public class ModInitializer extends AbstractModInitializer {
         registerSounds(eventBus);
         registerRecipeSerializers(eventBus);
         registerTickHandler();
-        registerSlotReferenceProviders();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             eventBus.addListener(ClientModInitializer::onClientSetup);
@@ -142,6 +158,7 @@ public class ModInitializer extends AbstractModInitializer {
         eventBus.addListener(this::registerCapabilities);
 
         NeoForge.EVENT_BUS.addListener(this::registerWrenchingEvent);
+        NeoForge.EVENT_BUS.addListener(this::registerSecurityBlockBreakEvent);
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {
@@ -204,16 +221,33 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerItems(final IEventBus eventBus) {
-        registerItems(
-            new ForgeRegistryCallback<>(itemRegistry),
-            () -> new RegulatorUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry()) {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
+        final RegistryCallback<Item> callback = new ForgeRegistryCallback<>(itemRegistry);
+        registerItems(callback);
+        registerCustomItems(callback);
+        itemRegistry.register(eventBus);
+    }
+
+    private void registerCustomItems(final RegistryCallback<Item> callback) {
+        Items.INSTANCE.setRegulatorUpgrade(callback.register(REGULATOR_UPGRADE, () -> new RegulatorUpgradeItem(
+            PlatformApi.INSTANCE.getUpgradeRegistry()
+        ) {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativeWirelessGrid(callback.register(
+            CREATIVE_WIRELESS_GRID,
             () -> new WirelessGridItem() {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -221,23 +255,20 @@ public class ModInitializer extends AbstractModInitializer {
                                                            final boolean slotChanged) {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
-            },
-            () -> new WirelessGridItem() {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
-            () -> new PortableGridBlockItem(Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL) {
-                @Override
-                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
-                                                           final ItemStack newStack,
-                                                           final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
-                }
-            },
+            }
+        ));
+        Items.INSTANCE.setPortableGrid(callback.register(PORTABLE_GRID, () -> new PortableGridBlockItem(
+            Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL
+        ) {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setCreativePortableGrid(callback.register(
+            CREATIVE_PORTABLE_GRID,
             () -> new PortableGridBlockItem(Blocks.INSTANCE.getCreativePortableGrid(), PortableGridType.CREATIVE) {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -246,8 +277,26 @@ public class ModInitializer extends AbstractModInitializer {
                     return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
                 }
             }
-        );
-        itemRegistry.register(eventBus);
+        ));
+        Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, () -> new SecurityCardItem() {
+            @Override
+            public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                       final ItemStack newStack,
+                                                       final boolean slotChanged) {
+                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            }
+        }));
+        Items.INSTANCE.setFallbackSecurityCard(callback.register(
+            FALLBACK_SECURITY_CARD,
+            () -> new FallbackSecurityCardItem() {
+                @Override
+                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                           final ItemStack newStack,
+                                                           final boolean slotChanged) {
+                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
     }
 
     private void registerBlockEntities(final IEventBus eventBus) {
@@ -334,7 +383,9 @@ public class ModInitializer extends AbstractModInitializer {
         NeoForge.EVENT_BUS.addListener(this::onServerTick);
     }
 
+    @Override
     protected void registerSlotReferenceProviders() {
+        super.registerSlotReferenceProviders();
         CuriosSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
             PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
                 createIdentifier("curios"),
@@ -358,7 +409,7 @@ public class ModInitializer extends AbstractModInitializer {
         e.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(
             createIdentifier("general"),
             CreativeModeTab.builder()
-                .title(createTranslation("itemGroup", "general"))
+                .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getController().getDefault()))
                 .displayItems((params, output) -> CreativeModeTabItems.append(output::accept))
                 .build()
@@ -382,6 +433,20 @@ public class ModInitializer extends AbstractModInitializer {
             e.setCanceled(true);
             e.setCancellationResult(result);
         });
+    }
+
+    @SubscribeEvent
+    public void registerSecurityBlockBreakEvent(final BlockEvent.BreakEvent e) {
+        final BlockEntity blockEntity = e.getLevel().getBlockEntity(e.getPos());
+        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
+            && e.getPlayer() instanceof ServerPlayer serverPlayer
+            && !platformNetworkNodeContainer.canBreakOrRotate(serverPlayer)) {
+            PlatformApi.INSTANCE.sendNoPermissionMessage(
+                serverPlayer,
+                createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())
+            );
+            e.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
@@ -431,6 +496,11 @@ public class ModInitializer extends AbstractModInitializer {
             PacketIds.WIRELESS_TRANSMITTER_RANGE,
             WirelessTransmitterRangePacket::decode,
             handler -> handler.client(WirelessTransmitterRangePacket::handle)
+        );
+        registrar.play(
+            PacketIds.NO_PERMISSION,
+            NoPermissionPacket::decode,
+            handler -> handler.client(NoPermissionPacket::handle)
         );
     }
 
@@ -494,6 +564,21 @@ public class ModInitializer extends AbstractModInitializer {
             PacketIds.USE_NETWORK_BOUND_ITEM,
             UseNetworkBoundItemPacket::decode,
             handler -> handler.server(UseNetworkBoundItemPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_PERMISSION,
+            SecurityCardPermissionPacket::decode,
+            handler -> handler.server(SecurityCardPermissionPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_RESET_PERMISSION,
+            SecurityCardResetPermissionPacket::decode,
+            handler -> handler.server(SecurityCardResetPermissionPacket::handle)
+        );
+        registrar.play(
+            PacketIds.SECURITY_CARD_BOUND_PLAYER,
+            SecurityCardBoundPlayerPacket::decode,
+            handler -> handler.server(SecurityCardBoundPlayerPacket::handle)
         );
     }
 

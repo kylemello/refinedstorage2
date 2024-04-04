@@ -7,6 +7,28 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.5] - 2024-04-04
+
+### Added
+
+-   Security Card
+-   Fallback Security Card
+-   Security Manager
+
+### Changed
+
+-   The permissions for a Security Card must be configured through the card itself, instead of via the Security Manager.
+-   The Security Card can be bound to other (currently online) players via its GUI.
+-   The binding of a Security Card can now be cleared.
+-   The Security Card tooltip and GUI now show whether the permission has been touched/changed in any way.
+-   As soon as a Security Manager is placed, the storage network will be locked down by default. Start adding Security Cards to allow or deny specific access to players.
+-   To not lock the entire network by default for players who do not have a matching Security Card, a Fallback Security Card can be used to configure this behavior.
+-   Smooth scrolling, screen size and max row stretch are no longer Grid-specific settings, but are now global settings.
+
+### Fixed
+
+-   Wireless Grid name not being correct in the GUI.
+
 ## [2.0.0-milestone.3.4] - 2024-03-16
 
 ### Added
@@ -532,7 +554,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.4...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.5...HEAD
+
+[2.0.0-milestone.3.5]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.4...v2.0.0-milestone.3.5
 
 [2.0.0-milestone.3.4]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.3...v2.0.0-milestone.3.4
 
