@@ -166,8 +166,8 @@ public class SecurityManagerBlockEntity
     }
 
     @Override
-    public boolean canBreak(final ServerPlayer player) {
-        return super.canBreak(player) || isPlacedBy(player.getGameProfile().getId());
+    public boolean canBreakOrRotate(final ServerPlayer player) {
+        return super.canBreakOrRotate(player) || isPlacedBy(player.getGameProfile().getId());
     }
 
     @Override

@@ -43,7 +43,7 @@ public interface PlatformNetworkNodeContainer extends NetworkNodeContainer {
 
     boolean isContainerRemoved();
 
-    default boolean canBreak(final ServerPlayer player) {
+    default boolean canBreakOrRotate(final ServerPlayer player) {
         return SecurityHelper.isAllowed(player, PlatformApi.INSTANCE.getBuiltinPermissions().build(), getNode());
     }
 }

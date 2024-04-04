@@ -440,7 +440,7 @@ public class ModInitializer extends AbstractModInitializer {
         final BlockEntity blockEntity = e.getLevel().getBlockEntity(e.getPos());
         if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
             && e.getPlayer() instanceof ServerPlayer serverPlayer
-            && !platformNetworkNodeContainer.canBreak(serverPlayer)) {
+            && !platformNetworkNodeContainer.canBreakOrRotate(serverPlayer)) {
             PlatformApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,
                 createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())

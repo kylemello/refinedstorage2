@@ -24,7 +24,7 @@ public class NetworkNodeBreakSecurityEventListener implements PlayerBlockBreakEv
                                     @Nullable final BlockEntity blockEntity) {
         if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
             && player instanceof ServerPlayer serverPlayer
-            && !platformNetworkNodeContainer.canBreak(serverPlayer)) {
+            && !platformNetworkNodeContainer.canBreakOrRotate(serverPlayer)) {
             PlatformApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,
                 createTranslation("misc", "no_permission.build.break", state.getBlock().getName())
