@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+-   Double slot highlighting in the Grid.
+
 ## [2.0.0-milestone.3.5] - 2024-04-04
 
 ### Added
