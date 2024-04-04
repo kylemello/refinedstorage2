@@ -734,10 +734,9 @@ public abstract class AbstractModInitializer {
             FALLBACK_SECURITY_CARD,
             () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
         ));
-        Menus.INSTANCE.setSecurityManager(callback.register(
-            SECURITY_MANAGER,
-            () -> menuTypeFactory.create(SecurityManagerContainerMenu::new)
-        ));
+        Menus.INSTANCE.setSecurityManager(callback.register(SECURITY_MANAGER, () -> menuTypeFactory.create(
+            (syncId, playerInventory, buf) -> new SecurityManagerContainerMenu(syncId, playerInventory)
+        )));
     }
 
     protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType> callback) {

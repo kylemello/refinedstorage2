@@ -10,9 +10,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO: fix slot shuffle security manager w/ fallback
 // TODO: sonar fixes
-// TODO: server test before release
 public class NetworkNodeBlockItem extends BaseBlockItem {
     public NetworkNodeBlockItem(final Block block) {
         super(block);
