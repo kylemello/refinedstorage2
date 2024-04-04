@@ -257,6 +257,8 @@
   "misc.refinedstorage2.no_permission.open": "You are not allowed to open the %s.",
   "misc.refinedstorage2.no_permission.insert": "You are not allowed to insert.",
   "misc.refinedstorage2.no_permission.extract": "You are not allowed to extract.",
+  "misc.refinedstorage2.no_permission.build.place": "You are not allowed to place a %s here.",
+  "misc.refinedstorage2.no_permission.build.break": "You are not allowed to break the %s.",
   "key.refinedstorage2.focus_search_bar": "Focus search bar",
   "key.refinedstorage2.clear_crafting_grid_matrix_to_network": "Clear Crafting Grid matrix to network",
   "key.refinedstorage2.clear_crafting_grid_matrix_to_inventory": "Clear Crafting Grid matrix to inventory",

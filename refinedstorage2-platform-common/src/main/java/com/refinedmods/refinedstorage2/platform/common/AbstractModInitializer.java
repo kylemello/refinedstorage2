@@ -93,8 +93,9 @@ import com.refinedmods.refinedstorage2.platform.common.storagemonitor.ItemStorag
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlock;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
@@ -354,15 +355,15 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(QUARTZ_ENRICHED_IRON, SimpleItem::new));
         callback.register(
             QUARTZ_ENRICHED_IRON_BLOCK,
-            () -> new SimpleBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
+            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
         );
         Items.INSTANCE.setSilicon(callback.register(SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(PROCESSOR_BINDING, SimpleItem::new));
         callback.register(DISK_DRIVE, () -> Blocks.INSTANCE.getDiskDrive().createBlockItem());
         Items.INSTANCE.setWrench(callback.register(WRENCH, WrenchItem::new));
         Items.INSTANCE.setStorageHousing(callback.register(STORAGE_HOUSING, SimpleItem::new));
-        callback.register(MACHINE_CASING, () -> new SimpleBlockItem(Blocks.INSTANCE.getMachineCasing()));
-        callback.register(STORAGE_MONITOR, () -> new SimpleBlockItem(Blocks.INSTANCE.getStorageMonitor()));
+        callback.register(MACHINE_CASING, () -> new BaseBlockItem(Blocks.INSTANCE.getMachineCasing()));
+        callback.register(STORAGE_MONITOR, () -> new NetworkNodeBlockItem(Blocks.INSTANCE.getStorageMonitor()));
         callback.register(INTERFACE, () -> Blocks.INSTANCE.getInterface().createBlockItem());
         Items.INSTANCE.setConstructionCore(callback.register(CONSTRUCTION_CORE, SimpleItem::new));
         Items.INSTANCE.setDestructionCore(callback.register(DESTRUCTION_CORE, SimpleItem::new));

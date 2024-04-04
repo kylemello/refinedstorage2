@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import javax.annotation.Nullable;
@@ -62,6 +62,6 @@ public class InterfaceBlock extends AbstractBaseBlock implements EntityBlock {
     }
 
     public BlockItem createBlockItem() {
-        return new SimpleBlockItem(this, HELP);
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

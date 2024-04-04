@@ -27,6 +27,7 @@ import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStr
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -91,6 +92,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -103,7 +106,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
@@ -542,5 +547,37 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
         Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(player, message);
+    }
+
+    @Override
+    public boolean canPlaceNetworkNode(final ServerPlayer player,
+                                       final Level level,
+                                       final BlockPos pos,
+                                       final BlockState state) {
+        for (final Direction direction : Direction.values()) {
+            final BlockPos adjacentPos = pos.relative(direction);
+            final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
+            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)) {
+                continue;
+            }
+            if (!platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)) {
+                continue;
+            }
+            final Network network = platformNetworkNodeContainer.getNode().getNetwork();
+            if (network == null) {
+                continue;
+            }
+            final PlatformSecurityNetworkComponent security = network.getComponent(
+                PlatformSecurityNetworkComponent.class
+            );
+            if (!security.isAllowed(BuiltinPermission.BUILD, player)) {
+                PlatformApi.INSTANCE.sendNoPermissionMessage(
+                    player,
+                    createTranslation("misc", "no_permission.build.place", state.getBlock().getName())
+                );
+                return false;
+            }
+        }
+        return true;
     }
 }

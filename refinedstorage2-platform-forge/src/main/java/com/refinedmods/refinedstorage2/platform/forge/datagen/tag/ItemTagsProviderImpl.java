@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -121,7 +121,7 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
         tag(t).add(items.stream().map(Supplier::get).toArray(Item[]::new)).replace(false);
     }
 
-    private void addAllToTag2(final TagKey<Item> t, final Collection<Supplier<NamedBlockItem>> items) {
+    private void addAllToTag2(final TagKey<Item> t, final Collection<Supplier<BaseBlockItem>> items) {
         tag(t).add(items.stream().map(Supplier::get).toArray(Item[]::new)).replace(false);
     }
 }

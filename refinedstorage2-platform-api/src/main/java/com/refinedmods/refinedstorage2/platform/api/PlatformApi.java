@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,6 +58,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
@@ -192,4 +194,6 @@ public interface PlatformApi {
     void sendNoPermissionToOpenMessage(ServerPlayer player, Component target);
 
     void sendNoPermissionMessage(ServerPlayer player, Component message);
+
+    boolean canPlaceNetworkNode(ServerPlayer player, Level level, BlockPos pos, BlockState state);
 }

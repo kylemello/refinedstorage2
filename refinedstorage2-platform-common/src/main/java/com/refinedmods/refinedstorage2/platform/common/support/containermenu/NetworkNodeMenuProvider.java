@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 public interface NetworkNodeMenuProvider extends ExtendedMenuProvider {
     NetworkNode getNode();
 
-    default boolean isAllowed(final ServerPlayer player) {
+    default boolean canOpen(final ServerPlayer player) {
         return SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, getNode());
     }
 }

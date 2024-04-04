@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.forge;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
@@ -71,6 +72,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -95,6 +97,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
@@ -110,6 +113,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 @Mod(IdentifierUtil.MOD_ID)
 public class ModInitializer extends AbstractModInitializer {
@@ -154,6 +158,7 @@ public class ModInitializer extends AbstractModInitializer {
         eventBus.addListener(this::registerCapabilities);
 
         NeoForge.EVENT_BUS.addListener(this::registerWrenchingEvent);
+        NeoForge.EVENT_BUS.addListener(this::registerSecurityBlockBreakEvent);
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {
@@ -428,6 +433,20 @@ public class ModInitializer extends AbstractModInitializer {
             e.setCanceled(true);
             e.setCancellationResult(result);
         });
+    }
+
+    @SubscribeEvent
+    public void registerSecurityBlockBreakEvent(final BlockEvent.BreakEvent e) {
+        final BlockEntity blockEntity = e.getLevel().getBlockEntity(e.getPos());
+        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
+            && e.getPlayer() instanceof ServerPlayer serverPlayer
+            && !platformNetworkNodeContainer.canBreak(serverPlayer)) {
+            PlatformApi.INSTANCE.sendNoPermissionMessage(
+                serverPlayer,
+                createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())
+            );
+            e.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

@@ -48,6 +48,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,6 +59,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PlatformApiProxy implements PlatformApi {
     @Nullable
@@ -379,6 +381,14 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
         ensureLoaded().sendNoPermissionMessage(player, message);
+    }
+
+    @Override
+    public boolean canPlaceNetworkNode(final ServerPlayer player,
+                                       final Level level,
+                                       final BlockPos pos,
+                                       final BlockState state) {
+        return ensureLoaded().canPlaceNetworkNode(player, level, pos, state);
     }
 
     private PlatformApi ensureLoaded() {

@@ -6,9 +6,10 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
@@ -20,7 +21,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -38,7 +38,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction>
-    implements ColorableBlock<WirelessTransmitterBlock, NamedBlockItem>, BlockItemProvider<NamedBlockItem>,
+    implements ColorableBlock<WirelessTransmitterBlock, BaseBlockItem>, BlockItemProvider<BaseBlockItem>,
     EntityBlock {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
@@ -99,7 +99,7 @@ public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction
     }
 
     @Override
-    public BlockColorMap<WirelessTransmitterBlock, NamedBlockItem> getBlockColorMap() {
+    public BlockColorMap<WirelessTransmitterBlock, BaseBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getWirelessTransmitter();
     }
 
@@ -128,7 +128,7 @@ public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction
     }
 
     @Override
-    public NamedBlockItem createBlockItem() {
-        return new NamedBlockItem(this, new Item.Properties(), getName(), HELP);
+    public BaseBlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

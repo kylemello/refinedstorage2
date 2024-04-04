@@ -8,21 +8,36 @@ import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public final class SimpleBlockItem extends BlockItem {
+public class BaseBlockItem extends BlockItem {
+    private final Block block;
     @Nullable
     private final Component helpText;
 
-    public SimpleBlockItem(final Block block) {
+    public BaseBlockItem(final Block block) {
         this(block, null);
     }
 
-    public SimpleBlockItem(final Block block, @Nullable final Component helpText) {
-        super(block, new Item.Properties());
+    public BaseBlockItem(final Block block, @Nullable final Component helpText) {
+        this(block, new Properties(), helpText);
+    }
+
+    public BaseBlockItem(final Block block, final Properties properties, @Nullable final Component helpText) {
+        super(block, properties);
+        this.block = block;
         this.helpText = helpText;
+    }
+
+    @Override
+    public Component getDescription() {
+        return block.getName();
+    }
+
+    @Override
+    public Component getName(final ItemStack stack) {
+        return block.getName();
     }
 
     @Override

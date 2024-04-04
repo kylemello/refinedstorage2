@@ -157,9 +157,14 @@ public class SecurityManagerBlockEntity
     }
 
     @Override
-    public boolean isAllowed(final ServerPlayer player) {
-        final boolean isAllowedViaSecuritySystem = NetworkNodeMenuProvider.super.isAllowed(player)
+    public boolean canOpen(final ServerPlayer player) {
+        final boolean isAllowedViaSecuritySystem = NetworkNodeMenuProvider.super.canOpen(player)
             && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, getNode());
         return isAllowedViaSecuritySystem || isPlacedBy(player.getGameProfile().getId());
+    }
+
+    @Override
+    public boolean canBreak(final ServerPlayer player) {
+        return super.canBreak(player) || isPlacedBy(player.getGameProfile().getId());
     }
 }

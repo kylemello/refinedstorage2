@@ -47,6 +47,7 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardRe
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage2.platform.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
@@ -65,6 +66,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -122,6 +124,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerSidedHandlers();
         registerTickHandler();
         registerWrenchingEvent();
+        registerSecurityBlockBreakEvent();
 
         LOGGER.debug("Refined Storage 2 has loaded.");
     }
@@ -451,5 +454,9 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 .or(() -> block.tryUpdateColor(state, level, hitResult.getBlockPos(), player, hand))
                 .orElse(InteractionResult.PASS);
         });
+    }
+
+    private void registerSecurityBlockBreakEvent() {
+        PlayerBlockBreakEvents.BEFORE.register(new NetworkNodeBreakSecurityEventListener());
     }
 }
