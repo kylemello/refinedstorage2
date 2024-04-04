@@ -323,7 +323,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridInsertionStrategy createGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return new CompositeGridInsertionStrategy(
             Platform.INSTANCE.getDefaultGridInsertionStrategyFactory().create(
@@ -356,7 +356,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                                               final Player player,
+                                                               final ServerPlayer player,
                                                                final Grid grid) {
         final List<GridExtractionStrategy> strategies = gridExtractionStrategyFactories
             .stream()
@@ -372,7 +372,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridScrollingStrategy createGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         final List<GridScrollingStrategy> strategies = gridScrollingStrategyFactories
             .stream()
@@ -536,9 +536,11 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
-        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(
-            player,
-            createTranslation("misc", "no_permission.open", target)
-        );
+        sendNoPermissionMessage(player, createTranslation("misc", "no_permission.open", target));
+    }
+
+    @Override
+    public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
+        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(player, message);
     }
 }

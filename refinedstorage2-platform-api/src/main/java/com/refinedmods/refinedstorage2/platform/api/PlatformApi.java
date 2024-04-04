@@ -112,7 +112,7 @@ public interface PlatformApi {
     void requestNetworkNodeUpdate(PlatformNetworkNodeContainer container, Level level);
 
     GridInsertionStrategy createGridInsertionStrategy(AbstractContainerMenu containerMenu,
-                                                      Player player,
+                                                      ServerPlayer player,
                                                       Grid grid);
 
     void addGridInsertionStrategyFactory(GridInsertionStrategyFactory insertionStrategyFactory);
@@ -122,13 +122,13 @@ public interface PlatformApi {
     GridInsertionHints getGridInsertionHints();
 
     GridExtractionStrategy createGridExtractionStrategy(AbstractContainerMenu containerMenu,
-                                                        Player player,
+                                                        ServerPlayer player,
                                                         Grid grid);
 
     void addGridExtractionStrategyFactory(GridExtractionStrategyFactory extractionStrategyFactory);
 
     GridScrollingStrategy createGridScrollingStrategy(AbstractContainerMenu containerMenu,
-                                                      Player player,
+                                                      ServerPlayer player,
                                                       Grid grid);
 
     void addGridScrollingStrategyFactory(GridScrollingStrategyFactory scrollingStrategyFactory);
@@ -190,4 +190,6 @@ public interface PlatformApi {
     SecurityPolicy createDefaultSecurityPolicy();
 
     void sendNoPermissionToOpenMessage(ServerPlayer player, Component target);
+
+    void sendNoPermissionMessage(ServerPlayer player, Component message);
 }

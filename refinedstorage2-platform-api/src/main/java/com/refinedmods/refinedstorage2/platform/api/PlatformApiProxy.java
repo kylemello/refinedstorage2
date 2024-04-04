@@ -194,7 +194,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridInsertionStrategy createGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return ensureLoaded().createGridInsertionStrategy(containerMenu, player, grid);
     }
@@ -216,7 +216,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                                               final Player player,
+                                                               final ServerPlayer player,
                                                                final Grid grid) {
         return ensureLoaded().createGridExtractionStrategy(containerMenu, player, grid);
     }
@@ -228,7 +228,7 @@ public class PlatformApiProxy implements PlatformApi {
 
     @Override
     public GridScrollingStrategy createGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return ensureLoaded().createGridScrollingStrategy(containerMenu, player, grid);
     }
@@ -374,6 +374,11 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
         ensureLoaded().sendNoPermissionToOpenMessage(player, target);
+    }
+
+    @Override
+    public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
+        ensureLoaded().sendNoPermissionMessage(player, message);
     }
 
     private PlatformApi ensureLoaded() {

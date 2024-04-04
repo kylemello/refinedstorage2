@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceTyp
 
 import java.util.List;
 
+import net.minecraft.server.level.ServerPlayer;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.0")
@@ -23,5 +24,5 @@ public interface Grid {
 
     List<TrackedResourceAmount> getResources(Class<? extends Actor> actorType);
 
-    GridOperations createOperations(ResourceType resourceType, Actor actor);
+    GridOperations createOperations(ResourceType resourceType, ServerPlayer player);
 }

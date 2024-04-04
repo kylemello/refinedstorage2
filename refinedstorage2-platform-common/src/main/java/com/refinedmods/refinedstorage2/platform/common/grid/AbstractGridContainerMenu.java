@@ -142,7 +142,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.grid.addWatcher(this, PlayerActor.class);
 
         this.synchronizer = NoopGridSynchronizer.INSTANCE;
-        initStrategies();
+        initStrategies((ServerPlayer) playerInventory.player);
     }
 
     private Predicate<GridResource> filterStorageChannel() {
@@ -274,25 +274,25 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     @Override
     public void invalidate() {
         if (playerInventory.player instanceof ServerPlayer serverPlayer) {
-            initStrategies();
+            initStrategies(serverPlayer);
             Platform.INSTANCE.getServerToClientCommunications().sendGridClear(serverPlayer);
         }
     }
 
-    private void initStrategies() {
+    private void initStrategies(final ServerPlayer player) {
         this.insertionStrategy = PlatformApi.INSTANCE.createGridInsertionStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
         this.extractionStrategy = PlatformApi.INSTANCE.createGridExtractionStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
         this.scrollingStrategy = PlatformApi.INSTANCE.createGridScrollingStrategy(
             this,
-            playerInventory.player,
+            player,
             requireNonNull(grid)
         );
     }

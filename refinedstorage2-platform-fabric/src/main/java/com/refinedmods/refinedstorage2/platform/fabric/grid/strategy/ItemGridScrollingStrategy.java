@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
@@ -17,7 +16,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import static com.refinedmods.refinedstorage2.platform.fabric.support.resource.VariantUtil.toItemVariant;
@@ -28,9 +27,9 @@ public class ItemGridScrollingStrategy implements GridScrollingStrategy {
     private final SingleSlotStorage<ItemVariant> playerCursorStorage;
 
     public ItemGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                     final Player player,
+                                     final ServerPlayer player,
                                      final Grid grid) {
-        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, player);
         this.playerInventoryStorage = PlayerInventoryStorage.of(player.getInventory());
         this.playerCursorStorage = PlayerInventoryStorage.getCursorStorage(containerMenu);
     }

@@ -15,6 +15,7 @@ import com.refinedmods.refinedstorage2.api.storage.StorageState;
 import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
+import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.storage.DiskInventory;
@@ -22,6 +23,8 @@ import com.refinedmods.refinedstorage2.platform.common.storage.DiskInventory;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import net.minecraft.server.level.ServerPlayer;
 
 class PortableGrid implements Grid {
     private final EnergyStorage energyStorage;
@@ -108,13 +111,12 @@ class PortableGrid implements Grid {
     }
 
     @Override
-    public GridOperations createOperations(final ResourceType resourceType,
-                                           final Actor actor) {
+    public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         if (storage == null) {
             return new NoopGridOperations();
         }
         final StorageChannel storageChannel = this.storage.getStorageChannel();
-        final GridOperations operations = resourceType.createGridOperations(storageChannel, actor);
+        final GridOperations operations = resourceType.createGridOperations(storageChannel, new PlayerActor(player));
         return new PortableGridOperations(operations, energyStorage);
     }
 }

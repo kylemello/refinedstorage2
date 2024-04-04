@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage2.platform.api.exporter.AmountOverride;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
@@ -15,8 +14,8 @@ import com.refinedmods.refinedstorage2.platform.forge.storage.CapabilityCache;
 import com.refinedmods.refinedstorage2.platform.forge.storage.ItemHandlerExtractableStorage;
 import com.refinedmods.refinedstorage2.platform.forge.storage.ItemHandlerInsertableStorage;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
@@ -30,9 +29,9 @@ public class ItemGridScrollingStrategy implements GridScrollingStrategy {
     private final CursorItemHandler playerCursorItemHandler;
 
     public ItemGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                     final Player player,
+                                     final ServerPlayer player,
                                      final Grid grid) {
-        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.ITEM, player);
         this.playerInventory = player.getInventory();
         this.playerInventoryStorage = new PlayerMainInvWrapper(playerInventory);
         this.playerCursorItemHandler = new CursorItemHandler(containerMenu);

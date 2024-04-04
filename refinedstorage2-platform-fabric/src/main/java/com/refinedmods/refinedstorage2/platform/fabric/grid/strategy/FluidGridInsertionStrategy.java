@@ -5,7 +5,6 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 
@@ -20,6 +19,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -33,10 +33,10 @@ public class FluidGridInsertionStrategy implements GridInsertionStrategy {
     private final PlayerInventoryStorage playerInventoryStorage;
 
     public FluidGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                      final Player player,
+                                      final ServerPlayer player,
                                       final Grid grid) {
         this.containerMenu = containerMenu;
-        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, player);
         this.player = player;
         this.playerInventoryStorage = PlayerInventoryStorage.of(player.getInventory());
     }
