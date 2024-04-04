@@ -11,18 +11,12 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class PlatformSecurityNetworkComponentImpl extends SecurityNetworkComponentImpl
     implements PlatformSecurityNetworkComponent {
-    private final SecurityPolicy defaultPolicy;
-
     public PlatformSecurityNetworkComponentImpl(final SecurityPolicy defaultPolicy) {
         super(defaultPolicy);
-        this.defaultPolicy = defaultPolicy;
     }
 
     @Override
     public boolean isAllowed(final Permission permission, final ServerPlayer player) {
-        if (providers.isEmpty()) {
-            return defaultPolicy.isAllowed(permission);
-        }
         final MinecraftServer server = player.getServer();
         if (server == null) {
             return false;

@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
-    protected final Set<SecurityDecisionProvider> providers = new LinkedHashSet<>();
+    private final Set<SecurityDecisionProvider> providers = new LinkedHashSet<>();
     private final SecurityPolicy defaultPolicy;
 
     public SecurityNetworkComponentImpl(final SecurityPolicy defaultPolicy) {
