@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.energy.TransferableB
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.BlockEntityEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.CreativeEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemBlockEnergyStorage;
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ControllerNetworkNode>
-    implements ExtendedMenuProvider, TransferableBlockEntityEnergy {
+    implements NetworkNodeMenuProvider, TransferableBlockEntityEnergy {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerBlockEntity.class);
 
     private static final String TAG_CAPACITY = "capacity";

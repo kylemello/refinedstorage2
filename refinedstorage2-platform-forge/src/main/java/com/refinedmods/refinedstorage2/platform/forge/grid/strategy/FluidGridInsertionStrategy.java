@@ -5,13 +5,12 @@ import com.refinedmods.refinedstorage2.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -26,9 +25,9 @@ public class FluidGridInsertionStrategy implements GridInsertionStrategy {
     private final AbstractContainerMenu menu;
     private final GridOperations gridOperations;
 
-    public FluidGridInsertionStrategy(final AbstractContainerMenu menu, final Player player, final Grid grid) {
+    public FluidGridInsertionStrategy(final AbstractContainerMenu menu, final ServerPlayer player, final Grid grid) {
         this.menu = menu;
-        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, player);
     }
 
     @Override

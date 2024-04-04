@@ -10,4 +10,8 @@ public interface SecurityDecisionProvider {
     default SecurityDecision isAllowed(Permission permission) {
         return SecurityDecision.PASS;
     }
+
+    default boolean isActive() {
+        return true;
+    }
 }

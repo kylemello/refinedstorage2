@@ -8,7 +8,6 @@ import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridExtractionStrategy;
-import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
@@ -16,7 +15,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.Resource
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,10 +37,10 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
     private final Storage itemStorage;
 
     public FluidGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                       final Player player,
+                                       final ServerPlayer player,
                                        final Grid grid) {
         this.menu = containerMenu;
-        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, new PlayerActor(player));
+        this.gridOperations = grid.createOperations(ResourceTypes.FLUID, player);
         this.playerInventoryStorage = new PlayerMainInvWrapper(player.getInventory());
         this.itemStorage = grid.getItemStorage();
     }

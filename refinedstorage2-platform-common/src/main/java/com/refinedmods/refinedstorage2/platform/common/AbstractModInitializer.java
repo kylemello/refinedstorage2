@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -56,6 +57,7 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmi
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.PlatformSecurityNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
@@ -91,8 +93,9 @@ import com.refinedmods.refinedstorage2.platform.common.storagemonitor.ItemStorag
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlock;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
@@ -257,6 +260,10 @@ public abstract class AbstractModInitializer {
             StorageNetworkComponent.class,
             network -> new PlatformStorageNetworkComponent()
         );
+        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+            PlatformSecurityNetworkComponent.class,
+            network -> new PlatformSecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
+        );
     }
 
     private void registerWirelessTransmitterRangeModifiers() {
@@ -348,15 +355,15 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(QUARTZ_ENRICHED_IRON, SimpleItem::new));
         callback.register(
             QUARTZ_ENRICHED_IRON_BLOCK,
-            () -> new SimpleBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
+            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
         );
         Items.INSTANCE.setSilicon(callback.register(SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(PROCESSOR_BINDING, SimpleItem::new));
         callback.register(DISK_DRIVE, () -> Blocks.INSTANCE.getDiskDrive().createBlockItem());
         Items.INSTANCE.setWrench(callback.register(WRENCH, WrenchItem::new));
         Items.INSTANCE.setStorageHousing(callback.register(STORAGE_HOUSING, SimpleItem::new));
-        callback.register(MACHINE_CASING, () -> new SimpleBlockItem(Blocks.INSTANCE.getMachineCasing()));
-        callback.register(STORAGE_MONITOR, () -> new SimpleBlockItem(Blocks.INSTANCE.getStorageMonitor()));
+        callback.register(MACHINE_CASING, () -> new BaseBlockItem(Blocks.INSTANCE.getMachineCasing()));
+        callback.register(STORAGE_MONITOR, () -> new NetworkNodeBlockItem(Blocks.INSTANCE.getStorageMonitor()));
         callback.register(INTERFACE, () -> Blocks.INSTANCE.getInterface().createBlockItem());
         Items.INSTANCE.setConstructionCore(callback.register(CONSTRUCTION_CORE, SimpleItem::new));
         Items.INSTANCE.setDestructionCore(callback.register(DESTRUCTION_CORE, SimpleItem::new));
@@ -727,10 +734,9 @@ public abstract class AbstractModInitializer {
             FALLBACK_SECURITY_CARD,
             () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
         ));
-        Menus.INSTANCE.setSecurityManager(callback.register(
-            SECURITY_MANAGER,
-            () -> menuTypeFactory.create(SecurityManagerContainerMenu::new)
-        ));
+        Menus.INSTANCE.setSecurityManager(callback.register(SECURITY_MANAGER, () -> menuTypeFactory.create(
+            (syncId, playerInventory, buf) -> new SecurityManagerContainerMenu(syncId, playerInventory)
+        )));
     }
 
     protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType> callback) {

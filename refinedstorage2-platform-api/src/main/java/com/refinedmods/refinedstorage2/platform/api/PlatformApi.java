@@ -4,7 +4,6 @@ import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
-import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
@@ -48,7 +47,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -57,6 +58,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
@@ -112,7 +114,7 @@ public interface PlatformApi {
     void requestNetworkNodeUpdate(PlatformNetworkNodeContainer container, Level level);
 
     GridInsertionStrategy createGridInsertionStrategy(AbstractContainerMenu containerMenu,
-                                                      Player player,
+                                                      ServerPlayer player,
                                                       Grid grid);
 
     void addGridInsertionStrategyFactory(GridInsertionStrategyFactory insertionStrategyFactory);
@@ -122,13 +124,13 @@ public interface PlatformApi {
     GridInsertionHints getGridInsertionHints();
 
     GridExtractionStrategy createGridExtractionStrategy(AbstractContainerMenu containerMenu,
-                                                        Player player,
+                                                        ServerPlayer player,
                                                         Grid grid);
 
     void addGridExtractionStrategyFactory(GridExtractionStrategyFactory extractionStrategyFactory);
 
     GridScrollingStrategy createGridScrollingStrategy(AbstractContainerMenu containerMenu,
-                                                      Player player,
+                                                      ServerPlayer player,
                                                       Grid grid);
 
     void addGridScrollingStrategyFactory(GridScrollingStrategyFactory scrollingStrategyFactory);
@@ -189,5 +191,9 @@ public interface PlatformApi {
 
     SecurityPolicy createDefaultSecurityPolicy();
 
-    SecurityActor createPlayerSecurityActor(ServerPlayer player);
+    void sendNoPermissionToOpenMessage(ServerPlayer player, Component target);
+
+    void sendNoPermissionMessage(ServerPlayer player, Component message);
+
+    boolean canPlaceNetworkNode(ServerPlayer player, Level level, BlockPos pos, BlockState state);
 }

@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkFactory;
-import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
@@ -28,6 +27,7 @@ import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStr
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -56,7 +56,6 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGr
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.recipemod.CompositeIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
-import com.refinedmods.refinedstorage2.platform.common.security.PlayerSecurityActor;
 import com.refinedmods.refinedstorage2.platform.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageRepositoryImpl;
@@ -93,8 +92,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -104,8 +106,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
+
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class PlatformApiImpl implements PlatformApi {
     private final StorageRepository clientStorageRepository =
@@ -322,7 +328,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridInsertionStrategy createGridInsertionStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         return new CompositeGridInsertionStrategy(
             Platform.INSTANCE.getDefaultGridInsertionStrategyFactory().create(
@@ -355,7 +361,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
-                                                               final Player player,
+                                                               final ServerPlayer player,
                                                                final Grid grid) {
         final List<GridExtractionStrategy> strategies = gridExtractionStrategyFactories
             .stream()
@@ -371,7 +377,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public GridScrollingStrategy createGridScrollingStrategy(final AbstractContainerMenu containerMenu,
-                                                             final Player player,
+                                                             final ServerPlayer player,
                                                              final Grid grid) {
         final List<GridScrollingStrategy> strategies = gridScrollingStrategyFactories
             .stream()
@@ -534,7 +540,40 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public SecurityActor createPlayerSecurityActor(final ServerPlayer player) {
-        return PlayerSecurityActor.of(player);
+    public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
+        sendNoPermissionMessage(player, createTranslation("misc", "no_permission.open", target));
+    }
+
+    @Override
+    public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
+        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(player, message);
+    }
+
+    @Override
+    public boolean canPlaceNetworkNode(final ServerPlayer player,
+                                       final Level level,
+                                       final BlockPos pos,
+                                       final BlockState state) {
+        for (final Direction direction : Direction.values()) {
+            final BlockPos adjacentPos = pos.relative(direction);
+            final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
+            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)
+                || !platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)
+                || platformNetworkNodeContainer.getNode().getNetwork() == null) {
+                continue;
+            }
+            final PlatformSecurityNetworkComponent security = platformNetworkNodeContainer
+                .getNode()
+                .getNetwork()
+                .getComponent(PlatformSecurityNetworkComponent.class);
+            if (!security.isAllowed(BuiltinPermission.BUILD, player)) {
+                PlatformApi.INSTANCE.sendNoPermissionMessage(
+                    player,
+                    createTranslation("misc", "no_permission.build.place", state.getBlock().getName())
+                );
+                return false;
+            }
+        }
+        return true;
     }
 }

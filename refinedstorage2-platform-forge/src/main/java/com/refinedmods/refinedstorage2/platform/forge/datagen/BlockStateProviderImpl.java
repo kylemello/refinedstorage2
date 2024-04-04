@@ -14,6 +14,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.CableBlockSupport
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlock;
 
 import java.util.EnumMap;
@@ -315,7 +316,10 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 } else {
                     model.modelFile(inactive);
                 }
-                addRotation(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
+                final Direction direction = HorizontalDirectionType.INSTANCE.extractDirection(blockState.getValue(
+                    HorizontalDirectionType.INSTANCE.getProperty()
+                ));
+                addRotation(model, BiDirection.forHorizontal(direction));
                 return model.build();
             });
         });

@@ -6,12 +6,13 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirection;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,6 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -32,8 +32,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-public class SecurityManagerBlock extends AbstractDirectionalBlock<BiDirection>
-    implements ColorableBlock<SecurityManagerBlock, NamedBlockItem>, BlockItemProvider<NamedBlockItem>, EntityBlock {
+public class SecurityManagerBlock extends AbstractDirectionalBlock<HorizontalDirection>
+    implements ColorableBlock<SecurityManagerBlock, BaseBlockItem>, BlockItemProvider<BaseBlockItem>, EntityBlock {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     private static final MutableComponent HELP = createTranslation("block", "security_manager.help");
@@ -61,12 +61,12 @@ public class SecurityManagerBlock extends AbstractDirectionalBlock<BiDirection>
     }
 
     @Override
-    protected DirectionType<BiDirection> getDirectionType() {
-        return BiDirectionType.INSTANCE;
+    protected DirectionType<HorizontalDirection> getDirectionType() {
+        return HorizontalDirectionType.INSTANCE;
     }
 
     @Override
-    public BlockColorMap<SecurityManagerBlock, NamedBlockItem> getBlockColorMap() {
+    public BlockColorMap<SecurityManagerBlock, BaseBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getSecurityManager();
     }
 
@@ -81,8 +81,8 @@ public class SecurityManagerBlock extends AbstractDirectionalBlock<BiDirection>
     }
 
     @Override
-    public NamedBlockItem createBlockItem() {
-        return new NamedBlockItem(this, new Item.Properties(), getName(), HELP);
+    public BaseBlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this, HELP);
     }
 
     @Nullable

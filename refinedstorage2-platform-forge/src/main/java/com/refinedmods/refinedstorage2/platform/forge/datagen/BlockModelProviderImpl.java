@@ -25,6 +25,9 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     private static final ResourceLocation ALL_CUTOUT = createIdentifier("block/all_cutout");
     private static final ResourceLocation NORTH_CUTOUT = createIdentifier("block/north_cutout");
 
+    private static final String NORTH = "north";
+    private static final String SOUTH = "south";
+
     private static final ResourceLocation BOTTOM_TEXTURE = createIdentifier("block/bottom");
 
     public BlockModelProviderImpl(final PackOutput output, final ExistingFileHelper existingFileHelper) {
@@ -90,9 +93,9 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         final ResourceLocation top = createIdentifier(BLOCK_PREFIX + "/" + name + "/top");
         withExistingParent(BLOCK_PREFIX + "/" + name + "/" + variantName, baseModel)
             .texture(PARTICLE_TEXTURE, right)
-            .texture("north", front)
+            .texture(NORTH, front)
             .texture("east", right)
-            .texture("south", back)
+            .texture(SOUTH, back)
             .texture("west", left)
             .texture("up", top)
             .texture("down", BOTTOM_TEXTURE)
@@ -185,9 +188,9 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             );
             withExistingParent("block/security_manager/" + color.getName(), EMISSIVE_CUTOUT)
                 .texture(PARTICLE_TEXTURE, back)
-                .texture("north", front)
+                .texture(NORTH, front)
                 .texture("east", right)
-                .texture("south", back)
+                .texture(SOUTH, back)
                 .texture("west", left)
                 .texture("up", top)
                 .texture("down", BOTTOM_TEXTURE)
@@ -205,9 +208,9 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         final ResourceLocation cutoutTop = createIdentifier("block/security_manager/cutouts/top/inactive");
         withExistingParent("block/security_manager/inactive", CUTOUT)
             .texture(PARTICLE_TEXTURE, back)
-            .texture("north", front)
+            .texture(NORTH, front)
             .texture("east", right)
-            .texture("south", back)
+            .texture(SOUTH, back)
             .texture("west", left)
             .texture("up", top)
             .texture("down", BOTTOM_TEXTURE)

@@ -22,6 +22,6 @@ public class CreativeControllerBlock extends AbstractControllerBlock<CreativeCon
 
     @Override
     public CreativeControllerBlockItem createBlockItem() {
-        return new CreativeControllerBlockItem(this, name);
+        return new CreativeControllerBlockItem(this);
     }
 }

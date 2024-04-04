@@ -4,10 +4,13 @@ import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
+import com.refinedmods.refinedstorage2.platform.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage2.platform.api.support.energy.AbstractNetworkBoundEnergyItem;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemSession;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
+import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -33,6 +36,13 @@ public class WirelessGridItem extends AbstractNetworkBoundEnergyItem {
     public void use(final ServerPlayer player,
                     final SlotReference slotReference,
                     final NetworkBoundItemSession session) {
+        final boolean isAllowed = session.resolveNetwork()
+            .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
+            .orElse(true); // if the network can't be resolved that will be apparent later in the UI.
+        if (!isAllowed) {
+            PlatformApi.INSTANCE.sendNoPermissionToOpenMessage(player, ContentNames.WIRELESS_GRID);
+            return;
+        }
         final Grid grid = new WirelessGrid(session);
         Platform.INSTANCE.getMenuOpener().openMenu(player, new WirelessGridExtendedMenuProvider(grid, slotReference));
     }

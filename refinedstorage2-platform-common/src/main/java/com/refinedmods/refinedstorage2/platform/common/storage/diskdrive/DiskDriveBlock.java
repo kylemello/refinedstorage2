@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.storage.diskdrive;
 
 import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
@@ -50,6 +50,6 @@ public class DiskDriveBlock extends AbstractDirectionalBlock<BiDirection> implem
     }
 
     public BlockItem createBlockItem() {
-        return new SimpleBlockItem(this, HELP);
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

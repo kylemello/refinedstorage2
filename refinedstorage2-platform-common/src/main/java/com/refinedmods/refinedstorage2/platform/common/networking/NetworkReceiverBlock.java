@@ -6,7 +6,8 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractColoredBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.NamedBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import javax.annotation.Nullable;
@@ -46,7 +47,7 @@ public class NetworkReceiverBlock extends AbstractColoredBlock<NetworkReceiverBl
     }
 
     @Override
-    public BlockColorMap<NetworkReceiverBlock, NamedBlockItem> getBlockColorMap() {
+    public BlockColorMap<NetworkReceiverBlock, BaseBlockItem> getBlockColorMap() {
         return Blocks.INSTANCE.getNetworkReceiver();
     }
 
@@ -62,5 +63,10 @@ public class NetworkReceiverBlock extends AbstractColoredBlock<NetworkReceiverBl
                                                                   final BlockState blockState,
                                                                   final BlockEntityType<O> type) {
         return TICKER.get(level, type);
+    }
+
+    @Override
+    public BaseBlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this);
     }
 }

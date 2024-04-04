@@ -2,19 +2,22 @@ package com.refinedmods.refinedstorage2.platform.common.security;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.impl.security.SecurityDecisionProviderImpl;
+import com.refinedmods.refinedstorage2.platform.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage2.platform.api.security.SecurityPolicyContainerItem;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleFilteredContainer;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,7 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SecurityManagerBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SecurityDecisionProviderProxyNetworkNode>
-    implements BlockEntityWithDrops, ExtendedMenuProvider {
+    implements BlockEntityWithDrops, NetworkNodeMenuProvider {
     static final int CARD_AMOUNT = 18;
 
     private static final String TAG_SECURITY_CARDS = "sc";
@@ -153,5 +156,35 @@ public class SecurityManagerBlockEntity
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
         return new SecurityManagerContainerMenu(syncId, inventory, this);
+    }
+
+    @Override
+    public boolean canOpen(final ServerPlayer player) {
+        final boolean isAllowedViaSecuritySystem = NetworkNodeMenuProvider.super.canOpen(player)
+            && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, getNode());
+        return isAllowedViaSecuritySystem || isPlacedBy(player.getGameProfile().getId());
+    }
+
+    @Override
+    public boolean canBreakOrRotate(final ServerPlayer player) {
+        return super.canBreakOrRotate(player) || isPlacedBy(player.getGameProfile().getId());
+    }
+
+    @Override
+    public void addOutgoingConnections(final ConnectionSink sink) {
+        for (final Direction direction : Direction.values()) {
+            if (direction == Direction.UP) {
+                continue;
+            }
+            sink.tryConnectInSameDimension(worldPosition.relative(direction), direction.getOpposite());
+        }
+    }
+
+    @Override
+    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
+        if (!colorsAllowConnecting(connectingState)) {
+            return false;
+        }
+        return incomingDirection != Direction.UP;
     }
 }

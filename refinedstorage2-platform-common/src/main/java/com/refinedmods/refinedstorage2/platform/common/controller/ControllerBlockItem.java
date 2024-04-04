@@ -11,29 +11,32 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import java.util.Optional;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class ControllerBlockItem extends AbstractEnergyBlockItem {
-    private final Component name;
+    private final Block block;
 
-    ControllerBlockItem(final Block block, final Component displayName) {
+    ControllerBlockItem(final Block block) {
         super(block, new Item.Properties().stacksTo(1), PlatformApi.INSTANCE.getEnergyItemHelper());
-        this.name = displayName;
+        this.block = block;
     }
 
     @Override
     public Component getDescription() {
-        return name;
+        return block.getName();
     }
 
     @Override
     public Component getName(final ItemStack stack) {
-        return name;
+        return block.getName();
     }
 
     @Override
@@ -50,5 +53,14 @@ public class ControllerBlockItem extends AbstractEnergyBlockItem {
             stack,
             BlockEntities.INSTANCE.getController()
         );
+    }
+
+    @Override
+    protected boolean placeBlock(final BlockPlaceContext ctx, final BlockState state) {
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer
+            && !(PlatformApi.INSTANCE.canPlaceNetworkNode(serverPlayer, ctx.getLevel(), ctx.getClickedPos(), state))) {
+            return false;
+        }
+        return super.placeBlock(ctx, state);
     }
 }

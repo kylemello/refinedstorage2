@@ -20,6 +20,6 @@ public class ControllerBlock extends AbstractControllerBlock<ControllerBlockItem
 
     @Override
     public ControllerBlockItem createBlockItem() {
-        return new ControllerBlockItem(this, name);
+        return new ControllerBlockItem(this);
     }
 }

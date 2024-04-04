@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
@@ -32,7 +32,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements ExtendedMenuProvider, WirelessTransmitter {
+    implements NetworkNodeMenuProvider, WirelessTransmitter {
     private static final String TAG_UPGRADES = "u";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(

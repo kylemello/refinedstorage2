@@ -31,6 +31,7 @@ public final class PacketIds {
         "security_card_reset_permission"
     );
     public static final ResourceLocation SECURITY_CARD_BOUND_PLAYER = createIdentifier("security_card_bound_player");
+    public static final ResourceLocation NO_PERMISSION = createIdentifier("no_permission");
 
     private PacketIds() {
     }

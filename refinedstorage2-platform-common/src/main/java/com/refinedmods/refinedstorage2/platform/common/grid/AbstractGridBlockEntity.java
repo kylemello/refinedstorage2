@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.grid;
 
 import com.refinedmods.refinedstorage2.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcher;
+import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.impl.node.container.NetworkNodeContainerPriorities;
 import com.refinedmods.refinedstorage2.api.network.impl.node.grid.GridNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
@@ -11,9 +12,11 @@ import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
+import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
+import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 
 import java.util.List;
@@ -28,7 +31,7 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<GridNetworkNode>
-    implements Grid, ExtendedMenuProvider {
+    implements Grid, NetworkNodeMenuProvider {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,
                                       final BlockState state,
@@ -49,11 +52,12 @@ public abstract class AbstractGridBlockEntity
     }
 
     @Override
-    public GridOperations createOperations(final ResourceType resourceType,
-                                           final Actor actor) {
-        final StorageChannel storageChannel = requireNonNull(getNode().getNetwork())
-            .getComponent(StorageNetworkComponent.class);
-        return resourceType.createGridOperations(storageChannel, actor);
+    public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
+        final Network network = requireNonNull(getNode().getNetwork());
+        final StorageChannel storageChannel = network.getComponent(StorageNetworkComponent.class);
+        final PlatformSecurityNetworkComponent security = network.getComponent(PlatformSecurityNetworkComponent.class);
+        final GridOperations operations = resourceType.createGridOperations(storageChannel, new PlayerActor(player));
+        return new SecuredGridOperations(player, security, operations);
     }
 
     @Override
