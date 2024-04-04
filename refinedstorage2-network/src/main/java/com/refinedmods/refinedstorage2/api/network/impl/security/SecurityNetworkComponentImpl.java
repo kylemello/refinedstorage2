@@ -37,13 +37,15 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
 
     @Override
     public boolean isAllowed(final Permission permission, final SecurityActor actor) {
-        if (providers.isEmpty()) {
+        final Set<SecurityDecisionProvider> activeProviders = providers.stream()
+            .filter(SecurityDecisionProvider::isActive)
+            .collect(Collectors.toSet());
+        if (activeProviders.isEmpty()) {
             return defaultPolicy.isAllowed(permission);
         }
-        final Set<SecurityDecision> decisions = providers.stream().map(provider -> CoreValidations.validateNotNull(
-            provider.isAllowed(permission, actor),
-            "Decision cannot be null"
-        )).collect(Collectors.toSet());
+        final Set<SecurityDecision> decisions = activeProviders.stream().map(provider ->
+            CoreValidations.validateNotNull(provider.isAllowed(permission, actor), "Decision cannot be null")
+        ).collect(Collectors.toSet());
         final boolean anyDenied = decisions.stream().anyMatch(decision -> decision == SecurityDecision.DENY);
         if (anyDenied) {
             return false;
@@ -52,14 +54,13 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
         if (anyAllowed) {
             return true;
         }
-        return tryFallback(permission);
+        return tryFallback(permission, activeProviders);
     }
 
-    private boolean tryFallback(final Permission permission) {
-        final Set<SecurityDecision> decisions = providers.stream().map(provider -> CoreValidations.validateNotNull(
-            provider.isAllowed(permission),
-            "Decision cannot be null"
-        )).collect(Collectors.toSet());
+    private boolean tryFallback(final Permission permission, final Set<SecurityDecisionProvider> activeProviders) {
+        final Set<SecurityDecision> decisions = activeProviders.stream().map(provider ->
+            CoreValidations.validateNotNull(provider.isAllowed(permission), "Decision cannot be null")
+        ).collect(Collectors.toSet());
         final boolean anyDenied = decisions.stream().anyMatch(decision -> decision == SecurityDecision.DENY);
         if (anyDenied) {
             return false;

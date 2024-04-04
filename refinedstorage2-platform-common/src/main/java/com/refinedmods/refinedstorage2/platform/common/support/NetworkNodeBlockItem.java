@@ -10,7 +10,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO: inactiveness of security manager
 // TODO: fix directionality of security manager (fix shift clicking on place working)
 // TODO: fix slot shuffle security manager w/ fallback
 // TODO: sonar fixes
