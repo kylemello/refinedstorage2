@@ -70,4 +70,9 @@ public class NetworkTransmitterBlock extends AbstractColoredBlock<NetworkTransmi
     public BaseBlockItem createBlockItem() {
         return new NetworkNodeBlockItem(this);
     }
+
+    @Override
+    public boolean canAlwaysConnect() {
+        return true;
+    }
 }

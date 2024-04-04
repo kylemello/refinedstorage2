@@ -140,4 +140,9 @@ public class DetectorBlock extends AbstractDirectionalBlock<Direction>
     public BaseBlockItem createBlockItem() {
         return new NetworkNodeBlockItem(this, HELP);
     }
+
+    @Override
+    public boolean canAlwaysConnect() {
+        return true;
+    }
 }
