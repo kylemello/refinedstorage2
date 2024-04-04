@@ -15,6 +15,10 @@ public final class SecurityHelper {
         if (network == null) {
             return false;
         }
+        return isAllowed(player, permission, network);
+    }
+
+    public static boolean isAllowed(final ServerPlayer player, final Permission permission, final Network network) {
         return network.getComponent(PlatformSecurityNetworkComponent.class).isAllowed(permission, player);
     }
 }

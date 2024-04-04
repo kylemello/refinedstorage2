@@ -48,6 +48,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -186,4 +188,6 @@ public interface PlatformApi {
     PlatformRegistry<PlatformPermission> getPermissionRegistry();
 
     SecurityPolicy createDefaultSecurityPolicy();
+
+    void sendNoPermissionToOpenMessage(ServerPlayer player, Component target);
 }

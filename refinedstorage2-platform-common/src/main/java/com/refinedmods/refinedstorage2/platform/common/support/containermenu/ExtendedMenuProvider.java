@@ -6,8 +6,4 @@ import net.minecraft.world.MenuProvider;
 
 public interface ExtendedMenuProvider extends MenuProvider {
     void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf);
-
-    default boolean isAllowed(ServerPlayer player) {
-        return true;
-    }
 }

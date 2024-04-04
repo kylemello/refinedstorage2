@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 
 import javax.annotation.Nullable;
@@ -37,7 +37,7 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class NetworkTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements ExtendedMenuProvider, BlockEntityWithDrops {
+    implements NetworkNodeMenuProvider, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 
     private static final NetworkTransmitterStatus INACTIVE = NetworkTransmitterStatus.message(

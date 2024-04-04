@@ -93,8 +93,10 @@ import java.util.stream.Collectors;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -103,6 +105,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.saveddata.SavedData;
+
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public class PlatformApiImpl implements PlatformApi {
     private final StorageRepository clientStorageRepository =
@@ -528,5 +532,13 @@ public class PlatformApiImpl implements PlatformApi {
             .stream()
             .filter(PlatformPermission::isAllowedByDefault)
             .collect(Collectors.toSet()));
+    }
+
+    @Override
+    public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
+        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(
+            player,
+            createTranslation("misc", "no_permission.open", target)
+        );
     }
 }

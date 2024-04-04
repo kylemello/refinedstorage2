@@ -1,9 +1,10 @@
 package com.refinedmods.refinedstorage2.platform.common.support;
 
+import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.Sounds;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -29,8 +30,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public abstract class AbstractBaseBlock extends Block {
     protected AbstractBaseBlock(final Properties properties) {
@@ -86,12 +85,9 @@ public abstract class AbstractBaseBlock extends Block {
     }
 
     private void tryOpenScreen(final ServerPlayer player, final MenuProvider menuProvider) {
-        if (menuProvider instanceof ExtendedMenuProvider extendedMenuProvider
-            && !extendedMenuProvider.isAllowed(player)) {
-            Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(
-                player,
-                createTranslation("misc", "no_permission.cannot_modify", extendedMenuProvider.getDisplayName())
-            );
+        if (menuProvider instanceof NetworkNodeMenuProvider networkNodeMenuProvider
+            && !networkNodeMenuProvider.isAllowed(player)) {
+            PlatformApi.INSTANCE.sendNoPermissionToOpenMessage(player, menuProvider.getDisplayName());
             return;
         }
         Platform.INSTANCE.getMenuOpener().openMenu(player, menuProvider);

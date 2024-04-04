@@ -26,7 +26,7 @@ public enum BuiltinPermission implements PlatformPermission {
     /**
      * Whether the player can open network device GUIs.
      */
-    MODIFY("modify"),
+    OPEN("open"),
     /**
      * Whether the player can add or remove network devices.
      */
@@ -40,7 +40,7 @@ public enum BuiltinPermission implements PlatformPermission {
         INSERT,
         EXTRACT,
         AUTOCRAFTING,
-        MODIFY,
+        OPEN,
         BUILD,
         SECURITY
     );

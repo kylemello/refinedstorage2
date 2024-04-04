@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage2.platform.common.support.SchedulingMode;
 import com.refinedmods.refinedstorage2.platform.common.support.SchedulingModeType;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractSchedulingNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode, C>
     extends AbstractUpgradeableNetworkNodeContainerBlockEntity<T>
-    implements ExtendedMenuProvider {
+    implements NetworkNodeMenuProvider {
     protected final FilterWithFuzzyMode filter;
     private final SchedulingMode<C> schedulingMode;
 

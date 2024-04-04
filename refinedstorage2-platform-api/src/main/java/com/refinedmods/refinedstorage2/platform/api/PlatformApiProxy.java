@@ -49,6 +49,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -367,6 +369,11 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public SecurityPolicy createDefaultSecurityPolicy() {
         return ensureLoaded().createDefaultSecurityPolicy();
+    }
+
+    @Override
+    public void sendNoPermissionToOpenMessage(final ServerPlayer player, final Component target) {
+        ensureLoaded().sendNoPermissionToOpenMessage(player, target);
     }
 
     private PlatformApi ensureLoaded() {

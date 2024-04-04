@@ -13,7 +13,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractUpgradeableNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
@@ -34,7 +34,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements ExtendedMenuProvider {
+    implements NetworkNodeMenuProvider {
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_PICKUP_ITEMS = "pi";
 

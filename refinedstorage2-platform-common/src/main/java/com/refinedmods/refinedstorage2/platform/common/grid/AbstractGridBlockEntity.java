@@ -13,7 +13,7 @@ import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<GridNetworkNode>
-    implements Grid, ExtendedMenuProvider {
+    implements Grid, NetworkNodeMenuProvider {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,
                                       final BlockState state,
