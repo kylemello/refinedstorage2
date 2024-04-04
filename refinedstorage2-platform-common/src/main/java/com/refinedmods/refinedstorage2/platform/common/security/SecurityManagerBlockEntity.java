@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.security.SecurityDe
 import com.refinedmods.refinedstorage2.api.network.impl.security.SecurityDecisionProviderImpl;
 import com.refinedmods.refinedstorage2.platform.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage2.platform.api.security.SecurityPolicyContainerItem;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
@@ -16,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -166,5 +168,23 @@ public class SecurityManagerBlockEntity
     @Override
     public boolean canBreak(final ServerPlayer player) {
         return super.canBreak(player) || isPlacedBy(player.getGameProfile().getId());
+    }
+
+    @Override
+    public void addOutgoingConnections(final ConnectionSink sink) {
+        for (final Direction direction : Direction.values()) {
+            if (direction == Direction.UP) {
+                continue;
+            }
+            sink.tryConnectInSameDimension(worldPosition.relative(direction), direction.getOpposite());
+        }
+    }
+
+    @Override
+    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
+        if (!colorsAllowConnecting(connectingState)) {
+            return false;
+        }
+        return incomingDirection != Direction.UP;
     }
 }

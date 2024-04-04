@@ -10,9 +10,9 @@ import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirection;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-public class SecurityManagerBlock extends AbstractDirectionalBlock<BiDirection>
+public class SecurityManagerBlock extends AbstractDirectionalBlock<HorizontalDirection>
     implements ColorableBlock<SecurityManagerBlock, BaseBlockItem>, BlockItemProvider<BaseBlockItem>, EntityBlock {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
@@ -61,8 +61,8 @@ public class SecurityManagerBlock extends AbstractDirectionalBlock<BiDirection>
     }
 
     @Override
-    protected DirectionType<BiDirection> getDirectionType() {
-        return BiDirectionType.INSTANCE;
+    protected DirectionType<HorizontalDirection> getDirectionType() {
+        return HorizontalDirectionType.INSTANCE;
     }
 
     @Override
