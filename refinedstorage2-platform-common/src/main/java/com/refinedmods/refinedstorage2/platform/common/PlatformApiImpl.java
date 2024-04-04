@@ -557,19 +557,15 @@ public class PlatformApiImpl implements PlatformApi {
         for (final Direction direction : Direction.values()) {
             final BlockPos adjacentPos = pos.relative(direction);
             final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
-            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)) {
+            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)
+                || !platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)
+                || platformNetworkNodeContainer.getNode().getNetwork() == null) {
                 continue;
             }
-            if (!platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)) {
-                continue;
-            }
-            final Network network = platformNetworkNodeContainer.getNode().getNetwork();
-            if (network == null) {
-                continue;
-            }
-            final PlatformSecurityNetworkComponent security = network.getComponent(
-                PlatformSecurityNetworkComponent.class
-            );
+            final PlatformSecurityNetworkComponent security = platformNetworkNodeContainer
+                .getNode()
+                .getNetwork()
+                .getComponent(PlatformSecurityNetworkComponent.class);
             if (!security.isAllowed(BuiltinPermission.BUILD, player)) {
                 PlatformApi.INSTANCE.sendNoPermissionMessage(
                     player,

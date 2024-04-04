@@ -9,9 +9,12 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidRes
 
 import javax.annotation.Nullable;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
     private final FluidStorageType.Variant variant;
@@ -47,5 +50,14 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
             return null;
         }
         return new ItemStack(Items.INSTANCE.getFluidStoragePart(variant), count);
+    }
+
+    @Override
+    protected boolean placeBlock(final BlockPlaceContext ctx, final BlockState state) {
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer
+            && !(PlatformApi.INSTANCE.canPlaceNetworkNode(serverPlayer, ctx.getLevel(), ctx.getClickedPos(), state))) {
+            return false;
+        }
+        return super.placeBlock(ctx, state);
     }
 }

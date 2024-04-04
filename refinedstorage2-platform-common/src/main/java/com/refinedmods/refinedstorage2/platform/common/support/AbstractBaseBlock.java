@@ -87,7 +87,7 @@ public abstract class AbstractBaseBlock extends Block {
     private void tryOpenScreen(final ServerPlayer player, final MenuProvider menuProvider) {
         if (menuProvider instanceof NetworkNodeMenuProvider networkNodeMenuProvider
             && !networkNodeMenuProvider.canOpen(player)) {
-            PlatformApi.INSTANCE.sendNoPermissionToOpenMessage(player, menuProvider.getDisplayName());
+            PlatformApi.INSTANCE.sendNoPermissionToOpenMessage(player, getName());
             return;
         }
         Platform.INSTANCE.getMenuOpener().openMenu(player, menuProvider);
