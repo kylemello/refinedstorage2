@@ -128,13 +128,10 @@ public class StorageContainerItemHelperImpl implements StorageContainerItemHelpe
 
     @Override
     public void transferToBlockEntity(final ItemStack stack, final ItemTransferableStorageBlockEntity blockEntity) {
-        getId(stack).ifPresentOrElse(
-            id -> {
-                blockEntity.modifyStorageIdAfterAlreadyInitialized(id);
-                LOGGER.debug("Transferred storage {} to block entity {}", id, blockEntity);
-            },
-            () -> LOGGER.warn("Could not transfer storage from stack to block entity {}, it has no id!", blockEntity)
-        );
+        getId(stack).ifPresent(id -> {
+            blockEntity.modifyStorageIdAfterAlreadyInitialized(id);
+            LOGGER.debug("Transferred storage {} to block entity {}", id, blockEntity);
+        });
     }
 
     @Override

@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,12 +46,8 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
-
     private static final int COLUMNS = 9;
-
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
-    private static final int SELECTION_SLOT_COLOR = -2130706433;
-
     private static final List<String> SEARCH_FIELD_HISTORY = new ArrayList<>();
 
     protected final int bottomHeight;
@@ -235,7 +231,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             renderResourceWithAmount(graphics, slotX, slotY, resource);
         }
         if (inBounds && isOverStorageArea(mouseX, mouseY)) {
-            renderSelection(graphics, slotX, slotY);
+            renderSlotHighlight(graphics, slotX, slotY, 0);
             if (resource != null) {
                 currentGridSlotIndex = idx;
             }
@@ -269,22 +265,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     private void renderDisabledSlot(final GuiGraphics graphics, final int slotX, final int slotY) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
-        graphics.fillGradient(slotX, slotY, slotX + 16, slotY + 16, DISABLED_SLOT_COLOR, DISABLED_SLOT_COLOR);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
-    }
-
-    private void renderSelection(final GuiGraphics graphics, final int slotX, final int slotY) {
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 200);
-        RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
-        graphics.fillGradient(slotX, slotY, slotX + 16, slotY + 16, SELECTION_SLOT_COLOR, SELECTION_SLOT_COLOR);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
-        graphics.pose().popPose();
+        graphics.fillGradient(
+            RenderType.guiOverlay(), slotX, slotY, slotX + 16, slotY + 16, DISABLED_SLOT_COLOR, DISABLED_SLOT_COLOR, 0
+        );
     }
 
     @Override

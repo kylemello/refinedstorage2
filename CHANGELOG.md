@@ -7,6 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+-   The Detector, Network Receiver, Network Transmitter and Security Manager will now always connect regardless of color.
+
+### Fixed
+
+-   Double slot highlighting in the Grid.
+-   Improved data corruption protection for storages.
+
 ## [2.0.0-milestone.3.5] - 2024-04-04
 
 ### Added
