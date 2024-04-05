@@ -34,8 +34,9 @@ class ControllerNetworkNodeTest {
     @Test
     void testStoredAndCapacityWhenInactive() {
         // Arrange
-        sut.setEnergyStorage(new EnergyStorageImpl(100));
-        sut.receive(10, Action.EXECUTE);
+        final EnergyStorageImpl energyStorage = new EnergyStorageImpl(100);
+        energyStorage.receive(10, Action.EXECUTE);
+        sut.setEnergyStorage(energyStorage);
 
         sut.setActive(false);
 
@@ -69,8 +70,9 @@ class ControllerNetworkNodeTest {
     @MethodSource("getStoredAndExpectedState")
     void testCalculatingStates(final long stored, final ControllerEnergyState expectedState) {
         // Arrange
-        sut.setEnergyStorage(new EnergyStorageImpl(100));
-        sut.receive(stored, Action.EXECUTE);
+        final EnergyStorageImpl energyStorage = new EnergyStorageImpl(100);
+        energyStorage.receive(stored, Action.EXECUTE);
+        sut.setEnergyStorage(energyStorage);
 
         // Act
         final ControllerEnergyState state = sut.getState();
@@ -82,8 +84,9 @@ class ControllerNetworkNodeTest {
     @Test
     void testEnergyStateShouldBeOffWhenInactive() {
         // Arrange
-        sut.setEnergyStorage(new EnergyStorageImpl(100));
-        sut.receive(50, Action.EXECUTE);
+        final EnergyStorageImpl energyStorage = new EnergyStorageImpl(100);
+        energyStorage.receive(50, Action.EXECUTE);
+        sut.setEnergyStorage(energyStorage);
         sut.setActive(false);
 
         // Act
@@ -94,29 +97,14 @@ class ControllerNetworkNodeTest {
     }
 
     @Test
-    void shouldReceiveEnergy() {
-        // Arrange
-        sut.setEnergyStorage(new EnergyStorageImpl(100));
-
-        // Act
-        final long inserted = sut.receive(10, Action.EXECUTE);
-
-        // Assert
-        assertThat(inserted).isEqualTo(10);
-        assertThat(sut.getCapacity()).isEqualTo(100);
-        assertThat(sut.getActualCapacity()).isEqualTo(100);
-        assertThat(sut.getStored()).isEqualTo(10);
-        assertThat(sut.getActualStored()).isEqualTo(10);
-    }
-
-    @Test
     void shouldExtractEnergy() {
         // Arrange
-        sut.setEnergyStorage(new EnergyStorageImpl(100));
+        final EnergyStorageImpl energyStorage = new EnergyStorageImpl(100);
+        energyStorage.receive(10, Action.EXECUTE);
+        sut.setEnergyStorage(energyStorage);
 
         // Act
-        sut.receive(10, Action.EXECUTE);
-        final long extracted = sut.extract(20, Action.EXECUTE);
+        final long extracted = sut.extract(20);
 
         // Assert
         assertThat(extracted).isEqualTo(10);
@@ -127,22 +115,9 @@ class ControllerNetworkNodeTest {
     }
 
     @Test
-    void shouldNotReceiveEnergyWithoutEnergyStorage() {
-        // Act
-        final long inserted = sut.receive(10, Action.EXECUTE);
-
-        // Assert
-        assertThat(inserted).isZero();
-        assertThat(sut.getCapacity()).isZero();
-        assertThat(sut.getActualCapacity()).isZero();
-        assertThat(sut.getStored()).isZero();
-        assertThat(sut.getActualStored()).isZero();
-    }
-
-    @Test
     void shouldNotExtractEnergyWithoutEnergyStorage() {
         // Act
-        final long extracted = sut.extract(20, Action.EXECUTE);
+        final long extracted = sut.extract(20);
 
         // Assert
         assertThat(extracted).isZero();
