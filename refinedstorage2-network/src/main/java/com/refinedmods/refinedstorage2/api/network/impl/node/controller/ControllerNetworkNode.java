@@ -1,12 +1,13 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.controller;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyProvider;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
 
 import javax.annotation.Nullable;
 
-public class ControllerNetworkNode extends AbstractNetworkNode implements EnergyStorage {
+public class ControllerNetworkNode extends AbstractNetworkNode implements EnergyProvider {
     @Nullable
     private EnergyStorage energyStorage;
 
@@ -60,19 +61,11 @@ public class ControllerNetworkNode extends AbstractNetworkNode implements Energy
     }
 
     @Override
-    public long receive(final long amount, final Action action) {
+    public long extract(final long amount) {
         if (energyStorage == null) {
             return 0L;
         }
-        return energyStorage.receive(amount, action);
-    }
-
-    @Override
-    public long extract(final long amount, final Action action) {
-        if (energyStorage == null) {
-            return 0L;
-        }
-        return energyStorage.extract(amount, action);
+        return energyStorage.extract(amount, Action.EXECUTE);
     }
 
     @Override

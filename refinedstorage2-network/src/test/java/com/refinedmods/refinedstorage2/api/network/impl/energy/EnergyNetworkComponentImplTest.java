@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.api.network.impl.energy;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.node.controller.ControllerNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
 
@@ -21,64 +22,160 @@ class EnergyNetworkComponentImplTest {
     }
 
     @Test
-    void shouldUpdateEnergyStorageAfterAddingNode() {
+    void shouldNotExtractAnythingWhenNoProvidersAreAvailable() {
         // Arrange
         final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
 
-        final ControllerNetworkNode controller = new ControllerNetworkNode();
-        controller.setActive(true);
-        controller.setEnergyStorage(new EnergyStorageImpl(1000));
-        controller.receive(100, Action.EXECUTE);
-        final NetworkNodeContainer container = () -> controller;
-
         // Act
-        final long extractedBefore = sut.extract(1);
-        final long capacityBefore = sut.getCapacity();
-        final long storedBefore = sut.getStored();
-
-        sut.onContainerAdded(container);
-
-        final long extractedAfter = sut.extract(1);
-        final long capacityAfter = sut.getCapacity();
-        final long storedAfter = sut.getStored();
+        final long extracted = sut.extract(3);
 
         // Assert
-        assertThat(extractedBefore).isZero();
-        assertThat(capacityBefore).isZero();
-        assertThat(storedBefore).isZero();
-
-        assertThat(capacityAfter).isEqualTo(1000);
-        assertThat(storedAfter).isEqualTo(99);
-        assertThat(extractedAfter).isEqualTo(1);
+        assertThat(extracted).isZero();
+        assertThat(sut.getStored()).isZero();
+        assertThat(sut.getCapacity()).isZero();
     }
 
     @Test
-    void shouldUpdateEnergyStorageAfterRemovingNode() {
+    void shouldExtractFromSingleProviderPartly() {
         // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(10);
+        final EnergyStorage b = new EnergyStorageImpl(5);
+
+        a.receive(10, Action.EXECUTE);
+        b.receive(3, Action.EXECUTE);
+
         final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
-
-        final ControllerNetworkNode controller = new ControllerNetworkNode();
-        controller.setEnergyStorage(new EnergyStorageImpl(1000));
-        controller.receive(100, Action.EXECUTE);
-        controller.setActive(true);
-        final NetworkNodeContainer container = () -> controller;
-
-        sut.onContainerAdded(container);
-
-        final long capacityBefore = sut.getCapacity();
-        final long storedBefore = sut.getStored();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
 
         // Act
-        sut.onContainerRemoved(container);
-
-        final long capacityAfter = sut.getCapacity();
-        final long storedAfter = sut.getStored();
+        final long extracted = sut.extract(3);
 
         // Assert
-        assertThat(capacityBefore).isEqualTo(1000);
-        assertThat(storedBefore).isEqualTo(100);
+        assertThat(extracted).isEqualTo(3);
+        assertThat(a.getStored()).isEqualTo(7);
+        assertThat(b.getStored()).isEqualTo(3);
+        assertThat(sut.getCapacity()).isEqualTo(15);
+    }
 
-        assertThat(capacityAfter).isZero();
-        assertThat(storedAfter).isZero();
+    @Test
+    void shouldExtractFromSingleProviderCompletely() {
+        // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(10);
+        final EnergyStorage b = new EnergyStorageImpl(5);
+
+        a.receive(10, Action.EXECUTE);
+        b.receive(3, Action.EXECUTE);
+
+        final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
+
+        // Act
+        final long extracted = sut.extract(10);
+
+        // Assert
+        assertThat(extracted).isEqualTo(10);
+        assertThat(a.getStored()).isZero();
+        assertThat(b.getStored()).isEqualTo(3);
+        assertThat(sut.getCapacity()).isEqualTo(15);
+    }
+
+    @Test
+    void shouldExtractFromMultipleProvidersPartly() {
+        // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(10);
+        final EnergyStorage b = new EnergyStorageImpl(5);
+
+        a.receive(10, Action.EXECUTE);
+        b.receive(3, Action.EXECUTE);
+
+        final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
+
+        // Act
+        final long extracted = sut.extract(11);
+
+        // Assert
+        assertThat(extracted).isEqualTo(11);
+        assertThat(a.getStored()).isZero();
+        assertThat(b.getStored()).isEqualTo(2);
+        assertThat(sut.getCapacity()).isEqualTo(15);
+    }
+
+    @Test
+    void shouldExtractFromMultipleProvidersCompletely() {
+        // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(10);
+        final EnergyStorage b = new EnergyStorageImpl(5);
+
+        a.receive(10, Action.EXECUTE);
+        b.receive(3, Action.EXECUTE);
+
+        final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
+
+        // Act
+        final long extracted = sut.extract(13);
+
+        // Assert
+        assertThat(extracted).isEqualTo(13);
+        assertThat(a.getStored()).isZero();
+        assertThat(b.getStored()).isZero();
+        assertThat(sut.getCapacity()).isEqualTo(15);
+    }
+
+    @Test
+    void shouldExtractFromMultipleProvidersCompletelyMoreThanIsAvailable() {
+        // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(10);
+        final EnergyStorage b = new EnergyStorageImpl(5);
+
+        a.receive(10, Action.EXECUTE);
+        b.receive(3, Action.EXECUTE);
+
+        final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
+
+        // Act
+        final long extracted = sut.extract(14);
+
+        // Assert
+        assertThat(extracted).isEqualTo(13);
+        assertThat(a.getStored()).isZero();
+        assertThat(b.getStored()).isZero();
+        assertThat(sut.getCapacity()).isEqualTo(15);
+    }
+
+    @Test
+    void shouldNotExceedLongMaxWithCapacityOrStored() {
+        // Arrange
+        final EnergyStorage a = new EnergyStorageImpl(Long.MAX_VALUE);
+        final EnergyStorage b = new EnergyStorageImpl(Long.MAX_VALUE);
+
+        a.receive(Long.MAX_VALUE, Action.EXECUTE);
+        b.receive(Long.MAX_VALUE, Action.EXECUTE);
+
+        final EnergyNetworkComponent sut = new EnergyNetworkComponentImpl();
+        sut.onContainerAdded(container(a));
+        sut.onContainerAdded(container(b));
+
+        // Act
+        final long stored = sut.getStored();
+        final long capacity = sut.getCapacity();
+
+        // Assert
+        assertThat(stored).isEqualTo(Long.MAX_VALUE);
+        assertThat(capacity).isEqualTo(Long.MAX_VALUE);
+    }
+
+    private NetworkNodeContainer container(final EnergyStorage energyStorage) {
+        final ControllerNetworkNode controller = new ControllerNetworkNode();
+        controller.setEnergyStorage(energyStorage);
+        controller.setActive(true);
+        return () -> controller;
     }
 }
