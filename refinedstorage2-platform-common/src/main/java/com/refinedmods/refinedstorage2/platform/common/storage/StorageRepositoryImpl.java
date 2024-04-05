@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage2.platform.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
 import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
+import com.refinedmods.refinedstorage2.platform.common.support.AbstractSafeSavedData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.saveddata.SavedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StorageRepositoryImpl extends SavedData implements StorageRepository {
+public class StorageRepositoryImpl extends AbstractSafeSavedData implements StorageRepository {
     public static final String NAME = "refinedstorage2_storages";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageRepositoryImpl.class);
