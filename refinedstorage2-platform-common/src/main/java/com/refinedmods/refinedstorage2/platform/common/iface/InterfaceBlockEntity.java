@@ -49,13 +49,13 @@ public class InterfaceBlockEntity
             state,
             new InterfaceNetworkNode(Platform.INSTANCE.getConfig().getInterface().getEnergyUsage())
         );
-        getNode().setTransferQuotaProvider(InterfaceBlockEntity::getTransferQuota);
+        this.mainNode.setTransferQuotaProvider(InterfaceBlockEntity::getTransferQuota);
         this.filter = FilterWithFuzzyMode.create(createFilterContainer(), this::setChanged);
         this.exportedResources = createExportedResourcesContainer(filter);
         this.exportedResources.setListener(this::setChanged);
-        getNode().setExportState(exportedResources);
+        this.mainNode.setExportState(exportedResources);
         this.exportedResourcesAsContainer = exportedResources.toItemContainer();
-        this.externalStorageProvider = new InterfaceExternalStorageProviderImpl(getNode());
+        this.externalStorageProvider = new InterfaceExternalStorageProviderImpl(mainNode);
     }
 
     static ResourceContainer createFilterContainer() {
@@ -155,5 +155,9 @@ public class InterfaceBlockEntity
 
     InterfaceExternalStorageProvider getExternalStorageProvider() {
         return externalStorageProvider;
+    }
+
+    InterfaceNetworkNode getInterface() {
+        return mainNode;
     }
 }

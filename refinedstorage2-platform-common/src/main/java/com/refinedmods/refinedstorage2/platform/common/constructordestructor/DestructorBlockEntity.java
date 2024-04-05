@@ -53,7 +53,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage()),
             UpgradeDestinations.DESTRUCTOR
         );
-        this.actor = new NetworkNodeActor(getNode());
+        this.actor = new NetworkNodeActor(mainNode);
         this.filterWithFuzzyMode = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
@@ -105,7 +105,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage();
-        getNode().setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -144,13 +144,13 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
     @Override
     public void postDoWork() {
         if (strategy == null
-            || getNode().getNetwork() == null
-            || !getNode().isActive()
+            || mainNode.getNetwork() == null
+            || !mainNode.isActive()
             || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
         final Player fakePlayer = getFakePlayer(serverLevel);
-        strategy.apply(filter, actor, getNode()::getNetwork, fakePlayer);
+        strategy.apply(filter, actor, mainNode::getNetwork, fakePlayer);
     }
 
     @Override

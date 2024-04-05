@@ -3,58 +3,49 @@ package com.refinedmods.refinedstorage2.platform.api.support.network;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.GlobalPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
 
-import static java.util.Objects.requireNonNull;
-
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
 public abstract class AbstractNetworkNodeContainerBlockEntity<T extends NetworkNode> extends BlockEntity
-    implements PlatformNetworkNodeContainer {
-    private final T node;
+    implements NetworkNodeContainerBlockEntity, ConnectionLogic {
+    protected static final String MAIN_CONTAINER_NAME = "main";
+
+    protected final T mainNode;
+    protected final InWorldNetworkNodeContainer mainContainer;
+
+    @Nullable
+    protected Runnable initializationCallback;
+
+    private final Set<InWorldNetworkNodeContainer> containers = new HashSet<>();
 
     protected AbstractNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                       final BlockPos pos,
                                                       final BlockState state,
-                                                      final T node) {
+                                                      final T mainNode) {
         super(type, pos, state);
-        this.node = node;
+        this.mainContainer = createMainContainer(mainNode);
+        this.containers.add(mainContainer);
+        this.mainNode = mainNode;
     }
 
-    @Override
-    public void clearRemoved() {
-        super.clearRemoved();
-        if (level == null || level.isClientSide) {
-            return;
-        }
-        PlatformApi.INSTANCE.requestNetworkNodeInitialization(this, level, this::onNetworkInNodeInitialized);
-    }
-
-    @Override
-    public boolean isContainerRemoved() {
-        return isRemoved();
-    }
-
-    protected void onNetworkInNodeInitialized() {
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        if (level == null || level.isClientSide) {
-            return;
-        }
-        PlatformApi.INSTANCE.requestNetworkNodeRemoval(this, level);
-    }
-
-    @Override
-    public T getNode() {
-        return node;
+    protected InWorldNetworkNodeContainer createMainContainer(final T node) {
+        return PlatformApi.INSTANCE.createInWorldNetworkNodeContainer(
+            this,
+            node,
+            MAIN_CONTAINER_NAME,
+            0,
+            this,
+            null
+        );
     }
 
     @Override
@@ -70,20 +61,23 @@ public abstract class AbstractNetworkNodeContainerBlockEntity<T extends NetworkN
     }
 
     @Override
-    public BlockState getContainerBlockState() {
-        return getBlockState();
+    public void clearRemoved() {
+        super.clearRemoved();
+        containers.forEach(container -> PlatformApi.INSTANCE.onNetworkNodeContainerInitialized(
+            container,
+            level,
+            initializationCallback
+        ));
     }
 
     @Override
-    public GlobalPos getContainerPosition() {
-        return GlobalPos.of(requireNonNull(level).dimension(), worldPosition);
+    public void setRemoved() {
+        super.setRemoved();
+        containers.forEach(container -> PlatformApi.INSTANCE.onNetworkNodeContainerRemoved(container, level));
     }
 
     @Override
-    public String toString() {
-        return "NetworkNodeContainerBlockEntity{"
-            + "node=" + node
-            + ", worldPosition=" + worldPosition
-            + "}";
+    public Set<InWorldNetworkNodeContainer> getContainers() {
+        return containers;
     }
 }

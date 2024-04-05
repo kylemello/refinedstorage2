@@ -1,9 +1,9 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network.bounditem;
 
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemSession;
+import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
         }
         final ItemStack stack = ctx.getPlayer().getItemInHand(ctx.getHand());
         final BlockEntity blockEntity = ctx.getLevel().getBlockEntity(ctx.getClickedPos());
-        if (!(blockEntity instanceof PlatformNetworkNodeContainer)) {
+        if (!(blockEntity instanceof NetworkBoundItemTargetBlockEntity)) {
             return InteractionResult.PASS;
         }
         final CompoundTag tag = stack.getOrCreateTag();

@@ -50,12 +50,12 @@ public class ExternalStorageBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            filters -> getNode().setFilters(filters)
+            mainNode::setFilters
         );
-        getNode().setNormalizer(filter.createNormalizer());
-        getNode().setTrackingRepository(trackedStorageRepository);
+        mainNode.setNormalizer(filter.createNormalizer());
+        mainNode.setTrackingRepository(trackedStorageRepository);
         this.configContainer = new StorageConfigurationContainerImpl(
-            getNode(),
+            mainNode,
             filter,
             this::setChanged,
             this::getRedstoneMode,
@@ -89,7 +89,7 @@ public class ExternalStorageBlockEntity
         if (direction == null) {
             return;
         }
-        getNode().initialize(() -> {
+        mainNode.initialize(() -> {
             final Direction incomingDirection = direction.getOpposite();
             final BlockPos sourcePosition = worldPosition.relative(direction);
             return PlatformApi.INSTANCE
@@ -104,7 +104,7 @@ public class ExternalStorageBlockEntity
     public void doWork() {
         super.doWork();
         if (workRate.canDoWork()) {
-            final boolean hasChanges = getNode().detectChanges();
+            final boolean hasChanges = mainNode.detectChanges();
             if (hasChanges) {
                 LOGGER.debug("External storage @ {} has changed!", worldPosition);
                 workRate.faster();

@@ -1,10 +1,13 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network;
 
+import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.network.AbstractNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
 
@@ -19,13 +22,14 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NetworkNodeContainerBlockEntityImpl<T extends AbstractNetworkNode>
-    extends AbstractNetworkNodeContainerBlockEntity<T> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkNodeContainerBlockEntityImpl.class);
+public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
+    extends AbstractNetworkNodeContainerBlockEntity<T>
+    implements ConnectionLogic, NetworkBoundItemTargetBlockEntity {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
-    public NetworkNodeContainerBlockEntityImpl(final BlockEntityType<?> type,
+    public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
                                                final BlockState state,
                                                final T networkNode) {
@@ -33,16 +37,16 @@ public class NetworkNodeContainerBlockEntityImpl<T extends AbstractNetworkNode>
     }
 
     protected boolean isActive() {
-        final long energyUsage = getNode().getEnergyUsage();
+        final long energyUsage = mainNode.getEnergyUsage();
         final boolean hasLevel = level != null && level.isLoaded(worldPosition);
         return hasLevel
-            && getNode().getNetwork() != null
-            && getNode().getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
+            && mainNode.getNetwork() != null
+            && mainNode.getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
     }
 
     public void updateActiveness(final BlockState state, @Nullable final BooleanProperty activenessProperty) {
         final boolean newActive = isActive();
-        final boolean nodeActivenessNeedsUpdate = newActive != getNode().isActive();
+        final boolean nodeActivenessNeedsUpdate = newActive != mainNode.isActive();
         final boolean blockStateActivenessNeedsUpdate = activenessProperty != null
             && state.getValue(activenessProperty) != newActive;
         final boolean activenessNeedsUpdate = nodeActivenessNeedsUpdate || blockStateActivenessNeedsUpdate;
@@ -57,8 +61,8 @@ public class NetworkNodeContainerBlockEntityImpl<T extends AbstractNetworkNode>
     }
 
     protected void activenessChanged(final boolean newActive) {
-        LOGGER.debug("Activeness change for node at {}: {} -> {}", getBlockPos(), getNode().isActive(), newActive);
-        getNode().setActive(newActive);
+        LOGGER.debug("Activeness change for node at {}: {} -> {}", getBlockPos(), mainNode.isActive(), newActive);
+        mainNode.setActive(newActive);
     }
 
     private void updateActivenessBlockState(final BlockState state,
@@ -76,7 +80,7 @@ public class NetworkNodeContainerBlockEntityImpl<T extends AbstractNetworkNode>
     }
 
     public void doWork() {
-        getNode().doWork();
+        mainNode.doWork();
     }
 
     @Override
@@ -151,9 +155,12 @@ public class NetworkNodeContainerBlockEntityImpl<T extends AbstractNetworkNode>
         if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
             return;
         }
-        if (level == null || level.isClientSide || getNode().getNetwork() == null) {
-            return;
-        }
-        PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
+        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
+    }
+
+    @Nullable
+    @Override
+    public Network getNetworkForBoundItem() {
+        return mainNode.getNetwork();
     }
 }

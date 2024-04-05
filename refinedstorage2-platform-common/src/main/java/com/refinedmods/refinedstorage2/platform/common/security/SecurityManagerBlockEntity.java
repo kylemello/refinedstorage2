@@ -60,7 +60,7 @@ public class SecurityManagerBlockEntity
         );
         securityCards.addListener(c -> invalidate());
         fallbackSecurityCard.addListener(c -> invalidate());
-        getNode().setDelegate(securityDecisionProvider);
+        mainNode.setDelegate(securityDecisionProvider);
     }
 
     private void invalidate() {
@@ -80,7 +80,7 @@ public class SecurityManagerBlockEntity
                     actor -> securityDecisionProvider.setPolicy(actor, policy)));
         }
         energyUsage += updateDefaultPolicyAndGetEnergyUsage();
-        getNode().setEnergyUsage(energyUsage);
+        mainNode.setEnergyUsage(energyUsage);
     }
 
     private long updateDefaultPolicyAndGetEnergyUsage() {
@@ -161,13 +161,13 @@ public class SecurityManagerBlockEntity
     @Override
     public boolean canOpen(final ServerPlayer player) {
         final boolean isAllowedViaSecuritySystem = NetworkNodeMenuProvider.super.canOpen(player)
-            && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, getNode());
+            && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, getContainers());
         return isAllowedViaSecuritySystem || isPlacedBy(player.getGameProfile().getId());
     }
 
     @Override
-    public boolean canBreakOrRotate(final ServerPlayer player) {
-        return super.canBreakOrRotate(player) || isPlacedBy(player.getGameProfile().getId());
+    public boolean canBuild(final ServerPlayer player) {
+        return super.canBuild(player) || isPlacedBy(player.getGameProfile().getId());
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage2.platform.common.grid;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.Network;
-import com.refinedmods.refinedstorage2.api.network.impl.node.grid.GridNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
@@ -129,11 +128,10 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
     }
 
     Optional<Network> getNetwork() {
-        final GridNetworkNode node = getNode();
-        if (!node.isActive()) {
+        if (!mainNode.isActive()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(node.getNetwork());
+        return Optional.ofNullable(mainNode.getNetwork());
     }
 
     Optional<StorageChannel> getStorageChannel() {

@@ -57,7 +57,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
                 propagateAmount();
                 setChanged();
             },
-            filters -> getNode().setConfiguredResource(filters.isEmpty() ? null : filters.get(0))
+            filters -> mainNode.setConfiguredResource(filters.isEmpty() ? null : filters.get(0))
         );
         initialize();
     }
@@ -67,7 +67,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
         super.writeConfiguration(tag);
         filter.save(tag);
         tag.putDouble(TAG_AMOUNT, amount);
-        tag.putInt(TAG_MODE, DetectorModeSettings.getDetectorMode(getNode().getMode()));
+        tag.putInt(TAG_MODE, DetectorModeSettings.getDetectorMode(mainNode.getMode()));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
             this.amount = tag.getDouble(TAG_AMOUNT);
         }
         if (tag.contains(TAG_MODE)) {
-            getNode().setMode(DetectorModeSettings.getDetectorMode(tag.getInt(TAG_MODE)));
+            mainNode.setMode(DetectorModeSettings.getDetectorMode(tag.getInt(TAG_MODE)));
         }
         initialize();
         propagateAmount();
@@ -96,7 +96,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
             ? (long) amount
             : configuredResource.getResourceType().normalizeAmount(amount);
         LOGGER.debug("Updating detector amount of {} normalized as {}", amount, normalizedAmount);
-        getNode().setAmount(normalizedAmount);
+        mainNode.setAmount(normalizedAmount);
     }
 
     boolean isFuzzyMode() {
@@ -109,12 +109,12 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     }
 
     void setMode(final DetectorMode mode) {
-        getNode().setMode(mode);
+        mainNode.setMode(mode);
         setChanged();
     }
 
     DetectorMode getMode() {
-        return getNode().getMode();
+        return mainNode.getMode();
     }
 
     private void initialize() {
@@ -122,7 +122,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
         final DetectorAmountStrategy strategy = isFuzzyMode()
             ? new FuzzyDetectorAmountStrategy(defaultStrategy)
             : defaultStrategy;
-        getNode().setAmountStrategy(strategy);
+        mainNode.setAmountStrategy(strategy);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     @Override
     public void updateActiveness(final BlockState state, @Nullable final BooleanProperty activenessProperty) {
         super.updateActiveness(state, activenessProperty);
-        final boolean powered = getNode().isActive() && getNode().isActivated();
+        final boolean powered = mainNode.isActive() && mainNode.isActivated();
         final boolean needToUpdatePowered = state.getValue(DetectorBlock.POWERED) != powered;
         if (level != null && needToUpdatePowered && poweredChangeRateLimiter.tryAcquire()) {
             level.setBlockAndUpdate(getBlockPos(), state.setValue(DetectorBlock.POWERED, powered));

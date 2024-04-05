@@ -53,7 +53,7 @@ public class ConstructorBlockEntity
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage()),
             UpgradeDestinations.CONSTRUCTOR
         );
-        this.actor = new NetworkNodeActor(getNode());
+        this.actor = new NetworkNodeActor(mainNode);
     }
 
     @Override
@@ -87,14 +87,14 @@ public class ConstructorBlockEntity
     @Override
     public void postDoWork() {
         if (taskExecutor == null
-            || getNode().getNetwork() == null
-            || !getNode().isActive()
+            || mainNode.getNetwork() == null
+            || !mainNode.isActive()
             || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
         final Player fakePlayer = getFakePlayer(serverLevel);
         taskExecutor.execute(tasks, new TaskContext(
-            getNode().getNetwork(),
+            mainNode.getNetwork(),
             fakePlayer
         ));
     }
@@ -139,7 +139,7 @@ public class ConstructorBlockEntity
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
-        getNode().setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override

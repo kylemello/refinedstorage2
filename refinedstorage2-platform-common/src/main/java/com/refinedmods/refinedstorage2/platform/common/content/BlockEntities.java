@@ -21,7 +21,7 @@ import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.Abst
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
-import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlockEntity;
 
 import java.util.EnumMap;
@@ -37,7 +37,7 @@ public final class BlockEntities {
     public static final BlockEntities INSTANCE = new BlockEntities();
 
     @Nullable
-    private Supplier<BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>>> cable;
+    private Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> cable;
     @Nullable
     private Supplier<BlockEntityType<AbstractDiskDriveBlockEntity>> diskDrive;
     @Nullable
@@ -84,12 +84,12 @@ public final class BlockEntities {
     private BlockEntities() {
     }
 
-    public BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>> getCable() {
+    public BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>> getCable() {
         return requireNonNull(cable).get();
     }
 
     public void setCable(
-        final Supplier<BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>>> supplier
+        final Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> supplier
     ) {
         this.cable = supplier;
     }

@@ -57,16 +57,16 @@ public class ImporterBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            filters -> getNode().setFilters(filters)
+            mainNode::setFilters
         );
-        getNode().setNormalizer(filter.createNormalizer());
+        this.mainNode.setNormalizer(filter.createNormalizer());
     }
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         final List<ImporterTransferStrategy> strategies = createStrategies(level, direction);
         LOGGER.debug("Initialized importer at {} with strategies {}", worldPosition, strategies);
-        getNode().setTransferStrategies(strategies);
+        mainNode.setTransferStrategies(strategies);
     }
 
     private List<ImporterTransferStrategy> createStrategies(final ServerLevel serverLevel, final Direction direction) {
@@ -83,7 +83,7 @@ public class ImporterBlockEntity
     @Override
     public void writeConfiguration(final CompoundTag tag) {
         super.writeConfiguration(tag);
-        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(getNode().getFilterMode()));
+        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
         filter.save(tag);
     }
 
@@ -91,7 +91,7 @@ public class ImporterBlockEntity
     public void readConfiguration(final CompoundTag tag) {
         super.readConfiguration(tag);
         if (tag.contains(TAG_FILTER_MODE)) {
-            getNode().setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
+            mainNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
         }
         filter.load(tag);
     }
@@ -105,18 +105,18 @@ public class ImporterBlockEntity
     }
 
     FilterMode getFilterMode() {
-        return getNode().getFilterMode();
+        return mainNode.getFilterMode();
     }
 
     void setFilterMode(final FilterMode mode) {
-        getNode().setFilterMode(mode);
+        mainNode.setFilterMode(mode);
         setChanged();
     }
 
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getImporter().getEnergyUsage();
-        getNode().setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
