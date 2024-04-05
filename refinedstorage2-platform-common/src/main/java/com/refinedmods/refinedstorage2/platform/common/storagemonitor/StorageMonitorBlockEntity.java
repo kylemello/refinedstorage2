@@ -79,7 +79,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
 
     private void trySendDisplayUpdate(final Level level) {
         final long amount = getAmount();
-        final boolean active = getNode().isActive();
+        final boolean active = mainNode.isActive();
         if ((amount != currentAmount || active != currentlyActive) && displayUpdateRateLimiter.tryAcquire()) {
             sendDisplayUpdate(level, amount, active);
         }
@@ -90,7 +90,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (configuredResource == null) {
             return 0;
         }
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (network == null) {
             return 0;
         }
@@ -109,7 +109,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (level == null) {
             return;
         }
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (network == null) {
             return;
         }
@@ -154,7 +154,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     private boolean doInsert(final Player player, final InteractionHand hand) {
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (network == null) {
             return false;
         }
@@ -195,7 +195,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     private boolean doInsertAll(final Player player, final ItemResource lastInsertedItem) {
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (network == null) {
             return false;
         }
@@ -313,7 +313,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (level == null) {
             return;
         }
-        sendDisplayUpdate(level, getAmount(), getNode().isActive());
+        sendDisplayUpdate(level, getAmount(), mainNode.isActive());
     }
 
     private void sendDisplayUpdate(final Level level, final long amount, final boolean active) {

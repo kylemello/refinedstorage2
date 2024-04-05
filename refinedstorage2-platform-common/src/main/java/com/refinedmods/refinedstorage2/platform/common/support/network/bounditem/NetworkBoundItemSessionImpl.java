@@ -3,9 +3,8 @@ package com.refinedmods.refinedstorage2.platform.common.support.network.boundite
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemSession;
+import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitter;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
@@ -19,14 +18,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
+class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
     private final Player player;
     private final Vec3 playerPosition;
     private final SlotReference slotReference;
     @Nullable
     private final NetworkReference networkReference;
 
-    public NetworkBoundItemSessionImpl(
+    NetworkBoundItemSessionImpl(
         final Player player,
         final SlotReference slotReference,
         @Nullable final NetworkReference networkReference
@@ -50,10 +49,9 @@ public class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
             .map(server -> server.getLevel(networkReference.dimensionKey()))
             .filter(level -> level.isLoaded(networkReference.pos()))
             .map(level -> level.getBlockEntity(networkReference.pos()))
-            .filter(PlatformNetworkNodeContainer.class::isInstance)
-            .map(PlatformNetworkNodeContainer.class::cast)
-            .map(PlatformNetworkNodeContainer::getNode)
-            .map(NetworkNode::getNetwork)
+            .filter(NetworkBoundItemTargetBlockEntity.class::isInstance)
+            .map(NetworkBoundItemTargetBlockEntity.class::cast)
+            .map(NetworkBoundItemTargetBlockEntity::getNetworkForBoundItem)
             .filter(this::isInRange);
     }
 

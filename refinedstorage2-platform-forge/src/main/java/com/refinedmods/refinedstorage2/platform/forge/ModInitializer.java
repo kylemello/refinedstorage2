@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.forge;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
@@ -438,9 +438,9 @@ public class ModInitializer extends AbstractModInitializer {
     @SubscribeEvent
     public void registerSecurityBlockBreakEvent(final BlockEvent.BreakEvent e) {
         final BlockEntity blockEntity = e.getLevel().getBlockEntity(e.getPos());
-        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
+        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
             && e.getPlayer() instanceof ServerPlayer serverPlayer
-            && !platformNetworkNodeContainer.canBreakOrRotate(serverPlayer)) {
+            && !networkNodeContainerBlockEntity.canBuild(serverPlayer)) {
             PlatformApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,
                 createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())

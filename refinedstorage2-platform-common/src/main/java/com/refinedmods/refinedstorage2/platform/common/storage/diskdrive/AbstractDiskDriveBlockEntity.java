@@ -60,21 +60,24 @@ public abstract class AbstractDiskDriveBlockEntity
             Platform.INSTANCE.getConfig().getDiskDrive().getEnergyUsagePerDisk(),
             AMOUNT_OF_DISKS
         ));
-        this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(slot), getNode().getSize());
+        this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(slot), mainNode.getSize());
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            filters -> getNode().setFilters(filters)
+            mainNode::setFilters
         );
         this.configContainer = new StorageConfigurationContainerImpl(
-            getNode(),
+            mainNode,
             filter,
             this::setChanged,
             this::getRedstoneMode,
             this::setRedstoneMode
         );
-        getNode().setListener(diskStateListener);
-        getNode().setNormalizer(filter.createNormalizer());
+        this.mainNode.setListener(diskStateListener);
+        this.mainNode.setNormalizer(filter.createNormalizer());
+        // It's important to sync here as the initial update packet might have failed as the network
+        // could possibly be not initialized yet.
+        this.initializationCallback = diskStateListener::immediateUpdate;
     }
 
     @Nullable
@@ -123,7 +126,7 @@ public abstract class AbstractDiskDriveBlockEntity
 
     private void initialize(final Level level) {
         diskInventory.setStorageRepository(PlatformApi.INSTANCE.getStorageRepository(level));
-        getNode().setProvider(diskInventory);
+        mainNode.setProvider(diskInventory);
     }
 
     @Override
@@ -169,21 +172,13 @@ public abstract class AbstractDiskDriveBlockEntity
         // Level will not yet be present
         final boolean isJustPlacedIntoLevelOrLoading = level == null || level.isClientSide();
         // Level will be present, but network not yet
-        final boolean isPlacedThroughDismantlingMode = getNode().getNetwork() == null;
+        final boolean isPlacedThroughDismantlingMode = mainNode.getNetwork() == null;
         if (isJustPlacedIntoLevelOrLoading || isPlacedThroughDismantlingMode) {
             return;
         }
-        getNode().onStorageChanged(slot);
+        mainNode.onStorageChanged(slot);
         diskStateListener.immediateUpdate();
         setChanged();
-    }
-
-    @Override
-    protected void onNetworkInNodeInitialized() {
-        super.onNetworkInNodeInitialized();
-        // It's important to sync here as the initial update packet might have failed as the network
-        // could possibly be not initialized yet.
-        diskStateListener.immediateUpdate();
     }
 
     private void fromClientTag(final CompoundTag tag) {
@@ -207,10 +202,10 @@ public abstract class AbstractDiskDriveBlockEntity
     public CompoundTag getUpdateTag() {
         final CompoundTag tag = new CompoundTag();
         // This null check is important. #getUpdateTag() can be called before the node's network is initialized!
-        if (getNode().getNetwork() == null) {
+        if (mainNode.getNetwork() == null) {
             return tag;
         }
-        tag.put(TAG_DISKS, diskInventory.toSyncTag(getNode()::getState));
+        tag.put(TAG_DISKS, diskInventory.toSyncTag(mainNode::getState));
         return tag;
     }
 

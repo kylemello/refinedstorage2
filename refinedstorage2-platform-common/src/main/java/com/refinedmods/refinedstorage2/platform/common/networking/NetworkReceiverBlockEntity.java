@@ -1,16 +1,16 @@
 package com.refinedmods.refinedstorage2.platform.common.networking;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
-import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
-
-import javax.annotation.Nullable;
+import com.refinedmods.refinedstorage2.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class NetworkReceiverBlockEntity extends NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode> {
+public class NetworkReceiverBlockEntity extends BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode> {
     public NetworkReceiverBlockEntity(final BlockPos pos, final BlockState state) {
         super(
             BlockEntities.INSTANCE.getNetworkReceiver(),
@@ -20,9 +20,15 @@ public class NetworkReceiverBlockEntity extends NetworkNodeContainerBlockEntityI
         );
     }
 
-    @Nullable
     @Override
-    public Object createKey() {
-        return new NetworkReceiverKey(getContainerPosition());
+    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode node) {
+        return PlatformApi.INSTANCE.createInWorldNetworkNodeContainer(
+            this,
+            node,
+            MAIN_CONTAINER_NAME,
+            0,
+            this,
+            () -> new NetworkReceiverKey(mainContainer.getPosition())
+        );
     }
 }

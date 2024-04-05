@@ -3,13 +3,16 @@ package com.refinedmods.refinedstorage2.platform.common.support.network;
 import com.refinedmods.refinedstorage2.api.network.ConnectionProvider;
 import com.refinedmods.refinedstorage2.api.network.Connections;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,18 +39,18 @@ public class ConnectionProviderImpl implements ConnectionProvider {
     @Override
     public Connections findConnections(final NetworkNodeContainer pivot,
                                        final Set<NetworkNodeContainer> existingConnections) {
-        final Set<PlatformNetworkNodeContainer> existingPlatformConnections = existingConnections.stream()
-            .filter(PlatformNetworkNodeContainer.class::isInstance)
-            .map(PlatformNetworkNodeContainer.class::cast)
+        final Set<InWorldNetworkNodeContainer> existingInWorldConnections = existingConnections.stream()
+            .filter(InWorldNetworkNodeContainer.class::isInstance)
+            .map(InWorldNetworkNodeContainer.class::cast)
             .collect(Collectors.toSet());
         LOGGER.debug(
             "Finding connections for pivot {} with {} existing connections",
             pivot,
             existingConnections.size()
         );
-        final ScanState scanState = new ScanState(existingPlatformConnections);
+        final ScanState scanState = new ScanState(existingInWorldConnections);
         addStartContainer(pivot, scanState);
-        PlatformNetworkNodeContainer currentContainer;
+        InWorldNetworkNodeContainer currentContainer;
         int requests = 0;
         while ((currentContainer = scanState.toCheck.poll()) != null) {
             visit(scanState, new ScanEntry(currentContainer));
@@ -65,7 +68,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
     }
 
     private void addStartContainer(final NetworkNodeContainer pivot, final ScanState scanState) {
-        if (!(pivot instanceof PlatformNetworkNodeContainer platformPivot)) {
+        if (!(pivot instanceof InWorldNetworkNodeContainer platformPivot)) {
             return;
         }
         scanState.toCheck.add(platformPivot);
@@ -80,48 +83,44 @@ public class ConnectionProviderImpl implements ConnectionProvider {
             state.newEntries.add(entry);
         }
         state.removedEntries.remove(entry);
-        final List<PlatformNetworkNodeContainer> connections = findConnectionsAt(entry.getContainer());
+        final List<InWorldNetworkNodeContainer> connections = findConnectionsAt(entry.getContainer());
         state.toCheck.addAll(connections);
     }
 
-    private List<PlatformNetworkNodeContainer> findConnectionsAt(final PlatformNetworkNodeContainer from) {
-        final ConnectionSinkImpl sink = new ConnectionSinkImpl(from.getContainerPosition());
+    private List<InWorldNetworkNodeContainer> findConnectionsAt(final InWorldNetworkNodeContainer from) {
+        final GlobalPos pos = from.getPosition();
+        final ConnectionSinkImpl sink = new ConnectionSinkImpl(pos);
         from.addOutgoingConnections(sink);
-        final List<PlatformNetworkNodeContainer> connections = new ArrayList<>();
+        final List<InWorldNetworkNodeContainer> connections = new ArrayList<>();
         for (final ConnectionSinkImpl.Connection connection : sink.getConnections()) {
-            final PlatformNetworkNodeContainer connectionContainer = getConnection(from, connection);
-            if (connectionContainer != null) {
-                connections.add(connectionContainer);
-            }
+            connections.addAll(getConnections(from, connection));
         }
         return connections;
     }
 
-    @Nullable
-    private PlatformNetworkNodeContainer getConnection(final PlatformNetworkNodeContainer from,
-                                                       final ConnectionSinkImpl.Connection connection) {
+    private Set<InWorldNetworkNodeContainer> getConnections(final InWorldNetworkNodeContainer from,
+                                                            final ConnectionSinkImpl.Connection connection) {
         final BlockEntity connectionBlockEntity = getBlockEntitySafely(connection.pos());
-        if (!(connectionBlockEntity instanceof PlatformNetworkNodeContainer connectionContainer)) {
-            return null;
+        if (!(connectionBlockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity)) {
+            return Collections.emptySet();
         }
         if (connection.incomingDirection() == null) {
-            return connectionContainer;
+            return networkNodeContainerBlockEntity.getContainers();
         }
-        final boolean acceptsIncomingDirection = connectionContainer.canAcceptIncomingConnection(
-            connection.incomingDirection(),
-            from.getContainerBlockState()
-        );
-        if (!acceptsIncomingDirection) {
-            return null;
-        }
-        return connectionContainer;
+        return networkNodeContainerBlockEntity.getContainers()
+            .stream()
+            .filter(container -> container.canAcceptIncomingConnection(
+                connection.incomingDirection(),
+                from.getBlockState()
+            ))
+            .collect(Collectors.toSet());
     }
 
     @Override
     public List<NetworkNodeContainer> sortDeterministically(final Set<NetworkNodeContainer> containers) {
         return containers
             .stream()
-            .sorted(Comparator.comparing(container -> ((BlockEntity) container).getBlockPos()))
+            .sorted(Comparator.comparing(container -> ((InWorldNetworkNodeContainer) container).getLocalPosition()))
             .toList();
     }
 
@@ -161,9 +160,9 @@ public class ConnectionProviderImpl implements ConnectionProvider {
         private final Set<ScanEntry> foundEntries = new HashSet<>();
         private final Set<ScanEntry> newEntries = new HashSet<>();
         private final Set<ScanEntry> removedEntries;
-        private final Queue<PlatformNetworkNodeContainer> toCheck = new ArrayDeque<>();
+        private final Queue<InWorldNetworkNodeContainer> toCheck = new ArrayDeque<>();
 
-        ScanState(final Set<PlatformNetworkNodeContainer> existingConnections) {
+        ScanState(final Set<InWorldNetworkNodeContainer> existingConnections) {
             this.currentEntries = toScanEntries(existingConnections);
             this.removedEntries = new HashSet<>(currentEntries);
         }
@@ -180,21 +179,23 @@ public class ConnectionProviderImpl implements ConnectionProvider {
             return entries.stream().map(ScanEntry::getContainer).collect(Collectors.toSet());
         }
 
-        private static Set<ScanEntry> toScanEntries(final Set<PlatformNetworkNodeContainer> existingConnections) {
+        private static Set<ScanEntry> toScanEntries(final Set<InWorldNetworkNodeContainer> existingConnections) {
             return existingConnections.stream().map(ScanEntry::new).collect(Collectors.toSet());
         }
     }
 
     private static class ScanEntry {
-        private final PlatformNetworkNodeContainer container;
+        private final InWorldNetworkNodeContainer container;
         private final GlobalPos pos;
+        private final String name;
 
-        ScanEntry(final PlatformNetworkNodeContainer container) {
+        ScanEntry(final InWorldNetworkNodeContainer container) {
             this.container = container;
-            this.pos = container.getContainerPosition();
+            this.pos = container.getPosition();
+            this.name = container.getName();
         }
 
-        public PlatformNetworkNodeContainer getContainer() {
+        private InWorldNetworkNodeContainer getContainer() {
             return container;
         }
 
@@ -206,13 +207,13 @@ public class ConnectionProviderImpl implements ConnectionProvider {
             if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-            final ScanEntry that = (ScanEntry) o;
-            return pos.equals(that.pos);
+            final ScanEntry scanEntry = (ScanEntry) o;
+            return Objects.equals(pos, scanEntry.pos) && Objects.equals(name, scanEntry.name);
         }
 
         @Override
         public int hashCode() {
-            return pos.hashCode();
+            return Objects.hash(pos, name);
         }
     }
 }

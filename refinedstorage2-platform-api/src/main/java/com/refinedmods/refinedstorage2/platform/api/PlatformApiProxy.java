@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
@@ -30,7 +31,8 @@ import com.refinedmods.refinedstorage2.platform.api.storage.externalstorage.Plat
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceFactory;
@@ -46,6 +48,7 @@ import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.Wireless
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -58,6 +61,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -178,20 +182,41 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public void requestNetworkNodeInitialization(final PlatformNetworkNodeContainer container,
-                                                 final Level level,
-                                                 final Runnable callback) {
-        ensureLoaded().requestNetworkNodeInitialization(container, level, callback);
+    public InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(
+        final BlockEntity blockEntity,
+        final NetworkNode node,
+        final String name,
+        final int priority,
+        final ConnectionLogic connectionLogic,
+        @Nullable final Supplier<Object> keyProvider
+    ) {
+        return ensureLoaded().createInWorldNetworkNodeContainer(
+            blockEntity,
+            node,
+            name,
+            priority,
+            connectionLogic,
+            keyProvider
+        );
     }
 
     @Override
-    public void requestNetworkNodeRemoval(final PlatformNetworkNodeContainer container, final Level level) {
-        ensureLoaded().requestNetworkNodeRemoval(container, level);
+    public void onNetworkNodeContainerInitialized(final InWorldNetworkNodeContainer container,
+                                                  @Nullable final Level level,
+                                                  @Nullable final Runnable callback) {
+        ensureLoaded().onNetworkNodeContainerInitialized(container, level, callback);
     }
 
     @Override
-    public void requestNetworkNodeUpdate(final PlatformNetworkNodeContainer container, final Level level) {
-        ensureLoaded().requestNetworkNodeUpdate(container, level);
+    public void onNetworkNodeContainerRemoved(final InWorldNetworkNodeContainer container,
+                                              @Nullable final Level level) {
+        ensureLoaded().onNetworkNodeContainerRemoved(container, level);
+    }
+
+    @Override
+    public void onNetworkNodeContainerUpdated(final InWorldNetworkNodeContainer container,
+                                              @Nullable final Level level) {
+        ensureLoaded().onNetworkNodeContainerUpdated(container, level);
     }
 
     @Override

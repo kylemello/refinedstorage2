@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
-import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitter;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
@@ -21,18 +21,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeMenuProvider, WirelessTransmitter {
+    implements NetworkNodeMenuProvider {
     private static final String TAG_UPGRADES = "u";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
@@ -45,6 +42,11 @@ public class WirelessTransmitterBlockEntity
         super(BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage()
         ));
+    }
+
+    @Override
+    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode node) {
+        return new WirelessTransmitterNetworkNodeContainer(this, node, MAIN_CONTAINER_NAME, this);
     }
 
     @Override
@@ -107,24 +109,7 @@ public class WirelessTransmitterBlockEntity
 
     private void configureAccordingToUpgrades() {
         final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
-        getNode().setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
-    }
-
-    @Override
-    public boolean isInRange(final ResourceKey<Level> dimension, final Vec3 position) {
-        final Level level = getLevel();
-        if (level == null || level.dimension() != dimension) {
-            return false;
-        }
-        if (!getNode().isActive()) {
-            return false;
-        }
-        final double distance = Math.sqrt(
-            Math.pow(getBlockPos().getX() - position.x(), 2)
-                + Math.pow(getBlockPos().getY() - position.y(), 2)
-                + Math.pow(getBlockPos().getZ() - position.z(), 2)
-        );
-        return distance <= getRange();
+        mainNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
     }
 
     @Override

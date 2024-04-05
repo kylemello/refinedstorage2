@@ -50,7 +50,7 @@ public class ExporterBlockEntity
     protected void initialize(final ServerLevel level, final Direction direction) {
         final ExporterTransferStrategy strategy = createStrategy(level, direction);
         LOGGER.debug("Initialized exporter at {} with strategy {}", worldPosition, strategy);
-        getNode().setTransferStrategy(strategy);
+        mainNode.setTransferStrategy(strategy);
     }
 
     private ExporterTransferStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
@@ -75,7 +75,7 @@ public class ExporterBlockEntity
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getExporter().getEnergyUsage();
-        getNode().setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -91,12 +91,12 @@ public class ExporterBlockEntity
 
     @Override
     protected void setTaskExecutor(final TaskExecutor<ExporterNetworkNode.TaskContext> taskExecutor) {
-        getNode().setTaskExecutor(taskExecutor);
+        mainNode.setTaskExecutor(taskExecutor);
     }
 
     @Override
     protected void setFilters(final List<ResourceKey> filters) {
-        getNode().setFilters(filters);
+        mainNode.setFilters(filters);
     }
 
     @Override

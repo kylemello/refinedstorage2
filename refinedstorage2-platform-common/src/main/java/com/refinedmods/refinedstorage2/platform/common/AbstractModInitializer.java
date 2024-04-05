@@ -98,7 +98,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockI
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
-import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
@@ -521,7 +521,7 @@ public abstract class AbstractModInitializer {
     ) {
         BlockEntities.INSTANCE.setCable(callback.register(
             CABLE,
-            () -> typeFactory.create((pos, state) -> new NetworkNodeContainerBlockEntityImpl<>(
+            () -> typeFactory.create((pos, state) -> new BaseNetworkNodeContainerBlockEntity<>(
                 BlockEntities.INSTANCE.getCable(),
                 pos,
                 state,

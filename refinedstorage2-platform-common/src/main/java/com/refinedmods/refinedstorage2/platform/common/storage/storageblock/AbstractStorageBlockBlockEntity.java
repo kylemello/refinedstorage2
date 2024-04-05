@@ -49,16 +49,16 @@ abstract class AbstractStorageBlockBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(resourceFactory),
             this::setChanged,
-            filters -> getNode().setFilters(filters)
+            mainNode::setFilters
         );
         this.configContainer = new StorageConfigurationContainerImpl(
-            getNode(),
+            mainNode,
             filter,
             this::setChanged,
             this::getRedstoneMode,
             this::setRedstoneMode
         );
-        getNode().setNormalizer(filter.createNormalizer());
+        mainNode.setNormalizer(filter.createNormalizer());
     }
 
     protected abstract Storage createStorage(Runnable listener);
@@ -80,11 +80,11 @@ abstract class AbstractStorageBlockBlockEntity
             storageId = UUID.randomUUID();
             final Storage storage = createStorage(storageRepository::markAsChanged);
             storageRepository.set(storageId, storage);
-            getNode().setStorage(storage);
+            mainNode.setStorage(storage);
         } else {
             // The existing block entity got loaded in the level (#load(CompoundTag) -> #setLevel(Level)).
             storageRepository.get(storageId).ifPresentOrElse(
-                storage -> getNode().setStorage(storage),
+                mainNode::setStorage,
                 () -> LOGGER.warn("Storage {} could not be resolved", storageId)
             );
         }
@@ -136,7 +136,7 @@ abstract class AbstractStorageBlockBlockEntity
             () -> LOGGER.warn("Unneeded storage {} could not be removed", storageId)
         );
         storageRepository.get(actualStorageId).ifPresentOrElse(
-            storage -> getNode().setStorage(storage),
+            mainNode::setStorage,
             () -> LOGGER.warn("Actual storage ID {} could not be resolved!", actualStorageId)
         );
     }
@@ -173,8 +173,8 @@ abstract class AbstractStorageBlockBlockEntity
 
     @Override
     public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        buf.writeLong(getNode().getStored());
-        buf.writeLong(getNode().getCapacity());
+        buf.writeLong(mainNode.getStored());
+        buf.writeLong(mainNode.getCapacity());
         filter.getFilterContainer().writeToUpdatePacket(buf);
     }
 }

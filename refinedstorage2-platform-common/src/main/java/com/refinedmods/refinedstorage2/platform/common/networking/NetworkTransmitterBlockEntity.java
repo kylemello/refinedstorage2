@@ -64,11 +64,11 @@ public class NetworkTransmitterBlockEntity
             Platform.INSTANCE.getConfig().getNetworkTransmitter().getEnergyUsage()
         ));
         networkCardInventory.addListener(container -> {
-            setChanged();
             updateReceiverLocation();
             if (level != null) {
                 LOGGER.debug("Network card was changed at {}, sending network update", worldPosition);
-                PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
+                setChanged();
+                PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
             }
         });
     }
@@ -76,10 +76,7 @@ public class NetworkTransmitterBlockEntity
     @Override
     protected void activenessChanged(final boolean newActive) {
         super.activenessChanged(newActive);
-        if (level == null) {
-            return;
-        }
-        PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
+        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
     }
 
     public void updateStateInLevel(final BlockState state) {
@@ -98,7 +95,7 @@ public class NetworkTransmitterBlockEntity
         if (receiverKey == null) {
             return NetworkTransmitterState.ERROR;
         }
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (network == null) {
             return NetworkTransmitterState.ERROR;
         }
@@ -107,7 +104,7 @@ public class NetworkTransmitterBlockEntity
     }
 
     NetworkTransmitterStatus getStatus() {
-        final Network network = getNode().getNetwork();
+        final Network network = mainNode.getNetwork();
         if (!isActive() || network == null || level == null) {
             return INACTIVE;
         }
@@ -129,25 +126,22 @@ public class NetworkTransmitterBlockEntity
     @Override
     public void doWork() {
         super.doWork();
-        if (!isActive() || getNode().getNetwork() == null || receiverKey == null) {
+        if (!isActive() || mainNode.getNetwork() == null || receiverKey == null) {
             return;
         }
-        final boolean receiverFound = isReceiverFoundInNetwork(getNode().getNetwork(), receiverKey);
+        final boolean receiverFound = isReceiverFoundInNetwork(mainNode.getNetwork(), receiverKey);
         if (!receiverFound && networkRebuildRetryRateLimiter.tryAcquire()) {
             tryReconnectingWithReceiver();
         }
     }
 
     private void tryReconnectingWithReceiver() {
-        if (level == null) {
-            return;
-        }
         LOGGER.debug(
             "Receiver {} was not found in network for transmitter at {}, retrying and sending network update",
             receiverKey,
             worldPosition
         );
-        PlatformApi.INSTANCE.requestNetworkNodeUpdate(this, level);
+        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
     }
 
     private static boolean isReceiverFoundInNetwork(final Network network, final NetworkReceiverKey key) {

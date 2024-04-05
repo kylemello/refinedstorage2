@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.fabric.security;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 
 import javax.annotation.Nullable;
 
@@ -22,9 +22,9 @@ public class NetworkNodeBreakSecurityEventListener implements PlayerBlockBreakEv
                                     final BlockPos pos,
                                     final BlockState state,
                                     @Nullable final BlockEntity blockEntity) {
-        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
+        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
             && player instanceof ServerPlayer serverPlayer
-            && !platformNetworkNodeContainer.canBreakOrRotate(serverPlayer)) {
+            && !networkNodeContainerBlockEntity.canBuild(serverPlayer)) {
             PlatformApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,
                 createTranslation("misc", "no_permission.build.break", state.getBlock().getName())
