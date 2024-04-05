@@ -50,7 +50,15 @@ public abstract class AbstractSideButtonWidget extends Button {
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         graphics.blit(getTextureIdentifier(), getX(), getY(), 238, isHovered ? 35 : 16, WIDTH, HEIGHT);
-        graphics.blit(getTextureIdentifier(), getX() + 1, getY() + 1, getXTexture(), getYTexture(), WIDTH, HEIGHT);
+        graphics.blit(
+            getTextureIdentifier(),
+            getX() + 1,
+            getY() + 1,
+            getXTexture(),
+            getYTexture(),
+            WIDTH - 2,
+            HEIGHT - 2
+        );
         if (isHovered) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

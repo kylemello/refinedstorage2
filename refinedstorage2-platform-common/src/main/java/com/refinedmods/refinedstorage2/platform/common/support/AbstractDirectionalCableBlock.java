@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage2.platform.common.support;
 
 import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.DefaultDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
 
 import java.util.Map;
 import java.util.Objects;
@@ -38,7 +38,7 @@ public abstract class AbstractDirectionalCableBlock
 
     @Override
     protected DirectionType<Direction> getDirectionType() {
-        return DirectionTypeImpl.INSTANCE;
+        return DefaultDirectionType.FACE_CLICKED;
     }
 
     @Override

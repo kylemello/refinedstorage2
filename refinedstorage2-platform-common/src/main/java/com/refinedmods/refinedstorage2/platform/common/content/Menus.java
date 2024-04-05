@@ -11,6 +11,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContaine
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
@@ -80,6 +81,8 @@ public final class Menus {
     private Supplier<MenuType<FallbackSecurityCardContainerMenu>> fallbackSecurityCard;
     @Nullable
     private Supplier<MenuType<SecurityManagerContainerMenu>> securityManager;
+    @Nullable
+    private Supplier<MenuType<RelayContainerMenu>> relay;
 
     private Menus() {
     }
@@ -268,5 +271,13 @@ public final class Menus {
 
     public void setSecurityManager(final Supplier<MenuType<SecurityManagerContainerMenu>> securityManager) {
         this.securityManager = securityManager;
+    }
+
+    public MenuType<RelayContainerMenu> getRelay() {
+        return requireNonNull(relay).get();
+    }
+
+    public void setRelay(final Supplier<MenuType<RelayContainerMenu>> relay) {
+        this.relay = relay;
     }
 }

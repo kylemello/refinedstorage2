@@ -7,9 +7,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Relay
+
 ### Changed
 
 -   The Detector, Network Receiver, Network Transmitter and Security Manager will now always connect regardless of color.
+-   The Relay now has a "pass-through" mode. By default, pass-through is on, which means that when the Relay is active, the network signal from the input network will be passed through as-is to the output side.
+-   When the "pass-through" mode on the Relay is off, the network signal from the input network will no longer be passed through as-is to the output side, but you can choose to pass the energy buffer, security settings or (specific) storage resources of the input network to the output network.
+-   When using the Relay when "pass-through" mode is off, and when passing all storage resources or specific storage resources, you can choose the filter mode, whether fuzzy mode is enabled, the access mode and the priority of the storage exposed to the output network.
 
 ### Fixed
 

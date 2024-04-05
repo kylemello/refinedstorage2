@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeCon
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage2.network.test.util.FakeActor;
+import com.refinedmods.refinedstorage2.network.test.fake.FakeActor;
 
 import java.util.function.Supplier;
 

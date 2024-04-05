@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.security;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.security.Permission;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityDecision;
@@ -49,5 +49,18 @@ public class SecurityDecisionProviderProxyNetworkNode extends AbstractNetworkNod
             return SecurityDecision.PASS;
         }
         return delegate.isAllowed(permission);
+    }
+
+    @Override
+    public boolean isProviderActive() {
+        return isActive();
+    }
+
+    public static SecurityDecisionProviderProxyNetworkNode activeSecurityDecisionProvider(
+        final SecurityDecisionProvider provider
+    ) {
+        final SecurityDecisionProviderProxyNetworkNode node = new SecurityDecisionProviderProxyNetworkNode(0, provider);
+        node.setActive(true);
+        return node;
     }
 }

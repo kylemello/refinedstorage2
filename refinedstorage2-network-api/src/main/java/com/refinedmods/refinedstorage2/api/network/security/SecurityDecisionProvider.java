@@ -11,7 +11,11 @@ public interface SecurityDecisionProvider {
         return SecurityDecision.PASS;
     }
 
-    default boolean isActive() {
+    default boolean isProviderActive() {
         return true;
+    }
+
+    default boolean contains(SecurityNetworkComponent component) {
+        return false;
     }
 }

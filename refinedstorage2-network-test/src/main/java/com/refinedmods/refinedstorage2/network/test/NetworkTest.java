@@ -9,6 +9,8 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.grid.GridNetworkNod
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.impl.node.importer.ImporterNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.impl.node.multistorage.MultiStorageNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.relay.RelayInputNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.relay.RelayOutputNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.ControllerNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.DetectorNetworkNodeFactory;
@@ -18,6 +20,8 @@ import com.refinedmods.refinedstorage2.network.test.nodefactory.GridNetworkNodeF
 import com.refinedmods.refinedstorage2.network.test.nodefactory.ImporterNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.InterfaceNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.MultiStorageNetworkNodeFactory;
+import com.refinedmods.refinedstorage2.network.test.nodefactory.RelayInputNetworkNodeFactory;
+import com.refinedmods.refinedstorage2.network.test.nodefactory.RelayOutputNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.SimpleNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.StorageNetworkNodeFactory;
 
@@ -41,5 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @RegisterNetworkNode(value = InterfaceNetworkNodeFactory.class, clazz = InterfaceNetworkNode.class)
 @RegisterNetworkNode(value = ExternalStorageNetworkNodeFactory.class, clazz = ExternalStorageNetworkNode.class)
 @RegisterNetworkNode(value = DetectorNetworkNodeFactory.class, clazz = DetectorNetworkNode.class)
+@RegisterNetworkNode(value = RelayInputNetworkNodeFactory.class, clazz = RelayInputNetworkNode.class)
+@RegisterNetworkNode(value = RelayOutputNetworkNodeFactory.class, clazz = RelayOutputNetworkNode.class)
 public @interface NetworkTest {
 }

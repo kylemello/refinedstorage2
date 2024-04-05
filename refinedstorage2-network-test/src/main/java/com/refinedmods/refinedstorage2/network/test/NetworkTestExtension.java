@@ -8,13 +8,14 @@ import com.refinedmods.refinedstorage2.api.network.impl.NetworkImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.controller.ControllerNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.NetworkNodeFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +34,10 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
 
     @Override
     public void beforeEach(final ExtensionContext extensionContext) {
-        extensionContext
-            .getTestInstances()
-            .ifPresent(testInstances -> testInstances.getAllInstances().forEach(this::processTestInstance));
+        extensionContext.getTestInstances().ifPresent(
+            testInstances -> testInstances.getAllInstances().forEach(this::processTestInstance)
+        );
+        extensionContext.getTestMethod().ifPresent(this::processTestMethod);
     }
 
     private void processTestInstance(final Object testInstance) {
@@ -43,6 +45,10 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
         setupNetworks(testInstance);
         injectNetworks(testInstance);
         addNetworkNodes(testInstance);
+    }
+
+    private void processTestMethod(final Method method) {
+        setupNetworks(method);
     }
 
     private void registerNetworkNodes(final Object testInstance) {
@@ -61,10 +67,22 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
 
     private void setupNetworks(final Object testInstance) {
         for (final SetupNetwork annotation : getAnnotations(testInstance, SetupNetwork.class)) {
-            final Network network = new NetworkImpl(NetworkTestFixtures.NETWORK_COMPONENT_MAP_FACTORY);
-            setupNetworkEnergy(annotation.energyCapacity(), annotation.energyStored(), network);
-            networkMap.put(annotation.id(), network);
+            setupNetwork(annotation);
         }
+    }
+
+    private void setupNetworks(final Method method) {
+        for (final SetupNetwork annotation : method.getAnnotationsByType(SetupNetwork.class)) {
+            setupNetwork(annotation);
+        }
+    }
+
+    private void setupNetwork(final SetupNetwork annotation) {
+        final Network network = new NetworkImpl(NetworkTestFixtures.NETWORK_COMPONENT_MAP_FACTORY);
+        if (annotation.setupEnergy()) {
+            setupNetworkEnergy(annotation.energyCapacity(), annotation.energyStored(), network);
+        }
+        networkMap.put(annotation.id(), network);
     }
 
     private <A extends Annotation> List<A> getAnnotations(final Object testInstance, final Class<A> annotationType) {
@@ -173,8 +191,9 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext,
                                      final ExtensionContext extensionContext) throws ParameterResolutionException {
-        return parameterContext.isAnnotated(InjectNetworkStorageChannel.class)
+        return parameterContext.isAnnotated(InjectNetworkStorageComponent.class)
             || parameterContext.isAnnotated(InjectNetworkEnergyComponent.class)
+            || parameterContext.isAnnotated(InjectNetworkSecurityComponent.class)
             || parameterContext.isAnnotated(InjectNetwork.class);
     }
 
@@ -182,26 +201,29 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
     public Object resolveParameter(final ParameterContext parameterContext,
                                    final ExtensionContext extensionContext) throws ParameterResolutionException {
         return parameterContext
-            .findAnnotation(InjectNetworkStorageChannel.class)
-            .map(annotation -> (Object) getNetworkStorageChannel(annotation.networkId()))
+            .findAnnotation(InjectNetworkStorageComponent.class)
+            .map(annotation -> (Object) getNetworkStorage(annotation.networkId()))
             .or(() -> parameterContext
                 .findAnnotation(InjectNetworkEnergyComponent.class)
                 .map(annotation -> (Object) getNetworkEnergy(annotation.networkId())))
+            .or(() -> parameterContext
+                .findAnnotation(InjectNetworkSecurityComponent.class)
+                .map(annotation -> (Object) getNetworkSecurity(annotation.networkId())))
             .or(() -> parameterContext
                 .findAnnotation(InjectNetwork.class)
                 .map(annotation -> networkMap.get(annotation.value())))
             .orElseThrow();
     }
 
-    private StorageChannel getNetworkStorageChannel(final String networkId) {
-        return networkMap
-            .get(networkId)
-            .getComponent(StorageNetworkComponent.class);
+    private StorageNetworkComponent getNetworkStorage(final String networkId) {
+        return networkMap.get(networkId).getComponent(StorageNetworkComponent.class);
     }
 
     private EnergyNetworkComponent getNetworkEnergy(final String networkId) {
-        return networkMap
-            .get(networkId)
-            .getComponent(EnergyNetworkComponent.class);
+        return networkMap.get(networkId).getComponent(EnergyNetworkComponent.class);
+    }
+
+    private SecurityNetworkComponent getNetworkSecurity(final String networkId) {
+        return networkMap.get(networkId).getComponent(SecurityNetworkComponent.class);
     }
 }

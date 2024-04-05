@@ -102,11 +102,14 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     private SimpleEnergyUsageEntryImpl fallbackSecurityCard = new SimpleEnergyUsageEntryImpl(
         DefaultEnergyUsage.FALLBACK_SECURITY_CARD
     );
-    
+
     @ConfigEntry.Gui.CollapsibleObject
     private SimpleEnergyUsageEntryImpl securityManager = new SimpleEnergyUsageEntryImpl(
         DefaultEnergyUsage.SECURITY_MANAGER
     );
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private RelayEntryImpl relay = new RelayEntryImpl();
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -251,6 +254,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @Override
     public SimpleEnergyUsageEntry getSecurityManager() {
         return securityManager;
+    }
+
+    @Override
+    public RelayEntry getRelay() {
+        return relay;
     }
 
     private static class GridEntryImpl implements GridEntry {
@@ -642,6 +650,22 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
         @Override
         public long getExtractEnergyUsage() {
             return extractEnergyUsage;
+        }
+    }
+
+    private static class RelayEntryImpl implements RelayEntry {
+        private long inputNetworkEnergyUsage = DefaultEnergyUsage.RELAY_INPUT_NETWORK;
+
+        private long outputNetworkEnergyUsage = DefaultEnergyUsage.RELAY_OUTPUT_NETWORK;
+
+        @Override
+        public long getInputNetworkEnergyUsage() {
+            return inputNetworkEnergyUsage;
+        }
+
+        @Override
+        public long getOutputNetworkEnergyUsage() {
+            return outputNetworkEnergyUsage;
         }
     }
 }

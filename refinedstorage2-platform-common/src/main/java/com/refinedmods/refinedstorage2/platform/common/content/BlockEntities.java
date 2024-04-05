@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntit
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
@@ -80,6 +81,8 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<AbstractPortableGridBlockEntity>> creativePortableGrid;
     @Nullable
     private Supplier<BlockEntityType<SecurityManagerBlockEntity>> securityManager;
+    @Nullable
+    private Supplier<BlockEntityType<RelayBlockEntity>> relay;
 
     private BlockEntities() {
     }
@@ -262,5 +265,13 @@ public final class BlockEntities {
 
     public void setSecurityManager(final Supplier<BlockEntityType<SecurityManagerBlockEntity>> supplier) {
         this.securityManager = supplier;
+    }
+
+    public BlockEntityType<RelayBlockEntity> getRelay() {
+        return requireNonNull(relay).get();
+    }
+
+    public void setRelay(final Supplier<BlockEntityType<RelayBlockEntity>> supplier) {
+        this.relay = supplier;
     }
 }

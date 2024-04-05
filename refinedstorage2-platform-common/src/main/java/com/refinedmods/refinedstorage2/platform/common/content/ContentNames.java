@@ -32,6 +32,7 @@ public final class ContentNames {
     public static final MutableComponent SECURITY_CARD = createTranslation("item", "security_card");
     public static final MutableComponent FALLBACK_SECURITY_CARD = createTranslation("item", "fallback_security_card");
     public static final MutableComponent SECURITY_MANAGER = name("security_manager");
+    public static final MutableComponent RELAY = name("relay");
 
     private ContentNames() {
     }

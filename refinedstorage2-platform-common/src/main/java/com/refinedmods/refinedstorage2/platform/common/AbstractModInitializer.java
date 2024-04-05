@@ -4,7 +4,9 @@ import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent
 import com.refinedmods.refinedstorage2.api.network.impl.energy.EnergyNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.GraphNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.security.SecurityNetworkComponentImpl;
 import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
@@ -55,6 +57,8 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.PlatformSecurityNetworkComponentImpl;
@@ -158,6 +162,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.RELAY;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_CARD;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SECURITY_MANAGER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.SILICON;
@@ -264,6 +269,10 @@ public abstract class AbstractModInitializer {
             PlatformSecurityNetworkComponent.class,
             network -> new PlatformSecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
         );
+        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+            SecurityNetworkComponent.class,
+            network -> new SecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
+        );
     }
 
     private void registerWirelessTransmitterRangeModifiers() {
@@ -328,6 +337,7 @@ public abstract class AbstractModInitializer {
             creativePortableGridBlockEntityFactory
         )));
         Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
+        Blocks.INSTANCE.getRelay().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -347,6 +357,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getNetworkReceiver().registerItems(callback, Items.INSTANCE::addNetworkReceiver);
         Blocks.INSTANCE.getNetworkTransmitter().registerItems(callback, Items.INSTANCE::addNetworkTransmitter);
         Blocks.INSTANCE.getSecurityManager().registerItems(callback, Items.INSTANCE::addSecurityManager);
+        Blocks.INSTANCE.getRelay().registerItems(callback, Items.INSTANCE::addRelay);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -642,6 +653,10 @@ public abstract class AbstractModInitializer {
                 Blocks.INSTANCE.getSecurityManager().toArray()
             )
         ));
+        BlockEntities.INSTANCE.setRelay(callback.register(
+            RELAY,
+            () -> typeFactory.create(RelayBlockEntity::new, Blocks.INSTANCE.getRelay().toArray())
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -737,6 +752,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setSecurityManager(callback.register(SECURITY_MANAGER, () -> menuTypeFactory.create(
             (syncId, playerInventory, buf) -> new SecurityManagerContainerMenu(syncId, playerInventory)
         )));
+        Menus.INSTANCE.setRelay(callback.register(
+            RELAY,
+            () -> menuTypeFactory.create(RelayContainerMenu::new)
+        ));
     }
 
     protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType> callback) {

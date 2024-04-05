@@ -5,11 +5,11 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.Ext
 import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.ExternalStorageProviderFactoryImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceExportStateImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -42,7 +42,7 @@ class InterfaceExternalStorageProviderImplTest {
 
     @Test
     void shouldExposeExportedResources(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         exportState.setCurrentlyExported(0, A, 100);
@@ -56,14 +56,14 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Assert
-        assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 101)
         );
     }
 
     @Test
     void shouldNotExposeExportedResourceWithoutExportState(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         externalStorage.initialize(new ExternalStorageProviderFactoryImpl(new InterfaceExternalStorageProviderImpl(
@@ -74,14 +74,14 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Assert
-        assertThat(networkStorage.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @ParameterizedTest
     @EnumSource(Action.class)
     void shouldInsertIntoInterface(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         externalStorage.initialize(new ExternalStorageProviderFactoryImpl(new InterfaceExternalStorageProviderImpl(
@@ -89,18 +89,18 @@ class InterfaceExternalStorageProviderImplTest {
         )));
 
         // Act
-        final long inserted = networkStorage.insert(A, 10, action, EmptyActor.INSTANCE);
+        final long inserted = storage.insert(A, 10, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(inserted).isEqualTo(10);
         if (action == Action.EXECUTE) {
-            assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new ResourceAmount(A, 10)
             );
             assertThat(exportState.getExportedResource(0)).isEqualTo(A);
             assertThat(exportState.getExportedAmount(0)).isEqualTo(10);
         } else {
-            assertThat(networkStorage.getAll()).isEmpty();
+            assertThat(storage.getAll()).isEmpty();
             assertThat(exportState.getExportedResource(0)).isNull();
             assertThat(exportState.getExportedAmount(0)).isZero();
         }
@@ -110,7 +110,7 @@ class InterfaceExternalStorageProviderImplTest {
     @EnumSource(Action.class)
     void shouldNotInsertResourceWithoutExportState(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         externalStorage.initialize(new ExternalStorageProviderFactoryImpl(new InterfaceExternalStorageProviderImpl(
@@ -119,18 +119,18 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Act
-        final long inserted = networkStorage.insert(A, 101, action, EmptyActor.INSTANCE);
+        final long inserted = storage.insert(A, 101, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(inserted).isZero();
-        assertThat(networkStorage.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @ParameterizedTest
     @EnumSource(Action.class)
     void shouldExtractEntireResourceFromInterface(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         exportState.setCurrentlyExported(0, A, 50);
@@ -141,18 +141,18 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Act
-        final long extracted = networkStorage.extract(A, 101, action, EmptyActor.INSTANCE);
+        final long extracted = storage.extract(A, 101, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isEqualTo(100);
         if (action == Action.EXECUTE) {
-            assertThat(networkStorage.getAll()).isEmpty();
+            assertThat(storage.getAll()).isEmpty();
             assertThat(exportState.getExportedResource(0)).isNull();
             assertThat(exportState.getExportedAmount(0)).isZero();
             assertThat(exportState.getExportedResource(1)).isNull();
             assertThat(exportState.getExportedAmount(1)).isZero();
         } else {
-            assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new ResourceAmount(A, 100)
             );
             assertThat(exportState.getExportedResource(0)).isEqualTo(A);
@@ -166,7 +166,7 @@ class InterfaceExternalStorageProviderImplTest {
     @EnumSource(Action.class)
     void shouldExtractPartialResourceFromInterface(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         exportState.setCurrentlyExported(0, A, 50);
@@ -177,12 +177,12 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Act
-        final long extracted = networkStorage.extract(A, 51, action, EmptyActor.INSTANCE);
+        final long extracted = storage.extract(A, 51, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isEqualTo(51);
         if (action == Action.EXECUTE) {
-            assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new ResourceAmount(A, 49)
             );
             assertThat(exportState.getExportedResource(0)).isNull();
@@ -190,7 +190,7 @@ class InterfaceExternalStorageProviderImplTest {
             assertThat(exportState.getExportedResource(1)).isEqualTo(A);
             assertThat(exportState.getExportedAmount(1)).isEqualTo(49);
         } else {
-            assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new ResourceAmount(A, 100)
             );
             assertThat(exportState.getExportedResource(0)).isEqualTo(A);
@@ -204,7 +204,7 @@ class InterfaceExternalStorageProviderImplTest {
     @EnumSource(Action.class)
     void shouldNotExtractNonExistentResourceFromInterface(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         exportState.setCurrentlyExported(0, A, 50);
@@ -214,11 +214,11 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Act
-        final long extracted = networkStorage.extract(B, 1, action, EmptyActor.INSTANCE);
+        final long extracted = storage.extract(B, 1, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isZero();
-        assertThat(networkStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 50)
         );
         assertThat(exportState.getExportedResource(0)).isEqualTo(A);
@@ -229,7 +229,7 @@ class InterfaceExternalStorageProviderImplTest {
     @EnumSource(Action.class)
     void shouldNotExtractResourceWithoutExportState(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         externalStorage.initialize(new ExternalStorageProviderFactoryImpl(new InterfaceExternalStorageProviderImpl(
@@ -238,10 +238,10 @@ class InterfaceExternalStorageProviderImplTest {
         externalStorage.detectChanges();
 
         // Act
-        final long extracted = networkStorage.extract(A, 101, action, EmptyActor.INSTANCE);
+        final long extracted = storage.extract(A, 101, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isZero();
-        assertThat(networkStorage.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 }

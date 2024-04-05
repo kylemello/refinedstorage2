@@ -5,24 +5,24 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.task.DefaultTaskExe
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNodeActor;
 import com.refinedmods.refinedstorage2.api.network.node.exporter.ExporterTransferStrategy;
 import com.refinedmods.refinedstorage2.api.network.node.task.TaskExecutor;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageImpl;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
@@ -32,11 +32,11 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
     }
 
     @Test
-    void shouldTransfer(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldTransfer(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
-        storageChannel.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 1L));
-        storageChannel.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 1L));
+        storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 1);
@@ -48,27 +48,27 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 99),
             new ResourceAmount(B, 100)
         );
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)
         );
-        assertThat(storageChannel.findTrackedResourceByActorType(A, NetworkNodeActor.class))
+        assertThat(storage.findTrackedResourceByActorType(A, NetworkNodeActor.class))
             .get()
             .usingRecursiveComparison()
             .isEqualTo(new TrackedResource(ExporterNetworkNode.class.getName(), 1));
-        assertThat(storageChannel.findTrackedResourceByActorType(B, NetworkNodeActor.class)).isEmpty();
+        assertThat(storage.findTrackedResourceByActorType(B, NetworkNodeActor.class)).isEmpty();
     }
 
     @Test
     void shouldUseNextResourceIfFirstOneIsNotAvailableInSameCycle(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(B, 7, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(B, 7, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 10);
@@ -80,7 +80,7 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(B, 7)
         );
@@ -88,13 +88,13 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
 
     @Test
     void shouldUseNextResourceIfFirstOneIsNotAcceptedInSameCycle(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(C, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(C, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl() {
             @Override
@@ -113,7 +113,7 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
         // Act & assert
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 10),
             new ResourceAmount(C, 10)
         );
@@ -123,7 +123,7 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 10)
         );
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -133,7 +133,7 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 10)
         );
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(

@@ -38,7 +38,7 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
     @Override
     public boolean isAllowed(final Permission permission, final SecurityActor actor) {
         final Set<SecurityDecisionProvider> activeProviders = providers.stream()
-            .filter(SecurityDecisionProvider::isActive)
+            .filter(SecurityDecisionProvider::isProviderActive)
             .collect(Collectors.toSet());
         if (activeProviders.isEmpty()) {
             return defaultPolicy.isAllowed(permission);
@@ -55,6 +55,16 @@ public class SecurityNetworkComponentImpl implements SecurityNetworkComponent {
             return true;
         }
         return tryFallback(permission, activeProviders);
+    }
+
+    @Override
+    public boolean contains(final SecurityNetworkComponent component) {
+        for (final SecurityDecisionProvider provider : providers) {
+            if (provider.contains(component)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean tryFallback(final Permission permission, final Set<SecurityDecisionProvider> activeProviders) {

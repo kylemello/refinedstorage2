@@ -9,6 +9,10 @@ import org.apiguardian.api.API;
 public record SecurityPolicy(Set<Permission> allowedPermissions) {
     public static final SecurityPolicy EMPTY = new SecurityPolicy(Collections.emptySet());
 
+    public static SecurityPolicy of(final Permission... permissions) {
+        return new SecurityPolicy(Set.of(permissions));
+    }
+
     public boolean isAllowed(final Permission permission) {
         return allowedPermissions.contains(permission);
     }

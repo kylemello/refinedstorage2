@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage2.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage2.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.composite.PrioritizedStorage;
+import com.refinedmods.refinedstorage2.api.storage.composite.PriorityStorage;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageImpl;
@@ -266,9 +266,9 @@ class StorageChannelImplTest {
     @Test
     void shouldSortSources() {
         // Arrange
-        final PrioritizedStorage storage1 = new PrioritizedStorage(0, new LimitedStorageImpl(10));
-        final PrioritizedStorage storage2 = new PrioritizedStorage(0, new LimitedStorageImpl(10));
-        final PrioritizedStorage storage3 = new PrioritizedStorage(0, new LimitedStorageImpl(10));
+        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
+        final PriorityStorage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
+        final PriorityStorage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
 
         sut.addSource(storage1);
         sut.addSource(storage2);

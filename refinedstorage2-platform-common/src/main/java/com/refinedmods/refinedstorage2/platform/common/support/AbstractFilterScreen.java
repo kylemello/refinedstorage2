@@ -17,8 +17,12 @@ public abstract class AbstractFilterScreen<T extends AbstractBaseContainerMenu> 
                                    final Component text) {
         super(menu, playerInventory, text);
         this.inventoryLabelY = 42;
-        this.imageWidth = 210;
+        this.imageWidth = hasUpgrades() ? 210 : 176;
         this.imageHeight = 137;
+    }
+
+    protected boolean hasUpgrades() {
+        return true;
     }
 
     @Override

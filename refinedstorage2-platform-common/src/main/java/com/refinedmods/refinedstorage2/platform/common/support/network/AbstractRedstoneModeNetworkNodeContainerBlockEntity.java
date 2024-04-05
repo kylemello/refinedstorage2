@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.support.PlayerAwareBlockEntity;
@@ -35,8 +35,10 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
     }
 
     @Override
-    protected boolean isActive() {
-        return super.isActive() && level != null && redstoneMode.isActive(level.hasNeighborSignal(worldPosition));
+    protected boolean calculateActive() {
+        return super.calculateActive()
+            && level != null
+            && redstoneMode.isActive(level.hasNeighborSignal(worldPosition));
     }
 
     @Override

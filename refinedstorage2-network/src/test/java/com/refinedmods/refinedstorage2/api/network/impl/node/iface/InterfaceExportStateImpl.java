@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE2;
 
 public class InterfaceExportStateImpl implements InterfaceExportState {
     private final Map<Integer, ResourceAmount> requested = new HashMap<>();
