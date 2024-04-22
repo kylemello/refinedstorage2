@@ -404,6 +404,6 @@
   "advancements.refinedstorage2.no_cables_required.description": "Add extra components to your storage network without using cables by using a Network Transmitter, Network Receiver and Network Card",
   "advancements.refinedstorage2.portable_storage": "便携式存储",
   "advancements.refinedstorage2.portable_storage.description": "合成一个便携式终端，在不需要连接到存储网络的情况下也可以访问磁盘内容。",
-  "advancements.refinedstorage2.security": "Security",
-  "advancements.refinedstorage2.security.description": "Secure your storage network with a Security Manager and a Security Card"
+  "advancements.refinedstorage2.security": "权限",
+  "advancements.refinedstorage2.security.description": "用权限管理器和权限卡来保护你的存储网络"
 }
