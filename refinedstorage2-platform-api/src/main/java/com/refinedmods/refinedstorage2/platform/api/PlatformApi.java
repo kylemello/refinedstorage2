@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.constructordestructor.ConstructorStrategyFactory;
@@ -30,7 +31,8 @@ import com.refinedmods.refinedstorage2.platform.api.storage.externalstorage.Plat
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceFactory;
@@ -46,6 +48,8 @@ import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.Wireless
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -57,6 +61,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
@@ -107,11 +112,20 @@ public interface PlatformApi {
 
     BuiltinUpgradeDestinations getBuiltinUpgradeDestinations();
 
-    void requestNetworkNodeInitialization(PlatformNetworkNodeContainer container, Level level, Runnable callback);
+    InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(BlockEntity blockEntity,
+                                                                  NetworkNode node,
+                                                                  String name,
+                                                                  int priority,
+                                                                  ConnectionLogic connectionLogic,
+                                                                  @Nullable Supplier<Object> keyProvider);
 
-    void requestNetworkNodeRemoval(PlatformNetworkNodeContainer container, Level level);
+    void onNetworkNodeContainerInitialized(InWorldNetworkNodeContainer container,
+                                           @Nullable Level level,
+                                           @Nullable Runnable callback);
 
-    void requestNetworkNodeUpdate(PlatformNetworkNodeContainer container, Level level);
+    void onNetworkNodeContainerRemoved(InWorldNetworkNodeContainer container, @Nullable Level level);
+
+    void onNetworkNodeContainerUpdated(InWorldNetworkNodeContainer container, @Nullable Level level);
 
     GridInsertionStrategy createGridInsertionStrategy(AbstractContainerMenu containerMenu,
                                                       ServerPlayer player,

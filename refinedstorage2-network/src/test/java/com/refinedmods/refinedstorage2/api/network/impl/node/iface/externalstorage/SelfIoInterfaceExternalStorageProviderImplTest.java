@@ -4,17 +4,17 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.Ext
 import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.ExternalStorageProviderFactoryImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceExportStateImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -38,7 +38,7 @@ class SelfIoInterfaceExternalStorageProviderImplTest {
     // IoLoopInterfaceExternalStorageProviderImplTest.
     @Test
     void shouldNotAllowSelfInsertionOrSelfExtraction(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         // this would try to do a self-insert as it's an unwanted resource.

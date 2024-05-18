@@ -129,9 +129,9 @@ class CompositeStorageImplTest {
     @Test
     void shouldRespectPriorityWhenAddingNewSources() {
         // Arrange
-        final Storage storage1 = new PrioritizedStorage(20, new LimitedStorageImpl(10));
-        final Storage storage2 = new PrioritizedStorage(10, new LimitedStorageImpl(10));
-        final Storage storage3 = new PrioritizedStorage(30, new LimitedStorageImpl(10));
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30);
 
         // Act
         sut.addSource(storage1);
@@ -154,9 +154,9 @@ class CompositeStorageImplTest {
     @Test
     void shouldRespectPriorityWhenRemovingSources() {
         // Arrange
-        final Storage storage1 = new PrioritizedStorage(20, new LimitedStorageImpl(10));
-        final Storage storage2 = new PrioritizedStorage(10, new LimitedStorageImpl(10));
-        final Storage storage3 = new PrioritizedStorage(30, new LimitedStorageImpl(10));
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30);
 
         sut.addSource(storage1);
         sut.addSource(storage2);
@@ -180,8 +180,8 @@ class CompositeStorageImplTest {
     @Test
     void shouldOnlyRespectPriorityWhenSortingSourcesExplicitlyWhenChangingPriorityAfterAddingSource() {
         // Arrange
-        final PrioritizedStorage storage1 = new PrioritizedStorage(1, new LimitedStorageImpl(10));
-        final Storage storage2 = new PrioritizedStorage(2, new LimitedStorageImpl(10));
+        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 1);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 2);
 
         sut.addSource(storage1);
         sut.addSource(storage2);

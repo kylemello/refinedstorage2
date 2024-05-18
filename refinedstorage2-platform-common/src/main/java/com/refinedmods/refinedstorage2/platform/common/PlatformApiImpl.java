@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage2.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.NetworkFactory;
+import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
@@ -27,7 +28,6 @@ import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStr
 import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
-import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
@@ -35,7 +35,9 @@ import com.refinedmods.refinedstorage2.platform.api.storage.externalstorage.Plat
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
+import com.refinedmods.refinedstorage2.platform.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceFactory;
@@ -66,6 +68,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyItem
 import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemBlockEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.network.ConnectionProviderImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.InWorldNetworkNodeContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReference;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
@@ -90,7 +93,9 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -288,9 +293,24 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void requestNetworkNodeInitialization(final PlatformNetworkNodeContainer container,
-                                                 final Level level,
-                                                 final Runnable callback) {
+    public InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(
+        final BlockEntity blockEntity,
+        final NetworkNode node,
+        final String name,
+        final int priority,
+        final ConnectionLogic connectionLogic,
+        @Nullable final Supplier<Object> keyProvider
+    ) {
+        return new InWorldNetworkNodeContainerImpl(blockEntity, node, name, priority, connectionLogic, keyProvider);
+    }
+
+    @Override
+    public void onNetworkNodeContainerInitialized(final InWorldNetworkNodeContainer container,
+                                                  @Nullable final Level level,
+                                                  @Nullable final Runnable callback) {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
         final ConnectionProviderImpl connectionProvider = new ConnectionProviderImpl(level);
         ServerEventQueue.queue(() -> {
             // The container could've been removed by the time it has been placed, and by the time the event queue has
@@ -298,16 +318,22 @@ public class PlatformApiImpl implements PlatformApi {
             // This is a workaround for the "Carry On" mod. The mod places the block (which creates a block entity and
             // requests this network node initialization) and then overrides the placed block entity with their own
             // block entity. This triggers a new initialization, but then this one can no longer run!
-            if (container.isContainerRemoved()) {
+            if (container.isRemoved()) {
                 return;
             }
             networkBuilder.initialize(container, connectionProvider);
-            callback.run();
+            if (callback != null) {
+                callback.run();
+            }
         });
     }
 
     @Override
-    public void requestNetworkNodeRemoval(final PlatformNetworkNodeContainer container, final Level level) {
+    public void onNetworkNodeContainerRemoved(final InWorldNetworkNodeContainer container,
+                                              @Nullable final Level level) {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
         // "Carry On" mod places the block (which creates a block entity and requests network node initialization)
         // and then overrides the placed block entity with their own information.
         // However, when the placed block entity is replaced, the server event queue hasn't run yet and there is
@@ -321,7 +347,11 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void requestNetworkNodeUpdate(final PlatformNetworkNodeContainer container, final Level level) {
+    public void onNetworkNodeContainerUpdated(final InWorldNetworkNodeContainer container,
+                                              @Nullable final Level level) {
+        if (level == null || level.isClientSide() || container.getNode().getNetwork() == null) {
+            return;
+        }
         final ConnectionProviderImpl connectionProvider = new ConnectionProviderImpl(level);
         networkBuilder.update(container, connectionProvider);
     }
@@ -557,16 +587,10 @@ public class PlatformApiImpl implements PlatformApi {
         for (final Direction direction : Direction.values()) {
             final BlockPos adjacentPos = pos.relative(direction);
             final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
-            if (!(adjacentBlockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer)
-                || !platformNetworkNodeContainer.canAcceptIncomingConnection(direction.getOpposite(), state)
-                || platformNetworkNodeContainer.getNode().getNetwork() == null) {
+            if (!(adjacentBlockEntity instanceof NetworkNodeContainerBlockEntity adjacentContainerBlockEntity)) {
                 continue;
             }
-            final PlatformSecurityNetworkComponent security = platformNetworkNodeContainer
-                .getNode()
-                .getNetwork()
-                .getComponent(PlatformSecurityNetworkComponent.class);
-            if (!security.isAllowed(BuiltinPermission.BUILD, player)) {
+            if (!adjacentContainerBlockEntity.canBuild(player)) {
                 PlatformApi.INSTANCE.sendNoPermissionMessage(
                     player,
                     createTranslation("misc", "no_permission.build.place", state.getBlock().getName())

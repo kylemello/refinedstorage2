@@ -47,6 +47,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerNetworkReceivers();
         registerNetworkTransmitters();
         registerSecurityManagers();
+        registerRelays();
     }
 
     private void registerCables() {
@@ -183,6 +184,14 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         blocks.forEach((color, id, block) -> withExistingParent(
             id.getPath(),
             createIdentifier("block/security_manager/" + color.getName())
+        ));
+    }
+
+    private void registerRelays() {
+        final var blocks = Blocks.INSTANCE.getRelay();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/relay/" + color.getName())
         ));
     }
 

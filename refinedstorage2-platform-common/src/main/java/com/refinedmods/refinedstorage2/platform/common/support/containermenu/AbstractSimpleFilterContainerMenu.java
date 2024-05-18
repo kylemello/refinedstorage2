@@ -7,6 +7,8 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeSlot;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +27,7 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
                                                 final int syncId,
                                                 final Player player,
                                                 final ResourceContainer resourceContainer,
-                                                final UpgradeContainer upgradeContainer,
+                                                @Nullable final UpgradeContainer upgradeContainer,
                                                 final T blockEntity,
                                                 final Component filterHelp) {
         super(type, syncId, player);
@@ -38,7 +40,7 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
                                                 final int syncId,
                                                 final Player player,
                                                 final FriendlyByteBuf buf,
-                                                final UpgradeDestinations upgradeDestination,
+                                                @Nullable final UpgradeDestinations upgradeDestination,
                                                 final Component filterHelp) {
         super(type, syncId);
         this.filterHelp = filterHelp;
@@ -46,7 +48,9 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
         addSlots(
             player,
             ResourceContainerImpl.createForFilter(),
-            new UpgradeContainer(upgradeDestination, PlatformApi.INSTANCE.getUpgradeRegistry())
+            upgradeDestination == null
+                ? null
+                : new UpgradeContainer(upgradeDestination, PlatformApi.INSTANCE.getUpgradeRegistry())
         );
         initializeResourceSlots(buf);
     }
@@ -57,16 +61,20 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
 
     private void addSlots(final Player player,
                           final ResourceContainer resourceContainer,
-                          final UpgradeContainer upgradeContainer) {
+                          @Nullable final UpgradeContainer upgradeContainer) {
         for (int i = 0; i < resourceContainer.size(); ++i) {
             addSlot(createFilterSlot(resourceContainer, i));
         }
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            addSlot(new UpgradeSlot(upgradeContainer, i, 187, 6 + (i * 18)));
+        if (upgradeContainer != null) {
+            for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
+                addSlot(new UpgradeSlot(upgradeContainer, i, 187, 6 + (i * 18)));
+            }
         }
         addPlayerInventory(player.getInventory(), 8, 55);
 
-        transferManager.addBiTransfer(player.getInventory(), upgradeContainer);
+        if (upgradeContainer != null) {
+            transferManager.addBiTransfer(player.getInventory(), upgradeContainer);
+        }
         transferManager.addFilterTransfer(player.getInventory());
     }
 

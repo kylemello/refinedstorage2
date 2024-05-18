@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntit
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
@@ -21,7 +22,7 @@ import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.Abst
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
-import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeContainerBlockEntityImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlockEntity;
 
 import java.util.EnumMap;
@@ -37,7 +38,7 @@ public final class BlockEntities {
     public static final BlockEntities INSTANCE = new BlockEntities();
 
     @Nullable
-    private Supplier<BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>>> cable;
+    private Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> cable;
     @Nullable
     private Supplier<BlockEntityType<AbstractDiskDriveBlockEntity>> diskDrive;
     @Nullable
@@ -80,16 +81,18 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<AbstractPortableGridBlockEntity>> creativePortableGrid;
     @Nullable
     private Supplier<BlockEntityType<SecurityManagerBlockEntity>> securityManager;
+    @Nullable
+    private Supplier<BlockEntityType<RelayBlockEntity>> relay;
 
     private BlockEntities() {
     }
 
-    public BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>> getCable() {
+    public BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>> getCable() {
         return requireNonNull(cable).get();
     }
 
     public void setCable(
-        final Supplier<BlockEntityType<NetworkNodeContainerBlockEntityImpl<SimpleNetworkNode>>> supplier
+        final Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> supplier
     ) {
         this.cable = supplier;
     }
@@ -262,5 +265,13 @@ public final class BlockEntities {
 
     public void setSecurityManager(final Supplier<BlockEntityType<SecurityManagerBlockEntity>> supplier) {
         this.securityManager = supplier;
+    }
+
+    public BlockEntityType<RelayBlockEntity> getRelay() {
+        return requireNonNull(relay).get();
+    }
+
+    public void setRelay(final Supplier<BlockEntityType<RelayBlockEntity>> supplier) {
+        this.relay = supplier;
     }
 }

@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.storage;
 
 import com.refinedmods.refinedstorage2.api.storage.AccessMode;
 
-class AccessModeSettings {
+public class AccessModeSettings {
     private static final int INSERT_EXTRACT = 0;
     private static final int INSERT = 1;
     private static final int EXTRACT = 2;
@@ -10,7 +10,7 @@ class AccessModeSettings {
     private AccessModeSettings() {
     }
 
-    static AccessMode getAccessMode(final int accessMode) {
+    public static AccessMode getAccessMode(final int accessMode) {
         return switch (accessMode) {
             case INSERT_EXTRACT -> AccessMode.INSERT_EXTRACT;
             case INSERT -> AccessMode.INSERT;
@@ -19,7 +19,7 @@ class AccessModeSettings {
         };
     }
 
-    static int getAccessMode(final AccessMode accessMode) {
+    public static int getAccessMode(final AccessMode accessMode) {
         return switch (accessMode) {
             case INSERT_EXTRACT -> INSERT_EXTRACT;
             case INSERT -> INSERT;

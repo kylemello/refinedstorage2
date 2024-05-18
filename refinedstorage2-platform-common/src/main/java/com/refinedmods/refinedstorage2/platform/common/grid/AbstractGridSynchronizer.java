@@ -13,6 +13,6 @@ public abstract class AbstractGridSynchronizer implements GridSynchronizer {
 
     @Override
     public int getYTexture() {
-        return 97;
+        return 96;
     }
 }

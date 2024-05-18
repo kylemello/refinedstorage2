@@ -75,6 +75,16 @@ public class CompositeStorageImpl implements CompositeStorage, CompositeAwareChi
     }
 
     @Override
+    public boolean contains(final Storage storage) {
+        for (final Storage source : sources) {
+            if (source instanceof CompositeAwareChild compositeAwareChild && compositeAwareChild.contains(storage)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public long extract(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
         long remaining = amount;
         long toRemoveFromList = 0;

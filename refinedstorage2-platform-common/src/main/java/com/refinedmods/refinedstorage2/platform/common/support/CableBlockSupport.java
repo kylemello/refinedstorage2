@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support;
 
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,9 +114,11 @@ public final class CableBlockSupport {
             return false;
         }
         final BlockPos offsetPos = pos.relative(direction);
-        if (!(level.getBlockEntity(offsetPos) instanceof PlatformNetworkNodeContainer neighboringContainer)) {
+        if (!(level.getBlockEntity(offsetPos) instanceof NetworkNodeContainerBlockEntity neighbor)) {
             return false;
         }
-        return neighboringContainer.canAcceptIncomingConnection(direction.getOpposite(), blockState);
+        return neighbor.getContainers()
+            .stream()
+            .anyMatch(container -> container.canAcceptIncomingConnection(direction.getOpposite(), blockState));
     }
 }

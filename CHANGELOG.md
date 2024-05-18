@@ -7,6 +7,24 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.6] - 2024-05-18
+
+### Added
+
+-   Relay
+
+### Changed
+
+-   The Detector, Network Receiver, Network Transmitter and Security Manager will now always connect regardless of color.
+-   The Relay now has a "pass-through" mode. By default, pass-through is on, which means that when the Relay is active, the network signal from the input network will be passed through as-is to the output side.
+-   When the "pass-through" mode on the Relay is off, the network signal from the input network will no longer be passed through as-is to the output side, but you can choose to pass the energy buffer, security settings or (specific) storage resources of the input network to the output network.
+-   When using the Relay when "pass-through" mode is off, and when passing all storage resources or specific storage resources, you can choose the filter mode, whether fuzzy mode is enabled, the access mode and the priority of the storage exposed to the output network.
+
+### Fixed
+
+-   Double slot highlighting in the Grid.
+-   Improved data corruption protection for storages.
+
 ## [2.0.0-milestone.3.5] - 2024-04-04
 
 ### Added
@@ -554,7 +572,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.5...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.6...HEAD
+
+[2.0.0-milestone.3.6]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.5...v2.0.0-milestone.3.6
 
 [2.0.0-milestone.3.5]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.4...v2.0.0-milestone.3.5
 

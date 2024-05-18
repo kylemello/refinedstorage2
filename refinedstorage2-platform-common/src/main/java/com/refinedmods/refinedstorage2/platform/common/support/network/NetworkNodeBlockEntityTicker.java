@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 
 import java.util.function.Supplier;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class NetworkNodeBlockEntityTicker<
     N extends AbstractNetworkNode,
-    T extends NetworkNodeContainerBlockEntityImpl<N>
+    T extends BaseNetworkNodeContainerBlockEntity<N>
     > extends AbstractBlockEntityTicker<T> {
     @Nullable
     private final BooleanProperty activenessProperty;

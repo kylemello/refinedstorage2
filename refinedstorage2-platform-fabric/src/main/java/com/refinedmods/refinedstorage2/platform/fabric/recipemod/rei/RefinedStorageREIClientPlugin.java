@@ -101,6 +101,12 @@ public class RefinedStorageREIClientPlugin implements REIClientPlugin {
             ContentIds.SECURITY_MANAGER,
             Tags.SECURITY_MANAGERS
         );
+        groupItems(
+            registry,
+            Blocks.INSTANCE.getRelay(),
+            ContentIds.RELAY,
+            Tags.RELAYS
+        );
     }
 
     @Override

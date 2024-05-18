@@ -2,23 +2,23 @@ package com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.Network;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.AccessMode;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.external.ExternalStorageProvider;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageImpl;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage2.network.test.InjectNetwork;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage2.network.test.util.FakeActor;
+import com.refinedmods.refinedstorage2.network.test.fake.FakeActor;
 
 import java.util.Optional;
 import java.util.Set;
@@ -30,9 +30,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
 import static com.refinedmods.refinedstorage2.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ENERGY_USAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +48,7 @@ class ExternalStorageNetworkNodeTest {
     ExternalStorageNetworkNode sut;
 
     @Test
-    void testInitialState(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void testInitialState(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Act
         final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
         final long extracted = networkStorage.extract(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
@@ -66,7 +66,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldInitialize(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldInitialize(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -81,7 +81,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldBeAbleToInitializeMultipleTimes(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage1 = new InMemoryStorageImpl();
@@ -111,7 +111,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldInsert(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldInsert(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -132,7 +132,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldExtract(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldExtract(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new InMemoryStorageImpl();
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -154,7 +154,8 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectAllowlistWhenInserting(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldRespectAllowlistWhenInserting(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A, B));
@@ -176,7 +177,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldRespectEmptyAllowlistWhenInserting(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
@@ -198,7 +199,8 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectBlocklistWhenInserting(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldRespectBlocklistWhenInserting(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of(A, B));
@@ -220,7 +222,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldRespectEmptyBlocklistWhenInserting(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage) {
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of());
@@ -243,7 +245,8 @@ class ExternalStorageNetworkNodeTest {
     @ParameterizedTest
     @EnumSource(AccessMode.class)
     void shouldRespectAccessModeWhenInserting(final AccessMode accessMode,
-                                              @InjectNetworkStorageChannel final StorageChannel networkStorage
+                                              @InjectNetworkStorageComponent
+                                              final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         sut.setAccessMode(accessMode);
@@ -265,7 +268,8 @@ class ExternalStorageNetworkNodeTest {
     @ParameterizedTest
     @EnumSource(AccessMode.class)
     void shouldRespectAccessModeWhenExtracting(final AccessMode accessMode,
-                                               @InjectNetworkStorageChannel final StorageChannel networkStorage
+                                               @InjectNetworkStorageComponent
+                                               final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         sut.setAccessMode(accessMode);
@@ -287,7 +291,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldNotInsertWhenInactive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldNotInsertWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -303,7 +307,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldNotExtractWhenInactive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldNotExtractWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new InMemoryStorageImpl();
         storage.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -321,7 +325,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldHideStorageContentsWhenInactive(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
@@ -340,7 +344,8 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldShowStorageContentsWhenActive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldShowStorageContentsWhenActive(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -363,7 +368,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldNoLongerShowOnNetworkWhenRemoved(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
         @InjectNetwork final Network network
     ) {
         // Arrange
@@ -384,8 +389,8 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldNotifyNewNetworkAboutChangesWhenChangingNetworks(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
-        @InjectNetworkStorageChannel(networkId = "other") final StorageChannel otherNetworkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
+        @InjectNetworkStorageComponent(networkId = "other") final StorageNetworkComponent otherNetworkStorage,
         @InjectNetwork final Network network,
         @InjectNetwork("other") final Network otherNetwork
     ) {
@@ -415,8 +420,8 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldNoLongerNotifyOldNetworkAboutChangesWhenChangingNetworks(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
-        @InjectNetworkStorageChannel(networkId = "other") final StorageChannel otherNetworkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
+        @InjectNetworkStorageComponent(networkId = "other") final StorageNetworkComponent otherNetworkStorage,
         @InjectNetwork final Network network,
         @InjectNetwork("other") final Network otherNetwork
     ) {
@@ -450,7 +455,7 @@ class ExternalStorageNetworkNodeTest {
 
     @Test
     void shouldNoLongerShowOnNetworkWhenRemovedWithoutInitializedStorage(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
         @InjectNetwork final Network network
     ) {
         // Act
@@ -465,7 +470,7 @@ class ExternalStorageNetworkNodeTest {
     @EnumSource(Action.class)
     void shouldTrackChangesWhenExtracting(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
@@ -502,7 +507,7 @@ class ExternalStorageNetworkNodeTest {
     @EnumSource(Action.class)
     void shouldNotTrackChangesWhenExtractionFailed(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
@@ -525,7 +530,7 @@ class ExternalStorageNetworkNodeTest {
     @EnumSource(Action.class)
     void shouldTrackChangesWhenInserting(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
@@ -561,7 +566,7 @@ class ExternalStorageNetworkNodeTest {
     @EnumSource(Action.class)
     void shouldNotTrackChangesWhenInsertionFailed(
         final Action action,
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(0);
@@ -581,7 +586,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     private AtomicBoolean trackWhetherResourceHasChangedAndTrackedResourceIsAvailable(
-        final StorageChannel networkStorage
+        final StorageNetworkComponent networkStorage
     ) {
         final AtomicBoolean found = new AtomicBoolean();
         networkStorage.addListener(change -> {
@@ -602,7 +607,7 @@ class ExternalStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldDetectChanges(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldDetectChanges(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -631,7 +636,7 @@ class ExternalStorageNetworkNodeTest {
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shouldRespectPriority(final boolean oneHasPriority,
-                                   @InjectNetworkStorageChannel final StorageChannel networkStorage) {
+                                   @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
             // Arrange
             final Storage storage1 = new TrackedStorageImpl(new LimitedStorageImpl(100), () -> 0L);
             final ExternalStorageProvider provider1 = new StorageExternalStorageProvider(storage1);

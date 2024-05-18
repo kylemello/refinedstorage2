@@ -98,4 +98,9 @@ public class SecurityManagerBlock extends AbstractDirectionalBlock<HorizontalDir
                                                                   final BlockEntityType<O> type) {
         return TICKER.get(level, type);
     }
+
+    @Override
+    public boolean canAlwaysConnect() {
+        return true;
+    }
 }

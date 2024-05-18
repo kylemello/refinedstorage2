@@ -185,8 +185,8 @@ class InsertCompositeStorageImplTest {
     @Test
     void shouldRespectPriorityWhenInserting() {
         // Arrange
-        final PrioritizedStorage lowestPriority = new PrioritizedStorage(5, new LimitedStorageImpl(10));
-        final PrioritizedStorage highestPriority = new PrioritizedStorage(10, new LimitedStorageImpl(10));
+        final PriorityStorage lowestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 5);
+        final PriorityStorage highestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 10);
 
         sut.addSource(lowestPriority);
         sut.addSource(highestPriority);

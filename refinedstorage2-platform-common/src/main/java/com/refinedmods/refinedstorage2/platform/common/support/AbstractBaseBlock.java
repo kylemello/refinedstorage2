@@ -1,8 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.common.support;
 
-import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-import com.refinedmods.refinedstorage2.platform.api.support.network.PlatformNetworkNodeContainer;
+import com.refinedmods.refinedstorage2.platform.api.support.network.NetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.Sounds;
@@ -12,7 +11,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
@@ -185,39 +183,17 @@ public abstract class AbstractBaseBlock extends Block {
                            final BlockPos pos,
                            final ServerPlayer player) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer) {
-            final Network network = platformNetworkNodeContainer.getNode().getNetwork();
-            if (!platformNetworkNodeContainer.canBreakOrRotate(player)
-                || mightMakeConnectionWithAnotherSecuredNetwork(level, pos, player, network)) {
-                PlatformApi.INSTANCE.sendNoPermissionMessage(
-                    player,
-                    createTranslation("misc", "no_permission.build.rotate", getName())
-                );
-                return false;
-            }
+        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
+            && !networkNodeContainerBlockEntity.canBuild(player)) {
+            PlatformApi.INSTANCE.sendNoPermissionMessage(
+                player,
+                createTranslation("misc", "no_permission.build.rotate", getName())
+            );
+            return false;
         }
         final BlockState rotated = getRotatedBlockState(state, level, pos);
         level.setBlockAndUpdate(pos, rotated);
         return !state.equals(rotated);
-    }
-
-    private boolean mightMakeConnectionWithAnotherSecuredNetwork(final Level level,
-                                                                 final BlockPos pos,
-                                                                 final ServerPlayer player,
-                                                                 @Nullable final Network rotatedNetwork) {
-        for (final Direction direction : Direction.values()) {
-            final BlockPos neighborPos = pos.relative(direction);
-            final BlockEntity neighborBlockEntity = level.getBlockEntity(neighborPos);
-            if (neighborBlockEntity instanceof PlatformNetworkNodeContainer neighborNetworkNodeContainer
-                && neighborNetworkNodeContainer.getNode().getNetwork() != rotatedNetwork) {
-                PlatformApi.INSTANCE.sendNoPermissionMessage(
-                    player,
-                    createTranslation("misc", "no_permission.build.rotate", getName())
-                );
-                return true;
-            }
-        }
-        return false;
     }
 
     @SuppressWarnings("deprecation")
@@ -234,8 +210,8 @@ public abstract class AbstractBaseBlock extends Block {
                               final BlockHitResult hitResult,
                               final ServerPlayer player) {
         final BlockEntity blockEntity = level.getBlockEntity(hitResult.getBlockPos());
-        if (blockEntity instanceof PlatformNetworkNodeContainer platformNetworkNodeContainer
-            && !platformNetworkNodeContainer.canBreakOrRotate(player)) {
+        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
+            && !networkNodeContainerBlockEntity.canBuild(player)) {
             PlatformApi.INSTANCE.sendNoPermissionMessage(
                 player,
                 createTranslation("misc", "no_permission.build.dismantle", getName())

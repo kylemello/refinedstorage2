@@ -46,4 +46,9 @@ public class StorageNetworkComponentImpl extends StorageChannelImpl implements S
             findTrackedResourceByActorType(resourceAmount.getResource(), actorType).orElse(null)
         )).toList();
     }
+
+    @Override
+    public boolean contains(final Storage storage) {
+        return this.storage.contains(storage);
+    }
 }

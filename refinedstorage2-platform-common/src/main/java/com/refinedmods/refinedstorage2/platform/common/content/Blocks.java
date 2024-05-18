@@ -17,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.CableBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlock;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
@@ -142,6 +143,12 @@ public final class Blocks {
         SecurityManagerBlock::new,
         ContentIds.SECURITY_MANAGER,
         ContentNames.SECURITY_MANAGER,
+        COLOR
+    );
+    private final BlockColorMap<RelayBlock, BaseBlockItem> relay = new BlockColorMap<>(
+        RelayBlock::new,
+        ContentIds.RELAY,
+        ContentNames.RELAY,
         COLOR
     );
 
@@ -300,5 +307,9 @@ public final class Blocks {
 
     public BlockColorMap<SecurityManagerBlock, BaseBlockItem> getSecurityManager() {
         return securityManager;
+    }
+
+    public BlockColorMap<RelayBlock, BaseBlockItem> getRelay() {
+        return relay;
     }
 }

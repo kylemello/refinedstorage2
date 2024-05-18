@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.network;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.support.PlayerAwareBlockEntity;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
-    extends NetworkNodeContainerBlockEntityImpl<T> implements PlayerAwareBlockEntity, ConfigurationCardTarget {
+    extends BaseNetworkNodeContainerBlockEntity<T> implements PlayerAwareBlockEntity, ConfigurationCardTarget {
     private static final String TAG_REDSTONE_MODE = "rm";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
 
@@ -35,8 +35,10 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
     }
 
     @Override
-    protected boolean isActive() {
-        return super.isActive() && level != null && redstoneMode.isActive(level.hasNeighborSignal(worldPosition));
+    protected boolean calculateActive() {
+        return super.calculateActive()
+            && level != null
+            && redstoneMode.isActive(level.hasNeighborSignal(worldPosition));
     }
 
     @Override

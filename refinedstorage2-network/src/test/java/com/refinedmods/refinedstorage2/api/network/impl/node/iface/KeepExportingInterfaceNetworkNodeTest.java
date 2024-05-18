@@ -1,23 +1,23 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.iface;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE2;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -38,11 +38,11 @@ class KeepExportingInterfaceNetworkNodeTest {
 
     @Test
     void shouldKeepExportingResourceUntilWantedAmountIsReached(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 7);
 
@@ -51,7 +51,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 8));
 
@@ -59,7 +59,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(4);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 6));
 
@@ -67,7 +67,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(6);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 4));
 
@@ -75,7 +75,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
 
@@ -85,18 +85,18 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
     }
 
     @Test
     void shouldKeepExportingResourceUntilWantedAmountIsReachedAndNetworkHasEnoughResources(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 7, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 7, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 10);
 
@@ -105,7 +105,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 5));
 
@@ -113,7 +113,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(4);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
 
@@ -121,7 +121,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(6);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 1));
 
@@ -129,7 +129,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
 
         sut.doWork();
         sut.doWork();
@@ -137,17 +137,17 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @Test
     void shouldKeepExportingResourceFuzzilyUntilWantedAmountIsReached(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(A_ALTERNATIVE2, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(A_ALTERNATIVE2, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 10);
 
@@ -156,7 +156,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A_ALTERNATIVE);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A_ALTERNATIVE, 8),
@@ -167,7 +167,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A_ALTERNATIVE);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(4);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A_ALTERNATIVE, 6),
@@ -177,11 +177,11 @@ class KeepExportingInterfaceNetworkNodeTest {
 
     @Test
     void shouldKeepExportingResourceFuzzilyUntilWantedAmountIsReachedEvenIfTheResourceIsNoLongerAvailableInTheNetwork(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A_ALTERNATIVE, 1, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A_ALTERNATIVE, 1, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 1);
 
@@ -190,21 +190,21 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A_ALTERNATIVE);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(1);
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
 
         sut.doWork();
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A_ALTERNATIVE);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(1);
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @Test
     void shouldReturnResourceToNetworkUntilWantedAmountIsReached(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         exportState.setRequestedResource(1, A, 7);
         exportState.setCurrentlyExported(1, A, 10);
@@ -214,7 +214,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(8);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 2));
 
@@ -222,7 +222,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
 
@@ -232,17 +232,17 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
     }
 
     @Test
     void shouldReturnResourceToNetworkUntilWantedAmountIsReachedAndNetworkIsFull(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new LimitedStorageImpl(3));
+        storage.addSource(new LimitedStorageImpl(3));
 
         exportState.setRequestedResource(1, A, 5);
         exportState.setCurrentlyExported(1, A, 10);
@@ -252,7 +252,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(8);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 2));
 
@@ -260,7 +260,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
 
@@ -270,18 +270,18 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(7);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 3));
     }
 
     @Test
     void shouldReturnResourceToNetworkAndExportOtherResourceIfSpecified(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, B, 3);
         exportState.setCurrentlyExported(1, A, 3);
@@ -291,7 +291,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(1);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 2),
@@ -301,7 +301,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         sut.doWork();
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isNull();
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 3),
@@ -312,7 +312,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(B);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 3),
@@ -323,7 +323,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(B);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(3);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 3),
@@ -336,7 +336,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(B);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(3);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 3),
@@ -346,11 +346,11 @@ class KeepExportingInterfaceNetworkNodeTest {
 
     @Test
     void shouldReturnResourceToNetworkAndExportOtherResourceIfSpecifiedUntilNetworkIsFull(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new LimitedStorageImpl(11));
-        storageChannel.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new LimitedStorageImpl(11));
+        storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, B, 3);
         exportState.setCurrentlyExported(1, A, 3);
@@ -360,7 +360,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 1),
@@ -373,7 +373,7 @@ class KeepExportingInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isEqualTo(A);
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 1),

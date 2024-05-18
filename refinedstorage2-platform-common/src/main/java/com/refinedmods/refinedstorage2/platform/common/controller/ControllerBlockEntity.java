@@ -42,7 +42,7 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
         super(getBlockEntityType(type), pos, state, new ControllerNetworkNode());
         this.type = type;
         this.energyStorage = createEnergyStorage(type, this);
-        this.getNode().setEnergyStorage(energyStorage);
+        this.mainNode.setEnergyStorage(energyStorage);
     }
 
     private static EnergyStorage createEnergyStorage(final ControllerType type, final BlockEntity blockEntity) {
@@ -63,7 +63,7 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
 
     public void updateEnergyTypeInLevel(final BlockState state) {
         final ControllerEnergyType currentEnergyType = state.getValue(AbstractControllerBlock.ENERGY_TYPE);
-        final ControllerEnergyType newEnergyType = ControllerEnergyType.ofState(getNode().getState());
+        final ControllerEnergyType newEnergyType = ControllerEnergyType.ofState(mainNode.getState());
         if (newEnergyType != currentEnergyType && level != null && energyStateChangeRateLimiter.tryAcquire()) {
             LOGGER.debug(
                 "Energy type state change for controller at {}: {} -> {}",
@@ -78,12 +78,12 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     @Override
     public void saveAdditional(final CompoundTag tag) {
         super.saveAdditional(tag);
-        ItemBlockEnergyStorage.writeToTag(tag, getNode().getActualStored());
+        ItemBlockEnergyStorage.writeToTag(tag, mainNode.getActualStored());
         saveRenderingInfo(tag);
     }
 
     private void saveRenderingInfo(final CompoundTag tag) {
-        tag.putLong(TAG_CAPACITY, getNode().getActualCapacity());
+        tag.putLong(TAG_CAPACITY, mainNode.getActualCapacity());
     }
 
     @Override
@@ -109,11 +109,11 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     }
 
     long getActualStored() {
-        return getNode().getActualStored();
+        return mainNode.getActualStored();
     }
 
     long getActualCapacity() {
-        return getNode().getActualCapacity();
+        return mainNode.getActualCapacity();
     }
 
     @Override

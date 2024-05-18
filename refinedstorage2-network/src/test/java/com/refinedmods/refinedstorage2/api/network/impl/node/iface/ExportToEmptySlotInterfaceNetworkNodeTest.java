@@ -1,22 +1,22 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.iface;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE2;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -37,7 +37,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
 
     @Test
     void shouldNotExportToEmptySlotWhenRequestedIsNotAvailable(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         exportState.setRequestedResource(1, A, 1);
@@ -50,16 +50,16 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(0)).isNull();
         assertThat(exportState.getExportedResource(1)).isNull();
         assertThat(exportState.getExportedResource(2)).isNull();
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @Test
     void shouldExportToEmptySlotWhenRequestedIsNotEntirelyAvailable(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 2, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 2, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 10);
 
@@ -74,16 +74,16 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
         assertThat(exportState.getExportedResource(2)).isNull();
 
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
     }
 
     @Test
     void shouldExportToEmptySlotWhenRequestedIsLessThanTransferQuota(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 1);
 
@@ -96,19 +96,19 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedAmount(1)).isEqualTo(1);
         assertThat(exportState.getExportedResource(2)).isNull();
 
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new ResourceAmount(A, 9));
     }
 
     @Test
     void shouldExportToEmptySlot(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 7);
         exportState.setRequestedResource(2, B, 2);
@@ -123,7 +123,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedResource(2)).isEqualTo(B);
         assertThat(exportState.getExportedAmount(2)).isEqualTo(2);
 
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A, 8),
@@ -133,12 +133,12 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
 
     @Test
     void shouldExportResourceFuzzilyToEmptySlot(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(A_ALTERNATIVE2, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(A_ALTERNATIVE2, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 10);
 
@@ -151,7 +151,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         assertThat(exportState.getExportedAmount(1)).isEqualTo(2);
         assertThat(exportState.getExportedResource(2)).isNull();
 
-        assertThat(storageChannel.getAll())
+        assertThat(storage.getAll())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(A_ALTERNATIVE, 8),

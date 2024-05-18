@@ -9,11 +9,12 @@ import com.refinedmods.refinedstorage2.platform.common.detector.DetectorBlock;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlock;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.CableBlockSupport;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.DefaultDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlock;
 
@@ -71,6 +72,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerNetworkReceivers();
         registerNetworkTransmitters();
         registerSecurityManagers();
+        registerRelays();
     }
 
     private void registerCables() {
@@ -84,7 +86,8 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             PROPERTY_BY_DIRECTION.forEach((direction, property) -> {
                 final var part = builder.part();
                 addDirectionalRotation(direction, part);
-                part.modelFile(exporterModel).addModel().condition(DirectionTypeImpl.INSTANCE.getProperty(), direction);
+                part.modelFile(exporterModel).addModel()
+                    .condition(DefaultDirectionType.FACE_CLICKED.getProperty(), direction);
             });
         });
     }
@@ -96,7 +99,8 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             PROPERTY_BY_DIRECTION.forEach((direction, property) -> {
                 final var part = builder.part();
                 addDirectionalRotation(direction, part);
-                part.modelFile(importerModel).addModel().condition(DirectionTypeImpl.INSTANCE.getProperty(), direction);
+                part.modelFile(importerModel).addModel()
+                    .condition(DefaultDirectionType.FACE_CLICKED.getProperty(), direction);
             });
         });
     }
@@ -110,7 +114,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 addDirectionalRotation(direction, part);
                 part.modelFile(model)
                     .addModel()
-                    .condition(DirectionTypeImpl.INSTANCE.getProperty(), direction);
+                    .condition(DefaultDirectionType.FACE_CLICKED.getProperty(), direction);
             });
         });
     }
@@ -171,7 +175,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             } else {
                 model.modelFile(inactive);
             }
-            addRotation(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
+            addRotationFrontFacingNorth(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
             return model.build();
         });
     }
@@ -227,7 +231,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 } else {
                     model.modelFile(inactive);
                 }
-                final Direction direction = blockState.getValue(DirectionTypeImpl.INSTANCE.getProperty());
+                final Direction direction = blockState.getValue(DefaultDirectionType.FACE_CLICKED.getProperty());
                 addRotation(model, direction);
                 return model.build();
             });
@@ -244,12 +248,12 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 addDirectionalRotation(direction, part);
                 part.modelFile(activeModel)
                     .addModel()
-                    .condition(DirectionTypeImpl.INSTANCE.getProperty(), direction)
+                    .condition(DefaultDirectionType.FACE_CLICKED.getProperty(), direction)
                     .condition(AbstractConstructorDestructorBlock.ACTIVE, true)
                     .end();
                 part.modelFile(inactiveModel)
                     .addModel()
-                    .condition(DirectionTypeImpl.INSTANCE.getProperty(), direction)
+                    .condition(DefaultDirectionType.FACE_CLICKED.getProperty(), direction)
                     .condition(AbstractConstructorDestructorBlock.ACTIVE, false)
                     .end();
             });
@@ -265,7 +269,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         } else {
             model.modelFile(unpowered);
         }
-        final Direction direction = blockState.getValue(DirectionTypeImpl.INSTANCE.getProperty());
+        final Direction direction = blockState.getValue(DefaultDirectionType.FACE_CLICKED.getProperty());
         addRotation(model, direction);
         return model.build();
     }
@@ -319,7 +323,32 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 final Direction direction = HorizontalDirectionType.INSTANCE.extractDirection(blockState.getValue(
                     HorizontalDirectionType.INSTANCE.getProperty()
                 ));
-                addRotation(model, BiDirection.forHorizontal(direction));
+                addRotationFrontFacingNorth(model, BiDirection.forHorizontal(direction));
+                return model.build();
+            });
+        });
+    }
+
+    private void registerRelays() {
+        final ModelFile inactive = modelFile(createIdentifier("block/relay/inactive"));
+        Blocks.INSTANCE.getRelay().forEach((color, id, block) -> {
+            final ModelFile active = modelFile(createIdentifier("block/relay/" + color.getName()));
+            final var builder = getVariantBuilder(block.get());
+            builder.forAllStates(blockState -> {
+                final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
+                if (Boolean.TRUE.equals(blockState.getValue(RelayBlock.ACTIVE))) {
+                    model.modelFile(active);
+                } else {
+                    model.modelFile(inactive);
+                }
+                final Direction direction = blockState.getValue(DefaultDirectionType.FACE_PLAYER.getProperty());
+                final BiDirection biDirection;
+                if (direction.getAxis().isHorizontal()) {
+                    biDirection = BiDirection.forHorizontal(direction);
+                } else {
+                    biDirection = direction == Direction.UP ? BiDirection.UP_NORTH : BiDirection.DOWN_NORTH;
+                }
+                addRotationFrontFacingNorth(model, biDirection);
                 return model.build();
             });
         });
@@ -337,7 +366,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         model.rotationY(rotationY);
     }
 
-    private void addRotation(final ConfiguredModel.Builder<?> model, final BiDirection direction) {
+    private void addRotationFrontFacingNorth(final ConfiguredModel.Builder<?> model, final BiDirection direction) {
         final int x = (int) direction.getVec().x();
         final int y = (int) direction.getVec().y();
         final int z = (int) direction.getVec().z();

@@ -1,20 +1,20 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.storage;
 
 import com.refinedmods.refinedstorage2.api.core.Action;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.AccessMode;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorage;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageImpl;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage2.network.test.util.FakeActor;
+import com.refinedmods.refinedstorage2.network.test.fake.FakeActor;
 
 import java.util.Collection;
 import java.util.Set;
@@ -25,9 +25,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
 import static com.refinedmods.refinedstorage2.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ENERGY_USAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ class StorageNetworkNodeTest {
     StorageNetworkNode sut;
 
     @Test
-    void testInitialState(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void testInitialState(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Act
         final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         final long extracted = networkStorage.extract(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -61,7 +61,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldInitialize(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldInitialize(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final LimitedStorage limitedStorage = new LimitedStorageImpl(100);
         limitedStorage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -78,7 +78,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldInsert(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldInsert(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         activateStorage(storage);
@@ -97,7 +97,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldExtract(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldExtract(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(200);
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -120,7 +120,8 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectAllowlistWhenInserting(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldRespectAllowlistWhenInserting(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A, B));
@@ -141,7 +142,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldRespectEmptyAllowlistWhenInserting(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage) {
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of());
@@ -161,7 +162,8 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectBlocklistWhenInserting(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldRespectBlocklistWhenInserting(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of(A, B));
@@ -182,7 +184,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldRespectEmptyBlocklistWhenInserting(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage) {
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of());
@@ -204,7 +206,8 @@ class StorageNetworkNodeTest {
     @ParameterizedTest
     @EnumSource(AccessMode.class)
     void shouldRespectAccessModeWhenInserting(final AccessMode accessMode,
-                                              @InjectNetworkStorageChannel final StorageChannel networkStorage
+                                              @InjectNetworkStorageComponent
+                                              final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         sut.setAccessMode(accessMode);
@@ -225,7 +228,8 @@ class StorageNetworkNodeTest {
     @ParameterizedTest
     @EnumSource(AccessMode.class)
     void shouldRespectAccessModeWhenExtracting(final AccessMode accessMode,
-                                               @InjectNetworkStorageChannel final StorageChannel networkStorage
+                                               @InjectNetworkStorageComponent
+                                               final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         sut.setAccessMode(accessMode);
@@ -245,7 +249,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldNotInsertWhenInactive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldNotInsertWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         activateStorage(storage);
@@ -259,7 +263,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldNotExtractWhenInactive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldNotExtractWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         activateStorage(storage);
@@ -275,7 +279,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldHideStorageContentsWhenInactive(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
@@ -291,7 +295,8 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldShowStorageContentsWhenActive(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldShowStorageContentsWhenActive(
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -308,7 +313,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldNotInsertWhenFull(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldNotInsertWhenFull(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         storage.insert(A, 95, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -334,7 +339,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldNotInsertWhenFullWhenStorageVoidsExcessButIsNotInAllowlistMode(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final LimitedStorageImpl storage = new LimitedStorageImpl(100);
@@ -355,7 +360,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldNotInsertWhenStorageVoidsExcessAndInAllowlistModeWithoutConfiguredFilter(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final LimitedStorageImpl storage = new LimitedStorageImpl(100);
@@ -374,7 +379,7 @@ class StorageNetworkNodeTest {
 
     @Test
     void shouldInsertWhenFullWhenStorageVoidsExcessAndIsInAllowlistMode(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final LimitedStorageImpl storage = new LimitedStorageImpl(100);
@@ -400,7 +405,7 @@ class StorageNetworkNodeTest {
     }
 
     @Test
-    void shouldTrackChanges(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void shouldTrackChanges(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
         activateStorage(new TrackedStorageImpl(new LimitedStorageImpl(100), () -> 0L));
 
@@ -426,7 +431,7 @@ class StorageNetworkNodeTest {
         @ValueSource(booleans = {true, false})
         void shouldRespectPriority(
             final boolean oneHasPriority,
-            @InjectNetworkStorageChannel final StorageChannel networkStorage
+            @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
         ) {
             // Arrange
             final LimitedStorageImpl storage1 = new LimitedStorageImpl(100);

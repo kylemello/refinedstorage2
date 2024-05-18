@@ -9,7 +9,6 @@ import com.refinedmods.refinedstorage2.api.resource.list.listenable.ListenableRe
 import com.refinedmods.refinedstorage2.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.composite.CompositeStorage;
 import com.refinedmods.refinedstorage2.api.storage.composite.CompositeStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 
@@ -21,8 +20,8 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
 public class StorageChannelImpl implements StorageChannel {
+    protected final CompositeStorageImpl storage;
     private final ListenableResourceList list;
-    private final CompositeStorage storage;
 
     public StorageChannelImpl() {
         this(new ResourceListImpl());

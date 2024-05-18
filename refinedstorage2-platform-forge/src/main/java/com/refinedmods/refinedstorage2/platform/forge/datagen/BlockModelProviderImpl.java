@@ -25,10 +25,20 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     private static final ResourceLocation ALL_CUTOUT = createIdentifier("block/all_cutout");
     private static final ResourceLocation NORTH_CUTOUT = createIdentifier("block/north_cutout");
 
-    private static final String NORTH = "north";
-    private static final String SOUTH = "south";
-
     private static final ResourceLocation BOTTOM_TEXTURE = createIdentifier("block/bottom");
+
+    private static final String CUTOUT_NORTH = "cutout_north";
+    private static final String CUTOUT_EAST = "cutout_east";
+    private static final String CUTOUT_SOUTH = "cutout_south";
+    private static final String CUTOUT_WEST = "cutout_west";
+    private static final String CUTOUT_UP = "cutout_up";
+    private static final String CUTOUT_DOWN = "cutout_down";
+    private static final String NORTH = "north";
+    private static final String EAST = "east";
+    private static final String SOUTH = "south";
+    private static final String WEST = "west";
+    private static final String UP = "up";
+    private static final String DOWN = "down";
 
     public BlockModelProviderImpl(final PackOutput output, final ExistingFileHelper existingFileHelper) {
         super(output, MOD_ID, existingFileHelper);
@@ -45,6 +55,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerNetworkReceivers();
         registerNetworkTransmitters();
         registerSecurityManagers();
+        registerRelays();
     }
 
     private void registerCables() {
@@ -94,11 +105,11 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         withExistingParent(BLOCK_PREFIX + "/" + name + "/" + variantName, baseModel)
             .texture(PARTICLE_TEXTURE, right)
             .texture(NORTH, front)
-            .texture("east", right)
+            .texture(EAST, right)
             .texture(SOUTH, back)
-            .texture("west", left)
-            .texture("up", top)
-            .texture("down", BOTTOM_TEXTURE)
+            .texture(WEST, left)
+            .texture(UP, top)
+            .texture(DOWN, BOTTOM_TEXTURE)
             .texture(CUTOUT_TEXTURE, cutout);
     }
 
@@ -189,17 +200,17 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             withExistingParent("block/security_manager/" + color.getName(), EMISSIVE_CUTOUT)
                 .texture(PARTICLE_TEXTURE, back)
                 .texture(NORTH, front)
-                .texture("east", right)
+                .texture(EAST, right)
                 .texture(SOUTH, back)
-                .texture("west", left)
-                .texture("up", top)
-                .texture("down", BOTTOM_TEXTURE)
-                .texture("cutout_north", cutoutFront)
-                .texture("cutout_east", cutoutRight)
-                .texture("cutout_south", cutoutBack)
-                .texture("cutout_west", cutoutLeft)
-                .texture("cutout_up", cutoutTop)
-                .texture("cutout_down", BOTTOM_TEXTURE);
+                .texture(WEST, left)
+                .texture(UP, top)
+                .texture(DOWN, BOTTOM_TEXTURE)
+                .texture(CUTOUT_NORTH, cutoutFront)
+                .texture(CUTOUT_EAST, cutoutRight)
+                .texture(CUTOUT_SOUTH, cutoutBack)
+                .texture(CUTOUT_WEST, cutoutLeft)
+                .texture(CUTOUT_UP, cutoutTop)
+                .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
         });
         final ResourceLocation cutoutBack = createIdentifier("block/security_manager/cutouts/back/inactive");
         final ResourceLocation cutoutFront = createIdentifier("block/security_manager/cutouts/front/inactive");
@@ -209,16 +220,55 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         withExistingParent("block/security_manager/inactive", CUTOUT)
             .texture(PARTICLE_TEXTURE, back)
             .texture(NORTH, front)
-            .texture("east", right)
+            .texture(EAST, right)
             .texture(SOUTH, back)
-            .texture("west", left)
-            .texture("up", top)
-            .texture("down", BOTTOM_TEXTURE)
-            .texture("cutout_north", cutoutFront)
-            .texture("cutout_east", cutoutRight)
-            .texture("cutout_south", cutoutBack)
-            .texture("cutout_west", cutoutLeft)
-            .texture("cutout_up", cutoutTop)
-            .texture("cutout_down", BOTTOM_TEXTURE);
+            .texture(WEST, left)
+            .texture(UP, top)
+            .texture(DOWN, BOTTOM_TEXTURE)
+            .texture(CUTOUT_NORTH, cutoutFront)
+            .texture(CUTOUT_EAST, cutoutRight)
+            .texture(CUTOUT_SOUTH, cutoutBack)
+            .texture(CUTOUT_WEST, cutoutLeft)
+            .texture(CUTOUT_UP, cutoutTop)
+            .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
+    }
+
+    private void registerRelays() {
+        final ResourceLocation in = createIdentifier("block/relay/in");
+        final ResourceLocation out = createIdentifier("block/relay/out");
+        Blocks.INSTANCE.getNetworkTransmitter().forEach((color, id, receiver) -> {
+            final ResourceLocation cutoutIn = createIdentifier("block/relay/cutouts/in/" + color.getName());
+            final ResourceLocation cutoutOut = createIdentifier("block/relay/cutouts/out/" + color.getName());
+            withExistingParent("block/relay/" + color.getName(), EMISSIVE_CUTOUT)
+                .texture(PARTICLE_TEXTURE, in)
+                .texture(NORTH, out)
+                .texture(EAST, in)
+                .texture(SOUTH, in)
+                .texture(WEST, in)
+                .texture(UP, in)
+                .texture(DOWN, in)
+                .texture(CUTOUT_NORTH, cutoutOut)
+                .texture(CUTOUT_EAST, cutoutIn)
+                .texture(CUTOUT_SOUTH, cutoutIn)
+                .texture(CUTOUT_WEST, cutoutIn)
+                .texture(CUTOUT_UP, cutoutIn)
+                .texture(CUTOUT_DOWN, cutoutIn);
+        });
+        final ResourceLocation cutoutIn = createIdentifier("block/relay/cutouts/in/inactive");
+        final ResourceLocation cutoutOut = createIdentifier("block/relay/cutouts/out/inactive");
+        withExistingParent("block/relay/inactive", CUTOUT)
+            .texture(PARTICLE_TEXTURE, in)
+            .texture(NORTH, out)
+            .texture(EAST, in)
+            .texture(SOUTH, in)
+            .texture(WEST, in)
+            .texture(UP, in)
+            .texture(DOWN, in)
+            .texture(CUTOUT_NORTH, cutoutOut)
+            .texture(CUTOUT_EAST, cutoutIn)
+            .texture(CUTOUT_SOUTH, cutoutIn)
+            .texture(CUTOUT_WEST, cutoutIn)
+            .texture(CUTOUT_UP, cutoutIn)
+            .texture(CUTOUT_DOWN, cutoutIn);
     }
 }

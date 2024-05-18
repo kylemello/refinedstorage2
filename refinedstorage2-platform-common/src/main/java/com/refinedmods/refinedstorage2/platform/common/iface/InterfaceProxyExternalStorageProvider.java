@@ -6,7 +6,6 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.iface.externalstora
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
-import com.refinedmods.refinedstorage2.platform.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -54,6 +53,6 @@ class InterfaceProxyExternalStorageProvider implements InterfaceExternalStorageP
     @Override
     @Nullable
     public InterfaceNetworkNode getInterface() {
-        return tryGetInterface().map(AbstractNetworkNodeContainerBlockEntity::getNode).orElse(null);
+        return tryGetInterface().map(InterfaceBlockEntity::getInterface).orElse(null);
     }
 }

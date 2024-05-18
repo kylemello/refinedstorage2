@@ -7,8 +7,8 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.multistorage.MultiS
 import com.refinedmods.refinedstorage2.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage2.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.AbstractNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.MultiStorageNetworkNodeFactory;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.SimpleNetworkNodeFactory;
@@ -63,6 +63,29 @@ class NetworkTestExtensionTest {
     }
 
     @Test
+    @SetupNetwork(id = "method_test")
+    void shouldSetNetworkThroughMethod(
+        @InjectNetwork("method_test") final Network network
+    ) {
+        // Assert
+        assertThat(network)
+            .isNotNull()
+            .isNotEqualTo(a)
+            .isNotEqualTo(b);
+    }
+
+    @Test
+    @SetupNetwork(id = "without_energy", setupEnergy = false)
+    void shouldNotSetupEnergy(
+        @InjectNetworkEnergyComponent(networkId = "without_energy") final EnergyNetworkComponent energy
+    ) {
+        // Assert
+        assertThat(energy.getStored()).isZero();
+        assertThat(energy.getCapacity()).isZero();
+        assertThat(energy.extract(1)).isZero();
+    }
+
+    @Test
     void shouldSetActivenessOfNetworkNode() {
         // Assert
         assertThat(storageInA.isActive()).isTrue();
@@ -106,13 +129,13 @@ class NetworkTestExtensionTest {
     }
 
     @Test
-    void shouldInjectStorageChannel(
-        @InjectNetworkStorageChannel(networkId = "a") final StorageChannel storageChannelA,
-        @InjectNetworkStorageChannel(networkId = "b") final StorageChannel storageChannelB
+    void shouldInjectNetworkStorageComponent(
+        @InjectNetworkStorageComponent(networkId = "a") final StorageNetworkComponent networkStorageA,
+        @InjectNetworkStorageComponent(networkId = "b") final StorageNetworkComponent networkStorageB
     ) {
         // Assert
-        assertThat(storageChannelA).isSameAs(a.getComponent(StorageNetworkComponent.class));
-        assertThat(storageChannelB).isSameAs(b.getComponent(StorageNetworkComponent.class));
+        assertThat(networkStorageA).isSameAs(a.getComponent(StorageNetworkComponent.class));
+        assertThat(networkStorageB).isSameAs(b.getComponent(StorageNetworkComponent.class));
     }
 
     @Test
@@ -123,6 +146,16 @@ class NetworkTestExtensionTest {
         // Assert
         assertThat(networkEnergyA).isSameAs(a.getComponent(EnergyNetworkComponent.class));
         assertThat(networkEnergyB).isSameAs(b.getComponent(EnergyNetworkComponent.class));
+    }
+
+    @Test
+    void shouldInjectNetworkSecurityComponent(
+        @InjectNetworkSecurityComponent(networkId = "a") final SecurityNetworkComponent networkSecurityA,
+        @InjectNetworkSecurityComponent(networkId = "b") final SecurityNetworkComponent networkSecurityB
+    ) {
+        // Assert
+        assertThat(networkSecurityA).isSameAs(a.getComponent(SecurityNetworkComponent.class));
+        assertThat(networkSecurityB).isSameAs(b.getComponent(SecurityNetworkComponent.class));
     }
 
     @Test
