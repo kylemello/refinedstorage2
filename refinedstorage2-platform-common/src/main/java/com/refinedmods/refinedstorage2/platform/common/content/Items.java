@@ -48,6 +48,7 @@ public final class Items {
     private final List<Supplier<BaseBlockItem>> allNetworkReceivers = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allNetworkTransmitters = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allSecurityManagers = new ArrayList<>();
+    private final List<Supplier<BaseBlockItem>> allRelays = new ArrayList<>();
     @Nullable
     private Supplier<Item> quartzEnrichedIron;
     @Nullable
@@ -405,6 +406,14 @@ public final class Items {
 
     public List<Supplier<BaseBlockItem>> getSecurityManagers() {
         return Collections.unmodifiableList(allSecurityManagers);
+    }
+
+    public void addRelay(final Supplier<BaseBlockItem> supplier) {
+        allRelays.add(supplier);
+    }
+
+    public List<Supplier<BaseBlockItem>> getRelays() {
+        return Collections.unmodifiableList(allRelays);
     }
 
     public Item getNetworkCard() {

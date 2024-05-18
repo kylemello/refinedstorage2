@@ -26,9 +26,13 @@ public class ComponentMapFactory<C, X> {
         return new ComponentMapFactory<>(new LinkedHashMap<>(factories));
     }
 
+    @SuppressWarnings("unchecked")
     public ComponentMap<C> buildComponentMap(final X context) {
         final Map<Class<? extends C>, C> components = new LinkedHashMap<>();
-        factories.forEach((componentType, factory) -> components.put(componentType, factory.apply(context)));
+        factories.forEach((componentType, factory) -> {
+            final C component = factory.apply(context);
+            components.put(componentType, component);
+        });
         return new ComponentMap<>(components);
     }
 }

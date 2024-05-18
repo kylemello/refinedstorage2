@@ -9,4 +9,8 @@ public interface EnergyProvider {
     long getCapacity();
 
     long extract(long amount);
+
+    default boolean contains(EnergyProvider energyProvider) {
+        return false;
+    }
 }

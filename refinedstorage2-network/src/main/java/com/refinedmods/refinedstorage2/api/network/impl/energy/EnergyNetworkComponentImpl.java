@@ -59,4 +59,14 @@ public class EnergyNetworkComponentImpl implements EnergyNetworkComponent {
         }
         return extracted;
     }
+
+    @Override
+    public boolean contains(final EnergyProvider energyProvider) {
+        for (final EnergyProvider provider : providers) {
+            if (provider.contains(energyProvider)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -2,8 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.support.network;
 
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
@@ -36,7 +35,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         super(type, pos, state, networkNode);
     }
 
-    protected boolean isActive() {
+    protected boolean calculateActive() {
         final long energyUsage = mainNode.getEnergyUsage();
         final boolean hasLevel = level != null && level.isLoaded(worldPosition);
         return hasLevel
@@ -45,7 +44,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     }
 
     public void updateActiveness(final BlockState state, @Nullable final BooleanProperty activenessProperty) {
-        final boolean newActive = isActive();
+        final boolean newActive = calculateActive();
         final boolean nodeActivenessNeedsUpdate = newActive != mainNode.isActive();
         final boolean blockStateActivenessNeedsUpdate = activenessProperty != null
             && state.getValue(activenessProperty) != newActive;
@@ -155,7 +154,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
             return;
         }
-        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
+        updateContainers();
     }
 
     @Nullable

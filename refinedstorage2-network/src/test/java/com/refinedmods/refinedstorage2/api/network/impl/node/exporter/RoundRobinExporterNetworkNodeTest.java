@@ -4,22 +4,22 @@ import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.impl.node.task.RoundRobinTaskExecutor;
 import com.refinedmods.refinedstorage2.api.network.node.exporter.ExporterTransferStrategy;
 import com.refinedmods.refinedstorage2.api.network.node.task.TaskExecutor;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.D;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.D;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -41,11 +41,11 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
     }
 
     @Test
-    void shouldTransfer(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldTransfer(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 5);
@@ -56,7 +56,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
         // Act & assert
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 95),
             new ResourceAmount(B, 100)
         );
@@ -68,7 +68,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 95),
             new ResourceAmount(B, 95)
         );
@@ -81,7 +81,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 90),
             new ResourceAmount(B, 95)
         );
@@ -109,12 +109,12 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
     @Test
     void shouldUseNextResourceIfFirstOneIsNotAvailableInSameCycle(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(D, 9, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(D, 9, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 10);
@@ -125,7 +125,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
         // Act & assert
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(D, 9)
         );
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
@@ -134,7 +134,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(C, 8),
             new ResourceAmount(D, 9)
@@ -142,18 +142,18 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(C, 8),
             new ResourceAmount(D, 9)
         );
 
-        storageChannel.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 2, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 2, Action.EXECUTE, EmptyActor.INSTANCE);
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(B, 2)
         );
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -164,7 +164,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 1),
             new ResourceAmount(B, 2),
@@ -174,7 +174,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(destination.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 1),
             new ResourceAmount(B, 2),
@@ -185,13 +185,13 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
     @Test
     void shouldResetRoundRobinStateAfterChangingFilters(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
-        storageChannel.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.insert(C, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new InMemoryStorageImpl());
+        storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(C, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final Storage destination = new InMemoryStorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 5);
@@ -202,7 +202,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
         // Act & assert
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 95),
             new ResourceAmount(B, 100),
             new ResourceAmount(C, 100)
@@ -213,7 +213,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
 
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 95),
             new ResourceAmount(B, 95),
             new ResourceAmount(C, 100)
@@ -227,7 +227,7 @@ class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest 
         sut.setFilters(List.of(A, C));
         sut.doWork();
 
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 90),
             new ResourceAmount(B, 95),
             new ResourceAmount(C, 100)

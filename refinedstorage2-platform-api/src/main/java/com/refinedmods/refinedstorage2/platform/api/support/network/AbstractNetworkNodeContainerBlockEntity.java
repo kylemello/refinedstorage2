@@ -33,7 +33,7 @@ public abstract class AbstractNetworkNodeContainerBlockEntity<T extends NetworkN
                                                       final T mainNode) {
         super(type, pos, state);
         this.mainContainer = createMainContainer(mainNode);
-        this.containers.add(mainContainer);
+        addContainer(mainContainer);
         this.mainNode = mainNode;
     }
 
@@ -46,6 +46,14 @@ public abstract class AbstractNetworkNodeContainerBlockEntity<T extends NetworkN
             this,
             null
         );
+    }
+
+    protected final void addContainer(final InWorldNetworkNodeContainer container) {
+        containers.add(container);
+    }
+
+    protected final void updateContainers() {
+        containers.forEach(container -> PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(container, level));
     }
 
     @Override

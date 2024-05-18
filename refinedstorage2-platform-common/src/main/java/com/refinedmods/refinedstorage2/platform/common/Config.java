@@ -66,6 +66,8 @@ public interface Config {
 
     SimpleEnergyUsageEntry getSecurityManager();
 
+    RelayEntry getRelay();
+
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
     }
@@ -184,5 +186,11 @@ public interface Config {
         long getInsertEnergyUsage();
 
         long getExtractEnergyUsage();
+    }
+
+    interface RelayEntry {
+        long getInputNetworkEnergyUsage();
+
+        long getOutputNetworkEnergyUsage();
     }
 }

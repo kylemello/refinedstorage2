@@ -52,6 +52,10 @@ public interface CompositeAwareChild extends Storage {
      */
     Amount compositeExtract(ResourceKey resource, long amount, Action action, Actor actor);
 
+    default boolean contains(Storage storage) {
+        return false;
+    }
+
     /**
      * @param amount        the amount
      * @param amountForList the amount to be modified in the parent composite cache list

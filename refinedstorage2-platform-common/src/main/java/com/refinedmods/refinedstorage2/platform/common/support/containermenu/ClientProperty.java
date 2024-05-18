@@ -43,5 +43,10 @@ public class ClientProperty<T> extends DataSlot implements Property<T> {
     public void set(final int newValue) {
         this.value = type.deserializer().apply(newValue);
         this.rawValue = newValue;
+        onChangedOnClient(value);
+    }
+
+    protected void onChangedOnClient(final T newValue) {
+        // do nothing by default
     }
 }

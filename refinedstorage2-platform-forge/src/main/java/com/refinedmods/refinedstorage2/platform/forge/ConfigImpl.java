@@ -46,6 +46,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry securityCard;
     private final SimpleEnergyUsageEntry fallbackSecurityCard;
     private final SimpleEnergyUsageEntry securityManager;
+    private final RelayEntry relay;
 
     public ConfigImpl() {
         screenSize = builder
@@ -109,6 +110,7 @@ public class ConfigImpl implements Config {
             "Security Manager",
             DefaultEnergyUsage.SECURITY_MANAGER
         );
+        relay = new RelayEntryImpl();
         spec = builder.build();
     }
 
@@ -254,6 +256,11 @@ public class ConfigImpl implements Config {
     @Override
     public SimpleEnergyUsageEntry getSecurityManager() {
         return securityManager;
+    }
+
+    @Override
+    public RelayEntry getRelay() {
+        return relay;
     }
 
     private class SimpleEnergyUsageEntryImpl implements SimpleEnergyUsageEntry {
@@ -805,6 +812,31 @@ public class ConfigImpl implements Config {
 
         public long getInsertEnergyUsage() {
             return insertEnergyUsage.get();
+        }
+    }
+
+    private class RelayEntryImpl implements RelayEntry {
+        private final ModConfigSpec.LongValue inputNetworkEnergyUsage;
+        private final ModConfigSpec.LongValue outputNetworkEnergyUsage;
+
+        RelayEntryImpl() {
+            builder.push("relay");
+            inputNetworkEnergyUsage = builder.comment("The energy used by the Relay in the input network")
+                .defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.RELAY_INPUT_NETWORK, 8, Long.MAX_VALUE);
+            outputNetworkEnergyUsage = builder.comment(
+                "The energy used by the Relay in the output network (if not in pass through mode)"
+            ).defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.RELAY_OUTPUT_NETWORK, 8, Long.MAX_VALUE);
+            builder.pop();
+        }
+
+        @Override
+        public long getInputNetworkEnergyUsage() {
+            return inputNetworkEnergyUsage.get();
+        }
+
+        @Override
+        public long getOutputNetworkEnergyUsage() {
+            return outputNetworkEnergyUsage.get();
         }
     }
 }

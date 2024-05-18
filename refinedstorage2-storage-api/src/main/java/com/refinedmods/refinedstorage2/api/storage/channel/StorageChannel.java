@@ -44,7 +44,7 @@ public interface StorageChannel extends Storage, TrackedStorage {
     void sortSources();
 
     /**
-     * Adds a source to the channel.
+     * Adds a source to the channel and resorts all the sources.
      *
      * @param source the source
      */

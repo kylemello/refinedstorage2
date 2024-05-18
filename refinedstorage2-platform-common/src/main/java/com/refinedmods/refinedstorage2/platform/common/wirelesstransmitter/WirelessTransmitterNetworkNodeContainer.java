@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitter;
 import com.refinedmods.refinedstorage2.platform.common.support.network.InWorldNetworkNodeContainerImpl;

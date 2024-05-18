@@ -163,7 +163,9 @@ public class NetworkBuilderImpl implements NetworkBuilder {
 
         connectionProvider.sortDeterministically(removedEntries).stream().sorted(HIGHEST_PRIORITY_FIRST).forEach(e -> {
             if (e.getNode().getNetwork() == null) {
-                throw new IllegalStateException("Network of resulting removed node cannot be empty");
+                throw new IllegalStateException(
+                    "Network of resulting removed node (" + e.getNode() + ") cannot be empty"
+                );
             }
             e.getNode().getNetwork().removeContainer(e);
             e.getNode().setNetwork(null);

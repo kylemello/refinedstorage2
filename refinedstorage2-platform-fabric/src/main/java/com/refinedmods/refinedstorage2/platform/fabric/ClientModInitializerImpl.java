@@ -120,6 +120,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getPortableGrid());
         setCutout(Blocks.INSTANCE.getCreativePortableGrid());
         setCutout(Blocks.INSTANCE.getSecurityManager());
+        setCutout(Blocks.INSTANCE.getRelay());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -167,6 +168,9 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
         Blocks.INSTANCE.getSecurityManager().forEach(
             (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
+        );
+        Blocks.INSTANCE.getRelay().forEach(
+            (color, id, block) -> registerEmissiveRelayModels(color, id)
         );
     }
 
@@ -295,6 +299,21 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
             createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
             createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+        );
+    }
+
+    private void registerEmissiveRelayModels(final DyeColor color, final ResourceLocation id) {
+        // Block
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier("block/relay/" + color.getName()),
+            createIdentifier("block/relay/cutouts/in/" + color.getName()),
+            createIdentifier("block/relay/cutouts/out/" + color.getName())
+        );
+        // Item
+        EmissiveModelRegistry.INSTANCE.register(
+            id,
+            createIdentifier("block/relay/cutouts/in/" + color.getName()),
+            createIdentifier("block/relay/cutouts/out/" + color.getName())
         );
     }
 

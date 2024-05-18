@@ -10,8 +10,8 @@ import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.DefaultDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
-import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionTypeImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNodeBlockEntityTicker;
 
 import net.minecraft.core.BlockPos;
@@ -65,7 +65,7 @@ public class DetectorBlock extends AbstractDirectionalBlock<Direction>
 
     @Override
     protected DirectionType<Direction> getDirectionType() {
-        return DirectionTypeImpl.INSTANCE;
+        return DefaultDirectionType.FACE_CLICKED;
     }
 
     @Override

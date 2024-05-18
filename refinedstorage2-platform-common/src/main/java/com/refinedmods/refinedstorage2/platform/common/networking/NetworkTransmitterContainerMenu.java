@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
@@ -49,7 +48,7 @@ public class NetworkTransmitterContainerMenu extends AbstractBaseContainerMenu {
         this.blockEntity = null;
         this.player = playerInventory.player;
         this.status = new NetworkTransmitterStatus(buf.readBoolean(), buf.readComponent());
-        addSlots(playerInventory, new SimpleContainer(1));
+        addSlots(playerInventory, new NetworkCardInventory());
     }
 
     @Override

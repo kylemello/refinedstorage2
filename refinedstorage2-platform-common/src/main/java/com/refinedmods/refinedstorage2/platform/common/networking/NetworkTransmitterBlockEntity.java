@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage2.platform.common.networking;
 import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.GraphNetworkComponent;
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.network.ConnectionSink;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
@@ -68,7 +67,7 @@ public class NetworkTransmitterBlockEntity
             if (level != null) {
                 LOGGER.debug("Network card was changed at {}, sending network update", worldPosition);
                 setChanged();
-                PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
+                updateContainers();
             }
         });
     }
@@ -76,20 +75,20 @@ public class NetworkTransmitterBlockEntity
     @Override
     protected void activenessChanged(final boolean newActive) {
         super.activenessChanged(newActive);
-        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
+        updateContainers();
     }
 
     public void updateStateInLevel(final BlockState state) {
         final NetworkTransmitterState currentState = state.getValue(NetworkTransmitterBlock.STATE);
-        final NetworkTransmitterState newState = getState();
+        final NetworkTransmitterState newState = calculateState();
         if (currentState != newState && level != null && stateChangeRateLimiter.tryAcquire()) {
             LOGGER.debug("Updating network transmitter at {} from {} to {}", worldPosition, currentState, newState);
             level.setBlockAndUpdate(worldPosition, state.setValue(NetworkTransmitterBlock.STATE, newState));
         }
     }
 
-    private NetworkTransmitterState getState() {
-        if (!isActive()) {
+    private NetworkTransmitterState calculateState() {
+        if (!mainNode.isActive()) {
             return NetworkTransmitterState.INACTIVE;
         }
         if (receiverKey == null) {
@@ -105,7 +104,7 @@ public class NetworkTransmitterBlockEntity
 
     NetworkTransmitterStatus getStatus() {
         final Network network = mainNode.getNetwork();
-        if (!isActive() || network == null || level == null) {
+        if (!mainNode.isActive() || network == null || level == null) {
             return INACTIVE;
         }
         if (receiverKey == null) {
@@ -126,7 +125,7 @@ public class NetworkTransmitterBlockEntity
     @Override
     public void doWork() {
         super.doWork();
-        if (!isActive() || mainNode.getNetwork() == null || receiverKey == null) {
+        if (!mainNode.isActive() || mainNode.getNetwork() == null || receiverKey == null) {
             return;
         }
         final boolean receiverFound = isReceiverFoundInNetwork(mainNode.getNetwork(), receiverKey);
@@ -141,7 +140,7 @@ public class NetworkTransmitterBlockEntity
             receiverKey,
             worldPosition
         );
-        PlatformApi.INSTANCE.onNetworkNodeContainerUpdated(mainContainer, level);
+        updateContainers();
     }
 
     private static boolean isReceiverFoundInNetwork(final Network network, final NetworkReceiverKey key) {
@@ -197,7 +196,7 @@ public class NetworkTransmitterBlockEntity
     @Override
     public void addOutgoingConnections(final ConnectionSink sink) {
         super.addOutgoingConnections(sink);
-        if (receiverKey != null && isActive()) {
+        if (receiverKey != null && mainNode.isActive()) {
             sink.tryConnect(receiverKey.pos());
         }
     }

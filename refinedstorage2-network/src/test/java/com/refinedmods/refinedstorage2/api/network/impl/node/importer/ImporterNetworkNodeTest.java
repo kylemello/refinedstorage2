@@ -3,17 +3,17 @@ package com.refinedmods.refinedstorage2.api.network.impl.node.importer;
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage2.api.network.node.importer.ImporterTransferStrategy;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage2.network.test.InjectNetworkEnergyComponent;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
@@ -23,11 +23,11 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A_ALTERNATIVE2;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -65,14 +65,14 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldNotWorkWithoutAnyTransferStrategy(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel,
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage,
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Act
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(energy.getStored()).isEqualTo(1000 - 5);
     }
 
@@ -85,11 +85,11 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldNotWorkOrExtractEnergyWithoutBeingActive(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel,
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage,
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, B)
             .add(A, 100)
@@ -102,7 +102,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 100),
             new ResourceAmount(B, 100)
@@ -111,9 +111,9 @@ class ImporterNetworkNodeTest {
     }
 
     @Test
-    void testTransfer(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void testTransfer(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, B, A)
             .add(A, 100)
@@ -125,7 +125,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -136,10 +136,10 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldUseFirstSuccessfulTransferStrategy(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource emptySource = new FakeImporterSource();
         final FakeImporterSource outdatedSource = new FakeImporterSource(C)
@@ -161,7 +161,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -172,11 +172,11 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldNotTransferIfThereIsNoSpaceInTheNetwork(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new LimitedStorageImpl(100));
-        storageChannel.insert(C, 100, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.addSource(new LimitedStorageImpl(100));
+        storage.insert(C, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
         final FakeImporterSource source = new FakeImporterSource(A, B)
             .add(A, 100)
@@ -188,7 +188,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(C, 100)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -199,10 +199,10 @@ class ImporterNetworkNodeTest {
 
     @Test
     void testTransferDifferentResourceOverMultipleSlots(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, B, A, B)
             .add(A, 11)
@@ -214,7 +214,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -225,10 +225,10 @@ class ImporterNetworkNodeTest {
 
     @Test
     void testTransferSameResourceOverMultipleSlots(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, A, A, B)
             .add(A, 20)
@@ -241,7 +241,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -252,10 +252,10 @@ class ImporterNetworkNodeTest {
 
     @Test
     void testTransferWhereResourceIsNotAccepted(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl() {
+        storage.addSource(new InMemoryStorageImpl() {
             @Override
             public long insert(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
                 if (A.equals(resource)) {
@@ -275,7 +275,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(B, 10)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -286,10 +286,10 @@ class ImporterNetworkNodeTest {
 
     @Test
     void testTransferWithoutAnyResourcesInSource(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource();
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 10);
@@ -299,17 +299,17 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().isEmpty();
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().isEmpty();
         assertThat(source.getAll()).isEmpty();
     }
 
     @Test
-    void shouldRespectAllowlist(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldRespectAllowlist(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A));
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(B, A)
             .add(B, 10)
@@ -322,7 +322,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -333,7 +333,7 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldRespectAllowlistWithNormalizer(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
@@ -345,7 +345,7 @@ class ImporterNetworkNodeTest {
             return resource;
         });
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(B, A_ALTERNATIVE, A_ALTERNATIVE2)
             .add(B, 10)
@@ -360,7 +360,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A_ALTERNATIVE, 1),
             new ResourceAmount(A_ALTERNATIVE2, 1)
         );
@@ -371,13 +371,13 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldRespectAllowlistWithoutAlternative(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A));
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(B)
             .add(B, 10);
@@ -389,19 +389,19 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(B, 10)
         );
     }
 
     @Test
-    void shouldRespectEmptyAllowlist(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldRespectEmptyAllowlist(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of());
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(B, A)
             .add(B, 10)
@@ -414,7 +414,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(B, 10),
             new ResourceAmount(A, 10)
@@ -422,12 +422,12 @@ class ImporterNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectBlocklist(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldRespectBlocklist(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of(A));
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, B)
             .add(A, 10)
@@ -440,7 +440,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(B, 1)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -451,13 +451,13 @@ class ImporterNetworkNodeTest {
 
     @Test
     void shouldRespectBlocklistWithoutAlternative(
-        @InjectNetworkStorageChannel final StorageChannel storageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of(A));
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A)
             .add(A, 10);
@@ -469,19 +469,19 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).isEmpty();
+        assertThat(storage.getAll()).isEmpty();
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
     }
 
     @Test
-    void shouldRespectEmptyBlocklist(@InjectNetworkStorageChannel final StorageChannel storageChannel) {
+    void shouldRespectEmptyBlocklist(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of());
 
-        storageChannel.addSource(new InMemoryStorageImpl());
+        storage.addSource(new InMemoryStorageImpl());
 
         final FakeImporterSource source = new FakeImporterSource(A, B)
             .add(A, 10)
@@ -494,7 +494,7 @@ class ImporterNetworkNodeTest {
         sut.doWork();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(storage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)
         );
         assertThat(source.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(

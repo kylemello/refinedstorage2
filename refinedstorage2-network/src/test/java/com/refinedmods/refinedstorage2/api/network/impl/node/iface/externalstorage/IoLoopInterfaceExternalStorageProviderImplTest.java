@@ -7,21 +7,21 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.Ext
 import com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage.StorageExternalStorageProvider;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceExportStateImpl;
 import com.refinedmods.refinedstorage2.api.network.impl.node.iface.InterfaceNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage2.network.test.InjectNetwork;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -54,7 +54,7 @@ class IoLoopInterfaceExternalStorageProviderImplTest {
     ExternalStorageNetworkNode externalStorageWithNonInterfaceConnection;
 
     @BeforeEach
-    void setUp(@InjectNetworkStorageChannel final StorageChannel networkStorage) {
+    void setUp(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         interfaceWithExternalStorageState = new InterfaceExportStateImpl(2);
         interfaceWithExternalStorageState.setRequestedResource(1, A, 10);
         interfaceWithExternalStorage.setExportState(interfaceWithExternalStorageState);
@@ -92,7 +92,7 @@ class IoLoopInterfaceExternalStorageProviderImplTest {
     // and would double count them because the External Storage update is later.
     @Test
     void shouldNotAllowInsertionByAnotherInterfaceIfThatInterfaceIsActingAsExternalStorage(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
         @InjectNetwork final Network network
     ) {
         // Arrange
@@ -121,7 +121,7 @@ class IoLoopInterfaceExternalStorageProviderImplTest {
 
     @Test
     void shouldAllowInsertionByAnotherInterfaceIfThatInterfaceIsNotActingAsExternalStorage(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage,
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage,
         @InjectNetwork final Network network
     ) {
         // Arrange
@@ -155,7 +155,7 @@ class IoLoopInterfaceExternalStorageProviderImplTest {
     // isn't allowed as it would create an extraction loop causing the Interfaces to constantly steal from each other.
     @Test
     void shouldNotAllowExtractionRequestedByAnotherInterfaceIfThatInterfaceIsActingAsExternalStorage(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Act & assert
         interfaceWithExternalStorage.doWork();
@@ -193,7 +193,7 @@ class IoLoopInterfaceExternalStorageProviderImplTest {
 
     @Test
     void shouldAllowExtractionRequestedByAnotherInterfaceIfThatInterfaceIsNotActingAsExternalStorage(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Act & assert
         interfaceWithExternalStorage.doWork();

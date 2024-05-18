@@ -3,30 +3,30 @@ package com.refinedmods.refinedstorage2.api.network.impl.node.grid;
 import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage2.api.network.Network;
+import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageImpl;
 import com.refinedmods.refinedstorage2.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage2.network.test.InjectNetwork;
-import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageChannel;
+import com.refinedmods.refinedstorage2.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage2.network.test.NetworkTest;
 import com.refinedmods.refinedstorage2.network.test.SetupNetwork;
+import com.refinedmods.refinedstorage2.network.test.fake.FakeActor;
 import com.refinedmods.refinedstorage2.network.test.nodefactory.AbstractNetworkNodeFactory;
-import com.refinedmods.refinedstorage2.network.test.util.FakeActor;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static com.refinedmods.refinedstorage2.network.test.TestResource.A;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.B;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.C;
-import static com.refinedmods.refinedstorage2.network.test.TestResource.D;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.A;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage2.network.test.fake.FakeResources.D;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -48,14 +48,14 @@ class GridNetworkNodeTest {
 
     @BeforeEach
     void setUp(
-        @InjectNetworkStorageChannel final StorageChannel storage,
-        @InjectNetworkStorageChannel(networkId = "other") final StorageChannel otherStorageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage,
+        @InjectNetworkStorageComponent(networkId = "other") final StorageNetworkComponent otherStorage
     ) {
         storage.addSource(new TrackedStorageImpl(new LimitedStorageImpl(1000), () -> 2L));
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 200, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        otherStorageChannel.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 3L));
+        otherStorage.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 3L));
     }
 
     @Test
@@ -85,7 +85,7 @@ class GridNetworkNodeTest {
 
     @Test
     void shouldNotifyWatchersOfStorageChanges(
-        @InjectNetworkStorageChannel final StorageChannel networkStorage
+        @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
@@ -141,8 +141,8 @@ class GridNetworkNodeTest {
     void shouldDetachWatchersFromOldNetworkAndReattachToNewNetwork(
         @InjectNetwork("other") final Network otherNetwork,
         @InjectNetwork final Network network,
-        @InjectNetworkStorageChannel final StorageChannel storageChannel,
-        @InjectNetworkStorageChannel(networkId = "other") final StorageChannel otherStorageChannel
+        @InjectNetworkStorageComponent final StorageNetworkComponent storage,
+        @InjectNetworkStorageComponent(networkId = "other") final StorageNetworkComponent otherStorage
     ) {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
@@ -150,19 +150,19 @@ class GridNetworkNodeTest {
 
         // Act
         // This one shouldn't be ignored!
-        otherStorageChannel.insert(C, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        otherStorage.insert(C, 10, Action.EXECUTE, FakeActor.INSTANCE);
 
         sut.setNetwork(otherNetwork);
         network.removeContainer(() -> sut);
         otherNetwork.addContainer(() -> sut);
 
         // these one shouldn't be ignored either
-        otherStorageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        otherStorageChannel.insert(D, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        otherStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        otherStorage.insert(D, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // these should be ignored
-        storageChannel.insert(B, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        storageChannel.insert(D, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.insert(B, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        storage.insert(D, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Assert
         verify(watcher, times(1)).invalidate();

@@ -34,6 +34,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.Tags.GRIDS
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.IMPORTERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.NETWORK_RECEIVERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.NETWORK_TRANSMITTERS;
+import static com.refinedmods.refinedstorage2.platform.common.content.Tags.RELAYS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.SECURITY_MANAGERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.STORAGE_DISKS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.WIRELESS_TRANSMITTERS;
@@ -113,6 +114,10 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
                 .toList());
         addAllToTag(SECURITY_MANAGERS,
             Blocks.INSTANCE.getSecurityManager().values().stream()
+                .map(block -> (Supplier<Item>) block::asItem)
+                .toList());
+        addAllToTag(RELAYS,
+            Blocks.INSTANCE.getRelay().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
     }
