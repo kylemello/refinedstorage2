@@ -10,7 +10,6 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinatio
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +32,8 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     private static final String TAG_UPGRADES = "u";
 
     protected final UpgradeContainer upgradeContainer;
-    private RateLimiter rateLimiter = createRateLimiter(0);
+    private int workTickRate = 20;
+    private int workTicks;
 
     protected AbstractUpgradeableNetworkNodeContainerBlockEntity(
         final BlockEntityType<?> type,
@@ -52,7 +52,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
 
     @Override
     public final void doWork() {
-        if (rateLimiter.tryAcquire()) {
+        if (workTicks++ % workTickRate == 0) {
             super.doWork();
             postDoWork();
         }
@@ -105,15 +105,11 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     private void configureAccordingToUpgrades() {
         LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.rateLimiter = createRateLimiter(amountOfSpeedUpgrades);
+        this.workTickRate = (amountOfSpeedUpgrades + 1) * 20;
         this.setEnergyUsage(upgradeContainer.getEnergyUsage());
     }
 
     protected abstract void setEnergyUsage(long upgradeEnergyUsage);
-
-    private static RateLimiter createRateLimiter(final int amountOfSpeedUpgrades) {
-        return RateLimiter.create((double) amountOfSpeedUpgrades + 1);
-    }
 
     @Override
     public NonNullList<ItemStack> getDrops() {

@@ -1,4 +1,4 @@
-gradle.ext.refinedArchitectVersion = "0.11.5"
+gradle.ext.refinedArchitectVersion = "0.12.1"
 
 dependencyResolutionManagement {
     repositories {

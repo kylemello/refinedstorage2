@@ -44,7 +44,8 @@ Valid examples are:
 
 ## Translations
 
-If you want to contribute to the translations of this project, please use [Crowdin](https://crowdin.com/project/refined-storage-2).
+If you want to contribute to the translations of this project, please
+use [Crowdin](https://crowdin.com/project/refined-storage-2).
 
 ## Versioning
 
@@ -126,8 +127,25 @@ at all times.
 They ensure that there are no regressions, act as general documentation for the codebase,
 and ensure that the project can evolve over time.
 
-To avoid brittle tests, tests need to validate behavior. A test cannot rely on the internal code structure, so most
-mocking should be avoided.
+To avoid brittle tests, tests need to validate behavior. A test cannot rely on the internal code structure, so most use
+of mocking should be avoided.
+
+### Unit testing
+
+Tests in the API modules are regular unit tests. Don't see a "unit" here as a code unit, but as a unit of behavior.
+
+> Don't isolate code by using mocking, even in a unit test.
+
+These tests don't rely on, nor know about, Minecraft.
+
+Additionally, tests in the `refinedstorage2-network` module use the `refinedstorage2-network-test` JUnit plugin to easily set up networks for testing.
+
+### Integration testing
+
+To test the entire chain from Minecraft to the API modules, we use integration tests. These tests are located in the
+test source set of the `refinedstorage2-platform-forge` module.
+
+We write these integration tests as Minecraft gametests using the NeoForge testing framework.
 
 ### Test coverage
 
@@ -202,6 +220,7 @@ The build workflow takes care of the following:
 
 - Running a Gradle build, running our tests in the process and generating an aggregated code coverage report for the API
   modules.
+- Running Minecraft gametests.
 - Analyzing the code on SonarQube.
   > Because of
   > [limitations with SonarQube](https://portal.productboard.com/sonarsource/1-sonarcloud/c/50-sonarcloud-analyzes-external-pull-request),
@@ -249,18 +268,18 @@ Refined Storage 2 is split up into various modules.
 Most modules aren't dependent on Minecraft or a mod loader. Only modules that start
 with `refinedstorage2-platform-*` have dependencies on Minecraft.
 
-| Name                              | Use in addons | Description                                                                           |
-|-----------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `refinedstorage2-core-api`        | ✔️            | Contains some utility classes and enums.                                              |
-| `refinedstorage2-grid-api`        | ✔️            | Contains Grid related functionality.                                                  |
-| `refinedstorage2-network-api`     | ✔️            | Contains storage network related functionality.                                       |
-| `refinedstorage2-network`         | ❌             | Contains implementations of `refinedstorage2-network-api`.                            |
-| `refinedstorage2-network-test`    | ✔️            | JUnit extension which helps with setting up a network and a network node for testing. |
-| `refinedstorage2-query-parser`    | ✔️            | A query parser, contains a lexer and parser. Only used for Grid query parsing.        |
-| `refinedstorage2-resource-api`    | ✔️            | Contains API for handling resources.                                                  |
-| `refinedstorage2-storage-api`     | ✔️            | Contains storage related functionality.                                               |
-| `refinedstorage2-platform-api`    | ✔️            | Implements the various Refined Storage API modules for use in Minecraft.              |
-| `refinedstorage2-platform-test`   | ✔️             | This module is used in platform tests for various Minecraft related helpers.          |
-| `refinedstorage2-platform-fabric` | ❌             | The platform module for Fabric. This module contains Fabric specific code.            |
-| `refinedstorage2-platform-forge`  | ❌             | The platform module for Forge. This module contains Forge specific code.              |
-| `refinedstorage2-platform-common` | ❌             | Common mod code. Most gameplay code is in here.                                       |
+| Name                              | Use in addons | Description                                                                                        |
+|-----------------------------------|---------------|----------------------------------------------------------------------------------------------------|
+| `refinedstorage2-core-api`        | ✔️            | Contains some utility classes and enums.                                                           |
+| `refinedstorage2-grid-api`        | ✔️            | Contains Grid related functionality.                                                               |
+| `refinedstorage2-network-api`     | ✔️            | Contains storage network related functionality.                                                    |
+| `refinedstorage2-network`         | ❌             | Contains implementations of `refinedstorage2-network-api`.                                         |
+| `refinedstorage2-network-test`    | ✔️            | JUnit extension which helps with setting up a network and a network node for testing.              |
+| `refinedstorage2-query-parser`    | ✔️            | A query parser, contains a lexer and parser. Only used for Grid query parsing.                     |
+| `refinedstorage2-resource-api`    | ✔️            | Contains API for handling resources.                                                               |
+| `refinedstorage2-storage-api`     | ✔️            | Contains storage related functionality.                                                            |
+| `refinedstorage2-platform-api`    | ✔️            | Implements the various Refined Storage API modules for use in Minecraft.                           |
+| `refinedstorage2-platform-test`   | ✔️            | This module is used in platform tests for various Minecraft related helpers.                       |
+| `refinedstorage2-platform-fabric` | ❌             | The platform module for Fabric. This module contains Fabric specific code.                         |
+| `refinedstorage2-platform-forge`  | ❌             | The platform module for Forge. This module contains Forge specific code and the integration tests. |
+| `refinedstorage2-platform-common` | ❌             | Common mod code. Most gameplay code is in here.                                                    |
