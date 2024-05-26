@@ -117,7 +117,7 @@ public class ConstructorBlockEntity
         return dropItems;
     }
 
-    void setDropItems(final boolean dropItems) {
+    public void setDropItems(final boolean dropItems) {
         this.dropItems = dropItems;
         setChanged();
         if (level instanceof ServerLevel serverLevel) {

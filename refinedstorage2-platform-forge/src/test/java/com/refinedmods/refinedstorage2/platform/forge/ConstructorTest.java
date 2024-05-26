@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestSequence;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -63,6 +64,33 @@ public final class ConstructorTest {
             // Assert
             sequence
                 .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.DIRT, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(DIRT, 9),
+                    new ResourceAmount(STONE, 15)
+                ))
+                .thenSucceed();
+        });
+    }
+
+    @GameTest(template = "empty_15x15")
+    public static void shouldDropItem(final GameTestHelper helper) {
+        prepareConstructorPlot(helper, Direction.EAST, (constructor, pos, sequence) -> {
+            // Arrange
+            sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
+                insertItem(helper, network, DIRT, 10);
+                insertItem(helper, network, STONE, 15);
+            }));
+
+            // Act
+            constructor.setDropItems(true);
+            constructor.setFilters(List.of(DIRT));
+
+            // Assert
+            sequence
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
+                .thenWaitUntil(() -> helper.assertItemEntityPresent(Items.DIRT, pos.east(), 1))
                 .thenWaitUntil(storageContainsExactly(
                     helper,
                     pos,
