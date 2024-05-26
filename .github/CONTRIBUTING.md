@@ -145,7 +145,7 @@ Additionally, tests in the `refinedstorage2-network` module use the `refinedstor
 To test the entire chain from Minecraft to the API modules, we use integration tests. These tests are located in the
 test source set of the `refinedstorage2-platform-forge` module.
 
-We write these integration tests as Minecraft gametests using the NeoForge testing framework.
+We write these integration tests as Minecraft gametests.
 
 ### Test coverage
 

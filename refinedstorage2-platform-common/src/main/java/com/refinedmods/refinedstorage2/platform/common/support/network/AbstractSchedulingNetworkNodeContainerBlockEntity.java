@@ -82,5 +82,5 @@ public abstract class AbstractSchedulingNetworkNodeContainerBlockEntity<T extend
 
     protected abstract void setTaskExecutor(TaskExecutor<C> taskExecutor);
 
-    public abstract void setFilters(List<ResourceKey> filters);
+    protected abstract void setFilters(List<ResourceKey> filters);
 }

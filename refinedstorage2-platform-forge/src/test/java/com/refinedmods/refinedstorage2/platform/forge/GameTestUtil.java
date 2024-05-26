@@ -5,30 +5,33 @@ import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.platform.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 
 public final class GameTestUtil {
-    public static final ItemResource DIRT = ItemResource.ofItemStack(new ItemStack(Items.DIRT));
     public static final Blocks RSBLOCKS = Blocks.INSTANCE;
 
     private GameTestUtil() {
     }
 
     @Nullable
-    public static Network getNetwork(final net.minecraft.gametest.framework.GameTestHelper helper, final BlockPos pos) {
+    private static Network getNetwork(final GameTestHelper helper, final BlockPos pos) {
         try {
             final var be = requireBlockEntity(helper, pos, AbstractNetworkNodeContainerBlockEntity.class);
             final var field = AbstractNetworkNodeContainerBlockEntity.class.getDeclaredField("mainNode");
@@ -40,17 +43,37 @@ public final class GameTestUtil {
         }
     }
 
-    public static Runnable itemIsInserted(final net.minecraft.gametest.framework.GameTestHelper helper,
-                                          final BlockPos networkPos,
-                                          final ItemResource resource,
-                                          final long amount) {
+    public static Runnable networkIsAvailable(final GameTestHelper helper,
+                                              final BlockPos networkPos,
+                                              final Consumer<Network> networkConsumer) {
         return () -> {
             final Network network = getNetwork(helper, networkPos);
-            helper.assertTrue(network != null && network.getComponent(StorageNetworkComponent.class)
-                    .insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE) == amount,
-                "Item couldn't be inserted"
-            );
+            helper.assertTrue(network != null, "Network is not available");
+            networkConsumer.accept(network);
         };
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Item resource,
+                              final long amount) {
+        insert(helper, network, new ItemResource(resource, null), amount);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Fluid resource,
+                              final long amount) {
+        insert(helper, network, new FluidResource(resource, null), amount);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final ResourceKey resource,
+                              final long amount) {
+        final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
+        final long inserted = storage.insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
+        helper.assertTrue(inserted == amount, "Resource couldn't be inserted");
     }
 
     @SuppressWarnings("unchecked")
@@ -71,34 +94,44 @@ public final class GameTestUtil {
         return (T) blockEntity;
     }
 
-    public static Runnable storageMustContainExactly(final net.minecraft.gametest.framework.GameTestHelper helper,
-                                                     final BlockPos networkPos,
-                                                     final ResourceAmount... expected) {
-        return () -> {
-            final Network network = getNetwork(helper, networkPos);
-            helper.assertTrue(network != null, "Network is not found");
-            if (network == null) {
-                return;
-            }
+    public static void assertFluidPresent(final GameTestHelper helper,
+                                          final BlockPos pos,
+                                          final Fluid fluid,
+                                          final int level) {
+        final FluidState fluidState = helper.getLevel().getFluidState(helper.absolutePos(pos));
+        helper.assertTrue(
+            fluidState.getType() == fluid && fluidState.getAmount() == level,
+            "Unexpected " + fluidState.getType() + ", " + fluidState.getAmount()
+        );
+    }
+
+    public static Runnable storageContainsExactly(final GameTestHelper helper,
+                                                  final BlockPos networkPos,
+                                                  final ResourceAmount... expected) {
+        return networkIsAvailable(helper, networkPos, network -> {
             final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
-            for (final ResourceAmount expectedItem : expected) {
+            for (final ResourceAmount expectedResource : expected) {
                 final boolean contains = storage.getAll()
                     .stream()
-                    .anyMatch(inStorage -> inStorage.getResource().equals(expectedItem.getResource())
-                        && inStorage.getAmount() == expectedItem.getAmount());
-                if (!contains) {
-                    throw new GameTestAssertException("Missing from storage: " + expectedItem);
-                }
+                    .anyMatch(inStorage -> inStorage.getResource().equals(expectedResource.getResource())
+                        && inStorage.getAmount() == expectedResource.getAmount());
+                helper.assertTrue(contains, "Expected resource is missing from storage: " + expectedResource);
             }
             for (final ResourceAmount inStorage : storage.getAll()) {
                 final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                    expectedItem -> expectedItem.getResource().equals(inStorage.getResource())
-                        && expectedItem.getAmount() == inStorage.getAmount()
+                    expectedResource -> expectedResource.getResource().equals(inStorage.getResource())
+                        && expectedResource.getAmount() == inStorage.getAmount()
                 );
-                if (!wasExpected) {
-                    throw new GameTestAssertException("Unexpected in storage: " + inStorage);
-                }
+                helper.assertTrue(wasExpected, "Unexpected resource found in storage: " + inStorage);
             }
-        };
+        });
+    }
+
+    public static ItemResource asResource(final Item item) {
+        return new ItemResource(item, null);
+    }
+
+    public static FluidResource asResource(final Fluid fluid) {
+        return new FluidResource(fluid, null);
     }
 }

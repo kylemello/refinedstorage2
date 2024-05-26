@@ -57,7 +57,7 @@ public class ConstructorBlockEntity
     }
 
     @Override
-    public void setFilters(final List<ResourceKey> filters) {
+    protected void setFilters(final List<ResourceKey> filters) {
         this.tasks.clear();
         this.tasks.addAll(filters.stream().map(TaskImpl::new).toList());
     }
