@@ -19,17 +19,12 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 
 public final class GameTestUtil {
-    public static final ItemResource DIRT = ItemResource.ofItemStack(new ItemStack(Items.DIRT));
-    public static final ItemResource STONE = ItemResource.ofItemStack(new ItemStack(Items.STONE));
-    public static final FluidResource WATER = new FluidResource(Fluids.WATER, null);
     public static final Blocks RSBLOCKS = Blocks.INSTANCE;
 
     private GameTestUtil() {
@@ -56,6 +51,20 @@ public final class GameTestUtil {
             helper.assertTrue(network != null, "Network is not available");
             networkConsumer.accept(network);
         };
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Item resource,
+                              final long amount) {
+        insert(helper, network, new ItemResource(resource, null), amount);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Fluid resource,
+                              final long amount) {
+        insert(helper, network, new FluidResource(resource, null), amount);
     }
 
     public static void insert(final GameTestHelper helper,
@@ -116,5 +125,13 @@ public final class GameTestUtil {
                 helper.assertTrue(wasExpected, "Unexpected resource found in storage: " + inStorage);
             }
         });
+    }
+
+    public static ItemResource asResource(final Item item) {
+        return new ItemResource(item, null);
+    }
+
+    public static FluidResource asResource(final Fluid fluid) {
+        return new FluidResource(fluid, null);
     }
 }
