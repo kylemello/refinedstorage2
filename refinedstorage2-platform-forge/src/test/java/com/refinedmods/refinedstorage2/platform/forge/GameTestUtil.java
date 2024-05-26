@@ -5,9 +5,11 @@ import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage2.platform.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 
 import java.util.Arrays;
@@ -20,10 +22,14 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 
 public final class GameTestUtil {
     public static final ItemResource DIRT = ItemResource.ofItemStack(new ItemStack(Items.DIRT));
     public static final ItemResource STONE = ItemResource.ofItemStack(new ItemStack(Items.STONE));
+    public static final FluidResource WATER = new FluidResource(Fluids.WATER, null);
     public static final Blocks RSBLOCKS = Blocks.INSTANCE;
 
     private GameTestUtil() {
@@ -52,13 +58,13 @@ public final class GameTestUtil {
         };
     }
 
-    public static void insertItem(final GameTestHelper helper,
-                                  final Network network,
-                                  final ItemResource resource,
-                                  final long amount) {
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final ResourceKey resource,
+                              final long amount) {
         final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
         final long inserted = storage.insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
-        helper.assertTrue(inserted == amount, "Item couldn't be inserted");
+        helper.assertTrue(inserted == amount, "Resource couldn't be inserted");
     }
 
     @SuppressWarnings("unchecked")
@@ -77,6 +83,17 @@ public final class GameTestUtil {
             );
         }
         return (T) blockEntity;
+    }
+
+    public static void assertFluidPresent(final GameTestHelper helper,
+                                          final BlockPos pos,
+                                          final Fluid fluid,
+                                          final int level) {
+        final FluidState fluidState = helper.getLevel().getFluidState(helper.absolutePos(pos));
+        helper.assertTrue(
+            fluidState.getType() == fluid && fluidState.getAmount() == level,
+            "Unexpected " + fluidState.getType() + ", " + fluidState.getAmount()
+        );
     }
 
     public static Runnable storageContainsExactly(final GameTestHelper helper,
