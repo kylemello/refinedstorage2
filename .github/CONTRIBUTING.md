@@ -13,7 +13,7 @@ These are the most important things to know before contributing (also explained 
   Category must match a
   category [used in our Commitlint config](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum).
 - We use [Checkstyle](https://checkstyle.sourceforge.io/) in our build workflow to validate coding style. It is
-  recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) file into your
+  recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) or [config/intellij-code-style.xml](../config/intellij-code-style.xml) file into your
   IDE, so that formatting rules are respected.
 - Branches are kept up to date by rebasing, not by merging.
 - For non-technical changes, adding a changelog entry is required.
@@ -98,24 +98,11 @@ from [API Guardian](https://github.com/apiguardian-team/apiguardian).
 
 We use [Checkstyle](https://checkstyle.sourceforge.io/) in our build workflow to validate coding style.
 
-It is recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) file into your
+It is recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) or [config/intellij-code-style.xml](../config/intellij-code-style.xml) file into your
 IDE, so that formatting rules are respected.
 
 Moreover, the [CheckStyle-IDEA plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) can be used to check
 if there are no style violations.
-
-### Import order
-
-IntellIJ does not import the `import` order rules correctly. Apply following order manually:
-
-- import `com.refinedmods.*`
-- blank line
-- import `java.*`
-- import `javax.*`
-- blank line
-- import all other imports
-- blank line
-- import static all other imports
 
 ## Architecture
 
