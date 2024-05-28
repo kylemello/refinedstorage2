@@ -104,6 +104,19 @@ IDE, so that formatting rules are respected.
 Moreover, the [CheckStyle-IDEA plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) can be used to check
 if there are no style violations.
 
+### Import order
+
+IntellIJ does not import the `import` order rules correctly. Apply following order manually:
+
+- import `com.refinedmods.*`
+- blank line
+- import `java.*`
+- import `javax.*`
+- blank line
+- import all other imports
+- blank line
+- import static all other imports
+
 ## Architecture
 
 ### Architecture Decision Records
@@ -250,7 +263,7 @@ The workflow takes care of the following:
 - Running a build.
 - Publishing on [GitHub packages](https://github.com/refinedmods/refinedstorage2/packages) and
   CreeperHost Maven.
-- Publishing Javadoc on [GitHub pages](https://github.com/refinedmods/refinedstorage2/tree/gh-pages).
+- Publishing Javadoc on [GitHub pages](https://github.com/refinedmods/javadoc).
 - Deploying on [GitHub releases](https://github.com/refinedmods/refinedstorage2/releases).
 - Announcing the release on Discord and Twitter.
 - Creating a PR that merges `main` back into `develop` to get the changes to `CHANGELOG.md` and `build.gradle`
