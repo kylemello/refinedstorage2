@@ -1,6 +1,6 @@
-# 7. Versioning scheme
+# 8. Versioning scheme
 
-Date: 11/01/2023
+Date: 2023-01-11
 
 ## Status
 
