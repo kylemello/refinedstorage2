@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.constructordestructor;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.node.NetworkNodeActor;
+import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
@@ -19,6 +20,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.Resource
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -57,7 +59,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
         this.filterWithFuzzyMode = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            filter::setFilters
+            this::setFilters
         );
     }
 
@@ -71,6 +73,10 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
         if (level instanceof ServerLevel serverLevel) {
             initialize(serverLevel);
         }
+    }
+
+    void setFilters(final Set<ResourceKey> filters) {
+        filter.setFilters(filters);
     }
 
     public FilterMode getFilterMode() {
