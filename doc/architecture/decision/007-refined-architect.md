@@ -21,3 +21,4 @@ It contains GitHub workflows, version management and Gradle helpers to help maki
 ## Consequences
 
 - Refined Storage adopts Refined Architect.
+- Refined Architect must be kept up to date and maintained in order to upgrade Refined Storage.
