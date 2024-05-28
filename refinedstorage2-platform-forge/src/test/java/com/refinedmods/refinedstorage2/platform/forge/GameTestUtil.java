@@ -14,12 +14,16 @@ import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemReso
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -105,6 +109,35 @@ public final class GameTestUtil {
         );
     }
 
+    public static Runnable containerContainsExactly(final GameTestHelper helper,
+                                                    final BlockPos pos,
+                                                    final ResourceAmount... expected) {
+        final var containerBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
+
+        return () -> {
+            for (final ResourceAmount expectedStack : expected) {
+                final boolean contains = IntStream.range(0, containerBlockEntity.getContainerSize())
+                        .mapToObj(containerBlockEntity::getItem)
+                        .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.getResource())
+                                && inContainer.getCount() == expectedStack.getAmount());
+                helper.assertTrue(contains, "Expected resource is missing from storage: "
+                        + expectedStack + " with count: " + expectedStack.getAmount());
+            }
+            for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
+                final ItemStack inContainer = containerBlockEntity.getItem(i);
+
+                if (inContainer.getItem() != Items.AIR) {
+                    final boolean wasExpected = Arrays.stream(expected).anyMatch(
+                            expectedStack -> expectedStack.getResource().equals(asResource(inContainer))
+                                    && expectedStack.getAmount() == inContainer.getCount()
+                    );
+                    helper.assertTrue(wasExpected, "Unexpected resource found in storage: "
+                            + inContainer.getDescriptionId() + " with count: " + inContainer.getCount());
+                }
+            }
+        };
+    }
+
     public static Runnable storageContainsExactly(final GameTestHelper helper,
                                                   final BlockPos networkPos,
                                                   final ResourceAmount... expected) {
@@ -129,6 +162,10 @@ public final class GameTestUtil {
 
     public static ItemResource asResource(final Item item) {
         return new ItemResource(item, null);
+    }
+
+    public static ItemResource asResource(final ItemStack itemStack) {
+        return new ItemResource(itemStack.getItem(), itemStack.getTag());
     }
 
     public static FluidResource asResource(final Fluid fluid) {
