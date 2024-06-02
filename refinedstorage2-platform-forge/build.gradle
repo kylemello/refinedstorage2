@@ -1,9 +1,5 @@
 repositories {
     maven {
-        name = 'JEI'
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
         name = 'REI'
         url 'https://maven.shedaniel.me/'
     }
@@ -17,11 +13,6 @@ forgeProject("refinedstorage2", project(":refinedstorage2-platform-common"), api
 archivesBaseName = 'refinedstorage2-platform-forge'
 
 dependencies {
-    compileOnly common.jei.api
-    testCompileOnly common.jei.api
-    compileOnly forge.jei.api
-    runtimeOnly forge.jei.impl
-
     compileOnly forge.rei.impl
     compileOnly forge.rei.architectury
     compileOnly forge.rei.cloth.math

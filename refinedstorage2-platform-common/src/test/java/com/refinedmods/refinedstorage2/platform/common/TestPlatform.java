@@ -116,11 +116,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public Optional<FluidResource> convertJeiIngredientToFluid(final Object ingredient) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
         throw new UnsupportedOperationException();
     }

@@ -72,8 +72,6 @@ public interface Platform {
 
     Optional<ContainedFluid> getContainedFluid(ItemStack stack);
 
-    Optional<FluidResource> convertJeiIngredientToFluid(Object ingredient);
-
     Optional<ItemStack> convertToBucket(FluidResource fluidResource);
 
     TransferManager createTransferManager(AbstractContainerMenu containerMenu);

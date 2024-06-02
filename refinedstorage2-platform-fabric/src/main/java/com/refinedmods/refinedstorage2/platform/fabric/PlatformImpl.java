@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
@@ -163,17 +162,6 @@ public final class PlatformImpl extends AbstractPlatform {
                 extracted.amount()
             ));
         }
-    }
-
-    @Override
-    public Optional<FluidResource> convertJeiIngredientToFluid(final Object ingredient) {
-        if (ingredient instanceof IJeiFluidIngredient fluidIngredient) {
-            return Optional.of(new FluidResource(
-                fluidIngredient.getFluid(),
-                fluidIngredient.getTag().orElse(null)
-            ));
-        }
-        return Optional.empty();
     }
 
     @Override
