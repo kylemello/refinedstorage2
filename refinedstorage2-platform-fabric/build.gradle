@@ -2,10 +2,6 @@ archivesBaseName = 'refinedstorage2-platform-fabric'
 
 repositories {
     maven {
-        name = 'JEI'
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
         name = 'ModMenu'
         url 'https://maven.terraformersmc.com/'
     }
@@ -55,10 +51,6 @@ dependencies {
     }
     modCompileOnly fabric.rei.architectury
     modRuntimeOnly fabric.rei.impl
-
-    modCompileOnly common.jei.api
-    modCompileOnly fabric.jei.api
-    // modRuntimeOnly fabric.jei.impl
 
     modRuntimeOnly fabric.wthit
 
