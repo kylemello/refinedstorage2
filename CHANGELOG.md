@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.7] - 2024-06-03
+
 ### Removed
 
 -   The JEI integration has been removed and will be moved to an addon mod.
@@ -576,7 +578,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.6...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.7...HEAD
+
+[2.0.0-milestone.3.7]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.6...v2.0.0-milestone.3.7
 
 [2.0.0-milestone.3.6]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.5...v2.0.0-milestone.3.6
 
