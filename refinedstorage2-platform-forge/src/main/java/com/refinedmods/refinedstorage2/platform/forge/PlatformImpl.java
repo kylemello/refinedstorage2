@@ -160,14 +160,6 @@ public final class PlatformImpl extends AbstractPlatform {
     }
 
     @Override
-    public Optional<FluidResource> convertJeiIngredientToFluid(final Object ingredient) {
-        if (ingredient instanceof FluidStack fluidStack) {
-            return Optional.of(ofFluidStack(fluidStack));
-        }
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
         return Optional.ofNullable(
             new ItemStack(Items.BUCKET).getCapability(Capabilities.FluidHandler.ITEM)

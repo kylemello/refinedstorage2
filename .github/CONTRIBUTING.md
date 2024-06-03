@@ -4,6 +4,20 @@ When contributing to this repository, please first discuss the change you wish t
 [GitHub issues](https://github.com/refinedmods/refinedstorage2/issues), [Discord](https://discordapp.com/invite/VYzsydb),
 or any other method with the owners of this repository before making a change.
 
+## Quickstart
+
+These are the most important things to know before contributing (also explained in more detail later in this document):
+
+- Commit messages must adhere to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+- Branch names must be formatted correctly. The format is `{category}/GH-{issue number}/{lowercase-description}`.
+  Category must match a
+  category [used in our Commitlint config](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum).
+- We use [Checkstyle](https://checkstyle.sourceforge.io/) in our build workflow to validate coding style. It is
+  recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) or [config/intellij-code-style.xml](../config/intellij-code-style.xml) file into your
+  IDE, so that formatting rules are respected.
+- Branches are kept up to date by rebasing, not by merging.
+- For non-technical changes, adding a changelog entry is required.
+
 ## Pull requests
 
 - Keep your pull request (PR) as small as possible, this makes reviewing easier.
@@ -44,31 +58,12 @@ Valid examples are:
 
 ## Translations
 
-If you want to contribute to the translations of this project, please use [Crowdin](https://crowdin.com/project/refined-storage-2).
+If you want to contribute to the translations of this project, please
+use [Crowdin](https://crowdin.com/project/refined-storage-2).
 
 ## Versioning
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-### Version metadata
-
-The code doesn't contain version metadata: `build.gradle` specifies a version of `0.0.0` (via Refined Architect).
-The versioning information is entirely contained in Git by using tags.
-
-Per [Semantic Versioning](https://semver.org/spec/v2.0.0.html), the version number being released depends on the changes
-in that release. We usually can't predict those
-changes at the start of a release cycle, so we can't bump the version at the start of a release cycle. That means that
-the version number being released is determined at release time.
-
-Because the version number is determined at release time, we can't store any versioning metadata in the
-code (`build.gradle`). If we did, `build.gradle` would have the version number of the latest released version during the
-release cycle of the new version, which isn't correct.
-
-### Dealing with Minecraft
-
-Whenever we port to a new Minecraft version, at least the minor version should be incremented.
-
-This is needed so that we can still support older Minecraft versions without the version numbers conflicting.
 
 ## Changelog
 
@@ -92,7 +87,7 @@ Documentation must be kept up to date when adding or changing functionality.
 
 ### Javadoc
 
-Javadoc is available after every release on https://refinedmods.com/refinedstorage2/.
+Javadoc is available after every release on https://refinedmods.com/javadoc/refinedstorage2/.
 
 ### API annotations
 
@@ -103,7 +98,7 @@ from [API Guardian](https://github.com/apiguardian-team/apiguardian).
 
 We use [Checkstyle](https://checkstyle.sourceforge.io/) in our build workflow to validate coding style.
 
-It is recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) file into your
+It is recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml) or [config/intellij-code-style.xml](../config/intellij-code-style.xml) file into your
 IDE, so that formatting rules are respected.
 
 Moreover, the [CheckStyle-IDEA plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) can be used to check
@@ -126,8 +121,26 @@ at all times.
 They ensure that there are no regressions, act as general documentation for the codebase,
 and ensure that the project can evolve over time.
 
-To avoid brittle tests, tests need to validate behavior. A test cannot rely on the internal code structure, so most
-mocking should be avoided.
+To avoid brittle tests, tests need to validate behavior. A test cannot rely on the internal code structure, so most use
+of mocking should be avoided.
+
+### Unit testing
+
+Tests in the API modules are regular unit tests. Don't see a "unit" here as a code unit, but as a unit of behavior.
+
+> Don't isolate code by using mocking, even in a unit test.
+
+These tests don't rely on, nor know about, Minecraft.
+
+Additionally, tests in the `refinedstorage2-network` module use the `refinedstorage2-network-test` JUnit plugin to
+easily set up networks for testing.
+
+### Integration testing
+
+To test the entire chain from Minecraft to the API modules, we use integration tests. These tests are located in the
+test source set of the `refinedstorage2-platform-forge` module.
+
+We write these integration tests as Minecraft gametests.
 
 ### Test coverage
 
@@ -202,6 +215,7 @@ The build workflow takes care of the following:
 
 - Running a Gradle build, running our tests in the process and generating an aggregated code coverage report for the API
   modules.
+- Running Minecraft gametests.
 - Analyzing the code on SonarQube.
   > Because of
   > [limitations with SonarQube](https://portal.productboard.com/sonarsource/1-sonarcloud/c/50-sonarcloud-analyzes-external-pull-request),
@@ -236,7 +250,7 @@ The workflow takes care of the following:
 - Running a build.
 - Publishing on [GitHub packages](https://github.com/refinedmods/refinedstorage2/packages) and
   CreeperHost Maven.
-- Publishing Javadoc on [GitHub pages](https://github.com/refinedmods/refinedstorage2/tree/gh-pages).
+- Publishing Javadoc on [GitHub pages](https://github.com/refinedmods/javadoc).
 - Deploying on [GitHub releases](https://github.com/refinedmods/refinedstorage2/releases).
 - Announcing the release on Discord and Twitter.
 - Creating a PR that merges `main` back into `develop` to get the changes to `CHANGELOG.md` and `build.gradle`
@@ -249,18 +263,18 @@ Refined Storage 2 is split up into various modules.
 Most modules aren't dependent on Minecraft or a mod loader. Only modules that start
 with `refinedstorage2-platform-*` have dependencies on Minecraft.
 
-| Name                              | Use in addons | Description                                                                           |
-|-----------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `refinedstorage2-core-api`        | ✔️            | Contains some utility classes and enums.                                              |
-| `refinedstorage2-grid-api`        | ✔️            | Contains Grid related functionality.                                                  |
-| `refinedstorage2-network-api`     | ✔️            | Contains storage network related functionality.                                       |
-| `refinedstorage2-network`         | ❌             | Contains implementations of `refinedstorage2-network-api`.                            |
-| `refinedstorage2-network-test`    | ✔️            | JUnit extension which helps with setting up a network and a network node for testing. |
-| `refinedstorage2-query-parser`    | ✔️            | A query parser, contains a lexer and parser. Only used for Grid query parsing.        |
-| `refinedstorage2-resource-api`    | ✔️            | Contains API for handling resources.                                                  |
-| `refinedstorage2-storage-api`     | ✔️            | Contains storage related functionality.                                               |
-| `refinedstorage2-platform-api`    | ✔️            | Implements the various Refined Storage API modules for use in Minecraft.              |
-| `refinedstorage2-platform-test`   | ✔️             | This module is used in platform tests for various Minecraft related helpers.          |
-| `refinedstorage2-platform-fabric` | ❌             | The platform module for Fabric. This module contains Fabric specific code.            |
-| `refinedstorage2-platform-forge`  | ❌             | The platform module for Forge. This module contains Forge specific code.              |
-| `refinedstorage2-platform-common` | ❌             | Common mod code. Most gameplay code is in here.                                       |
+| Name                              | Use in addons | Description                                                                                        |
+|-----------------------------------|---------------|----------------------------------------------------------------------------------------------------|
+| `refinedstorage2-core-api`        | ✔️            | Contains some utility classes and enums.                                                           |
+| `refinedstorage2-grid-api`        | ✔️            | Contains Grid related functionality.                                                               |
+| `refinedstorage2-network-api`     | ✔️            | Contains storage network related functionality.                                                    |
+| `refinedstorage2-network`         | ❌             | Contains implementations of `refinedstorage2-network-api`.                                         |
+| `refinedstorage2-network-test`    | ✔️            | JUnit extension which helps with setting up a network and a network node for testing.              |
+| `refinedstorage2-query-parser`    | ✔️            | A query parser, contains a lexer and parser. Only used for Grid query parsing.                     |
+| `refinedstorage2-resource-api`    | ✔️            | Contains API for handling resources.                                                               |
+| `refinedstorage2-storage-api`     | ✔️            | Contains storage related functionality.                                                            |
+| `refinedstorage2-platform-api`    | ✔️            | Implements the various Refined Storage API modules for use in Minecraft.                           |
+| `refinedstorage2-platform-test`   | ✔️            | This module is used in platform tests for various Minecraft related helpers.                       |
+| `refinedstorage2-platform-fabric` | ❌             | The platform module for Fabric. This module contains Fabric specific code.                         |
+| `refinedstorage2-platform-forge`  | ❌             | The platform module for Forge. This module contains Forge specific code and the integration tests. |
+| `refinedstorage2-platform-common` | ❌             | Common mod code. Most gameplay code is in here.                                                    |
