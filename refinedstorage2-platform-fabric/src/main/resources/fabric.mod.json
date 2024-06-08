@@ -24,9 +24,6 @@
     ],
     "modmenu": [
       "com.refinedmods.refinedstorage2.platform.fabric.modmenu.ModMenuApiImpl"
-    ],
-    "rei_client": [
-      "com.refinedmods.refinedstorage2.platform.fabric.recipemod.rei.RefinedStorageREIClientPlugin"
     ]
   },
   "custom": {

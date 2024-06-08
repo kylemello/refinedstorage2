@@ -25,7 +25,6 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
@@ -43,6 +42,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Sl
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
+import com.refinedmods.refinedstorage2.platform.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
@@ -56,7 +56,6 @@ import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.SingleIt
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridExtractionStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.CompositeGridScrollingStrategy;
-import com.refinedmods.refinedstorage2.platform.common.recipemod.CompositeIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageContainerItemHelperImpl;
@@ -73,6 +72,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReference;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.registry.PlatformRegistryImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.CompositeRecipeModIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
@@ -147,7 +147,8 @@ public class PlatformApiImpl implements PlatformApi {
         new CompositeStorageMonitorInsertionStrategy();
     private final CompositeStorageMonitorExtractionStrategy storageMonitorExtractionStrategy =
         new CompositeStorageMonitorExtractionStrategy();
-    private final CompositeIngredientConverter compositeConverter = new CompositeIngredientConverter();
+    private final CompositeRecipeModIngredientConverter ingredientConverter =
+        new CompositeRecipeModIngredientConverter();
     private final StorageContainerItemHelper storageContainerItemHelper = new StorageContainerItemHelperImpl();
     private final List<GridInsertionStrategyFactory> gridInsertionStrategyFactories = new ArrayList<>();
     private final GridInsertionHintsImpl gridInsertionHints = new GridInsertionHintsImpl(
@@ -463,13 +464,13 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void registerIngredientConverter(final IngredientConverter converter) {
-        this.compositeConverter.addConverter(converter);
+    public void addIngredientConverter(final RecipeModIngredientConverter converter) {
+        ingredientConverter.addConverter(converter);
     }
 
     @Override
-    public IngredientConverter getIngredientConverter() {
-        return compositeConverter;
+    public RecipeModIngredientConverter getIngredientConverter() {
+        return ingredientConverter;
     }
 
     @Override

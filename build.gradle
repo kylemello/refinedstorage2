@@ -22,6 +22,5 @@ enableSonarQube("refinedmods_refinedstorage2")
 sonarqube {
     properties {
         property "sonar.coverage.exclusions", "refinedstorage2-platform-forge/**/*,refinedstorage2-platform-fabric/**/*,refinedstorage2-platform-common/**/*,refinedstorage2-platform-api/**/*"
-        property "sonar.cpd.exclusions", "refinedstorage2-platform-forge/src/main/java/com/refinedmods/refinedstorage2/platform/forge/recipemod/rei/*,refinedstorage2-platform-fabric/src/main/java/com/refinedmods/refinedstorage2/platform/fabric/recipemod/rei/*"
     }
 }

@@ -6,7 +6,7 @@ repositories {
         url 'https://maven.terraformersmc.com/'
     }
     maven {
-        name = 'Cloth Config, REI'
+        name = 'Cloth Config'
         url 'https://maven.shedaniel.me/'
     }
     maven {
@@ -40,17 +40,6 @@ dependencies {
     include fabric.noIndium
 
     modImplementation fabric.modmenu
-
-    modCompileOnly(common.rei.api) {
-        exclude(group: 'me.shedaniel.cloth')
-        exclude(group: 'dev.architectury')
-    }
-    modCompileOnly(fabric.rei.plugin) {
-        exclude(group: 'me.shedaniel.cloth')
-        exclude(group: 'dev.architectury')
-    }
-    modCompileOnly fabric.rei.architectury
-    modRuntimeOnly fabric.rei.impl
 
     modRuntimeOnly fabric.wthit
 
