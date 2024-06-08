@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.fabric;
 
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.AbstractClientModInitializer;
@@ -33,9 +32,6 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NoPermissionPa
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.WirelessTransmitterRangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.recipemod.rei.RefinedStorageREIClientPlugin;
-import com.refinedmods.refinedstorage2.platform.fabric.recipemod.rei.ReiGridSynchronizer;
-import com.refinedmods.refinedstorage2.platform.fabric.recipemod.rei.ReiProxy;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveUnbakedModel;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.PortableGridBlockEntityRendererImpl;
@@ -53,7 +49,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
@@ -96,7 +91,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
         registerKeyBindings();
         registerModelPredicates();
-        registerGridSynchronizers();
+        registerBaseGridSynchronizer();
         registerResourceRendering();
         registerAlternativeGridHints();
         registerItemProperties();
@@ -431,30 +426,6 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             createIdentifier("stored_in_controller"),
             new ControllerModelPredicateProvider()
         ));
-    }
-
-    private void registerGridSynchronizers() {
-        registerBaseGridSynchronizer();
-        final FabricLoader loader = FabricLoader.getInstance();
-        if (loader.isModLoaded("roughlyenoughitems")) {
-            registerReiGridSynchronizers();
-        }
-    }
-
-    private void registerReiGridSynchronizers() {
-        LOGGER.debug("Enabling REI grid synchronizers");
-        // This is so the ingredient converters are only registered once
-        // see https://github.com/refinedmods/refinedstorage2/pull/302#discussion_r1070015672
-        RefinedStorageREIClientPlugin.registerIngredientConverters();
-        final ReiProxy reiProxy = new ReiProxy();
-        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
-            createIdentifier("rei"),
-            new ReiGridSynchronizer(reiProxy, false)
-        );
-        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
-            createIdentifier("rei_two_way"),
-            new ReiGridSynchronizer(reiProxy, true)
-        );
     }
 
     private void registerItemProperties() {

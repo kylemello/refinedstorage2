@@ -21,7 +21,6 @@ import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionS
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.api.importer.ImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.api.recipemod.IngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
@@ -38,6 +37,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Sl
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
+import com.refinedmods.refinedstorage2.platform.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
@@ -307,12 +307,12 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public void registerIngredientConverter(final IngredientConverter converter) {
-        ensureLoaded().registerIngredientConverter(converter);
+    public void addIngredientConverter(final RecipeModIngredientConverter converter) {
+        ensureLoaded().addIngredientConverter(converter);
     }
 
     @Override
-    public IngredientConverter getIngredientConverter() {
+    public RecipeModIngredientConverter getIngredientConverter() {
         return ensureLoaded().getIngredientConverter();
     }
 

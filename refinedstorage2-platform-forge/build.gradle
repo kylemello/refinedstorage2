@@ -1,9 +1,6 @@
 repositories {
     maven {
-        name = 'REI'
-        url 'https://maven.shedaniel.me/'
-    }
-    maven {
+        name = 'Curios'
         url = "https://maven.theillusivec4.top/"
     }
 }
@@ -13,12 +10,6 @@ forgeProject("refinedstorage2", project(":refinedstorage2-platform-common"), api
 archivesBaseName = 'refinedstorage2-platform-forge'
 
 dependencies {
-    compileOnly forge.rei.impl
-    compileOnly forge.rei.architectury
-    compileOnly forge.rei.cloth.math
-//  runtimeOnly forge.rei.impl
-//  runtimeOnly forge.rei.architectury
-
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:7.1.0+1.20.4"
     compileOnly "top.theillusivec4.curios:curios-neoforge:7.1.0+1.20.4:api"
 }
