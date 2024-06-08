@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.forge;
 
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.AbstractClientModInitializer;
@@ -20,9 +19,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.tooltip.HelpClien
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinationClientTooltipComponent;
-import com.refinedmods.refinedstorage2.platform.forge.recipemod.rei.RefinedStorageREIClientPlugin;
-import com.refinedmods.refinedstorage2.platform.forge.recipemod.rei.ReiGridSynchronizer;
-import com.refinedmods.refinedstorage2.platform.forge.recipemod.rei.ReiProxy;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.DiskDriveGeometryLoader;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.PortableGridBlockEntityRendererImpl;
@@ -40,7 +36,6 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -71,7 +66,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         e.enqueueWork(ClientModInitializer::registerModelPredicates);
         e.enqueueWork(ClientModInitializer::registerItemProperties);
         registerBlockEntityRenderer();
-        registerGridSynchronizers();
+        registerBaseGridSynchronizer();
         registerResourceRendering();
         registerAlternativeGridHints();
         registerDiskModels();
@@ -166,32 +161,6 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         BlockEntityRenderers.register(
             BlockEntities.INSTANCE.getCreativePortableGrid(),
             ctx -> new PortableGridBlockEntityRendererImpl<>()
-        );
-    }
-
-    private static void registerGridSynchronizers() {
-        registerBaseGridSynchronizer();
-        final ModList list = ModList.get();
-        // Give priority to REI, as REI requires a JEI compat mod on Forge.
-        // This means that both JEI + REI support would be activated. We only want REI in that case.
-        if (list.isLoaded("roughlyenoughitems")) {
-            registerReiGridSynchronizers();
-        }
-    }
-
-    private static void registerReiGridSynchronizers() {
-        LOGGER.debug("Enabling REI grid synchronizers");
-        // This is so the ingredient converters are only registered once
-        // see https://github.com/refinedmods/refinedstorage2/pull/302#discussion_r1070015672
-        RefinedStorageREIClientPlugin.registerIngredientConverters();
-        final ReiProxy reiProxy = new ReiProxy();
-        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
-            createIdentifier("rei"),
-            new ReiGridSynchronizer(reiProxy, false)
-        );
-        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
-            createIdentifier("rei_two_way"),
-            new ReiGridSynchronizer(reiProxy, true)
         );
     }
 
