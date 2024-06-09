@@ -10,7 +10,6 @@ import com.refinedmods.refinedstorage2.platform.common.controller.ControllerScre
 import com.refinedmods.refinedstorage2.platform.common.detector.DetectorScreen;
 import com.refinedmods.refinedstorage2.platform.common.exporter.ExporterScreen;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.CraftingGridScreen;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.GridScreen;
@@ -51,13 +50,6 @@ import net.minecraft.world.inventory.MenuType;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractClientModInitializer {
-    protected static void registerBaseGridSynchronizer() {
-        PlatformApi.INSTANCE.getGridSynchronizerRegistry().register(
-            createIdentifier("off"),
-            NoopGridSynchronizer.INSTANCE
-        );
-    }
-
     protected static void registerScreens(final ScreenRegistration registration) {
         registration.register(Menus.INSTANCE.getDiskDrive(), DiskDriveScreen::new);
         registration.register(Menus.INSTANCE.getGrid(), GridScreen<GridContainerMenu>::new);

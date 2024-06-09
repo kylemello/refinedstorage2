@@ -46,8 +46,6 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_DRIVE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PORTABLE_GRID;
@@ -55,8 +53,6 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public final class ClientModInitializer extends AbstractClientModInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientModInitializer.class);
-
     private ClientModInitializer() {
     }
 
@@ -66,7 +62,6 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         e.enqueueWork(ClientModInitializer::registerModelPredicates);
         e.enqueueWork(ClientModInitializer::registerItemProperties);
         registerBlockEntityRenderer();
-        registerBaseGridSynchronizer();
         registerResourceRendering();
         registerAlternativeGridHints();
         registerDiskModels();
