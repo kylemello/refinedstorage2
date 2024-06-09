@@ -50,6 +50,9 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     private final List<Rect2i> exclusionZones = new ArrayList<>();
     private int sideButtonY;
 
+    @Nullable
+    private List<ClientTooltipComponent> deferredTooltip;
+
     protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component text) {
         super(menu, playerInventory, text);
         this.playerInventory = playerInventory;
@@ -189,7 +192,15 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
                 return;
             }
         }
+        if (deferredTooltip != null) {
+            Platform.INSTANCE.renderTooltip(graphics, deferredTooltip, x, y);
+            deferredTooltip = null;
+        }
         super.renderTooltip(graphics, x, y);
+    }
+
+    public void setDeferredTooltip(@Nullable final List<ClientTooltipComponent> deferredTooltip) {
+        this.deferredTooltip = deferredTooltip;
     }
 
     private List<ClientTooltipComponent> getUpgradeTooltip(final ItemStack carried, final UpgradeSlot upgradeSlot) {

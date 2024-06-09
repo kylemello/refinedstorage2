@@ -10,10 +10,6 @@ repositories {
         url 'https://maven.shedaniel.me/'
     }
     maven {
-        name = 'wthit'
-        url "https://maven.bai.lol"
-    }
-    maven {
         name = 'NoIndium'
         url = 'https://maven.cafeteria.dev/releases/'
     }
@@ -26,27 +22,25 @@ repositories {
 fabricProject("refinedstorage2", project(":refinedstorage2-platform-common"), apis, compileApis)
 
 dependencies {
-    modImplementation(fabric.cloth.config) {
+    modApi(libs.cloth.config) {
         exclude(group: 'net.fabricmc.fabric-api')
     }
-    include fabric.cloth.config
+    include libs.cloth.config
 
-    modImplementation(fabric.teamreborn.energy) {
+    modApi(libs.teamreborn.energy) {
         exclude(group: 'net.fabricmc.fabric-api')
     }
-    include fabric.teamreborn.energy
+    include libs.teamreborn.energy
 
-    modImplementation fabric.noIndium
-    include fabric.noIndium
+    modApi "me.luligabi:NoIndium:${noIndiumVersion}"
+    include "me.luligabi:NoIndium:${noIndiumVersion}"
 
-    modImplementation fabric.modmenu
-
-    modRuntimeOnly fabric.wthit
+    modApi libs.modmenu
 
     // https://www.curseforge.com/minecraft/mc-mods/trinkets/files
-    modImplementation "dev.emi:trinkets:3.8.0"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.4.0"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.4.0"
+    modApi "dev.emi:trinkets:${trinketsVersion}"
+    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cardinalComponentsVersion}"
+    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cardinalComponentsVersion}"
 }
 
 enablePublishing()

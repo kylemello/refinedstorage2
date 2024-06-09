@@ -1,6 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
 archivesBaseName = 'refinedstorage2-network'
 
 dependencies {
+    api project(':refinedstorage2-core-api')
+    api project(':refinedstorage2-network-api')
+    api project(':refinedstorage2-resource-api')
+    api project(':refinedstorage2-storage-api')
+    api project(':refinedstorage2-grid-api')
     implementation libs.slf4j.api
     testRuntimeOnly libs.slf4j.impl
     testImplementation libs.junit.api
@@ -9,11 +18,6 @@ dependencies {
     testImplementation libs.assertj
     testImplementation libs.mockito
     testImplementation project(':refinedstorage2-network-test')
-    implementation project(':refinedstorage2-core-api')
-    implementation project(':refinedstorage2-network-api')
-    implementation project(':refinedstorage2-resource-api')
-    implementation project(':refinedstorage2-storage-api')
-    implementation project(':refinedstorage2-grid-api')
 }
 
 test {

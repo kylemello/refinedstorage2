@@ -46,8 +46,8 @@ class GridSortingTypesTest {
     void setUp() {
         viewBuilder = new GridViewBuilderImpl(
             FACTORY,
-            (view) -> Comparator.comparing(GridResource::getName),
-            (view) -> Comparator.comparing(GridResource::getAmount)
+            view -> Comparator.comparing(GridResource::getName),
+            view -> Comparator.comparing(GridResource::getAmount)
         );
         dirt = new ItemResource(Items.DIRT, null);
         stone = new ItemResource(Items.STONE, null);

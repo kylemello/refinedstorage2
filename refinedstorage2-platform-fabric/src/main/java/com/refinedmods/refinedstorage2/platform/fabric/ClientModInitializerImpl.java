@@ -63,15 +63,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import org.lwjgl.glfw.GLFW;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public class ClientModInitializerImpl extends AbstractClientModInitializer implements ClientModInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientModInitializerImpl.class);
-
     @Override
     public void onInitializeClient() {
         setRenderLayers();
@@ -91,7 +87,6 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
         registerKeyBindings();
         registerModelPredicates();
-        registerBaseGridSynchronizer();
         registerResourceRendering();
         registerAlternativeGridHints();
         registerItemProperties();

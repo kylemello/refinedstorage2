@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.9] - 2024-06-09
+
+### Fixed
+
+-   Side button tooltip rendering issue with ModernUI.
+
 ## [2.0.0-milestone.3.8] - 2024-06-08
 
 ### Removed
@@ -584,7 +590,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.8...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.9...HEAD
+
+[2.0.0-milestone.3.9]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.8...v2.0.0-milestone.3.9
 
 [2.0.0-milestone.3.8]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.7...v2.0.0-milestone.3.8
 

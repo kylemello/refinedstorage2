@@ -1,11 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
 archivesBaseName = 'refinedstorage2-query-parser'
 
 dependencies {
+    api project(':refinedstorage2-core-api')
     testImplementation libs.junit.api
     testImplementation libs.junit.params
     testRuntimeOnly libs.junit.engine
     testImplementation libs.assertj
-    implementation project(':refinedstorage2-core-api')
 }
 
 test {

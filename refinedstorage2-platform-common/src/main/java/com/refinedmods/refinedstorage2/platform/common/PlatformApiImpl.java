@@ -50,6 +50,7 @@ import com.refinedmods.refinedstorage2.platform.api.upgrade.BuiltinUpgradeDestin
 import com.refinedmods.refinedstorage2.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.ItemGridInsertionHint;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.SingleItemGridInsertionHint;
@@ -88,7 +89,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -116,7 +116,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+import static java.util.Objects.requireNonNull;
 
 public class PlatformApiImpl implements PlatformApi {
     private final StorageRepository clientStorageRepository =
@@ -169,6 +171,10 @@ public class PlatformApiImpl implements PlatformApi {
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
     private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
 
+    public PlatformApiImpl() {
+        gridSynchronizerRegistry.register(createIdentifier("off"), NoopGridSynchronizer.INSTANCE);
+    }
+
     @Override
     public PlatformRegistry<StorageType> getStorageTypeRegistry() {
         return storageTypeRegistry;
@@ -180,7 +186,7 @@ public class PlatformApiImpl implements PlatformApi {
         if (level.getServer() == null) {
             return clientStorageRepository;
         }
-        final ServerLevel serverLevel = Objects.requireNonNull(level.getServer().getLevel(Level.OVERWORLD));
+        final ServerLevel serverLevel = requireNonNull(level.getServer().getLevel(Level.OVERWORLD));
         return serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
             this::createStorageRepository,
             this::createStorageRepository,

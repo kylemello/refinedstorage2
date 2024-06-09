@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import com.mojang.logging.LogUtils;
@@ -27,17 +28,23 @@ public abstract class AbstractSafeSavedData extends SavedData {
         compoundTag.put("data", this.save(new CompoundTag()));
         NbtUtils.addCurrentDataVersion(compoundTag);
         try {
-            // Write to temp file first.
-            NbtIo.writeCompressed(compoundTag, tempFile);
-            // Try atomic move
-            try {
-                Files.move(tempFile, targetPath, StandardCopyOption.ATOMIC_MOVE);
-            } catch (final AtomicMoveNotSupportedException ignored) {
-                Files.move(tempFile, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            }
+            doSave(compoundTag, tempFile, targetPath);
         } catch (final IOException e) {
             LOGGER.error("Could not save data {}", this, e);
         }
         setDirty(false);
+    }
+
+    private void doSave(final CompoundTag compoundTag,
+                        final Path tempFile,
+                        final Path targetPath) throws IOException {
+        // Write to temp file first.
+        NbtIo.writeCompressed(compoundTag, tempFile);
+        // Try atomic move
+        try {
+            Files.move(tempFile, targetPath, StandardCopyOption.ATOMIC_MOVE);
+        } catch (final AtomicMoveNotSupportedException ignored) {
+            Files.move(tempFile, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 }
