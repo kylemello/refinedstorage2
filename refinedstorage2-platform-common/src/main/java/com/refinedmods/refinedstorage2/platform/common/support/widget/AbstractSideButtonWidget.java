@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.widget;
 
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage2.platform.common.support.TextureIds;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.SmallTextClientTooltipComponent;
@@ -11,8 +11,10 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -66,7 +68,10 @@ public abstract class AbstractSideButtonWidget extends Button {
             graphics.blit(getTextureIdentifier(), getX(), getY(), 238, 54, WIDTH, HEIGHT);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
-            Platform.INSTANCE.renderTooltip(graphics, buildTooltip(), mouseX, mouseY);
+            final Screen screen = Minecraft.getInstance().screen;
+            if (screen instanceof AbstractBaseScreen<?> baseScreen) {
+                baseScreen.setDeferredTooltip(buildTooltip());
+            }
         }
         if (warning != null) {
             renderWarning(graphics);

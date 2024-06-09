@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+-   Side button tooltip rendering issue with ModernUI.
+
 ## [2.0.0-milestone.3.8] - 2024-06-08
 
 ### Removed
