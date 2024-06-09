@@ -1,3 +1,7 @@
+plugins {
+    id 'java-library'
+}
+
 repositories {
     maven {
         name = 'Curios'
@@ -10,8 +14,8 @@ forgeProject("refinedstorage2", project(":refinedstorage2-platform-common"), api
 archivesBaseName = 'refinedstorage2-platform-forge'
 
 dependencies {
-    runtimeOnly "top.theillusivec4.curios:curios-neoforge:7.1.0+1.20.4"
-    compileOnly "top.theillusivec4.curios:curios-neoforge:7.1.0+1.20.4:api"
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curiosVersion}"
+    compileOnlyApi "top.theillusivec4.curios:curios-neoforge:${curiosVersion}:api"
 }
 
 enablePublishing()
