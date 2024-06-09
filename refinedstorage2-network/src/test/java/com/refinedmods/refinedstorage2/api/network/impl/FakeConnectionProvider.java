@@ -78,6 +78,6 @@ public class FakeConnectionProvider implements ConnectionProvider {
         return containers
             .stream()
             .sorted(Comparator.comparingInt(allowed::indexOf))
-            .collect(Collectors.toList());
+            .toList();
     }
 }
