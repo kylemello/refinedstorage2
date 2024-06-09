@@ -8,11 +8,11 @@ archivesBaseName = 'refinedstorage2-platform-api'
 
 dependencies {
     api libs.apiguardian
-    implementation project(':refinedstorage2-core-api')
-    implementation project(':refinedstorage2-storage-api')
-    implementation project(':refinedstorage2-resource-api')
-    implementation project(':refinedstorage2-network-api')
-    implementation project(':refinedstorage2-grid-api')
+    api project(':refinedstorage2-core-api')
+    api project(':refinedstorage2-storage-api')
+    api project(':refinedstorage2-resource-api')
+    api project(':refinedstorage2-network-api')
+    api project(':refinedstorage2-grid-api')
     testImplementation libs.junit.api
     testImplementation libs.junit.params
     testRuntimeOnly libs.junit.engine

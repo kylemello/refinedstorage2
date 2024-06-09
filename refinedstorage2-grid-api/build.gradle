@@ -6,6 +6,10 @@ archivesBaseName = 'refinedstorage2-grid-api'
 
 dependencies {
     api libs.apiguardian
+    api project(':refinedstorage2-resource-api')
+    api project(':refinedstorage2-core-api')
+    api project(':refinedstorage2-storage-api')
+    api project(':refinedstorage2-query-parser')
     implementation libs.slf4j.api
     testImplementation libs.junit.api
     testImplementation libs.junit.params
@@ -13,10 +17,6 @@ dependencies {
     testRuntimeOnly libs.slf4j.impl
     testImplementation libs.assertj
     testImplementation libs.mockito
-    implementation project(':refinedstorage2-resource-api')
-    implementation project(':refinedstorage2-core-api')
-    implementation project(':refinedstorage2-storage-api')
-    implementation project(':refinedstorage2-query-parser')
 }
 
 test {
