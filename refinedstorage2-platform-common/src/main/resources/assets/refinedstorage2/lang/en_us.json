@@ -270,7 +270,6 @@
   "key.refinedstorage2.clear_crafting_grid_matrix_to_inventory": "Clear Crafting Grid matrix to inventory",
   "key.refinedstorage2.open_wireless_grid": "Open Wireless Grid",
   "refinedstorage2.subtitle.wrench": "Wrench used",
-  "trinkets.slot.refinedstorage2.wireless": "Refined Storage 2",
   "permission.refinedstorage2.insert": "Insert",
   "permission.refinedstorage2.insert.description": "Whether the player can insert resources in a network.",
   "permission.refinedstorage2.extract": "Extract",

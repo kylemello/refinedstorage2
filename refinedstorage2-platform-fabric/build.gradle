@@ -13,10 +13,6 @@ repositories {
         name = 'NoIndium'
         url = 'https://maven.cafeteria.dev/releases/'
     }
-    maven {
-        name = "Trinkets"
-        url = 'https://maven.ladysnake.org/releases'
-    }
 }
 
 fabricProject("refinedstorage2", project(":refinedstorage2-platform-common"), apis, compileApis)
@@ -36,11 +32,6 @@ dependencies {
     include "me.luligabi:NoIndium:${noIndiumVersion}"
 
     modApi libs.modmenu
-
-    // https://www.curseforge.com/minecraft/mc-mods/trinkets/files
-    modApi "dev.emi:trinkets:${trinketsVersion}"
-    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cardinalComponentsVersion}"
-    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cardinalComponentsVersion}"
 }
 
 enablePublishing()
