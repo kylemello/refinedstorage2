@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Removed
+
+-   The Curios integration has been removed and will be moved to an addon mod.
+
 ## [2.0.0-milestone.3.10] - 2024-06-16
 
 ## [2.0.0-milestone.3.9] - 2024-06-09
