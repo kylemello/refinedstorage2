@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.fabric;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.RefinedStoragePlugin;
 import com.refinedmods.refinedstorage2.platform.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.PlatformProxy;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
@@ -57,6 +58,7 @@ import com.refinedmods.refinedstorage2.platform.fabric.support.resource.VariantU
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -72,6 +74,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.Container;
@@ -102,6 +105,7 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class ModInitializerImpl extends AbstractModInitializer implements ModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModInitializerImpl.class);
+    private static final String PLUGIN_ENTRYPOINT_KEY = "refinedstorage_plugin";
 
     @Override
     public void onInitialize() {
@@ -123,6 +127,11 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerTickHandler();
         registerWrenchingEvent();
         registerSecurityBlockBreakEvent();
+
+        final List<RefinedStoragePlugin> pluginEntrypoints = FabricLoader.getInstance()
+            .getEntrypoints(PLUGIN_ENTRYPOINT_KEY, RefinedStoragePlugin.class);
+        LOGGER.debug("Loading {} Refined Storage plugin entrypoints.", pluginEntrypoints.size());
+        pluginEntrypoints.forEach(plugin -> plugin.onPlatformApiAvailable(PlatformApi.INSTANCE));
 
         LOGGER.debug("Refined Storage 2 has loaded.");
     }
