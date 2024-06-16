@@ -52,8 +52,6 @@ import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricD
 import com.refinedmods.refinedstorage2.platform.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.support.energy.EnergyStorageAdapter;
-import com.refinedmods.refinedstorage2.platform.fabric.support.network.bounditem.TrinketsSlotReferenceFactory;
-import com.refinedmods.refinedstorage2.platform.fabric.support.network.bounditem.TrinketsSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.fabric.support.resource.ResourceContainerFluidStorageAdapter;
 import com.refinedmods.refinedstorage2.platform.fabric.support.resource.VariantUtil;
 
@@ -430,18 +428,6 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
 
     private void registerTickHandler() {
         ServerTickEvents.START_SERVER_TICK.register(server -> ServerEventQueue.runQueuedActions());
-    }
-
-    @Override
-    protected void registerSlotReferenceProviders() {
-        super.registerSlotReferenceProviders();
-        TrinketsSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
-            PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
-                createIdentifier("trinkets"),
-                TrinketsSlotReferenceFactory.INSTANCE
-            );
-            PlatformApi.INSTANCE.addSlotReferenceProvider(slotReferenceProvider);
-        });
     }
 
     private void registerWrenchingEvent() {

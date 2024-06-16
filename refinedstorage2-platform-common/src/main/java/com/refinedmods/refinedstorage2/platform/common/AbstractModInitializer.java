@@ -197,7 +197,7 @@ public abstract class AbstractModInitializer {
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
         registerPermissions();
-        registerSlotReferenceProviders();
+        registerSlotReferenceProvider();
     }
 
     private void registerStorageTypes() {
@@ -787,7 +787,7 @@ public abstract class AbstractModInitializer {
         );
     }
 
-    protected void registerSlotReferenceProviders() {
+    protected final void registerSlotReferenceProvider() {
         PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
             createIdentifier("inventory"),
             InventorySlotReferenceFactory.INSTANCE
