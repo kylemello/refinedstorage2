@@ -37,8 +37,6 @@ import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.Fl
 import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.ItemHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.ForgePortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.forge.support.energy.EnergyStorageAdapter;
-import com.refinedmods.refinedstorage2.platform.forge.support.network.bounditem.CuriosSlotReferenceFactory;
-import com.refinedmods.refinedstorage2.platform.forge.support.network.bounditem.CuriosSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.GridExtractPacket;
@@ -381,18 +379,6 @@ public class ModInitializer extends AbstractModInitializer {
 
     private void registerTickHandler() {
         NeoForge.EVENT_BUS.addListener(this::onServerTick);
-    }
-
-    @Override
-    protected void registerSlotReferenceProviders() {
-        super.registerSlotReferenceProviders();
-        CuriosSlotReferenceProvider.create().ifPresent(slotReferenceProvider -> {
-            PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
-                createIdentifier("curios"),
-                CuriosSlotReferenceFactory.INSTANCE
-            );
-            PlatformApi.INSTANCE.addSlotReferenceProvider(slotReferenceProvider);
-        });
     }
 
     @SubscribeEvent
