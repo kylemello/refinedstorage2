@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Item tag translations.
+
 ## [2.0.0-milestone.3.13] - 2024-06-16
 
 ## [2.0.0-milestone.3.12] - 2024-06-16
