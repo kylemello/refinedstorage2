@@ -1,48 +1,59 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.storage;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractStorageNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractStorageContainerNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageProvider;
+import com.refinedmods.refinedstorage2.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
-
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StorageNetworkNode extends AbstractStorageNetworkNode implements StorageProvider {
+public class StorageNetworkNode extends AbstractStorageContainerNetworkNode implements StorageProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageNetworkNode.class);
 
-    private final long energyUsage;
-    private final ExposedStorage storage = new ExposedStorage(this);
-    @Nullable
-    private Storage internalStorage;
+    private final ExposedStorage storage;
 
-    public StorageNetworkNode(final long energyUsage) {
-        this.energyUsage = energyUsage;
+    public StorageNetworkNode(final long energyUsage, final long energyUsagePerStorage, final int size) {
+        super(energyUsage, energyUsagePerStorage, size);
+        this.storage = new ExposedStorage(this);
     }
 
-    public void setStorage(final Storage storage) {
-        LOGGER.debug("Loading storage {}", storage);
-        this.internalStorage = storage;
+    @Override
+    protected void onStorageChange(final AbstractStorageContainerNetworkNode.StorageChange change) {
+        if (!isActive()) {
+            return;
+        }
+        if (change.removed()) {
+            storage.removeSource(change.storage());
+        } else {
+            storage.addSource(change.storage());
+        }
     }
 
     @Override
     protected void onActiveChanged(final boolean newActive) {
         super.onActiveChanged(newActive);
-        if (network == null || internalStorage == null) {
+        if (network == null) {
             return;
         }
-        LOGGER.debug("Storage activeness got changed to '{}', updating underlying storage", newActive);
+        LOGGER.debug("Activeness got changed to {}, updating underlying internal storages", newActive);
         if (newActive) {
-            storage.setDelegate(internalStorage);
+            enableAllStorages();
         } else {
-            storage.clearDelegate();
+            disableAllStorages();
         }
     }
 
-    @Override
-    public long getEnergyUsage() {
-        return energyUsage;
+    private void enableAllStorages() {
+        for (final StateTrackedStorage internalStorage : storages) {
+            if (internalStorage != null) {
+                storage.addSource(internalStorage);
+            }
+        }
+    }
+
+    private void disableAllStorages() {
+        storage.clearSources();
     }
 
     public long getStored() {

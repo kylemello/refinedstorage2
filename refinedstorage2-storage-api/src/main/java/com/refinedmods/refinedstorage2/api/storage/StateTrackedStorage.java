@@ -11,12 +11,13 @@ import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-public class StateTrackedStorage implements TrackedStorage {
+public class StateTrackedStorage implements TrackedStorage, LimitedStorage {
     private static final double NEAR_CAPACITY_THRESHOLD = .75;
 
     private final Storage delegate;
     @Nullable
     private final Listener listener;
+
     private StorageState state;
 
     public StateTrackedStorage(final Storage delegate, @Nullable final Listener listener) {
@@ -94,6 +95,13 @@ public class StateTrackedStorage implements TrackedStorage {
         return delegate instanceof TrackedStorage trackedStorage
             ? trackedStorage.findTrackedResourceByActorType(resource, actorType)
             : Optional.empty();
+    }
+
+    @Override
+    public long getCapacity() {
+        return delegate instanceof LimitedStorage limitedStorage
+            ? limitedStorage.getCapacity()
+            : 0;
     }
 
     @FunctionalInterface

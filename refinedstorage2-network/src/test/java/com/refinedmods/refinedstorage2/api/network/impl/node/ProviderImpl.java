@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage2.api.network.impl.node.multistorage;
+package com.refinedmods.refinedstorage2.api.network.impl.node;
 
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-class MultiStorageProviderImpl implements MultiStorageProvider {
+public class ProviderImpl implements AbstractStorageContainerNetworkNode.Provider {
     private final Map<Integer, Storage> storages = new HashMap<>();
 
     @Override
