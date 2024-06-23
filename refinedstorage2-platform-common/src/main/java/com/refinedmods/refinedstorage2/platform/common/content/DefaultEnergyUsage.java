@@ -10,9 +10,11 @@ public final class DefaultEnergyUsage {
     public static final long GRID = 10;
     public static final long CRAFTING_GRID = 14;
     public static final long DISK_DRIVE = 10;
+    public static final long DISK_DRIVE_PER_DISK = 4;
+    public static final long DISK_INTERFACE = 6;
+    public static final long DISK_INTERFACE_PER_DISK = 4;
     public static final long CONSTRUCTOR = 3;
     public static final long DESTRUCTOR = 3;
-    public static final long DISK_DRIVE_PER_DISK = 4;
     public static final long STORAGE_MONITOR = 4;
     public static final long NETWORK_RECEIVER = 8;
     public static final long NETWORK_TRANSMITTER = 32;

@@ -419,7 +419,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 20L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();
@@ -455,7 +455,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 20L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A, B));
 
@@ -492,7 +492,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 20L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
         sut.setFilterMode(FilterMode.BLOCK);
         sut.setFilters(Set.of(A, B));
 
@@ -521,7 +521,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 15L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();
@@ -545,7 +545,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 15L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();
@@ -577,7 +577,7 @@ class StorageTransferNetworkNodeTest {
         sut.setTransferQuotaProvider(storage -> 15L);
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A));
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();
@@ -609,7 +609,7 @@ class StorageTransferNetworkNodeTest {
         sut.setTransferQuotaProvider(storage -> 15L);
         sut.setFilterMode(FilterMode.ALLOW);
         sut.setFilters(Set.of(A));
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();
@@ -640,7 +640,7 @@ class StorageTransferNetworkNodeTest {
 
         sut.setProvider(provider);
         sut.setTransferQuotaProvider(storage -> 100L);
-        sut.setMode(StorageTransferMode.EXTRACT);
+        sut.setMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
 
         // Act
         sut.doWork();

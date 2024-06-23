@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractStorageNetworkNode;
 import com.refinedmods.refinedstorage2.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.StorageState;
@@ -17,12 +16,12 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractStorageContainerNetworkNode extends AbstractStorageNetworkNode {
+public abstract class AbstractStorageContainerNetworkNode extends AbstractNetworkNode {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageContainerNetworkNode.class);
 
     protected final StateTrackedStorage[] storages;
 
-    private final long energyUsage;
+    private long energyUsage;
     private final long energyUsagePerStorage;
 
     @Nullable
@@ -87,6 +86,10 @@ public abstract class AbstractStorageContainerNetworkNode extends AbstractStorag
 
     private void updateActiveStorageCount() {
         this.activeStorages = (int) Arrays.stream(storages).filter(Objects::nonNull).count();
+    }
+
+    public void setEnergyUsage(final long energyUsage) {
+        this.energyUsage = energyUsage;
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage2.api.storage.Storage;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.6")
-public class PriorityStorage extends AbstractProxyStorage implements Priority {
+public class PriorityStorage extends AbstractProxyStorage implements PriorityProvider {
     private int priority;
 
     private PriorityStorage(final int priority, final Storage delegate) {

@@ -25,6 +25,7 @@ public final class Tags {
     public static final TagKey<Item> NETWORK_TRANSMITTERS = createTag("network_transmitters");
     public static final TagKey<Item> SECURITY_MANAGERS = createTag("security_managers");
     public static final TagKey<Item> RELAYS = createTag("relays");
+    public static final TagKey<Item> DISK_INTERFACES = createTag("disk_interfaces");
 
     private Tags() {
     }

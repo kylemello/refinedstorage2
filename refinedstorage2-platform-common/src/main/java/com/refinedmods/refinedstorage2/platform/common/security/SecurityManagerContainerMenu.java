@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage2.platform.common.security;
 
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleFilteredContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
@@ -11,7 +11,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Val
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
@@ -25,8 +24,8 @@ public class SecurityManagerContainerMenu extends AbstractBaseContainerMenu {
         super(Menus.INSTANCE.getSecurityManager(), syncId);
         addSlots(
             playerInventory,
-            new SimpleFilteredContainer(CARD_AMOUNT, SecurityManagerBlockEntity::isValidSecurityCard),
-            new SimpleFilteredContainer(1, SecurityManagerBlockEntity::isValidFallbackSecurityCard)
+            new FilteredContainer(CARD_AMOUNT, SecurityManagerBlockEntity::isValidSecurityCard),
+            new FilteredContainer(1, SecurityManagerBlockEntity::isValidFallbackSecurityCard)
         );
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
@@ -44,8 +43,8 @@ public class SecurityManagerContainerMenu extends AbstractBaseContainerMenu {
     }
 
     private void addSlots(final Inventory playerInventory,
-                          final Container securityCards,
-                          final Container fallbackSecurityCard) {
+                          final FilteredContainer securityCards,
+                          final FilteredContainer fallbackSecurityCard) {
         for (int i = 0; i < CARD_AMOUNT; ++i) {
             final int column = i % 9;
             final int x = 8 + (column * 18);

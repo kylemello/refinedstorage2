@@ -18,7 +18,6 @@ public class StorageMonitorScreen extends AbstractBaseScreen<StorageMonitorConta
                                 final Inventory playerInventory,
                                 final Component text) {
         super(menu, playerInventory, text);
-
         this.inventoryLabelY = 43;
         this.imageWidth = 211;
         this.imageHeight = 137;
@@ -30,7 +29,7 @@ public class StorageMonitorScreen extends AbstractBaseScreen<StorageMonitorConta
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
         addSideButton(new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.GENERIC
+            () -> FuzzyModeSideButtonWidget.Type.GENERIC
         ));
     }
 

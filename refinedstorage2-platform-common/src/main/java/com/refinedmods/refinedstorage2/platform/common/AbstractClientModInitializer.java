@@ -24,6 +24,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerS
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveScreen;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceScreen;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageScreen;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridScreen;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlockScreen;
@@ -75,6 +76,7 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getFallbackSecurityCard(), FallbackSecurityCardScreen::new);
         registration.register(Menus.INSTANCE.getSecurityManager(), SecurityManagerScreen::new);
         registration.register(Menus.INSTANCE.getRelay(), RelayScreen::new);
+        registration.register(Menus.INSTANCE.getDiskInterface(), DiskInterfaceScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {

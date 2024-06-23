@@ -116,6 +116,11 @@ public class ItemStorageType implements StorageType {
         return resource instanceof ItemResource;
     }
 
+    @Override
+    public long getDiskInterfaceTransferQuota(final boolean stackUpgrade) {
+        return stackUpgrade ? 64 : 1;
+    }
+
     public enum Variant {
         ONE_K("1k", 1024L),
         FOUR_K("4k", 1024 * 4L),

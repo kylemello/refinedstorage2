@@ -94,7 +94,7 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
 
         fuzzyModeButton = new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.STORAGE
+            () -> FuzzyModeSideButtonWidget.Type.STORAGE
         );
         fuzzyModeButton.visible = visible;
         addSideButton(fuzzyModeButton);

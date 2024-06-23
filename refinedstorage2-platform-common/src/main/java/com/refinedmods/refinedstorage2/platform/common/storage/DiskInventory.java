@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.StorageState;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItem;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
+import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer;
 
 import java.util.Optional;
 import java.util.function.IntFunction;
@@ -13,10 +14,9 @@ import javax.annotation.Nullable;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
-public class DiskInventory extends SimpleContainer implements AbstractStorageContainerNetworkNode.Provider {
+public class DiskInventory extends FilteredContainer implements AbstractStorageContainerNetworkNode.Provider {
     private static final String TAG_DISK_STATE = "s";
     private static final String TAG_DISK_ITEM_ID = "i";
 
@@ -25,17 +25,12 @@ public class DiskInventory extends SimpleContainer implements AbstractStorageCon
     private StorageRepository storageRepository;
 
     public DiskInventory(final DiskListener listener, final int diskCount) {
-        super(diskCount);
+        super(diskCount, StorageContainerItem.stackValidator());
         this.listener = listener;
     }
 
     public void setStorageRepository(@Nullable final StorageRepository storageRepository) {
         this.storageRepository = storageRepository;
-    }
-
-    @Override
-    public boolean canPlaceItem(final int slot, final ItemStack stack) {
-        return stack.getItem() instanceof StorageContainerItem;
     }
 
     @Override

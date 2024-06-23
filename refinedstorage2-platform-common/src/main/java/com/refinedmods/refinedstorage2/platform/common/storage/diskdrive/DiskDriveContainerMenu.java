@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.storage.AbstractStorageContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageAccessor;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainer;
+import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ValidatedSlot;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -45,7 +45,10 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
         ));
         addSlots(
             playerInventory.player,
-            new SimpleContainer(AbstractDiskDriveBlockEntity.AMOUNT_OF_DISKS),
+            new FilteredContainer(
+                AbstractDiskDriveBlockEntity.AMOUNT_OF_DISKS,
+                StorageContainerItem.stackValidator()
+            ),
             ResourceContainerImpl.createForFilter()
         );
         initializeResourceSlots(buf);
@@ -53,23 +56,23 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
 
     DiskDriveContainerMenu(final int syncId,
                            final Player player,
-                           final SimpleContainer diskInventory,
-                           final ResourceContainer resourceContainer,
+                           final FilteredContainer diskInventory,
+                           final ResourceContainer filterContainer,
                            final StorageConfigurationContainer configContainer,
                            final StorageDiskInfoAccessor storageInfoAccessor) {
         super(Menus.INSTANCE.getDiskDrive(), syncId, player, configContainer);
         this.storageInfoAccessor = storageInfoAccessor;
-        addSlots(player, diskInventory, resourceContainer);
+        addSlots(player, diskInventory, filterContainer);
     }
 
     private void addSlots(final Player player,
-                          final SimpleContainer diskInventory,
-                          final ResourceContainer resourceContainer) {
+                          final FilteredContainer diskInventory,
+                          final ResourceContainer filterContainer) {
         for (int i = 0; i < diskInventory.getContainerSize(); ++i) {
             diskSlots.add(addSlot(createDiskSlot(diskInventory, i)));
         }
-        for (int i = 0; i < resourceContainer.size(); ++i) {
-            addSlot(createFilterSlot(resourceContainer, i));
+        for (int i = 0; i < filterContainer.size(); ++i) {
+            addSlot(createFilterSlot(filterContainer, i));
         }
         addPlayerInventory(player.getInventory(), 8, 141);
 
@@ -77,10 +80,10 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
         transferManager.addFilterTransfer(player.getInventory());
     }
 
-    private Slot createFilterSlot(final ResourceContainer resourceContainer, final int i) {
+    private Slot createFilterSlot(final ResourceContainer filterContainer, final int i) {
         final int x = FILTER_SLOT_X + (18 * i);
         return new ResourceSlot(
-            resourceContainer,
+            filterContainer,
             i,
             createTranslation("gui", "storage.filter_help"),
             x,
@@ -89,10 +92,10 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
         );
     }
 
-    private Slot createDiskSlot(final SimpleContainer diskInventory, final int i) {
+    private Slot createDiskSlot(final FilteredContainer diskInventory, final int i) {
         final int x = DISK_SLOT_X + ((i % 2) * 18);
         final int y = DISK_SLOT_Y + Math.floorDiv(i, 2) * 18;
-        return new ValidatedSlot(diskInventory, i, x, y, stack -> stack.getItem() instanceof StorageContainerItem);
+        return ValidatedSlot.forStorageContainer(diskInventory, i, x, y);
     }
 
     @Override

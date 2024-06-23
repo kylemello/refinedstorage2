@@ -25,7 +25,7 @@ public class ImporterScreen extends AbstractFilterScreen<ImporterContainerMenu> 
         ));
         addSideButton(new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.EXTRACTING_SOURCE
+            () -> FuzzyModeSideButtonWidget.Type.EXTRACTING_SOURCE
         ));
     }
 }

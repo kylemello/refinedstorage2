@@ -25,6 +25,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry cable;
     private final ControllerEntry controller;
     private final DiskDriveEntry diskDrive;
+    private final DiskInterfaceEntry diskInterface;
     private final GridEntry grid;
     private final CraftingGridEntry craftingGrid;
     private final StorageBlockEntry storageBlock;
@@ -61,6 +62,7 @@ public class ConfigImpl implements Config {
         cable = new SimpleEnergyUsageEntryImpl("cable", "Cable", DefaultEnergyUsage.CABLE);
         controller = new ControllerEntryImpl();
         diskDrive = new DiskDriveEntryImpl();
+        diskInterface = new DiskInterfaceEntryImpl();
         grid = new GridEntryImpl();
         craftingGrid = new CraftingGridEntryImpl();
         storageBlock = new StorageBlockEntryImpl();
@@ -156,6 +158,11 @@ public class ConfigImpl implements Config {
     @Override
     public DiskDriveEntry getDiskDrive() {
         return diskDrive;
+    }
+
+    @Override
+    public DiskInterfaceEntry getDiskInterface() {
+        return diskInterface;
     }
 
     @Override
@@ -306,6 +313,30 @@ public class ConfigImpl implements Config {
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.DISK_DRIVE, 0, Long.MAX_VALUE);
             energyUsagePerDisk = builder.comment("The energy used per disk")
                 .defineInRange("energyUsagePerDisk", DefaultEnergyUsage.DISK_DRIVE_PER_DISK, 0, Long.MAX_VALUE);
+            builder.pop();
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage.get();
+        }
+
+        @Override
+        public long getEnergyUsagePerDisk() {
+            return energyUsagePerDisk.get();
+        }
+    }
+
+    private class DiskInterfaceEntryImpl implements DiskInterfaceEntry {
+        private final ModConfigSpec.LongValue energyUsage;
+        private final ModConfigSpec.LongValue energyUsagePerDisk;
+
+        private DiskInterfaceEntryImpl() {
+            builder.push("diskInterface");
+            energyUsage = builder.comment("The energy used by the Disk Interface")
+                .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.DISK_INTERFACE, 0, Long.MAX_VALUE);
+            energyUsagePerDisk = builder.comment("The energy used per disk")
+                .defineInRange("energyUsagePerDisk", DefaultEnergyUsage.DISK_INTERFACE_PER_DISK, 0, Long.MAX_VALUE);
             builder.pop();
         }
 

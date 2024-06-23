@@ -56,10 +56,10 @@ class ExternalStorageNetworkNodeTest {
         // Assert
         assertThat(inserted).isZero();
         assertThat(extracted).isZero();
-        assertThat(sut.getAccessMode()).isEqualTo(AccessMode.INSERT_EXTRACT);
+        assertThat(sut.getStorageConfiguration().getAccessMode()).isEqualTo(AccessMode.INSERT_EXTRACT);
         assertThat(sut.getEnergyUsage()).isEqualTo(ENERGY_USAGE);
-        assertThat(sut.getPriority()).isZero();
-        assertThat(sut.getFilterMode()).isEqualTo(FilterMode.BLOCK);
+        assertThat(sut.getStorageConfiguration().getPriority()).isZero();
+        assertThat(sut.getStorageConfiguration().getFilterMode()).isEqualTo(FilterMode.BLOCK);
         assertThat(networkStorage.getAll()).isEmpty();
         assertThat(networkStorage.getStored()).isZero();
         assertThat(networkStorage.findTrackedResourceByActorType(A, FakeActor.class)).isEmpty();
@@ -157,8 +157,8 @@ class ExternalStorageNetworkNodeTest {
     void shouldRespectAllowlistWhenInserting(
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        sut.setFilterMode(FilterMode.ALLOW);
-        sut.setFilters(Set.of(A, B));
+        sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
+        sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -180,8 +180,8 @@ class ExternalStorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.ALLOW);
-        sut.setFilters(Set.of());
+        sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
+        sut.getStorageConfiguration().setFilters(Set.of());
 
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -202,8 +202,8 @@ class ExternalStorageNetworkNodeTest {
     void shouldRespectBlocklistWhenInserting(
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        sut.setFilterMode(FilterMode.BLOCK);
-        sut.setFilters(Set.of(A, B));
+        sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
+        sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -224,8 +224,8 @@ class ExternalStorageNetworkNodeTest {
     void shouldRespectEmptyBlocklistWhenInserting(
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        sut.setFilterMode(FilterMode.BLOCK);
-        sut.setFilters(Set.of());
+        sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
+        sut.getStorageConfiguration().setFilters(Set.of());
 
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -249,7 +249,7 @@ class ExternalStorageNetworkNodeTest {
                                               final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setAccessMode(accessMode);
+        sut.getStorageConfiguration().setAccessMode(accessMode);
 
         final Storage storage = new InMemoryStorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
@@ -272,7 +272,7 @@ class ExternalStorageNetworkNodeTest {
                                                final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setAccessMode(accessMode);
+        sut.getStorageConfiguration().setAccessMode(accessMode);
 
         final Storage storage = new InMemoryStorageImpl();
         storage.insert(A, 20, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -647,11 +647,11 @@ class ExternalStorageNetworkNodeTest {
             otherStorage.initialize(new ExternalStorageProviderFactoryImpl(provider2));
 
             if (oneHasPriority) {
-                sut.setPriority(5);
-                otherStorage.setPriority(2);
+                sut.getStorageConfiguration().setPriority(5);
+                otherStorage.getStorageConfiguration().setPriority(2);
             } else {
-                sut.setPriority(2);
-                otherStorage.setPriority(5);
+                sut.getStorageConfiguration().setPriority(2);
+                otherStorage.getStorageConfiguration().setPriority(5);
             }
 
             // Act

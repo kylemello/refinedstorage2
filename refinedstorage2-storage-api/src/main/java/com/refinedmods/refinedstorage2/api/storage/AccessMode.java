@@ -18,5 +18,13 @@ public enum AccessMode {
     /**
      * Extract-only.
      */
-    EXTRACT
+    EXTRACT;
+
+    public boolean isInsertOnly() {
+        return this == INSERT;
+    }
+
+    public boolean isExtractOnly() {
+        return this == EXTRACT;
+    }
 }

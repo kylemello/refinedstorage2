@@ -41,8 +41,8 @@ public class ExternalStorageBlock extends AbstractDirectionalCableBlock
     private static final Map<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE = new HashMap<>();
     private static final AbstractBlockEntityTicker<ExternalStorageBlockEntity> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getExternalStorage);
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalStorageBlock.class);
+
     private final DyeColor color;
     private final MutableComponent name;
 

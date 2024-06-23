@@ -10,7 +10,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlock;
-import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.AbstractActiveColoredDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.CableBlockSupport;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
@@ -315,7 +315,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             final var builder = getVariantBuilder(block.get());
             builder.forAllStates(blockState -> {
                 final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
-                if (Boolean.TRUE.equals(blockState.getValue(SecurityManagerBlock.ACTIVE))) {
+                if (Boolean.TRUE.equals(blockState.getValue(AbstractActiveColoredDirectionalBlock.ACTIVE))) {
                     model.modelFile(active);
                 } else {
                     model.modelFile(inactive);
