@@ -26,6 +26,10 @@ public class StateTrackedStorage implements TrackedStorage, LimitedStorage {
         this.state = computeState();
     }
 
+    public Storage getDelegate() {
+        return delegate;
+    }
+
     public StorageState getState() {
         return state;
     }

@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.storage;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractStorageContainerNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.NetworkNodeStorageConfiguration;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.StorageConfiguration;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageProvider;
 import com.refinedmods.refinedstorage2.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
@@ -11,11 +13,13 @@ import org.slf4j.LoggerFactory;
 public class StorageNetworkNode extends AbstractStorageContainerNetworkNode implements StorageProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageNetworkNode.class);
 
+    private final StorageConfiguration storageConfiguration;
     private final ExposedStorage storage;
 
     public StorageNetworkNode(final long energyUsage, final long energyUsagePerStorage, final int size) {
         super(energyUsage, energyUsagePerStorage, size);
-        this.storage = new ExposedStorage(this);
+        this.storageConfiguration = new NetworkNodeStorageConfiguration(this);
+        this.storage = new ExposedStorage(storageConfiguration);
     }
 
     @Override
@@ -54,6 +58,10 @@ public class StorageNetworkNode extends AbstractStorageContainerNetworkNode impl
 
     private void disableAllStorages() {
         storage.clearSources();
+    }
+
+    public StorageConfiguration getStorageConfiguration() {
+        return storageConfiguration;
     }
 
     public long getStored() {

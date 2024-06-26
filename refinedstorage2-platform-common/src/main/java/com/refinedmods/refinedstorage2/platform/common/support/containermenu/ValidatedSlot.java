@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
+import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItem;
+
 import java.util.function.Predicate;
 
 import net.minecraft.world.Container;
@@ -21,5 +23,12 @@ public class ValidatedSlot extends Slot {
     @Override
     public boolean mayPlace(final ItemStack stack) {
         return predicate.test(stack);
+    }
+
+    public static Slot forStorageContainer(final Container container,
+                                           final int index,
+                                           final int x,
+                                           final int y) {
+        return new ValidatedSlot(container, index, x, y, stack -> stack.getItem() instanceof StorageContainerItem);
     }
 }

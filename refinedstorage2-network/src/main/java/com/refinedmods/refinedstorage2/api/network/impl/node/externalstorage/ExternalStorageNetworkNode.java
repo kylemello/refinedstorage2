@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage2.api.network.impl.node.externalstorage;
 
-import com.refinedmods.refinedstorage2.api.network.impl.storage.AbstractStorageNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.NetworkNodeStorageConfiguration;
+import com.refinedmods.refinedstorage2.api.network.impl.storage.StorageConfiguration;
 import com.refinedmods.refinedstorage2.api.network.node.externalstorage.ExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageProvider;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
@@ -10,15 +12,21 @@ import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedStorageReposit
 import java.util.function.LongSupplier;
 import javax.annotation.Nullable;
 
-public class ExternalStorageNetworkNode extends AbstractStorageNetworkNode implements StorageProvider {
+public class ExternalStorageNetworkNode extends AbstractNetworkNode implements StorageProvider {
     private final long energyUsage;
+    private final StorageConfiguration storageConfiguration;
     private final ExposedExternalStorage storage;
     @Nullable
     private ExternalStorage externalStorage;
 
     public ExternalStorageNetworkNode(final long energyUsage, final LongSupplier clock) {
         this.energyUsage = energyUsage;
-        this.storage = new ExposedExternalStorage(this, clock);
+        this.storageConfiguration = new NetworkNodeStorageConfiguration(this);
+        this.storage = new ExposedExternalStorage(storageConfiguration, clock);
+    }
+
+    public StorageConfiguration getStorageConfiguration() {
+        return storageConfiguration;
     }
 
     public void setTrackingRepository(final TrackedStorageRepository trackingRepository) {

@@ -26,6 +26,8 @@ public interface Config {
 
     DiskDriveEntry getDiskDrive();
 
+    DiskInterfaceEntry getDiskInterface();
+
     SimpleEnergyUsageEntry getCable();
 
     StorageBlockEntry getStorageBlock();
@@ -111,6 +113,10 @@ public interface Config {
     }
 
     interface DiskDriveEntry extends SimpleEnergyUsageEntry {
+        long getEnergyUsagePerDisk();
+    }
+
+    interface DiskInterfaceEntry extends SimpleEnergyUsageEntry {
         long getEnergyUsagePerDisk();
     }
 

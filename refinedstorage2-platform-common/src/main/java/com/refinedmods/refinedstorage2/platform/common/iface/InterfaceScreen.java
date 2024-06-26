@@ -29,7 +29,7 @@ public class InterfaceScreen extends AbstractBaseScreen<InterfaceContainerMenu> 
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
         addSideButton(new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.EXTRACTING_STORAGE_NETWORK
+            () -> FuzzyModeSideButtonWidget.Type.EXTRACTING_STORAGE_NETWORK
         ));
     }
 

@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage2.platform.common.support.SimpleFilteredContainer;
+import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
@@ -23,7 +23,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -38,11 +37,11 @@ public class SecurityManagerBlockEntity
     private static final String TAG_SECURITY_CARDS = "sc";
     private static final String TAG_FALLBACK_SECURITY_CARD = "fsc";
 
-    private final SimpleContainer securityCards = new SimpleFilteredContainer(
+    private final FilteredContainer securityCards = new FilteredContainer(
         CARD_AMOUNT,
         SecurityManagerBlockEntity::isValidSecurityCard
     );
-    private final SimpleContainer fallbackSecurityCard = new SimpleFilteredContainer(
+    private final FilteredContainer fallbackSecurityCard = new FilteredContainer(
         1,
         SecurityManagerBlockEntity::isValidFallbackSecurityCard
     );
@@ -124,11 +123,11 @@ public class SecurityManagerBlockEntity
         return drops;
     }
 
-    SimpleContainer getSecurityCards() {
+    FilteredContainer getSecurityCards() {
         return securityCards;
     }
 
-    SimpleContainer getFallbackSecurityCard() {
+    FilteredContainer getFallbackSecurityCard() {
         return fallbackSecurityCard;
     }
 

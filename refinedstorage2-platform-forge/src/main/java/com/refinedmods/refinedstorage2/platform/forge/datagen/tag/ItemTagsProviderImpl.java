@@ -27,6 +27,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.Tags.CRAFT
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.CREATIVE_CONTROLLERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.DESTRUCTORS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.DETECTORS;
+import static com.refinedmods.refinedstorage2.platform.common.content.Tags.DISK_INTERFACES;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.EXPORTERS;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.EXTERNAL_STORAGES;
 import static com.refinedmods.refinedstorage2.platform.common.content.Tags.FLUID_STORAGE_DISKS;
@@ -118,6 +119,10 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
                 .toList());
         addAllToTag(RELAYS,
             Blocks.INSTANCE.getRelay().values().stream()
+                .map(block -> (Supplier<Item>) block::asItem)
+                .toList());
+        addAllToTag(DISK_INTERFACES,
+            Blocks.INSTANCE.getDiskInterface().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
     }

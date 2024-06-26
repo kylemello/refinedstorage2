@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage2.platform.common.support.widget;
 
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 
+import java.util.function.Supplier;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -13,14 +15,12 @@ public class FuzzyModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent SUBTEXT_OFF = createTranslation("gui", "fuzzy_mode.off");
 
     private final ClientProperty<Boolean> property;
-    private final Component helpOn;
-    private final Component helpOff;
+    private final Supplier<Type> typeSupplier;
 
-    public FuzzyModeSideButtonWidget(final ClientProperty<Boolean> property, final Type type) {
+    public FuzzyModeSideButtonWidget(final ClientProperty<Boolean> property, final Supplier<Type> typeSupplier) {
         super(createPressAction(property));
         this.property = property;
-        this.helpOn = createTranslation("gui", "fuzzy_mode.on." + type.getHelpTranslationKey());
-        this.helpOff = createTranslation("gui", "fuzzy_mode.off." + type.getHelpTranslationKey());
+        this.typeSupplier = typeSupplier;
     }
 
     private static OnPress createPressAction(final ClientProperty<Boolean> property) {
@@ -49,7 +49,8 @@ public class FuzzyModeSideButtonWidget extends AbstractSideButtonWidget {
 
     @Override
     protected Component getHelpText() {
-        return Boolean.TRUE.equals(property.getValue()) ? helpOn : helpOff;
+        final Type type = typeSupplier.get();
+        return Boolean.TRUE.equals(property.getValue()) ? type.helpOnText : type.helpOffText;
     }
 
     public enum Type {
@@ -58,7 +59,15 @@ public class FuzzyModeSideButtonWidget extends AbstractSideButtonWidget {
         EXTRACTING_STORAGE_NETWORK,
         EXTRACTING_SOURCE;
 
-        String getHelpTranslationKey() {
+        private final MutableComponent helpOnText;
+        private final MutableComponent helpOffText;
+
+        Type() {
+            this.helpOnText = createTranslation("gui", "fuzzy_mode.on." + getHelpTranslationKey());
+            this.helpOffText = createTranslation("gui", "fuzzy_mode.off." + getHelpTranslationKey());
+        }
+
+        private String getHelpTranslationKey() {
             return name().toLowerCase() + "_help";
         }
     }

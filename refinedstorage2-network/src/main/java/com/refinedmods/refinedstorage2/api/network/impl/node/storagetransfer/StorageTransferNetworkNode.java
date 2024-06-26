@@ -5,21 +5,27 @@ import com.refinedmods.refinedstorage2.api.network.node.NetworkNodeActor;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage2.api.resource.filter.Filter;
+import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
+import com.refinedmods.refinedstorage2.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.TransferHelper;
 import com.refinedmods.refinedstorage2.api.storage.limited.LimitedStorage;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
 public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkNode {
     private final Actor actor = new NetworkNodeActor(this);
+    private final Filter filter = new Filter();
 
-    private StorageTransferMode mode = StorageTransferMode.INSERT;
+    private StorageTransferMode mode = StorageTransferMode.INSERT_INTO_NETWORK;
     @Nullable
     private ToLongFunction<Storage> transferQuotaProvider;
     @Nullable
@@ -33,12 +39,32 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
         this.mode = mode;
     }
 
+    public StorageTransferMode getMode() {
+        return mode;
+    }
+
     public void setTransferQuotaProvider(final ToLongFunction<Storage> transferQuotaProvider) {
         this.transferQuotaProvider = transferQuotaProvider;
     }
 
     public void setListener(@Nullable final StorageTransferListener listener) {
         this.listener = listener;
+    }
+
+    public FilterMode getFilterMode() {
+        return filter.getMode();
+    }
+
+    public void setFilterMode(final FilterMode filterMode) {
+        filter.setMode(filterMode);
+    }
+
+    public void setFilters(final Set<ResourceKey> filters) {
+        filter.setFilters(filters);
+    }
+
+    public void setNormalizer(final UnaryOperator<ResourceKey> normalizer) {
+        filter.setNormalizer(normalizer);
     }
 
     @Override
@@ -49,7 +75,7 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
         }
         final StorageNetworkComponent networkStorage = network.getComponent(StorageNetworkComponent.class);
         for (int i = 0; i < storages.length / 2; ++i) {
-            final Storage storage = storages[i];
+            final StateTrackedStorage storage = storages[i];
             if (storage == null) {
                 continue;
             }
@@ -60,12 +86,12 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
         }
     }
 
-    private Result transfer(final Storage storage, final StorageNetworkComponent networkStorage) {
+    private Result transfer(final StateTrackedStorage storage, final StorageNetworkComponent networkStorage) {
         if (transferQuotaProvider == null) {
             return Result.FAILURE;
         }
-        final long transferQuota = transferQuotaProvider.applyAsLong(storage);
-        if (mode == StorageTransferMode.INSERT) {
+        final long transferQuota = transferQuotaProvider.applyAsLong(storage.getDelegate());
+        if (mode == StorageTransferMode.INSERT_INTO_NETWORK) {
             return transfer(storage, networkStorage, transferQuota, this::hasNoExtractableResources);
         }
         return transfer(
@@ -96,7 +122,7 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
         final Collection<ResourceAmount> sourceContents = new LinkedHashSet<>(source.getAll());
         for (final ResourceAmount resourceAmount : sourceContents) {
             final ResourceKey resource = resourceAmount.getResource();
-            if (!isAllowed(resource)) {
+            if (!filter.isAllowed(resource)) {
                 continue;
             }
             final long amount = Math.min(remainder, resourceAmount.getAmount());
@@ -110,7 +136,7 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
     }
 
     private boolean hasNoExtractableResources(final Storage source) {
-        return source.getAll().stream().noneMatch(resourceAmount -> isAllowed(resourceAmount.getResource()));
+        return source.getAll().stream().noneMatch(resourceAmount -> filter.isAllowed(resourceAmount.getResource()));
     }
 
     private boolean storageIsFull(final Storage storage) {

@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -29,10 +30,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class RelayBlock extends AbstractDirectionalBlock<Direction>
     implements EntityBlock, ColorableBlock<RelayBlock, BaseBlockItem>, BlockItemProvider<BaseBlockItem> {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
+    private static final Component HELP = createTranslation("item", "relay.help");
     private static final AbstractBlockEntityTicker<RelayBlockEntity> TICKER = new NetworkNodeBlockEntityTicker<>(
         BlockEntities.INSTANCE::getRelay,
         ACTIVE
@@ -79,7 +83,7 @@ public class RelayBlock extends AbstractDirectionalBlock<Direction>
 
     @Override
     public BaseBlockItem createBlockItem() {
-        return new BaseBlockItem(this);
+        return new BaseBlockItem(this, HELP);
     }
 
     @Override

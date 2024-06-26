@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerB
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveBlock;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlock;
@@ -149,6 +150,12 @@ public final class Blocks {
         RelayBlock::new,
         ContentIds.RELAY,
         ContentNames.RELAY,
+        COLOR
+    );
+    private final BlockColorMap<DiskInterfaceBlock, BaseBlockItem> diskInterface = new BlockColorMap<>(
+        DiskInterfaceBlock::new,
+        ContentIds.DISK_INTERFACE,
+        ContentNames.DISK_INTERFACE,
         COLOR
     );
 
@@ -311,5 +318,9 @@ public final class Blocks {
 
     public BlockColorMap<RelayBlock, BaseBlockItem> getRelay() {
         return relay;
+    }
+
+    public BlockColorMap<DiskInterfaceBlock, BaseBlockItem> getDiskInterface() {
+        return diskInterface;
     }
 }

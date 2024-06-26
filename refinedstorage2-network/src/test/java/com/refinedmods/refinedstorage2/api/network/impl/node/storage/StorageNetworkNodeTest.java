@@ -131,7 +131,7 @@ class StorageNetworkNodeTest {
     void testInitialState(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Assert
         assertThat(sut.getEnergyUsage()).isEqualTo(BASE_USAGE);
-        assertThat(sut.getFilterMode()).isEqualTo(FilterMode.BLOCK);
+        assertThat(sut.getStorageConfiguration().getFilterMode()).isEqualTo(FilterMode.BLOCK);
         assertThat(networkStorage.getAll()).isEmpty();
         assertThat(networkStorage.getStored()).isZero();
         assertThat(sut.getSize()).isEqualTo(9);
@@ -396,8 +396,8 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.ALLOW);
-        sut.setFilters(Set.of(A, B));
+        sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
+        sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);
@@ -419,9 +419,9 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.ALLOW);
-        sut.setFilters(Set.of(A));
-        sut.setNormalizer(resource -> {
+        sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
+        sut.getStorageConfiguration().setFilters(Set.of(A));
+        sut.getStorageConfiguration().setNormalizer(resource -> {
             if (resource == A_ALTERNATIVE || resource == A_ALTERNATIVE2) {
                 return A;
             }
@@ -455,8 +455,8 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.ALLOW);
-        sut.setFilters(Set.of());
+        sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
+        sut.getStorageConfiguration().setFilters(Set.of());
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);
@@ -478,8 +478,8 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.BLOCK);
-        sut.setFilters(Set.of(A, B));
+        sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
+        sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);
@@ -501,8 +501,8 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setFilterMode(FilterMode.BLOCK);
-        sut.setFilters(Set.of());
+        sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
+        sut.getStorageConfiguration().setFilters(Set.of());
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);
@@ -526,7 +526,7 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setAccessMode(accessMode);
+        sut.getStorageConfiguration().setAccessMode(accessMode);
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);
@@ -549,7 +549,7 @@ class StorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        sut.setAccessMode(accessMode);
+        sut.getStorageConfiguration().setAccessMode(accessMode);
 
         final Storage storage = new LimitedStorageImpl(100);
         provider.set(1, storage);

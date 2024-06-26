@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage2.api.network.impl.storage;
 
+import com.refinedmods.refinedstorage2.api.network.Network;
 import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage2.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
@@ -10,23 +11,31 @@ import com.refinedmods.refinedstorage2.api.storage.AccessMode;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
-import org.apiguardian.api.API;
-
-@API(status = API.Status.STABLE, since = "2.0.0-milestone.2.4")
-public abstract class AbstractStorageNetworkNode extends AbstractNetworkNode implements StorageConfiguration {
+public class NetworkNodeStorageConfiguration implements StorageConfiguration {
+    private final AbstractNetworkNode node;
     private final Filter filter = new Filter();
+
     private int priority;
     private AccessMode accessMode = AccessMode.INSERT_EXTRACT;
     private boolean voidExcess;
 
-    @Override
-    public int getPriority() {
-        return priority;
+    public NetworkNodeStorageConfiguration(final AbstractNetworkNode node) {
+        this.node = node;
     }
 
     @Override
     public AccessMode getAccessMode() {
         return accessMode;
+    }
+
+    @Override
+    public boolean isVoidExcess() {
+        return voidExcess;
+    }
+
+    @Override
+    public void setVoidExcess(final boolean voidExcess) {
+        this.voidExcess = voidExcess;
     }
 
     @Override
@@ -45,8 +54,18 @@ public abstract class AbstractStorageNetworkNode extends AbstractNetworkNode imp
     }
 
     @Override
-    public void setFilterMode(final FilterMode mode) {
-        filter.setMode(mode);
+    public void setFilters(final Set<ResourceKey> filters) {
+        filter.setFilters(filters);
+    }
+
+    @Override
+    public void setNormalizer(final UnaryOperator<ResourceKey> normalizer) {
+        filter.setNormalizer(normalizer);
+    }
+
+    @Override
+    public void setFilterMode(final FilterMode filterMode) {
+        filter.setMode(filterMode);
     }
 
     @Override
@@ -55,17 +74,8 @@ public abstract class AbstractStorageNetworkNode extends AbstractNetworkNode imp
         trySortSources();
     }
 
-    @Override
-    public boolean isVoidExcess() {
-        return voidExcess;
-    }
-
-    @Override
-    public void setVoidExcess(final boolean voidExcess) {
-        this.voidExcess = voidExcess;
-    }
-
     private void trySortSources() {
+        final Network network = node.getNetwork();
         if (network == null) {
             return;
         }
@@ -73,11 +83,13 @@ public abstract class AbstractStorageNetworkNode extends AbstractNetworkNode imp
         storage.sortSources();
     }
 
-    public void setFilters(final Set<ResourceKey> filters) {
-        filter.setFilters(filters);
+    @Override
+    public int getPriority() {
+        return priority;
     }
 
-    public void setNormalizer(final UnaryOperator<ResourceKey> normalizer) {
-        filter.setNormalizer(normalizer);
+    @Override
+    public boolean isActive() {
+        return node.isActive();
     }
 }

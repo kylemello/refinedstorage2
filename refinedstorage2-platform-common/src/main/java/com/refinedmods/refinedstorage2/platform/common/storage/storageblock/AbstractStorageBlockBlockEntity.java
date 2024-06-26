@@ -50,16 +50,16 @@ abstract class AbstractStorageBlockBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(resourceFactory),
             this::setChanged,
-            mainNode::setFilters
+            mainNode.getStorageConfiguration()::setFilters
         );
         this.configContainer = new StorageConfigurationContainerImpl(
-            mainNode,
+            mainNode.getStorageConfiguration(),
             filter,
             this::setChanged,
             this::getRedstoneMode,
             this::setRedstoneMode
         );
-        mainNode.setNormalizer(filter.createNormalizer());
+        mainNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
     }
 
     protected abstract Storage createStorage(Runnable listener);
