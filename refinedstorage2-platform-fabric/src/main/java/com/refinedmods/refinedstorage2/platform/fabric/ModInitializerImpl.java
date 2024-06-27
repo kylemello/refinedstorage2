@@ -19,7 +19,7 @@ import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformEx
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
-import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
@@ -51,6 +51,7 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoReq
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
+import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.FabricDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.support.energy.EnergyStorageAdapter;
@@ -222,7 +223,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             new DirectRegistryCallback<>(BuiltInRegistries.BLOCK),
             FabricDiskDriveBlockEntity::new,
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            FabricDiskInterfaceBlockEntity::new
         );
         final DirectRegistryCallback<Item> itemRegistryCallback = new DirectRegistryCallback<>(BuiltInRegistries.ITEM);
         registerItems(itemRegistryCallback);
@@ -240,7 +242,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             },
             FabricDiskDriveBlockEntity::new,
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            FabricDiskInterfaceBlockEntity::new
         );
         registerMenus(new DirectRegistryCallback<>(BuiltInRegistries.MENU), new MenuTypeFactory() {
             @Override
@@ -397,7 +400,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ItemStorage.SIDED.registerForBlockEntity((blockEntity, context) -> {
             final InventoryStorage storage = InventoryStorage.of(blockEntity.getDiskInventory(), context);
             final List<Storage<ItemVariant>> parts = new ArrayList<>();
-            for (int i = 0; i < DiskInterfaceBlockEntity.AMOUNT_OF_DISKS; ++i) {
+            for (int i = 0; i < AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS; ++i) {
                 final var slot = storage.getSlot(i);
                 parts.add(i < 3 ? FilteringStorage.insertOnlyOf(slot) : FilteringStorage.extractOnlyOf(slot));
             }

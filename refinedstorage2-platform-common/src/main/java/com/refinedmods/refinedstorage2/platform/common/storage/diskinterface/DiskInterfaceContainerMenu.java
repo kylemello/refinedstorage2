@@ -38,7 +38,7 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
 
     DiskInterfaceContainerMenu(final int syncId,
                                final Player player,
-                               final DiskInterfaceBlockEntity blockEntity,
+                               final AbstractDiskInterfaceBlockEntity blockEntity,
                                final DiskInventory diskInventory,
                                final ResourceContainer filterContainer,
                                final UpgradeContainer upgradeContainer) {
@@ -70,7 +70,10 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
         super(Menus.INSTANCE.getDiskInterface(), syncId);
         addSlots(
             playerInventory.player,
-            new FilteredContainer(DiskInterfaceBlockEntity.AMOUNT_OF_DISKS, StorageContainerItem.stackValidator()),
+            new FilteredContainer(
+                AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS,
+                StorageContainerItem.stackValidator()
+            ),
             ResourceContainerImpl.createForFilter(),
             new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, PlatformApi.INSTANCE.getUpgradeRegistry())
         );

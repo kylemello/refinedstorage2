@@ -46,9 +46,4 @@ public abstract class AbstractActiveColoredDirectionalBlock<T extends Enum<T> & 
     public MutableComponent getName() {
         return name;
     }
-
-    @Override
-    public boolean canAlwaysConnect() {
-        return true;
-    }
 }

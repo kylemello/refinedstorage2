@@ -17,7 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
-import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
@@ -34,6 +34,7 @@ import com.refinedmods.refinedstorage2.platform.forge.grid.strategy.ItemGridScro
 import com.refinedmods.refinedstorage2.platform.forge.importer.FluidHandlerImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.forge.importer.ItemHandlerImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.ForgeDiskDriveBlockEntity;
+import com.refinedmods.refinedstorage2.platform.forge.storage.diskinterface.ForgeDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.FluidHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.ItemHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.ForgePortableGridBlockEntity;
@@ -217,7 +218,8 @@ public class ModInitializer extends AbstractModInitializer {
             new ForgeRegistryCallback<>(blockRegistry),
             ForgeDiskDriveBlockEntity::new,
             (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            ForgeDiskInterfaceBlockEntity::new
         );
         blockRegistry.register(eventBus);
     }
@@ -313,7 +315,8 @@ public class ModInitializer extends AbstractModInitializer {
             },
             ForgeDiskDriveBlockEntity::new,
             (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            ForgeDiskInterfaceBlockEntity::new
         );
         blockEntityTypeRegistry.register(eventBus);
     }
@@ -378,12 +381,12 @@ public class ModInitializer extends AbstractModInitializer {
                     new RangedWrapper(
                         wrapper,
                         0,
-                        DiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2
                     ),
                     new RangedWrapper(
                         wrapper,
-                        DiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2,
-                        DiskInterfaceBlockEntity.AMOUNT_OF_DISKS
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2,
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS
                     )
                 );
             }

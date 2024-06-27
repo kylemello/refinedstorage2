@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerB
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveBlock;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlock;
@@ -34,10 +35,13 @@ import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.Wirel
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.state.BlockState;
 
 import static java.util.Objects.requireNonNull;
 
@@ -152,12 +156,8 @@ public final class Blocks {
         ContentNames.RELAY,
         COLOR
     );
-    private final BlockColorMap<DiskInterfaceBlock, BaseBlockItem> diskInterface = new BlockColorMap<>(
-        DiskInterfaceBlock::new,
-        ContentIds.DISK_INTERFACE,
-        ContentNames.DISK_INTERFACE,
-        COLOR
-    );
+    @Nullable
+    private BlockColorMap<DiskInterfaceBlock, BaseBlockItem> diskInterface;
 
     @Nullable
     private Supplier<SimpleBlock> quartzEnrichedIronBlock;
@@ -320,7 +320,23 @@ public final class Blocks {
         return relay;
     }
 
-    public BlockColorMap<DiskInterfaceBlock, BaseBlockItem> getDiskInterface() {
+    public BlockColorMap<DiskInterfaceBlock, BaseBlockItem> setDiskInterface(
+        final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> blockEntityFactory
+    ) {
+        this.diskInterface = new BlockColorMap<>(
+            (color, name) -> new DiskInterfaceBlock(
+                color,
+                name,
+                blockEntityFactory
+            ),
+            ContentIds.DISK_INTERFACE,
+            ContentNames.DISK_INTERFACE,
+            COLOR
+        );
         return diskInterface;
+    }
+
+    public BlockColorMap<DiskInterfaceBlock, BaseBlockItem> getDiskInterface() {
+        return requireNonNull(diskInterface);
     }
 }

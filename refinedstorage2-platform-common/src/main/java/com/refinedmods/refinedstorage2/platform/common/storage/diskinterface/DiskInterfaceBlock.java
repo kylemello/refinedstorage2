@@ -14,6 +14,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirec
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
 
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -33,11 +34,17 @@ public class DiskInterfaceBlock
     extends AbstractActiveColoredDirectionalBlock<BiDirection, DiskInterfaceBlock, BaseBlockItem>
     implements EntityBlock, BlockItemProvider<BaseBlockItem> {
     private static final Component HELP = createTranslation("item", "disk_interface.help");
-    private static final DiskContainerBlockEntityTicker<StorageTransferNetworkNode, DiskInterfaceBlockEntity> TICKER =
-        new DiskContainerBlockEntityTicker<>(BlockEntities.INSTANCE::getDiskInterface, ACTIVE);
+    private static final DiskContainerBlockEntityTicker<StorageTransferNetworkNode, AbstractDiskInterfaceBlockEntity>
+        TICKER = new DiskContainerBlockEntityTicker<>(BlockEntities.INSTANCE::getDiskInterface, ACTIVE);
 
-    public DiskInterfaceBlock(final DyeColor color, final MutableComponent name) {
+    private final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> blockEntityFactory;
+
+    public DiskInterfaceBlock(final DyeColor color,
+                              final MutableComponent name,
+                              final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity>
+                                  blockEntityFactory) {
         super(BlockConstants.PROPERTIES, color, name);
+        this.blockEntityFactory = blockEntityFactory;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class DiskInterfaceBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(final BlockPos blockPos, final BlockState blockState) {
-        return new DiskInterfaceBlockEntity(blockPos, blockState);
+        return blockEntityFactory.apply(blockPos, blockState);
     }
 
     @Override
@@ -67,5 +74,10 @@ public class DiskInterfaceBlock
     @Override
     public BaseBlockItem createBlockItem() {
         return new NetworkNodeBlockItem(this, HELP);
+    }
+
+    @Override
+    public boolean canAlwaysConnect() {
+        return true;
     }
 }

@@ -33,9 +33,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO models.
 // TODO: upgradeable + level interacting class hierarchy? Disk Interface is copying stuff now... :(
-public class DiskInterfaceBlockEntity extends AbstractDiskContainerBlockEntity<StorageTransferNetworkNode>
+public abstract class AbstractDiskInterfaceBlockEntity
+    extends AbstractDiskContainerBlockEntity<StorageTransferNetworkNode>
     implements StorageTransferListener {
     public static final int AMOUNT_OF_DISKS = 6;
 
@@ -47,7 +47,7 @@ public class DiskInterfaceBlockEntity extends AbstractDiskContainerBlockEntity<S
     private int workTickRate = 9;
     private int workTicks;
 
-    public DiskInterfaceBlockEntity(final BlockPos pos, final BlockState state) {
+    protected AbstractDiskInterfaceBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getDiskInterface(), pos, state, new StorageTransferNetworkNode(
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage(),
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsagePerDisk(),
