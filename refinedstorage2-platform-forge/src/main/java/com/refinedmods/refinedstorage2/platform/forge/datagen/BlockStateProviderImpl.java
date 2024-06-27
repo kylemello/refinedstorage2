@@ -6,17 +6,14 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.controller.AbstractControllerBlock;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerEnergyType;
 import com.refinedmods.refinedstorage2.platform.common.detector.DetectorBlock;
-import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlock;
-import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractActiveColoredDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.CableBlockSupport;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DefaultDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.HorizontalDirectionType;
-import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlock;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -73,6 +70,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerNetworkTransmitters();
         registerSecurityManagers();
         registerRelays();
+        registerDiskInterfaces();
     }
 
     private void registerCables() {
@@ -154,30 +152,16 @@ public class BlockStateProviderImpl extends BlockStateProvider {
     }
 
     private void registerGrids() {
-        Blocks.INSTANCE.getGrid().forEach((color, id, block) -> configureGridVariants(color, block, "grid"));
-        Blocks.INSTANCE.getCraftingGrid().forEach((color, id, block) -> configureGridVariants(
+        Blocks.INSTANCE.getGrid().forEach((color, id, block) -> configureActiveColoredDirectionalBlock(
+            color,
+            block,
+            "grid"
+        ));
+        Blocks.INSTANCE.getCraftingGrid().forEach((color, id, block) -> configureActiveColoredDirectionalBlock(
             color,
             block,
             "crafting_grid"
         ));
-    }
-
-    private void configureGridVariants(final DyeColor color,
-                                       final Supplier<? extends AbstractGridBlock<?, ?>> block,
-                                       final String name) {
-        final ModelFile inactive = modelFile(createIdentifier(BLOCK_PREFIX + "/" + name + "/inactive"));
-        final ModelFile active = modelFile(createIdentifier(BLOCK_PREFIX + "/" + name + "/" + color.getName()));
-        final var builder = getVariantBuilder(block.get());
-        builder.forAllStates(blockState -> {
-            final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
-            if (Boolean.TRUE.equals(blockState.getValue(AbstractGridBlock.ACTIVE))) {
-                model.modelFile(active);
-            } else {
-                model.modelFile(inactive);
-            }
-            addRotationFrontFacingNorth(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
-            return model.build();
-        });
     }
 
     private void registerControllers() {
@@ -226,7 +210,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             final var builder = getVariantBuilder(block.get());
             builder.forAllStates(blockState -> {
                 final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
-                if (Boolean.TRUE.equals(blockState.getValue(WirelessTransmitterBlock.ACTIVE))) {
+                if (Boolean.TRUE.equals(blockState.getValue(AbstractActiveColoredDirectionalBlock.ACTIVE))) {
                     model.modelFile(modelFile(createIdentifier("block/wireless_transmitter/" + color.getName())));
                 } else {
                     model.modelFile(inactive);
@@ -336,7 +320,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             final var builder = getVariantBuilder(block.get());
             builder.forAllStates(blockState -> {
                 final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
-                if (Boolean.TRUE.equals(blockState.getValue(RelayBlock.ACTIVE))) {
+                if (Boolean.TRUE.equals(blockState.getValue(AbstractActiveColoredDirectionalBlock.ACTIVE))) {
                     model.modelFile(active);
                 } else {
                     model.modelFile(inactive);
@@ -351,6 +335,36 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 addRotationFrontFacingNorth(model, biDirection);
                 return model.build();
             });
+        });
+    }
+
+    private void registerDiskInterfaces() {
+        Blocks.INSTANCE.getDiskInterface().forEach((color, id, block) -> {
+            final var builder = getVariantBuilder(block.get());
+            builder.addModels(
+                builder.partialState(),
+                ConfiguredModel.builder().modelFile(
+                    modelFile(createIdentifier("block/disk_interface/" + color.getName()))
+                ).build()
+            );
+        });
+    }
+
+    private void configureActiveColoredDirectionalBlock(final DyeColor color,
+                                                        final Supplier<? extends Block> block,
+                                                        final String name) {
+        final ModelFile inactive = modelFile(createIdentifier(BLOCK_PREFIX + "/" + name + "/inactive"));
+        final ModelFile active = modelFile(createIdentifier(BLOCK_PREFIX + "/" + name + "/" + color.getName()));
+        final var builder = getVariantBuilder(block.get());
+        builder.forAllStates(blockState -> {
+            final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
+            if (Boolean.TRUE.equals(blockState.getValue(AbstractActiveColoredDirectionalBlock.ACTIVE))) {
+                model.modelFile(active);
+            } else {
+                model.modelFile(inactive);
+            }
+            addRotationFrontFacingNorth(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
+            return model.build();
         });
     }
 

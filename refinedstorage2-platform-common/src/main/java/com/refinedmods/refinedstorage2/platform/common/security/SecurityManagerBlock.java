@@ -67,4 +67,9 @@ public class SecurityManagerBlock
                                                                   final BlockEntityType<O> type) {
         return TICKER.get(level, type);
     }
+
+    @Override
+    public boolean canAlwaysConnect() {
+        return true;
+    }
 }

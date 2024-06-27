@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.tooltip.HelpClien
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinationClientTooltipComponent;
+import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage2.platform.fabric.mixin.ItemPropertiesAccessor;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridActivePacket;
@@ -34,6 +35,8 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.StorageInfoRes
 import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveUnbakedModel;
+import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.DiskInterfaceBlockEntityRendererImpl;
+import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.DiskInterfaceUnbakedModel;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.PortableGridBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.PortableGridUnbakedModel;
 import com.refinedmods.refinedstorage2.platform.fabric.support.render.EmissiveModelRegistry;
@@ -111,6 +114,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getCreativePortableGrid());
         setCutout(Blocks.INSTANCE.getSecurityManager());
         setCutout(Blocks.INSTANCE.getRelay());
+        setCutout(Blocks.INSTANCE.getDiskInterface());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -342,25 +346,56 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             BlockEntities.INSTANCE.getCreativePortableGrid(),
             ctx -> new PortableGridBlockEntityRendererImpl<>()
         );
+        BlockEntityRenderers.register(
+            BlockEntities.INSTANCE.getDiskInterface(),
+            ctx -> new DiskInterfaceBlockEntityRendererImpl<>()
+        );
     }
 
     private void registerCustomModels() {
         registerDiskModels();
+        final QuadRotators quadRotators = new QuadRotators();
+        ModelLoadingPlugin.register(pluginContext -> {
+            registerCustomDiskDriveModels(pluginContext, quadRotators);
+            registerCustomDiskInterfaceModels(pluginContext, quadRotators);
+            registerCustomPortableGridModels(pluginContext, quadRotators);
+        });
+    }
 
-        final ResourceLocation diskDriveIdentifier = createIdentifier("block/disk_drive");
-        final ResourceLocation diskDriveIdentifierItem = createIdentifier("item/disk_drive");
+    private void registerCustomDiskInterfaceModels(final ModelLoadingPlugin.Context pluginContext,
+                                                   final QuadRotators quadRotators) {
+        pluginContext.resolveModel().register(context -> {
+            if (context.id().getNamespace().equals(IdentifierUtil.MOD_ID)
+                && context.id().getPath().startsWith("item/")
+                && context.id().getPath().endsWith("disk_interface")) {
+                final boolean isDefault = !context.id().getPath().endsWith("_disk_interface");
+                final DyeColor color = isDefault
+                    ? Blocks.INSTANCE.getDiskInterface().getDefault().getColor()
+                    : DyeColor.byName(context.id().getPath().replace("_disk_interface", "")
+                    .replace("item/", ""), Blocks.INSTANCE.getDiskInterface().getDefault().getColor());
+                return new DiskInterfaceUnbakedModel(quadRotators, color);
+            }
+            if (context.id().getNamespace().equals(IdentifierUtil.MOD_ID)
+                && context.id().getPath().startsWith("block/disk_interface/")
+                && !context.id().getPath().startsWith("block/disk_interface/base_")
+                && !context.id().getPath().equals("block/disk_interface/inactive")) {
+                final DyeColor color = DyeColor.byName(
+                    context.id().getPath().replace("block/disk_interface/", ""),
+                    Blocks.INSTANCE.getDiskInterface().getDefault().getColor()
+                );
+                return new DiskInterfaceUnbakedModel(quadRotators, color);
+            }
+            return null;
+        });
+    }
 
+    private void registerCustomPortableGridModels(final ModelLoadingPlugin.Context pluginContext,
+                                                  final QuadRotators quadRotators) {
         final ResourceLocation portableGridIdentifier = createIdentifier("block/portable_grid");
         final ResourceLocation portableGridIdentifierItem = createIdentifier("item/portable_grid");
         final ResourceLocation creativePortableGridIdentifier = createIdentifier("block/creative_portable_grid");
         final ResourceLocation creativePortableGridIdentifierItem = createIdentifier("item/creative_portable_grid");
-
-        final QuadRotators quadRotators = new QuadRotators();
-
-        ModelLoadingPlugin.register(pluginContext -> pluginContext.resolveModel().register(context -> {
-            if (context.id().equals(diskDriveIdentifier) || context.id().equals(diskDriveIdentifierItem)) {
-                return new DiskDriveUnbakedModel(quadRotators);
-            }
+        pluginContext.resolveModel().register(context -> {
             if (context.id().equals(portableGridIdentifier)
                 || context.id().equals(portableGridIdentifierItem)
                 || context.id().equals(creativePortableGridIdentifier)
@@ -368,7 +403,19 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                 return new PortableGridUnbakedModel(quadRotators);
             }
             return null;
-        }));
+        });
+    }
+
+    private void registerCustomDiskDriveModels(final ModelLoadingPlugin.Context pluginContext,
+                                               final QuadRotators quadRotators) {
+        final ResourceLocation diskDriveIdentifier = createIdentifier("block/disk_drive");
+        final ResourceLocation diskDriveIdentifierItem = createIdentifier("item/disk_drive");
+        pluginContext.resolveModel().register(context -> {
+            if (context.id().equals(diskDriveIdentifier) || context.id().equals(diskDriveIdentifierItem)) {
+                return new DiskDriveUnbakedModel(quadRotators);
+            }
+            return null;
+        });
     }
 
     private void registerCustomTooltips() {

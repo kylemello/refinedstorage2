@@ -11,10 +11,10 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
-class EmissiveTransform implements RenderContext.QuadTransform {
+public class EmissiveTransform implements RenderContext.QuadTransform {
     private final Set<ResourceLocation> emissiveSprites;
 
-    EmissiveTransform(final Set<ResourceLocation> emissiveSprites) {
+    public EmissiveTransform(final Set<ResourceLocation> emissiveSprites) {
         this.emissiveSprites = emissiveSprites;
     }
 

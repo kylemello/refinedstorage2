@@ -2,11 +2,11 @@ package com.refinedmods.refinedstorage2.platform.forge.datagen;
 
 import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
-import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridBlock;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.MOD_ID;
@@ -48,14 +48,15 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     protected void registerModels() {
         registerCables();
         registerControllers();
-        registerGrids(Blocks.INSTANCE.getGrid(), "grid");
-        registerGrids(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getGrid(), "grid", "");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid", "");
         registerDetectors();
         registerWirelessTransmitters();
         registerNetworkReceivers();
         registerNetworkTransmitters();
         registerSecurityManagers();
         registerRelays();
+        registerDiskInterfaces();
     }
 
     private void registerCables() {
@@ -84,19 +85,21 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         });
     }
 
-    private void registerGrids(final BlockColorMap<? extends AbstractGridBlock<?, ?>, ?> blockMap, final String name) {
+    private void registerRightLeftBackFrontTopModel(final BlockColorMap<?, ?> blockMap,
+                                                    final String name,
+                                                    final String modelPrefix) {
         blockMap.forEach((color, id, block) -> {
             final ResourceLocation cutout = createIdentifier(BLOCK_PREFIX + "/" + name + "/cutouts/" + color.getName());
-            registerEmissiveGrids(name, color.getName(), cutout);
+            registerRightLeftBackFrontTopModel(name, modelPrefix + color.getName(), cutout, EMISSIVE_NORTH_CUTOUT);
         });
         final ResourceLocation inactiveCutout = createIdentifier(BLOCK_PREFIX + "/" + name + "/cutouts/inactive");
-        registerGrids(name, "inactive", inactiveCutout, NORTH_CUTOUT);
+        registerRightLeftBackFrontTopModel(name, "inactive", inactiveCutout, NORTH_CUTOUT);
     }
 
-    private void registerGrids(final String name,
-                               final String variantName,
-                               final ResourceLocation cutout,
-                               final ResourceLocation baseModel) {
+    private void registerRightLeftBackFrontTopModel(final String name,
+                                                    final String variantName,
+                                                    final ResourceLocation cutout,
+                                                    final ResourceLocation baseModel) {
         final ResourceLocation right = createIdentifier(BLOCK_PREFIX + "/" + name + "/right");
         final ResourceLocation left = createIdentifier(BLOCK_PREFIX + "/" + name + "/left");
         final ResourceLocation back = createIdentifier(BLOCK_PREFIX + "/" + name + "/back");
@@ -111,10 +114,6 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             .texture(UP, top)
             .texture(DOWN, BOTTOM_TEXTURE)
             .texture(CUTOUT_TEXTURE, cutout);
-    }
-
-    private void registerEmissiveGrids(final String name, final String variantName, final ResourceLocation cutout) {
-        registerGrids(name, variantName, cutout, EMISSIVE_NORTH_CUTOUT);
     }
 
     private void registerDetectors() {
@@ -270,5 +269,18 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             .texture(CUTOUT_WEST, cutoutIn)
             .texture(CUTOUT_UP, cutoutIn)
             .texture(CUTOUT_DOWN, cutoutIn);
+    }
+
+    private void registerDiskInterfaces() {
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getDiskInterface(), "disk_interface", "base_");
+        Blocks.INSTANCE.getDiskInterface()
+            .forEach((color, id, block) -> getBuilder("block/disk_interface/" + color.getName())
+                .customLoader((blockModelBuilder, existingFileHelper) -> new CustomLoaderBuilder<>(
+                    id,
+                    blockModelBuilder,
+                    existingFileHelper,
+                    true
+                ) {
+                }).end());
     }
 }

@@ -17,7 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerB
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
-import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.AbstractPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.FluidStorageBlockBlockEntity;
@@ -85,7 +85,7 @@ public final class BlockEntities {
     @Nullable
     private Supplier<BlockEntityType<RelayBlockEntity>> relay;
     @Nullable
-    private Supplier<BlockEntityType<DiskInterfaceBlockEntity>> diskInterface;
+    private Supplier<BlockEntityType<AbstractDiskInterfaceBlockEntity>> diskInterface;
 
     private BlockEntities() {
     }
@@ -278,11 +278,11 @@ public final class BlockEntities {
         this.relay = supplier;
     }
 
-    public BlockEntityType<DiskInterfaceBlockEntity> getDiskInterface() {
+    public BlockEntityType<AbstractDiskInterfaceBlockEntity> getDiskInterface() {
         return requireNonNull(diskInterface).get();
     }
 
-    public void setDiskInterface(final Supplier<BlockEntityType<DiskInterfaceBlockEntity>> supplier) {
+    public void setDiskInterface(final Supplier<BlockEntityType<AbstractDiskInterfaceBlockEntity>> supplier) {
         this.diskInterface = supplier;
     }
 }

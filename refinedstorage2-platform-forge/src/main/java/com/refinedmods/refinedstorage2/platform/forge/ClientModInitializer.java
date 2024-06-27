@@ -6,6 +6,7 @@ import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
+import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
@@ -21,6 +22,8 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeI
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.DiskDriveGeometryLoader;
+import com.refinedmods.refinedstorage2.platform.forge.storage.diskinterface.DiskInterfaceBlockEntityRendererImpl;
+import com.refinedmods.refinedstorage2.platform.forge.storage.diskinterface.DiskInterfaceGeometryLoader;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.PortableGridBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.PortableGridGeometryLoader;
 
@@ -85,6 +88,9 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         registerDiskModels();
         e.register(DISK_DRIVE, new DiskDriveGeometryLoader());
         e.register(PORTABLE_GRID, new PortableGridGeometryLoader());
+        Blocks.INSTANCE.getDiskInterface().forEach(
+            (color, id, supplier) -> e.register(id, new DiskInterfaceGeometryLoader(color))
+        );
     }
 
     @SubscribeEvent
@@ -156,6 +162,10 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         BlockEntityRenderers.register(
             BlockEntities.INSTANCE.getCreativePortableGrid(),
             ctx -> new PortableGridBlockEntityRendererImpl<>()
+        );
+        BlockEntityRenderers.register(
+            BlockEntities.INSTANCE.getDiskInterface(),
+            ctx -> new DiskInterfaceBlockEntityRendererImpl<>()
         );
     }
 

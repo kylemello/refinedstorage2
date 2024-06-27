@@ -44,23 +44,12 @@ public abstract class AbstractDiskDriveBlockEntityRenderer<T extends AbstractDis
         if (direction == null) {
             return;
         }
-        render(entity, poseStack, vertexConsumers, direction);
-    }
-
-    private void render(final T entity,
-                        final PoseStack poseStack,
-                        final MultiBufferSource vertexConsumers,
-                        final BiDirection direction) {
         final Disk[] disks = getDisks(entity);
-        poseStack.pushPose();
-        poseStack.translate(0.5F, 0.5F, 0.5F);
-        poseStack.mulPose(direction.getQuaternion());
-        poseStack.translate(-0.5F, -0.5F, -0.5F);
-        final VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderType);
         if (disks != null) {
-            renderDiskLeds(poseStack, disks, vertexConsumer);
+            rotate(poseStack, direction);
+            renderDiskLeds(poseStack, disks, vertexConsumers.getBuffer(renderType));
+            postRotate(poseStack);
         }
-        poseStack.popPose();
     }
 
     private void renderDiskLeds(final PoseStack poseStack,

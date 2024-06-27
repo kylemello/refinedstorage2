@@ -4,11 +4,10 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
+import com.refinedmods.refinedstorage2.platform.common.support.AbstractActiveColoredDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
-import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockItemProvider;
-import com.refinedmods.refinedstorage2.platform.common.support.ColorableBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DefaultDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
@@ -23,25 +22,20 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction>
-    implements ColorableBlock<WirelessTransmitterBlock, BaseBlockItem>, BlockItemProvider<BaseBlockItem>,
-    EntityBlock {
-    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
-
+public class WirelessTransmitterBlock
+    extends AbstractActiveColoredDirectionalBlock<Direction, WirelessTransmitterBlock, BaseBlockItem>
+    implements BlockItemProvider<BaseBlockItem>, EntityBlock {
     private static final AbstractBlockEntityTicker<WirelessTransmitterBlockEntity> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getWirelessTransmitter, ACTIVE);
     private static final Component HELP = createTranslation("item", "wireless_transmitter.help");
@@ -53,24 +47,8 @@ public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction
     private static final VoxelShape SHAPE_NORTH = box(6.0D, 6.0D, 0.0D, 10.0D, 10.0D, 10.0D);
     private static final VoxelShape SHAPE_SOUTH = box(6.0D, 6.0D, 6.0D, 10.0D, 10.0D, 16.0D);
 
-    private final DyeColor color;
-    private final MutableComponent name;
-
     public WirelessTransmitterBlock(final DyeColor color, final MutableComponent name) {
-        super(BlockConstants.PROPERTIES);
-        this.color = color;
-        this.name = name;
-    }
-
-    @Override
-    protected BlockState getDefaultState() {
-        return super.getDefaultState().setValue(ACTIVE, false);
-    }
-
-    @Override
-    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(ACTIVE);
+        super(BlockConstants.PROPERTIES, color, name);
     }
 
     @Override
@@ -115,16 +93,6 @@ public class WirelessTransmitterBlock extends AbstractDirectionalBlock<Direction
                                                                   final BlockState blockState,
                                                                   final BlockEntityType<O> type) {
         return TICKER.get(level, type);
-    }
-
-    @Override
-    public DyeColor getColor() {
-        return color;
-    }
-
-    @Override
-    public MutableComponent getName() {
-        return name;
     }
 
     @Override

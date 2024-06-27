@@ -15,6 +15,7 @@ import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.Wirel
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -48,6 +49,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerNetworkTransmitters();
         registerSecurityManagers();
         registerRelays();
+        registerDiskInterfaces();
     }
 
     private void registerCables() {
@@ -193,6 +195,18 @@ public class ItemModelProviderImpl extends ItemModelProvider {
             id.getPath(),
             createIdentifier("block/relay/" + color.getName())
         ));
+    }
+
+    private void registerDiskInterfaces() {
+        final var blocks = Blocks.INSTANCE.getDiskInterface();
+        blocks.forEach((color, id, block) -> getBuilder(id.getPath()).customLoader(
+            (blockModelBuilder, existingFileHelper) -> new CustomLoaderBuilder<>(
+                id,
+                blockModelBuilder,
+                existingFileHelper,
+                true
+            ) {
+            }).end());
     }
 
     private ModelFile modelFile(final ResourceLocation location) {
