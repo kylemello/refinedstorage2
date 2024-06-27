@@ -8,8 +8,6 @@ import net.minecraft.network.chat.MutableComponent;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
-
-// TODO: icons . 
 public class SchedulingModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "scheduling_mode");
 
@@ -34,12 +32,16 @@ public class SchedulingModeSideButtonWidget extends AbstractSideButtonWidget {
 
     @Override
     protected int getXTexture() {
-        return -16;
+        return switch (property.getValue()) {
+            case DEFAULT -> 0;
+            case ROUND_ROBIN -> 16;
+            case RANDOM -> 32;
+        };
     }
 
     @Override
     protected int getYTexture() {
-        return -16;
+        return 144;
     }
 
     @Override

@@ -16,6 +16,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Relay having no help tooltip.
 -   Fixed bug where adding more Speed Upgrades would actually slow down the device even more.
+-   Fixed missing textures for scheduling mode side button.
 
 ## [2.0.0-milestone.3.13] - 2024-06-16
 
