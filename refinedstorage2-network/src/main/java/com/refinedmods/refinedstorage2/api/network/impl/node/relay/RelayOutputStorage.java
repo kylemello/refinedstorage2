@@ -13,7 +13,7 @@ import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.composite.CompositeAwareChild;
 import com.refinedmods.refinedstorage2.api.storage.composite.ParentComposite;
-import com.refinedmods.refinedstorage2.api.storage.composite.Priority;
+import com.refinedmods.refinedstorage2.api.storage.composite.PriorityProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
-class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, Priority {
+class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, PriorityProvider {
     private final Set<ParentComposite> parentComposites = new HashSet<>();
     private final Filter filter = new Filter();
 

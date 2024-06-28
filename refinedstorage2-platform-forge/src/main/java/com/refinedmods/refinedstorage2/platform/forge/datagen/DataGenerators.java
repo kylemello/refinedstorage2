@@ -40,33 +40,28 @@ public class DataGenerators {
     private static void registerBlockStateProviders(final DataGenerator generator,
                                                     final ExistingFileHelper existingFileHelper) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-
         mainPack.addProvider(output -> new BlockStateProviderImpl(output, existingFileHelper));
     }
 
     private static void registerBlockModelProviders(final DataGenerator generator,
                                                     final ExistingFileHelper existingFileHelper) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-
         mainPack.addProvider(output -> new BlockModelProviderImpl(output, existingFileHelper));
     }
 
     private static void registerItemModelProviders(final DataGenerator generator,
                                                    final ExistingFileHelper existingFileHelper) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-
         mainPack.addProvider(output -> new ItemModelProviderImpl(output, existingFileHelper));
     }
 
     private static void registerLootTableProviders(final DataGenerator generator) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-
         mainPack.addProvider(LootTableProviderImpl::new);
     }
 
     private static void registerRecipeProviders(final DataGenerator generator) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-
         mainPack.addProvider(RecoloringRecipeProvider::new);
     }
 

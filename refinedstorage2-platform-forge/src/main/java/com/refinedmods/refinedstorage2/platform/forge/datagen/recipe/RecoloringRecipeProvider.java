@@ -68,6 +68,9 @@ public class RecoloringRecipeProvider extends RecipeProvider {
         Blocks.INSTANCE.getRelay().forEach((color, id, block) ->
             recipe(Tags.RELAYS, block.get().asItem(), color)
                 .save(output, recipeId(color, "relay")));
+        Blocks.INSTANCE.getDiskInterface().forEach((color, id, block) ->
+            recipe(Tags.DISK_INTERFACES, block.get().asItem(), color)
+                .save(output, recipeId(color, "disk_interface")));
     }
 
     private ResourceLocation recipeId(final DyeColor color, final String suffix) {

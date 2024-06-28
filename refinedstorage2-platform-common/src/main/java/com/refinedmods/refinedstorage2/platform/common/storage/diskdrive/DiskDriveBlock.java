@@ -1,6 +1,9 @@
 package com.refinedmods.refinedstorage2.platform.common.storage.diskdrive;
 
+import com.refinedmods.refinedstorage2.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
+import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
+import com.refinedmods.refinedstorage2.platform.common.storage.DiskContainerBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
@@ -23,7 +26,8 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class DiskDriveBlock extends AbstractDirectionalBlock<BiDirection> implements EntityBlock {
     private static final Component HELP = createTranslation("item", "disk_drive.help");
-    private static final DiskDriveBlockEntityTicker TICKER = new DiskDriveBlockEntityTicker();
+    private static final DiskContainerBlockEntityTicker<StorageNetworkNode, AbstractDiskDriveBlockEntity> TICKER =
+        new DiskContainerBlockEntityTicker<>(BlockEntities.INSTANCE::getDiskDrive);
 
     private final BiFunction<BlockPos, BlockState, AbstractDiskDriveBlockEntity> blockEntityFactory;
 

@@ -32,7 +32,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     private static final String TAG_UPGRADES = "u";
 
     protected final UpgradeContainer upgradeContainer;
-    private int workTickRate = 20;
+    private int workTickRate = 9;
     private int workTicks;
 
     protected AbstractUpgradeableNetworkNodeContainerBlockEntity(
@@ -105,7 +105,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     private void configureAccordingToUpgrades() {
         LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.workTickRate = (amountOfSpeedUpgrades + 1) * 20;
+        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
         this.setEnergyUsage(upgradeContainer.getEnergyUsage());
     }
 

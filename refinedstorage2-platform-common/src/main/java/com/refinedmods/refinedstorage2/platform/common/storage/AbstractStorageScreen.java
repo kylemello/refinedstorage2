@@ -44,7 +44,7 @@ public abstract class AbstractStorageScreen<T extends AbstractStorageContainerMe
         addSideButton(filterModeSideButtonWidget);
         addSideButton(new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.STORAGE
+            () -> FuzzyModeSideButtonWidget.Type.STORAGE
         ));
         addSideButton(new AccessModeSideButtonWidget(getMenu().getProperty(StoragePropertyTypes.ACCESS_MODE)));
         addSideButton(new PrioritySideButtonWidget(

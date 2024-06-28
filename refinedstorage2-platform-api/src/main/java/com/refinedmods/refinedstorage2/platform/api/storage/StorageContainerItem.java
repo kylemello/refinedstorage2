@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage2.platform.api.storage;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
@@ -12,4 +13,8 @@ public interface StorageContainerItem {
     Optional<Storage> resolve(StorageRepository storageRepository, ItemStack stack);
 
     Optional<StorageInfo> getInfo(StorageRepository storageRepository, ItemStack stack);
+
+    static Predicate<ItemStack> stackValidator() {
+        return stack -> stack.getItem() instanceof StorageContainerItem;
+    }
 }

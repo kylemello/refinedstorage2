@@ -16,6 +16,7 @@ import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurity
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridItemContainerMenu;
@@ -83,6 +84,8 @@ public final class Menus {
     private Supplier<MenuType<SecurityManagerContainerMenu>> securityManager;
     @Nullable
     private Supplier<MenuType<RelayContainerMenu>> relay;
+    @Nullable
+    private Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface;
 
     private Menus() {
     }
@@ -279,5 +282,13 @@ public final class Menus {
 
     public void setRelay(final Supplier<MenuType<RelayContainerMenu>> relay) {
         this.relay = relay;
+    }
+
+    public MenuType<DiskInterfaceContainerMenu> getDiskInterface() {
+        return requireNonNull(diskInterface).get();
+    }
+
+    public void setDiskInterface(final Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface) {
+        this.diskInterface = diskInterface;
     }
 }

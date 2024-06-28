@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformEx
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
@@ -50,12 +51,14 @@ import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoReq
 import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
+import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.FabricDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.support.energy.EnergyStorageAdapter;
 import com.refinedmods.refinedstorage2.platform.fabric.support.resource.ResourceContainerFluidStorageAdapter;
 import com.refinedmods.refinedstorage2.platform.fabric.support.resource.VariantUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +77,10 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.FilteringStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -216,7 +223,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             new DirectRegistryCallback<>(BuiltInRegistries.BLOCK),
             FabricDiskDriveBlockEntity::new,
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            FabricDiskInterfaceBlockEntity::new
         );
         final DirectRegistryCallback<Item> itemRegistryCallback = new DirectRegistryCallback<>(BuiltInRegistries.ITEM);
         registerItems(itemRegistryCallback);
@@ -234,7 +242,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             },
             FabricDiskDriveBlockEntity::new,
             (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            FabricDiskInterfaceBlockEntity::new
         );
         registerMenus(new DirectRegistryCallback<>(BuiltInRegistries.MENU), new MenuTypeFactory() {
             @Override
@@ -388,6 +397,15 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             InterfaceBlockEntity::getExportedResourcesAsContainer,
             BlockEntities.INSTANCE.getInterface()
         );
+        ItemStorage.SIDED.registerForBlockEntity((blockEntity, context) -> {
+            final InventoryStorage storage = InventoryStorage.of(blockEntity.getDiskInventory(), context);
+            final List<Storage<ItemVariant>> parts = new ArrayList<>();
+            for (int i = 0; i < AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS; ++i) {
+                final var slot = storage.getSlot(i);
+                parts.add(i < 3 ? FilteringStorage.insertOnlyOf(slot) : FilteringStorage.extractOnlyOf(slot));
+            }
+            return new CombinedStorage<>(parts);
+        }, BlockEntities.INSTANCE.getDiskInterface());
         FluidStorage.SIDED.registerForBlockEntity(
             (blockEntity, context) -> new ResourceContainerFluidStorageAdapter(blockEntity.getExportedResources()),
             BlockEntities.INSTANCE.getInterface()

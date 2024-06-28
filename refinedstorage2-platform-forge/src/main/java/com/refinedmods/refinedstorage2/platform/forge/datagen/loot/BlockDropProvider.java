@@ -34,6 +34,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         Blocks.INSTANCE.getNetworkTransmitter().forEach((color, id, block) -> dropSelf(block.get()));
         Blocks.INSTANCE.getSecurityManager().forEach((color, id, block) -> dropSelf(block.get()));
         Blocks.INSTANCE.getRelay().forEach((color, id, block) -> dropSelf(block.get()));
+        Blocks.INSTANCE.getDiskInterface().forEach((color, id, block) -> dropSelf(block.get()));
     }
 
     @Override
@@ -52,6 +53,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         blocks.addAll(Blocks.INSTANCE.getNetworkTransmitter().values());
         blocks.addAll(Blocks.INSTANCE.getSecurityManager().values());
         blocks.addAll(Blocks.INSTANCE.getRelay().values());
+        blocks.addAll(Blocks.INSTANCE.getDiskInterface().values());
         return blocks;
     }
 }

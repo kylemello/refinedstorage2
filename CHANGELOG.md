@@ -7,6 +7,19 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.3.14] - 2024-06-28
+
+### Added
+
+-   Disk Interface (formerly known as the "Disk Manipulator").
+-   Item tag translations.
+
+### Fixed
+
+-   Relay having no help tooltip.
+-   Fixed bug where adding more Speed Upgrades would actually slow down the device even more.
+-   Fixed missing textures for scheduling mode side button.
+
 ## [2.0.0-milestone.3.13] - 2024-06-16
 
 ## [2.0.0-milestone.3.12] - 2024-06-16
@@ -606,7 +619,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.13...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.14...HEAD
+
+[2.0.0-milestone.3.14]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.13...v2.0.0-milestone.3.14
 
 [2.0.0-milestone.3.13]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.12...v2.0.0-milestone.3.13
 

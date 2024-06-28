@@ -17,6 +17,7 @@ import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfacePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItem;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
@@ -33,10 +34,12 @@ import com.refinedmods.refinedstorage2.platform.forge.grid.strategy.ItemGridScro
 import com.refinedmods.refinedstorage2.platform.forge.importer.FluidHandlerImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.forge.importer.ItemHandlerImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.diskdrive.ForgeDiskDriveBlockEntity;
+import com.refinedmods.refinedstorage2.platform.forge.storage.diskinterface.ForgeDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.FluidHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.ItemHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.ForgePortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.forge.support.energy.EnergyStorageAdapter;
+import com.refinedmods.refinedstorage2.platform.forge.support.inventory.InsertExtractItemHandler;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.GridExtractPacket;
@@ -97,6 +100,7 @@ import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -198,7 +202,8 @@ public class ModInitializer extends AbstractModInitializer {
         PlatformApi.INSTANCE.addExternalStorageProviderFactory(new InterfacePlatformExternalStorageProviderFactory());
         PlatformApi.INSTANCE.addExternalStorageProviderFactory(new ItemHandlerPlatformExternalStorageProviderFactory());
         PlatformApi.INSTANCE.addExternalStorageProviderFactory(
-            new FluidHandlerPlatformExternalStorageProviderFactory());
+            new FluidHandlerPlatformExternalStorageProviderFactory()
+        );
     }
 
     private void registerContent(final IEventBus eventBus) {
@@ -213,7 +218,8 @@ public class ModInitializer extends AbstractModInitializer {
             new ForgeRegistryCallback<>(blockRegistry),
             ForgeDiskDriveBlockEntity::new,
             (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            ForgeDiskInterfaceBlockEntity::new
         );
         blockRegistry.register(eventBus);
     }
@@ -309,7 +315,8 @@ public class ModInitializer extends AbstractModInitializer {
             },
             ForgeDiskDriveBlockEntity::new,
             (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state)
+            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+            ForgeDiskInterfaceBlockEntity::new
         );
         blockEntityTypeRegistry.register(eventBus);
     }
@@ -364,6 +371,25 @@ public class ModInitializer extends AbstractModInitializer {
             Capabilities.EnergyStorage.ITEM,
             (stack, ctx) -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack)),
             Items.INSTANCE.getPortableGrid()
+        );
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK,
+            BlockEntities.INSTANCE.getDiskInterface(),
+            (be, side) -> {
+                final InvWrapper wrapper = new InvWrapper(be.getDiskInventory());
+                return new InsertExtractItemHandler(
+                    new RangedWrapper(
+                        wrapper,
+                        0,
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2
+                    ),
+                    new RangedWrapper(
+                        wrapper,
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS / 2,
+                        AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS
+                    )
+                );
+            }
         );
     }
 

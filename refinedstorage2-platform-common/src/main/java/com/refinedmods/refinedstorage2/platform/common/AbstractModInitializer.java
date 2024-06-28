@@ -71,6 +71,8 @@ import com.refinedmods.refinedstorage2.platform.common.storage.StorageTypes;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveBlock;
 import com.refinedmods.refinedstorage2.platform.common.storage.diskdrive.DiskDriveContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.DiskInterfaceContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.externalstorage.ExternalStorageContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.AbstractPortableGridBlockEntity;
@@ -146,6 +148,7 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DESTRUCTOR;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DETECTOR;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_DRIVE;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.DISK_INTERFACE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXPORTER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.EXTERNAL_STORAGE;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.FALLBACK_SECURITY_CARD;
@@ -293,7 +296,8 @@ public abstract class AbstractModInitializer {
         final RegistryCallback<Block> callback,
         final BiFunction<BlockPos, BlockState, AbstractDiskDriveBlockEntity> diskDriveBlockEntityFactory,
         final BiFunction<BlockPos, BlockState, AbstractPortableGridBlockEntity> portableGridBlockEntityFactory,
-        final BiFunction<BlockPos, BlockState, AbstractPortableGridBlockEntity> creativePortableGridBlockEntityFactory
+        final BiFunction<BlockPos, BlockState, AbstractPortableGridBlockEntity> creativePortableGridBlockEntityFactory,
+        final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> diskInterfaceBlockEntityFactory
     ) {
         Blocks.INSTANCE.setQuartzEnrichedIronBlock(callback.register(QUARTZ_ENRICHED_IRON_BLOCK, SimpleBlock::new));
         Blocks.INSTANCE.setDiskDrive(
@@ -338,6 +342,7 @@ public abstract class AbstractModInitializer {
         )));
         Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
         Blocks.INSTANCE.getRelay().registerBlocks(callback);
+        Blocks.INSTANCE.setDiskInterface(diskInterfaceBlockEntityFactory).registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -358,6 +363,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getNetworkTransmitter().registerItems(callback, Items.INSTANCE::addNetworkTransmitter);
         Blocks.INSTANCE.getSecurityManager().registerItems(callback, Items.INSTANCE::addSecurityManager);
         Blocks.INSTANCE.getRelay().registerItems(callback, Items.INSTANCE::addRelay);
+        Blocks.INSTANCE.getDiskInterface().registerItems(callback, Items.INSTANCE::addDiskInterface);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -519,6 +525,10 @@ public abstract class AbstractModInitializer {
         PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.WIRELESS_TRANSMITTER)
             .add(Items.INSTANCE.getRangeUpgrade(), 4)
             .add(Items.INSTANCE.getCreativeRangeUpgrade());
+
+        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.DISK_INTERFACE)
+            .add(Items.INSTANCE.getSpeedUpgrade(), 4)
+            .add(Items.INSTANCE.getStackUpgrade());
     }
 
     protected final void registerBlockEntities(
@@ -528,7 +538,9 @@ public abstract class AbstractModInitializer {
         final BlockEntityTypeFactory.BlockEntitySupplier<? extends AbstractPortableGridBlockEntity>
             portableGridBlockEntitySupplier,
         final BlockEntityTypeFactory.BlockEntitySupplier<? extends AbstractPortableGridBlockEntity>
-            creativePortableGridBlockEntitySupplier
+            creativePortableGridBlockEntitySupplier,
+        final BlockEntityTypeFactory.BlockEntitySupplier<AbstractDiskInterfaceBlockEntity>
+            diskInterfaceBlockEntitySupplier
     ) {
         BlockEntities.INSTANCE.setCable(callback.register(
             CABLE,
@@ -657,6 +669,10 @@ public abstract class AbstractModInitializer {
             RELAY,
             () -> typeFactory.create(RelayBlockEntity::new, Blocks.INSTANCE.getRelay().toArray())
         ));
+        BlockEntities.INSTANCE.setDiskInterface(callback.register(
+            DISK_INTERFACE,
+            () -> typeFactory.create(diskInterfaceBlockEntitySupplier, Blocks.INSTANCE.getDiskInterface().toArray())
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -755,6 +771,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setRelay(callback.register(
             RELAY,
             () -> menuTypeFactory.create(RelayContainerMenu::new)
+        ));
+        Menus.INSTANCE.setDiskInterface(callback.register(
+            DISK_INTERFACE,
+            () -> menuTypeFactory.create(DiskInterfaceContainerMenu::new)
         ));
     }
 

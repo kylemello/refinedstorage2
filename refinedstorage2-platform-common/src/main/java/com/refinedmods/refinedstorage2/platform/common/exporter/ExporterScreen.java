@@ -18,7 +18,7 @@ public class ExporterScreen extends AbstractFilterScreen<ExporterContainerMenu> 
         super.init();
         addSideButton(new FuzzyModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FUZZY_MODE),
-            FuzzyModeSideButtonWidget.Type.EXTRACTING_STORAGE_NETWORK
+            () -> FuzzyModeSideButtonWidget.Type.EXTRACTING_STORAGE_NETWORK
         ));
         addSideButton(new SchedulingModeSideButtonWidget(getMenu().getProperty(PropertyTypes.SCHEDULING_MODE)));
     }

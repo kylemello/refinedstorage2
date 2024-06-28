@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.support.render;
 
 import com.refinedmods.refinedstorage2.api.storage.StorageState;
 import com.refinedmods.refinedstorage2.platform.common.storage.Disk;
+import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -46,5 +47,16 @@ public abstract class AbstractDiskLedBlockEntityRenderer<T extends BlockEntity> 
             case NEAR_CAPACITY -> 0xFFB700;
             case FULL -> 0xDA4B40;
         };
+    }
+
+    protected static void rotate(final PoseStack poseStack, final BiDirection direction) {
+        poseStack.pushPose();
+        poseStack.translate(0.5F, 0.5F, 0.5F);
+        poseStack.mulPose(direction.getQuaternion());
+        poseStack.translate(-0.5F, -0.5F, -0.5F);
+    }
+
+    protected static void postRotate(final PoseStack poseStack) {
+        poseStack.popPose();
     }
 }

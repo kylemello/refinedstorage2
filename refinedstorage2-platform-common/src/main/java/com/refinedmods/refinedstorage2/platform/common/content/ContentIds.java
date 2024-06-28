@@ -58,6 +58,7 @@ public final class ContentIds {
     public static final ResourceLocation FALLBACK_SECURITY_CARD = createIdentifier("fallback_security_card");
     public static final ResourceLocation SECURITY_MANAGER = createIdentifier("security_manager");
     public static final ResourceLocation RELAY = createIdentifier("relay");
+    public static final ResourceLocation DISK_INTERFACE = createIdentifier("disk_interface");
 
     private ContentIds() {
     }

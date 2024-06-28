@@ -50,12 +50,12 @@ public class ExternalStorageBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            mainNode::setFilters
+            mainNode.getStorageConfiguration()::setFilters
         );
-        mainNode.setNormalizer(filter.createNormalizer());
+        mainNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
         mainNode.setTrackingRepository(trackedStorageRepository);
         this.configContainer = new StorageConfigurationContainerImpl(
-            mainNode,
+            mainNode.getStorageConfiguration(),
             filter,
             this::setChanged,
             this::getRedstoneMode,

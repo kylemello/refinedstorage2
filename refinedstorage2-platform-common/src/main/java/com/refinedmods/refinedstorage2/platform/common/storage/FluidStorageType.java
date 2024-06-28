@@ -117,6 +117,11 @@ public class FluidStorageType implements StorageType {
         return resource instanceof FluidResource;
     }
 
+    @Override
+    public long getDiskInterfaceTransferQuota(final boolean stackUpgrade) {
+        return stackUpgrade ? Platform.INSTANCE.getBucketAmount() * 16 : Platform.INSTANCE.getBucketAmount();
+    }
+
     public enum Variant {
         SIXTY_FOUR_B("64b", 64L),
         TWO_HUNDRED_FIFTY_SIX_B("256b", 256L),

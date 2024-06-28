@@ -37,6 +37,9 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     private DiskDriveEntryImpl diskDrive = new DiskDriveEntryImpl();
 
     @ConfigEntry.Gui.CollapsibleObject
+    private DiskInterfaceEntryImpl diskInterface = new DiskInterfaceEntryImpl();
+
+    @ConfigEntry.Gui.CollapsibleObject
     private SimpleEnergyUsageEntryImpl cable = new SimpleEnergyUsageEntryImpl(DefaultEnergyUsage.CABLE);
 
     @ConfigEntry.Gui.CollapsibleObject
@@ -154,6 +157,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
     @Override
     public DiskDriveEntry getDiskDrive() {
         return diskDrive;
+    }
+
+    @Override
+    public DiskInterfaceEntry getDiskInterface() {
+        return diskInterface;
     }
 
     @Override
@@ -405,6 +413,22 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
         private long energyUsage = DefaultEnergyUsage.DISK_DRIVE;
 
         private long energyUsagePerDisk = DefaultEnergyUsage.DISK_DRIVE_PER_DISK;
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage;
+        }
+
+        @Override
+        public long getEnergyUsagePerDisk() {
+            return energyUsagePerDisk;
+        }
+    }
+
+    private static class DiskInterfaceEntryImpl implements DiskInterfaceEntry {
+        private long energyUsage = DefaultEnergyUsage.DISK_INTERFACE;
+
+        private long energyUsagePerDisk = DefaultEnergyUsage.DISK_INTERFACE_PER_DISK;
 
         @Override
         public long getEnergyUsage() {

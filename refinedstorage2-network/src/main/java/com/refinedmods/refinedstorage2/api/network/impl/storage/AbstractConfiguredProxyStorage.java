@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage2.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage2.api.storage.Actor;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.api.storage.composite.CompositeAwareChild;
-import com.refinedmods.refinedstorage2.api.storage.composite.Priority;
+import com.refinedmods.refinedstorage2.api.storage.composite.PriorityProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.4")
-public abstract class AbstractConfiguredProxyStorage<S extends Storage> implements CompositeAwareChild, Priority {
+public abstract class AbstractConfiguredProxyStorage<S extends Storage>
+    implements CompositeAwareChild, PriorityProvider {
     @Nullable
     private S delegate;
     private final StorageConfiguration config;
@@ -47,7 +48,10 @@ public abstract class AbstractConfiguredProxyStorage<S extends Storage> implemen
                                   final long amount,
                                   final Action action,
                                   final Actor actor) {
-        if (delegate == null || config.isExtractOnly() || !config.isActive() || !config.isAllowed(resource)) {
+        if (delegate == null
+            || config.getAccessMode().isExtractOnly()
+            || !config.isActive()
+            || !config.isAllowed(resource)) {
             return Amount.ZERO;
         }
         final long inserted = delegate.insert(resource, amount, action, actor);
@@ -62,7 +66,7 @@ public abstract class AbstractConfiguredProxyStorage<S extends Storage> implemen
                                    final long amount,
                                    final Action action,
                                    final Actor actor) {
-        if (delegate == null || config.isInsertOnly() || !config.isActive()) {
+        if (delegate == null || config.getAccessMode().isInsertOnly() || !config.isActive()) {
             return Amount.ZERO;
         }
         final long extracted = delegate.extract(resource, amount, action, actor);
