@@ -10,10 +10,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Abs
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,12 +26,14 @@ public class RelayContainerMenu extends AbstractSimpleFilterContainerMenu<RelayB
     @Nullable
     private PassThroughListener passThroughListener;
 
-    public RelayContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public RelayContainerMenu(final int syncId,
+                              final Inventory playerInventory,
+                              final ResourceContainerData resourceContainerData) {
         super(
             Menus.INSTANCE.getRelay(),
             syncId,
             playerInventory.player,
-            buf,
+            resourceContainerData,
             null,
             FILTER_HELP
         );

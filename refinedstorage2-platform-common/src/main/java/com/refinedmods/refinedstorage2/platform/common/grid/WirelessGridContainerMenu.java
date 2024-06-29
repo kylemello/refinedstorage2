@@ -1,17 +1,17 @@
 package com.refinedmods.refinedstorage2.platform.common.grid;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
 public class WirelessGridContainerMenu extends AbstractGridContainerMenu {
-    public WirelessGridContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getWirelessGrid(), syncId, playerInventory, buf);
-        this.disabledSlot = PlatformApi.INSTANCE.getSlotReference(buf).orElse(null);
+    public WirelessGridContainerMenu(final int syncId,
+                                     final Inventory playerInventory,
+                                     final WirelessGridData wirelessGridData) {
+        super(Menus.INSTANCE.getWirelessGrid(), syncId, playerInventory, wirelessGridData.gridData());
+        this.disabledSlot = wirelessGridData.slotReference();
         onScreenReady(0);
     }
 

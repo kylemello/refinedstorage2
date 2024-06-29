@@ -9,9 +9,9 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Pro
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,12 +21,13 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 public class StorageMonitorContainerMenu extends AbstractResourceContainerMenu {
     private static final Component FILTER_HELP = createTranslation("gui", "storage_monitor.filter_help");
 
-    public StorageMonitorContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public StorageMonitorContainerMenu(final int syncId,
+                                       final Inventory playerInventory,
+                                       final ResourceContainerData resourceContainerData) {
         super(Menus.INSTANCE.getStorageMonitor(), syncId);
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
-        addSlots(playerInventory, ResourceContainerImpl.createForFilter(1));
-        initializeResourceSlots(buf);
+        addSlots(playerInventory, ResourceContainerImpl.createForFilter(resourceContainerData));
     }
 
     StorageMonitorContainerMenu(final int syncId,

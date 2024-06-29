@@ -14,8 +14,9 @@ import com.refinedmods.refinedstorage2.platform.common.storage.AccessModeSetting
 import com.refinedmods.refinedstorage2.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import java.util.HashSet;
@@ -24,10 +25,11 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -36,7 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import static java.util.Objects.requireNonNull;
 
 public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
-    implements NetworkNodeMenuProvider {
+    implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_PASS_THROUGH = "passthrough";
     private static final String TAG_PASS_ENERGY = "passenergy";
     private static final String TAG_PASS_SECURITY = "passsecurity";
@@ -180,8 +182,13 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public ResourceContainerData getMenuData() {
+        return ResourceContainerData.of(filter.getFilterContainer());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
+        return ResourceContainerData.STREAM_CODEC;
     }
 
     @Override
@@ -196,9 +203,9 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
         tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(filterMode));
         tag.putBoolean(TAG_PASS_THROUGH, passThrough);
         tag.putBoolean(TAG_PASS_ENERGY, mainNode.hasComponentType(RelayComponentType.ENERGY));
@@ -209,9 +216,9 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
         if (tag.contains(TAG_FILTER_MODE)) {
             filterMode = FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE));
         }

@@ -14,16 +14,16 @@ import net.minecraft.resources.ResourceLocation;
 
 // A custom checkbox so that we can change the font color.
 public class CustomCheckboxWidget extends AbstractButton {
-    private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = new ResourceLocation(
+    private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace(
         "widget/checkbox_selected_highlighted"
     );
-    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = new ResourceLocation(
+    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = ResourceLocation.withDefaultNamespace(
         "widget/checkbox_selected"
     );
-    private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE = new ResourceLocation(
+    private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace(
         "widget/checkbox_highlighted"
     );
-    private static final ResourceLocation CHECKBOX_SPRITE = new ResourceLocation("widget/checkbox");
+    private static final ResourceLocation CHECKBOX_SPRITE = ResourceLocation.withDefaultNamespace("widget/checkbox");
 
     private static final int BOX_SIZE = 9 + 8;
 

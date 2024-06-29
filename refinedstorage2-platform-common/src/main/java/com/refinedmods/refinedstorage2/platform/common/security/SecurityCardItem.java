@@ -6,16 +6,15 @@ import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
-import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -29,10 +28,7 @@ import net.minecraft.world.level.Level;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 import static java.util.Objects.requireNonNull;
 
-public class SecurityCardItem extends AbstractSecurityCardItem {
-    private static final String TAG_BOUND_PLAYER_ID = "bid";
-    private static final String TAG_BOUND_PLAYER_NAME = "bname";
-
+public class SecurityCardItem extends AbstractSecurityCardItem<PlayerBoundSecurityCardData> {
     private static final Component UNBOUND_HELP = createTranslation("item", "security_card.unbound.help");
     private static final Component BOUND_HELP = createTranslation("item", "security_card.bound.help");
 
@@ -42,26 +38,27 @@ public class SecurityCardItem extends AbstractSecurityCardItem {
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> lines,
                                 final TooltipFlag flag) {
-        final String boundPlayerName = getBoundPlayerName(stack);
-        if (boundPlayerName == null) {
+        final SecurityCardBoundPlayer boundPlayer = stack.get(DataComponents.INSTANCE.getSecurityCardBoundPlayer());
+        if (boundPlayer == null) {
             lines.add(createTranslation("item", "security_card.unbound").withStyle(ChatFormatting.GRAY));
         } else {
             lines.add(createTranslation(
                 "item",
                 "security_card.bound",
-                Component.literal(boundPlayerName).withStyle(ChatFormatting.YELLOW)
+                Component.literal(boundPlayer.playerName()).withStyle(ChatFormatting.YELLOW)
             ).withStyle(ChatFormatting.GRAY));
         }
-        super.appendHoverText(stack, level, lines, flag);
+        super.appendHoverText(stack, context, lines, flag);
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer && !stack.hasTag()) {
+        if (player instanceof ServerPlayer serverPlayer
+            && !stack.has(DataComponents.INSTANCE.getSecurityCardBoundPlayer())) {
             setBoundPlayer(serverPlayer, stack);
         }
         return super.use(level, player, hand);
@@ -73,33 +70,31 @@ public class SecurityCardItem extends AbstractSecurityCardItem {
     }
 
     @Override
-    AbstractSecurityCardExtendedMenuProvider createMenuProvider(final SlotReference slotReference,
-                                                                final SecurityPolicy policy,
-                                                                final Set<PlatformPermission> dirtyPermissions,
-                                                                final ItemStack stack) {
+    AbstractSecurityCardExtendedMenuProvider<PlayerBoundSecurityCardData> createMenuProvider(
+        final MinecraftServer server,
+        final SlotReference slotReference,
+        final SecurityPolicy policy,
+        final Set<PlatformPermission> dirtyPermissions,
+        final ItemStack stack
+    ) {
         return new SecurityCardExtendedMenuProvider(
+            server,
             slotReference,
             policy,
             dirtyPermissions,
-            requireNonNull(getBoundPlayerId(stack)),
-            requireNonNull(getBoundPlayerName(stack))
+            requireNonNull(stack.get(DataComponents.INSTANCE.getSecurityCardBoundPlayer()))
         );
     }
 
     @Override
     public boolean isValid(final ItemStack stack) {
-        return stack.getTag() != null
-            && stack.getTag().contains(TAG_BOUND_PLAYER_ID)
-            && stack.getTag().contains(TAG_BOUND_PLAYER_NAME);
+        return stack.has(DataComponents.INSTANCE.getSecurityCardBoundPlayer());
     }
 
     @Override
     public Optional<SecurityActor> getActor(final ItemStack stack) {
-        final UUID playerId = getBoundPlayerId(stack);
-        if (playerId == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new PlayerSecurityActor(playerId));
+        return Optional.ofNullable(stack.get(DataComponents.INSTANCE.getSecurityCardBoundPlayer()))
+            .map(SecurityCardBoundPlayer::toSecurityActor);
     }
 
     @Override
@@ -107,23 +102,8 @@ public class SecurityCardItem extends AbstractSecurityCardItem {
         return Platform.INSTANCE.getConfig().getSecurityCard().getEnergyUsage();
     }
 
-    @Nullable
-    UUID getBoundPlayerId(final ItemStack stack) {
-        return (stack.getTag() == null || !stack.getTag().contains(TAG_BOUND_PLAYER_ID))
-            ? null
-            : stack.getTag().getUUID(TAG_BOUND_PLAYER_ID);
-    }
-
-    @Nullable
-    String getBoundPlayerName(final ItemStack stack) {
-        return (stack.getTag() == null || !stack.getTag().contains(TAG_BOUND_PLAYER_NAME))
-            ? null
-            : stack.getTag().getString(TAG_BOUND_PLAYER_NAME);
-    }
-
     void setBoundPlayer(final ServerPlayer player, final ItemStack stack) {
-        final CompoundTag tag = stack.getOrCreateTag();
-        tag.putUUID(TAG_BOUND_PLAYER_ID, player.getGameProfile().getId());
-        tag.putString(TAG_BOUND_PLAYER_NAME, player.getGameProfile().getName());
+        final SecurityCardBoundPlayer boundPlayer = SecurityCardBoundPlayer.of(player);
+        stack.set(DataComponents.INSTANCE.getSecurityCardBoundPlayer(), boundPlayer);
     }
 }

@@ -52,7 +52,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -79,6 +78,11 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public PlatformRegistry<StorageType> getStorageTypeRegistry() {
         return ensureLoaded().getStorageTypeRegistry();
+    }
+
+    @Override
+    public StorageRepository getClientStorageRepository() {
+        return ensureLoaded().getClientStorageRepository();
     }
 
     @Override
@@ -164,11 +168,6 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public PlatformRegistry<GridSynchronizer> getGridSynchronizerRegistry() {
         return ensureLoaded().getGridSynchronizerRegistry();
-    }
-
-    @Override
-    public void writeGridScreenOpeningData(final Grid grid, final FriendlyByteBuf buf) {
-        ensureLoaded().writeGridScreenOpeningData(grid, buf);
     }
 
     @Override
@@ -356,16 +355,6 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public PlatformRegistry<SlotReferenceFactory> getSlotReferenceFactoryRegistry() {
         return ensureLoaded().getSlotReferenceFactoryRegistry();
-    }
-
-    @Override
-    public void writeSlotReference(final SlotReference slotReference, final FriendlyByteBuf buf) {
-        ensureLoaded().writeSlotReference(slotReference, buf);
-    }
-
-    @Override
-    public Optional<SlotReference> getSlotReference(final FriendlyByteBuf buf) {
-        return ensureLoaded().getSlotReference(buf);
     }
 
     @Override

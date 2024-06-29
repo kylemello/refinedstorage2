@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,8 +36,10 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     @Nullable
     private Predicate<GridResource> filterBeforeFilteringBasedOnCraftingMatrixItems;
 
-    public CraftingGridContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, buf);
+    public CraftingGridContainerMenu(final int syncId,
+                                     final Inventory playerInventory,
+                                     final GridData gridData) {
+        super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, gridData);
         this.source = new ClientCraftingGridSource();
         this.player = playerInventory.player;
         onScreenReady(0);

@@ -11,7 +11,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataGenerator.PackGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -23,17 +23,13 @@ public class DataGenerators {
     }
 
     @SubscribeEvent
-    public static void onGatherData(final GatherDataEvent dataEvent) {
-        registerBlockModelProviders(dataEvent.getGenerator(), dataEvent.getExistingFileHelper());
-        registerItemModelProviders(dataEvent.getGenerator(), dataEvent.getExistingFileHelper());
-        registerBlockStateProviders(dataEvent.getGenerator(), dataEvent.getExistingFileHelper());
-        registerLootTableProviders(dataEvent.getGenerator());
-        registerRecipeProviders(dataEvent.getGenerator());
-        registerTagProviders(
-            dataEvent.getGenerator(),
-            dataEvent.getLookupProvider(),
-            dataEvent.getExistingFileHelper()
-        );
+    public static void onGatherData(final GatherDataEvent e) {
+        registerBlockModelProviders(e.getGenerator(), e.getExistingFileHelper());
+        registerItemModelProviders(e.getGenerator(), e.getExistingFileHelper());
+        registerBlockStateProviders(e.getGenerator(), e.getExistingFileHelper());
+        registerLootTableProviders(e.getGenerator(), e.getLookupProvider());
+        registerRecipeProviders(e.getGenerator(), e.getLookupProvider());
+        registerTagProviders(e.getGenerator(), e.getLookupProvider(), e.getExistingFileHelper());
     }
 
     // this function has to happen after the models, since the jsons refer to files generated there
@@ -55,14 +51,16 @@ public class DataGenerators {
         mainPack.addProvider(output -> new ItemModelProviderImpl(output, existingFileHelper));
     }
 
-    private static void registerLootTableProviders(final DataGenerator generator) {
+    private static void registerLootTableProviders(final DataGenerator generator,
+                                                   final CompletableFuture<HolderLookup.Provider> provider) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-        mainPack.addProvider(LootTableProviderImpl::new);
+        mainPack.addProvider(output -> new LootTableProviderImpl(output, provider));
     }
 
-    private static void registerRecipeProviders(final DataGenerator generator) {
+    private static void registerRecipeProviders(final DataGenerator generator,
+                                                final CompletableFuture<HolderLookup.Provider> provider) {
         final PackGenerator mainPack = generator.getVanillaPack(true);
-        mainPack.addProvider(RecoloringRecipeProvider::new);
+        mainPack.addProvider(output -> new RecoloringRecipeProvider(output, provider));
     }
 
     private static void registerTagProviders(

@@ -15,9 +15,6 @@ public class ControllerModelPredicateProvider implements ClampedItemPropertyFunc
                                @Nullable final ClientLevel level,
                                @Nullable final LivingEntity entity,
                                final int seed) {
-        if (stack.getTag() == null) { // for newly created items
-            return 1;
-        }
         return PlatformApi.INSTANCE.getEnergyStorage(stack)
             .map(energyStorage -> (float) energyStorage.getStored() / (float) energyStorage.getCapacity())
             .orElse(1F);

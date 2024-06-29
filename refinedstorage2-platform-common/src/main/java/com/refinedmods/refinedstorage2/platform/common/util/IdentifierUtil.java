@@ -17,7 +17,7 @@ public final class IdentifierUtil {
     }
 
     public static ResourceLocation createIdentifier(final String value) {
-        return new ResourceLocation(MOD_ID, value);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, value);
     }
 
     public static String createTranslationKey(final String category, final String value) {

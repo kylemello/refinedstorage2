@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
@@ -18,14 +19,14 @@ public abstract class AbstractSafeSavedData extends SavedData {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     @Override
-    public void save(final File file) {
+    public void save(final File file, final HolderLookup.Provider provider) {
         if (!isDirty()) {
             return;
         }
         final var targetPath = file.toPath().toAbsolutePath();
         final var tempFile = targetPath.getParent().resolve(file.getName() + ".temp");
         final CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("data", this.save(new CompoundTag()));
+        compoundTag.put("data", this.save(new CompoundTag(), provider));
         NbtUtils.addCurrentDataVersion(compoundTag);
         try {
             doSave(compoundTag, tempFile, targetPath);

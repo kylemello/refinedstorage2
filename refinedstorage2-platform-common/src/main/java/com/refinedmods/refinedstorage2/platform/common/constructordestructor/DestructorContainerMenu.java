@@ -8,10 +8,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Abs
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,12 +21,14 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 public class DestructorContainerMenu extends AbstractSimpleFilterContainerMenu<DestructorBlockEntity> {
     private static final MutableComponent FILTER_HELP = createTranslation("gui", "destructor.filter_help");
 
-    public DestructorContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public DestructorContainerMenu(final int syncId,
+                                   final Inventory playerInventory,
+                                   final ResourceContainerData resourceContainerData) {
         super(
             Menus.INSTANCE.getDestructor(),
             syncId,
             playerInventory.player,
-            buf,
+            resourceContainerData,
             UpgradeDestinations.DESTRUCTOR,
             FILTER_HELP
         );

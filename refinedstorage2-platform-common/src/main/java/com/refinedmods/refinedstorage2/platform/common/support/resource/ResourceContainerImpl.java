@@ -8,7 +8,6 @@ import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
-import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage2.platform.common.util.MathUtil;
 
 import java.util.ArrayList;
@@ -19,9 +18,10 @@ import java.util.Set;
 import java.util.function.ToLongFunction;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
@@ -201,82 +201,32 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     @Override
-    public void writeToUpdatePacket(final FriendlyByteBuf buf) {
-        for (final ResourceContainerSlot slot : slots) {
-            if (slot == null) {
-                buf.writeBoolean(false);
-                continue;
-            }
-            writeToUpdatePacket(buf, slot);
-        }
-    }
-
-    private void writeToUpdatePacket(final FriendlyByteBuf buf, final ResourceContainerSlot slot) {
-        final ResourceType resourceType = slot.getResourceType();
-        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresentOrElse(id -> {
-            buf.writeBoolean(true);
-            buf.writeResourceLocation(id);
-            slot.getPlatformResource().toBuffer(buf);
-            buf.writeLong(slot.getAmount());
-        }, () -> buf.writeBoolean(false));
-    }
-
-    @Override
-    public void readFromUpdatePacket(final int index, final FriendlyByteBuf buf) {
-        final boolean present = buf.readBoolean();
-        if (!present) {
-            removeSilently(index);
-            return;
-        }
-        final ResourceLocation id = buf.readResourceLocation();
-        PlatformApi.INSTANCE.getResourceTypeRegistry().get(id).ifPresent(
-            resourceType -> readFromUpdatePacket(index, buf, resourceType)
-        );
-    }
-
-    private void readFromUpdatePacket(final int index,
-                                      final FriendlyByteBuf buf,
-                                      final ResourceType resourceType) {
-        final ResourceKey resource = resourceType.fromBuffer(buf);
-        final long amount = buf.readLong();
-        setSilently(index, new ResourceAmount(resource, amount));
-    }
-
-    @Override
-    public CompoundTag toTag() {
+    public CompoundTag toTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         for (int i = 0; i < size(); ++i) {
             final ResourceContainerSlot slot = slots[i];
             if (slot == null) {
                 continue;
             }
-            addToTag(tag, i, slot);
+            addToTag(tag, i, slot, provider);
         }
         return tag;
     }
 
     private void addToTag(final CompoundTag tag,
                           final int index,
-                          final ResourceContainerSlot slot) {
-        final ResourceType resourceType = slot.getResourceType();
-        PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType).ifPresent(
-            resourceTypeId -> addToTag(tag, index, slot, resourceTypeId)
-        );
-    }
-
-    private void addToTag(final CompoundTag tag,
-                          final int index,
                           final ResourceContainerSlot slot,
-                          final ResourceLocation resourceTypeId) {
-        final CompoundTag serialized = new CompoundTag();
-        serialized.putString("t", resourceTypeId.toString());
-        serialized.put("v", slot.getPlatformResource().toTag());
-        serialized.putLong("a", slot.getAmount());
+                          final HolderLookup.Provider provider) {
+        final Tag serialized = ResourceCodecs.AMOUNT_CODEC.encode(
+            slot.getResourceAmount(),
+            provider.createSerializationContext(NbtOps.INSTANCE),
+            new CompoundTag()
+        ).getOrThrow();
         tag.put("s" + index, serialized);
     }
 
     @Override
-    public void fromTag(final CompoundTag tag) {
+    public void fromTag(final CompoundTag tag, final HolderLookup.Provider provider) {
         for (int i = 0; i < size(); ++i) {
             final String key = "s" + i;
             if (!tag.contains(key)) {
@@ -284,23 +234,16 @@ public class ResourceContainerImpl implements ResourceContainer {
                 continue;
             }
             final CompoundTag item = tag.getCompound(key);
-            fromTag(i, item);
+            fromTag(i, item, provider);
         }
     }
 
-    private void fromTag(final int index, final CompoundTag tag) {
-        final ResourceLocation resourceTypeId = new ResourceLocation(tag.getString("t"));
-        PlatformApi.INSTANCE.getResourceTypeRegistry().get(resourceTypeId).ifPresent(
-            resourceType -> fromTag(index, tag, resourceType)
-        );
-    }
-
-    private void fromTag(final int index, final CompoundTag tag, final ResourceType resourceType) {
-        final long amount = tag.getLong("a");
-        resourceType.fromTag(tag.getCompound("v")).ifPresent(resource -> setSilently(
-            index,
-            new ResourceAmount(resource, amount)
-        ));
+    private void fromTag(final int index, final CompoundTag tag, final HolderLookup.Provider provider) {
+        final ResourceAmount resourceAmount = ResourceCodecs.AMOUNT_CODEC.decode(
+            provider.createSerializationContext(NbtOps.INSTANCE),
+            tag
+        ).getOrThrow().getFirst();
+        setSilently(index, resourceAmount);
     }
 
     @Override
@@ -418,6 +361,15 @@ public class ResourceContainerImpl implements ResourceContainer {
         return createForFilter(9);
     }
 
+    public static ResourceContainer createForFilter(final ResourceContainerData data) {
+        final ResourceContainer resourceContainer = createForFilter(data.resources().size());
+        for (int i = 0; i < data.resources().size(); ++i) {
+            final int ii = i;
+            data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
+        }
+        return resourceContainer;
+    }
+
     public static ResourceContainer createForFilter(final int size) {
         return new ResourceContainerImpl(
             size,
@@ -428,11 +380,25 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     public static ResourceContainer createForFilter(final ResourceFactory resourceFactory) {
+        return createForFilter(resourceFactory, 9);
+    }
+
+    public static ResourceContainer createForFilter(final ResourceFactory resourceFactory, final int size) {
         return new ResourceContainerImpl(
-            9,
+            size,
             resource -> Long.MAX_VALUE,
             resourceFactory,
             Collections.emptySet()
         );
+    }
+
+    public static ResourceContainer createForFilter(final ResourceFactory resourceFactory,
+                                                    final ResourceContainerData data) {
+        final ResourceContainer resourceContainer = createForFilter(resourceFactory, data.resources().size());
+        for (int i = 0; i < data.resources().size(); ++i) {
+            final int ii = i;
+            data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
+        }
+        return resourceContainer;
     }
 }

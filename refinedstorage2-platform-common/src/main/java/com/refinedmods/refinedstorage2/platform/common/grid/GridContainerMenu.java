@@ -6,12 +6,11 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Cli
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
 public class GridContainerMenu extends AbstractGridContainerMenu {
-    public GridContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getGrid(), syncId, playerInventory, buf);
+    public GridContainerMenu(final int syncId, final Inventory playerInventory, final GridData gridData) {
+        super(Menus.INSTANCE.getGrid(), syncId, playerInventory, gridData);
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }

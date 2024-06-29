@@ -45,7 +45,10 @@ public class ItemHandlerExtractableStorage implements ExtractableStorage {
                            final ItemStack toExtractStack) {
         long extracted = 0;
         for (int slot = 0; slot < itemHandler.getSlots(); ++slot) {
-            final boolean relevant = ItemStack.isSameItemSameTags(itemHandler.getStackInSlot(slot), toExtractStack);
+            final boolean relevant = ItemStack.isSameItemSameComponents(
+                itemHandler.getStackInSlot(slot),
+                toExtractStack
+            );
             if (!relevant) {
                 continue;
             }

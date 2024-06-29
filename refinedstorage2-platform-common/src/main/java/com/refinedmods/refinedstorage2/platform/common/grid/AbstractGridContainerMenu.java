@@ -10,9 +10,7 @@ import com.refinedmods.refinedstorage2.api.grid.view.GridView;
 import com.refinedmods.refinedstorage2.api.grid.view.GridViewBuilder;
 import com.refinedmods.refinedstorage2.api.grid.view.GridViewBuilderImpl;
 import com.refinedmods.refinedstorage2.api.grid.watcher.GridWatcher;
-import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage2.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.grid.Grid;
@@ -33,20 +31,17 @@ import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridI
 import com.refinedmods.refinedstorage2.platform.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.CompositeGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
-import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 import com.refinedmods.refinedstorage2.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage2.query.parser.ParserOperatorMappings;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -96,24 +91,21 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         final MenuType<? extends AbstractGridContainerMenu> menuType,
         final int syncId,
         final Inventory playerInventory,
-        final FriendlyByteBuf buf
+        final GridData gridData
     ) {
         super(menuType, syncId);
 
         this.playerInventory = playerInventory;
 
-        this.active = buf.readBoolean();
+        this.active = gridData.active();
 
         final GridViewBuilder viewBuilder = createViewBuilder();
-        final int resources = buf.readInt();
-        for (int i = 0; i < resources; ++i) {
-            final ResourceLocation resourceTypeId = buf.readResourceLocation();
-            final ResourceType resourceType = PlatformApi.INSTANCE
-                .getResourceTypeRegistry()
-                .get(resourceTypeId)
-                .orElseThrow();
-            readResource(resourceType, buf, viewBuilder);
-        }
+        gridData.resources().forEach(gridResource -> viewBuilder.withResource(
+            gridResource.resourceAmount().getResource(),
+            gridResource.resourceAmount().getAmount(),
+            gridResource.trackedResource().orElse(null)
+        ));
+
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
         this.view.setSortingType(Platform.INSTANCE.getConfig().getGrid().getSortingType());
@@ -249,7 +241,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     public void onActiveChanged(final boolean newActive) {
         this.active = newActive;
         if (this.playerInventory.player instanceof ServerPlayer serverPlayerEntity) {
-            Platform.INSTANCE.getServerToClientCommunications().sendGridActiveness(serverPlayerEntity, newActive);
+            S2CPackets.sendGridActiveness(serverPlayerEntity, newActive);
         }
     }
 
@@ -263,7 +255,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             return;
         }
         LOGGER.debug("{} received a change of {} for {}", this, change, resource);
-        Platform.INSTANCE.getServerToClientCommunications().sendGridUpdate(
+        S2CPackets.sendGridUpdate(
             (ServerPlayer) playerInventory.player,
             platformResource,
             change,
@@ -275,7 +267,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     public void invalidate() {
         if (playerInventory.player instanceof ServerPlayer serverPlayer) {
             initStrategies(serverPlayer);
-            Platform.INSTANCE.getServerToClientCommunications().sendGridClear(serverPlayer);
+            S2CPackets.sendGridClear(serverPlayer);
         }
     }
 
@@ -427,36 +419,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         return true;
     }
 
-    private static void readResource(final ResourceType type,
-                                     final FriendlyByteBuf buf,
-                                     final GridViewBuilder viewBuilder) {
-        final ResourceKey resource = type.fromBuffer(buf);
-        final long amount = buf.readLong();
-        final TrackedResource trackedResource = PacketUtil.readTrackedResource(buf);
-        viewBuilder.withResource(resource, amount, trackedResource);
-    }
-
     public void onClear() {
         view.clear();
-    }
-
-    public static void writeScreenOpeningData(final Grid grid, final FriendlyByteBuf buf) {
-        buf.writeBoolean(grid.isGridActive());
-        final List<TrackedResourceAmount> resources = grid.getResources(PlayerActor.class);
-        buf.writeInt(resources.size());
-        resources.forEach(resource -> writeGridResource(resource, buf));
-    }
-
-    private static void writeGridResource(final TrackedResourceAmount trackedResourceAmount,
-                                          final FriendlyByteBuf buf) {
-        final ResourceAmount resourceAmount = trackedResourceAmount.resourceAmount();
-        final PlatformResourceKey resource = (PlatformResourceKey) resourceAmount.getResource();
-        final ResourceType resourceType = resource.getResourceType();
-        final ResourceLocation resourceTypeId = PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType)
-            .orElseThrow();
-        buf.writeResourceLocation(resourceTypeId);
-        resource.toBuffer(buf);
-        buf.writeLong(resourceAmount.getAmount());
-        PacketUtil.writeTrackedResource(buf, trackedResourceAmount.trackedResource());
     }
 }

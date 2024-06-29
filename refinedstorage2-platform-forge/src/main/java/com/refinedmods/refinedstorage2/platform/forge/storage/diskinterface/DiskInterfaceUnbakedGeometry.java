@@ -47,8 +47,7 @@ public class DiskInterfaceUnbakedGeometry implements IUnbakedGeometry<DiskInterf
                            final ModelBaker baker,
                            final Function<Material, TextureAtlasSprite> spriteGetter,
                            final ModelState modelState,
-                           final ItemOverrides overrides,
-                           final ResourceLocation modelLocation) {
+                           final ItemOverrides overrides) {
         return new DiskInterfaceBakedModel(
             requireNonNull(baker.bake(baseModel, modelState, spriteGetter)),
             new RotationTranslationModelBaker(modelState, baker, spriteGetter, INACTIVE_MODEL),

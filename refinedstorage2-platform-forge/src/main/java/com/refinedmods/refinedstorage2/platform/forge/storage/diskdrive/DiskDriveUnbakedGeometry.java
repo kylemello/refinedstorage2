@@ -42,8 +42,7 @@ public class DiskDriveUnbakedGeometry implements IUnbakedGeometry<DiskDriveUnbak
                            final ModelBaker baker,
                            final Function<Material, TextureAtlasSprite> spriteGetter,
                            final ModelState modelState,
-                           final ItemOverrides overrides,
-                           final ResourceLocation modelLocation) {
+                           final ItemOverrides overrides) {
         return new DiskDriveBakedModel(
             requireNonNull(baker.bake(BASE_MODEL, modelState, spriteGetter)),
             new RotationTranslationModelBaker(modelState, baker, spriteGetter, BASE_MODEL),

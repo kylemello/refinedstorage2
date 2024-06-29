@@ -61,14 +61,14 @@ public final class GameTestUtil {
                               final Network network,
                               final Item resource,
                               final long amount) {
-        insert(helper, network, new ItemResource(resource, null), amount);
+        insert(helper, network, new ItemResource(resource), amount);
     }
 
     public static void insert(final GameTestHelper helper,
                               final Network network,
                               final Fluid resource,
                               final long amount) {
-        insert(helper, network, new FluidResource(resource, null), amount);
+        insert(helper, network, new FluidResource(resource), amount);
     }
 
     public static void insert(final GameTestHelper helper,
@@ -117,22 +117,22 @@ public final class GameTestUtil {
         return () -> {
             for (final ResourceAmount expectedStack : expected) {
                 final boolean contains = IntStream.range(0, containerBlockEntity.getContainerSize())
-                        .mapToObj(containerBlockEntity::getItem)
-                        .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.getResource())
-                                && inContainer.getCount() == expectedStack.getAmount());
+                    .mapToObj(containerBlockEntity::getItem)
+                    .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.getResource())
+                        && inContainer.getCount() == expectedStack.getAmount());
                 helper.assertTrue(contains, "Expected resource is missing from storage: "
-                        + expectedStack + " with count: " + expectedStack.getAmount());
+                    + expectedStack + " with count: " + expectedStack.getAmount());
             }
             for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
                 final ItemStack inContainer = containerBlockEntity.getItem(i);
 
                 if (inContainer.getItem() != Items.AIR) {
                     final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                            expectedStack -> expectedStack.getResource().equals(asResource(inContainer))
-                                    && expectedStack.getAmount() == inContainer.getCount()
+                        expectedStack -> expectedStack.getResource().equals(asResource(inContainer))
+                            && expectedStack.getAmount() == inContainer.getCount()
                     );
                     helper.assertTrue(wasExpected, "Unexpected resource found in storage: "
-                            + inContainer.getDescriptionId() + " with count: " + inContainer.getCount());
+                        + inContainer.getDescriptionId() + " with count: " + inContainer.getCount());
                 }
             }
         };
@@ -161,14 +161,14 @@ public final class GameTestUtil {
     }
 
     public static ItemResource asResource(final Item item) {
-        return new ItemResource(item, null);
+        return new ItemResource(item);
     }
 
     public static ItemResource asResource(final ItemStack itemStack) {
-        return new ItemResource(itemStack.getItem(), itemStack.getTag());
+        return ItemResource.ofItemStack(itemStack);
     }
 
     public static FluidResource asResource(final Fluid fluid) {
-        return new FluidResource(fluid, null);
+        return new FluidResource(fluid);
     }
 }

@@ -33,7 +33,7 @@ public class NetworkTransmitterScreen extends AbstractBaseScreen<NetworkTransmit
     @Override
     protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
-        final NetworkTransmitterStatus status = getMenu().getStatus();
+        final NetworkTransmitterData status = getMenu().getStatus();
         final int displayTextX = 51;
         if (status.error()) {
             graphics.blit(TextureIds.ICONS, displayTextX, 23, 246, 148, 10, 10);

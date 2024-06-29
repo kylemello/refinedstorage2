@@ -3,21 +3,30 @@ package com.refinedmods.refinedstorage2.platform.common.storage.storageblock;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.storage.AbstractStorageContainerBlockItem;
 import com.refinedmods.refinedstorage2.platform.api.support.AmountFormatting;
+import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.storage.ItemStorageType;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
+    private static final Component CREATIVE_HELP = createTranslation("item", "creative_storage_block.help");
+
     private final ItemStorageType.Variant variant;
+    private final Component helpText;
 
     public ItemStorageBlockBlockItem(final Block block, final ItemStorageType.Variant variant) {
         super(
@@ -26,6 +35,9 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
             PlatformApi.INSTANCE.getStorageContainerItemHelper()
         );
         this.variant = variant;
+        this.helpText = variant.getCapacity() == null
+            ? CREATIVE_HELP
+            : createTranslation("item", "storage_block.help", AmountFormatting.format(variant.getCapacity()));
     }
 
     @Override
@@ -59,5 +71,10 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
             return false;
         }
         return super.placeBlock(ctx, state);
+    }
+
+    @Override
+    public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
+        return Optional.of(new HelpTooltipComponent(helpText));
     }
 }

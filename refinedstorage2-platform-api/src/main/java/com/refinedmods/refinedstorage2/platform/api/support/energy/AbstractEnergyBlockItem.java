@@ -26,11 +26,11 @@ public abstract class AbstractEnergyBlockItem extends BlockItem {
     @Override
     public void appendHoverText(
         final ItemStack stack,
-        @Nullable final Level level,
+        final TooltipContext context,
         final List<Component> lines,
         final TooltipFlag flag
     ) {
-        super.appendHoverText(stack, level, lines, flag);
+        super.appendHoverText(stack, context, lines, flag);
         helper.addTooltip(stack, lines);
     }
 

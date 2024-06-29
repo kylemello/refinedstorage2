@@ -6,9 +6,9 @@ import com.refinedmods.refinedstorage2.platform.common.storage.AbstractStorageCo
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainer;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -19,10 +19,11 @@ public class ExternalStorageContainerMenu extends AbstractStorageContainerMenu {
     private static final int FILTER_SLOT_X = 8;
     private static final int FILTER_SLOT_Y = 20;
 
-    public ExternalStorageContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public ExternalStorageContainerMenu(final int syncId,
+                                        final Inventory playerInventory,
+                                        final ResourceContainerData resourceContainerData) {
         super(Menus.INSTANCE.getExternalStorage(), syncId);
-        addSlots(playerInventory.player, ResourceContainerImpl.createForFilter());
-        initializeResourceSlots(buf);
+        addSlots(playerInventory.player, ResourceContainerImpl.createForFilter(resourceContainerData));
     }
 
     ExternalStorageContainerMenu(final int syncId,

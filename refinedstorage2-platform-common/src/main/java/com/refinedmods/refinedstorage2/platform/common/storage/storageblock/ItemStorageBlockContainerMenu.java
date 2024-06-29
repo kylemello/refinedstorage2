@@ -5,17 +5,18 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceCon
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainer;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
 public class ItemStorageBlockContainerMenu extends AbstractStorageBlockContainerMenu {
-    public ItemStorageBlockContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public ItemStorageBlockContainerMenu(final int syncId,
+                                         final Inventory playerInventory,
+                                         final StorageBlockData storageBlockData) {
         super(
             Menus.INSTANCE.getItemStorage(),
             syncId,
             playerInventory.player,
-            buf,
+            storageBlockData,
             PlatformApi.INSTANCE.getItemResourceFactory()
         );
     }

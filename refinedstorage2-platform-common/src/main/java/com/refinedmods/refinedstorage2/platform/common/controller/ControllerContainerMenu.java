@@ -9,17 +9,22 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Ser
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyInfo;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
 public class ControllerContainerMenu extends AbstractBaseContainerMenu implements EnergyContainerMenu {
     private final EnergyInfo energyInfo;
 
-    public ControllerContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public ControllerContainerMenu(final int syncId,
+                                   final Inventory playerInventory,
+                                   final ControllerData controllerData) {
         super(Menus.INSTANCE.getController(), syncId);
         addPlayerInventory(playerInventory, 8, 107);
-        this.energyInfo = EnergyInfo.forClient(playerInventory.player, buf.readLong(), buf.readLong());
+        this.energyInfo = EnergyInfo.forClient(
+            playerInventory.player,
+            controllerData.stored(),
+            controllerData.capacity()
+        );
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
 

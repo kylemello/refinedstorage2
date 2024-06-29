@@ -77,7 +77,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
     }
 
     private void registerControllers() {
-        final ResourceLocation base = new ResourceLocation("item/generated");
+        final ResourceLocation base = ResourceLocation.withDefaultNamespace("item/generated");
         final ResourceLocation off = createIdentifier("block/controller/off");
         final ResourceLocation nearlyOff = createIdentifier("block/controller/nearly_off");
         final ResourceLocation nearlyOn = createIdentifier("block/controller/nearly_on");

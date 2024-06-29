@@ -42,7 +42,7 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
     @Override
     protected void init(final int rows) {
         permissions.clear();
-        final List<AbstractSecurityCardContainerMenu.Permission> menuPermissions = getMenu().getPermissions();
+        final List<SecurityCardData.Permission> menuPermissions = getMenu().getPermissions();
         for (int i = 0; i < menuPermissions.size(); ++i) {
             final Permission permission = createPermission(menuPermissions.get(i), i, rows);
             addWidget(permission.checkbox);
@@ -53,7 +53,7 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
     }
 
     private Permission createPermission(
-        final AbstractSecurityCardContainerMenu.Permission menuPermission,
+        final SecurityCardData.Permission menuPermission,
         final int index,
         final int rows
     ) {
@@ -66,7 +66,7 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
     }
 
     private CustomCheckboxWidget createPermissionCheckbox(
-        final AbstractSecurityCardContainerMenu.Permission menuPermission,
+        final SecurityCardData.Permission menuPermission,
         final int y,
         final boolean visible
     ) {
@@ -82,18 +82,18 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
         return checkbox;
     }
 
-    private void updatePermission(final AbstractSecurityCardContainerMenu.Permission menuPermission,
+    private void updatePermission(final SecurityCardData.Permission menuPermission,
                                   final Button resetButton,
                                   final CustomCheckboxWidget checkbox,
                                   final boolean allowed) {
         updateCheckboxAndResetButton(checkbox, resetButton, menu.changePermission(
-            menuPermission.platformPermission(),
+            menuPermission.permission(),
             allowed
         ));
     }
 
-    private Tooltip getPermissionTooltip(final AbstractSecurityCardContainerMenu.Permission menuPermission) {
-        final PlatformPermission permission = menuPermission.platformPermission();
+    private Tooltip getPermissionTooltip(final SecurityCardData.Permission menuPermission) {
+        final PlatformPermission permission = menuPermission.permission();
         final MutableComponent ownerName = permission.getOwnerName().copy().withStyle(
             Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY)
         );
@@ -101,7 +101,7 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
         return Tooltip.create(menuPermission.dirty() ? tooltip.append("\n").append(MODIFIED_TITLE) : tooltip);
     }
 
-    private Button createPermissionResetButton(final AbstractSecurityCardContainerMenu.Permission menuPermission,
+    private Button createPermissionResetButton(final SecurityCardData.Permission menuPermission,
                                                final CustomCheckboxWidget checkbox,
                                                final int y,
                                                final boolean visible) {
@@ -114,23 +114,23 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
         return resetButton;
     }
 
-    private void resetPermission(final AbstractSecurityCardContainerMenu.Permission menuPermission,
+    private void resetPermission(final SecurityCardData.Permission menuPermission,
                                  final CustomCheckboxWidget checkbox,
                                  final Button resetButton) {
-        updateCheckboxAndResetButton(checkbox, resetButton, menu.resetPermission(menuPermission.platformPermission()));
+        updateCheckboxAndResetButton(checkbox, resetButton, menu.resetPermission(menuPermission.permission()));
     }
 
     private void updateCheckboxAndResetButton(final CustomCheckboxWidget checkbox,
                                               final Button resetButton,
-                                              final AbstractSecurityCardContainerMenu.Permission menuPermission) {
+                                              final SecurityCardData.Permission menuPermission) {
         checkbox.setMessage(getPermissionName(menuPermission));
         checkbox.setTooltip(getPermissionTooltip(menuPermission));
         checkbox.setSelected(menuPermission.allowed());
         resetButton.active = menuPermission.dirty();
     }
 
-    private Component getPermissionName(final AbstractSecurityCardContainerMenu.Permission menuPermission) {
-        final Component name = menuPermission.platformPermission().getName();
+    private Component getPermissionName(final SecurityCardData.Permission menuPermission) {
+        final Component name = menuPermission.permission().getName();
         if (!menuPermission.dirty()) {
             return name;
         }

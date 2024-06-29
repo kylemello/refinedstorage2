@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage2.platform.common.networking;
 
-import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
@@ -8,11 +7,11 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Cli
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ValidatedSlot;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,7 +22,7 @@ public class NetworkTransmitterContainerMenu extends AbstractBaseContainerMenu {
     private final NetworkTransmitterBlockEntity blockEntity;
     private final Player player;
     private final RateLimiter statusUpdateRateLimiter = RateLimiter.create(2);
-    private NetworkTransmitterStatus status;
+    private NetworkTransmitterData status;
 
     NetworkTransmitterContainerMenu(final int syncId,
                                     final Inventory playerInventory,
@@ -42,12 +41,12 @@ public class NetworkTransmitterContainerMenu extends AbstractBaseContainerMenu {
 
     public NetworkTransmitterContainerMenu(final int syncId,
                                            final Inventory playerInventory,
-                                           final FriendlyByteBuf buf) {
+                                           final NetworkTransmitterData status) {
         super(Menus.INSTANCE.getNetworkTransmitter(), syncId);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         this.blockEntity = null;
         this.player = playerInventory.player;
-        this.status = new NetworkTransmitterStatus(buf.readBoolean(), buf.readComponent());
+        this.status = status;
         addSlots(playerInventory, new NetworkCardInventory());
     }
 
@@ -60,19 +59,16 @@ public class NetworkTransmitterContainerMenu extends AbstractBaseContainerMenu {
         if (!statusUpdateRateLimiter.tryAcquire()) {
             return;
         }
-        final NetworkTransmitterStatus newStatus = blockEntity.getStatus();
+        final NetworkTransmitterData newStatus = blockEntity.getStatus();
         if (newStatus.message().equals(status.message())) {
             return;
         }
         updateStatus(serverPlayer, newStatus);
     }
 
-    private void updateStatus(final ServerPlayer serverPlayer, final NetworkTransmitterStatus newStatus) {
+    private void updateStatus(final ServerPlayer serverPlayer, final NetworkTransmitterData newStatus) {
         this.status = newStatus;
-        Platform.INSTANCE.getServerToClientCommunications().sendNetworkTransmitterStatus(
-            serverPlayer,
-            newStatus
-        );
+        S2CPackets.sendNetworkTransmitterStatus(serverPlayer, newStatus);
     }
 
     private void addSlots(final Inventory playerInventory, final Container networkCardInventory) {
@@ -87,11 +83,11 @@ public class NetworkTransmitterContainerMenu extends AbstractBaseContainerMenu {
         transferManager.addBiTransfer(playerInventory, networkCardInventory);
     }
 
-    NetworkTransmitterStatus getStatus() {
+    NetworkTransmitterData getStatus() {
         return status;
     }
 
-    public void setStatus(final NetworkTransmitterStatus status) {
+    public void setStatus(final NetworkTransmitterData status) {
         this.status = status;
     }
 }

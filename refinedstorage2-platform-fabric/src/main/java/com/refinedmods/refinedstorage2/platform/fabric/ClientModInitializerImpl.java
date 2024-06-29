@@ -16,7 +16,16 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemItemPropertyFunction;
-import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.EnergyInfoPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridActivePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridClearPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.ResourceSlotUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.StorageInfoResponsePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.CompositeClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.tooltip.ResourceClientTooltipComponent;
@@ -24,15 +33,6 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeI
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage2.platform.fabric.mixin.ItemPropertiesAccessor;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.EnergyInfoPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridActivePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridClearPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.GridUpdatePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NetworkTransmitterStatusPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.NoPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.ResourceSlotUpdatePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.StorageInfoResponsePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.DiskDriveUnbakedModel;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.DiskInterfaceBlockEntityRendererImpl;
@@ -60,6 +60,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -71,11 +72,14 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public class ClientModInitializerImpl extends AbstractClientModInitializer implements ClientModInitializer {
+    private static final String BLOCK_PREFIX = "block";
+    private static final String ITEM_PREFIX = "item";
+
     @Override
     public void onInitializeClient() {
         setRenderLayers();
         registerEmissiveModels();
-        registerPackets();
+        registerPacketHandlers();
         registerBlockEntityRenderers();
         registerCustomModels();
         registerCustomTooltips();
@@ -126,39 +130,17 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     }
 
     private void registerEmissiveModels() {
-        Blocks.INSTANCE.getController().forEach((color, id, block) -> {
-            registerEmissiveControllerModels(color);
-            registerEmissiveControllerItemModels(color, id);
-        });
-        Blocks.INSTANCE.getCreativeController().forEach(
-            (color, id, block) -> registerEmissiveControllerItemModels(color, id)
-        );
-        Blocks.INSTANCE.getGrid().forEach(
-            (color, id, block) -> registerEmissiveGridModels(color, id)
-        );
-        Blocks.INSTANCE.getCraftingGrid().forEach(
-            (color, id, block) -> registerEmissiveCraftingGridModels(color, id)
-        );
-        Blocks.INSTANCE.getDetector().forEach(
-            (color, id, block) -> registerEmissiveDetectorModels(color, id)
-        );
-        Blocks.INSTANCE.getConstructor().forEach(
-            (color, id, block) -> registerEmissiveConstructorModels(color, id)
-        );
-        Blocks.INSTANCE.getDestructor().forEach(
-            (color, id, block) -> registerEmissiveDestructorModels(color, id)
-        );
-        Blocks.INSTANCE.getWirelessTransmitter().forEach(
-            (color, id, block) -> registerEmissiveWirelessTransmitterModels(color, id)
-        );
-        Blocks.INSTANCE.getNetworkReceiver().forEach(
-            (color, id, block) -> registerEmissiveNetworkReceiverModels(color, id)
-        );
+        registerColoredEmissiveModels(Blocks.INSTANCE.getController(), "controller");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getCreativeController(), "controller");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getGrid(), "grid");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getDetector(), "detector");
+        registerConstructorDestructorEmissiveModels(Blocks.INSTANCE.getConstructor(), "constructor");
+        registerConstructorDestructorEmissiveModels(Blocks.INSTANCE.getDestructor(), "destructor");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getWirelessTransmitter(), "wireless_transmitter");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getNetworkReceiver(), "network_receiver");
         Blocks.INSTANCE.getNetworkTransmitter().forEach(
             (color, id, block) -> registerEmissiveNetworkTransmitterModels(color, id)
-        );
-        Blocks.INSTANCE.getGrid().forEach(
-            (color, id, block) -> registerEmissiveGridModels(color, id)
         );
         Blocks.INSTANCE.getSecurityManager().forEach(
             (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
@@ -168,165 +150,124 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
     }
 
-    private void registerEmissiveControllerModels(final DyeColor color) {
-        final ResourceLocation spriteLocation = createIdentifier("block/controller/cutouts/" + color.getName());
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/controller/" + color.getName()),
-            spriteLocation
-        );
+    private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
+                                               final String blockDirectory) {
+        blockMap.forEach((color, id, block) -> {
+            final ResourceLocation blockModelLocation = createIdentifier(
+                BLOCK_PREFIX + "/" + blockDirectory + "/" + color.getName()
+            );
+            final ResourceLocation spriteLocation = createIdentifier(
+                BLOCK_PREFIX + "/" + blockDirectory + "/cutouts/" + color.getName()
+            );
+            EmissiveModelRegistry.INSTANCE.register(blockModelLocation, spriteLocation);
+            EmissiveModelRegistry.INSTANCE.register(id.withPath(ITEM_PREFIX + "/" + id.getPath()), spriteLocation);
+        });
     }
 
-    private void registerEmissiveControllerItemModels(final DyeColor color, final ResourceLocation id) {
-        final ResourceLocation spriteLocation = createIdentifier("block/controller/cutouts/" + color.getName());
-        EmissiveModelRegistry.INSTANCE.register(id, spriteLocation);
-    }
-
-    private void registerEmissiveGridModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/grid/" + color.getName()),
-            createIdentifier("block/grid/cutouts/" + color.getName())
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(id, createIdentifier("block/grid/cutouts/" + color.getName()));
-    }
-
-    private void registerEmissiveCraftingGridModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/crafting_grid/" + color.getName()),
-            createIdentifier("block/crafting_grid/cutouts/" + color.getName())
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(id, createIdentifier("block/crafting_grid/cutouts/" + color.getName()));
-    }
-
-    private void registerEmissiveDetectorModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/detector/" + color.getName()),
-            createIdentifier("block/detector/cutouts/" + color.getName())
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(id, createIdentifier("block/detector/cutouts/" + color.getName()));
-    }
-
-    private void registerEmissiveConstructorModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/constructor/" + color.getName()),
-            createIdentifier("block/constructor/cutouts/active")
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(id, createIdentifier("block/constructor/cutouts/active"));
-    }
-
-    private void registerEmissiveDestructorModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/destructor/" + color.getName()),
-            createIdentifier("block/destructor/cutouts/active")
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(id, createIdentifier("block/destructor/cutouts/active"));
-    }
-
-    private void registerEmissiveWirelessTransmitterModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/wireless_transmitter/" + color.getName()),
-            createIdentifier("block/wireless_transmitter/cutouts/" + color.getName())
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(
-            id,
-            createIdentifier("block/wireless_transmitter/cutouts/" + color.getName())
-        );
-    }
-
-    private void registerEmissiveNetworkReceiverModels(final DyeColor color, final ResourceLocation id) {
-        // Block
-        EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/network_receiver/" + color.getName()),
-            createIdentifier("block/network_receiver/cutouts/" + color.getName())
-        );
-        // Item
-        EmissiveModelRegistry.INSTANCE.register(
-            id,
-            createIdentifier("block/network_receiver/cutouts/" + color.getName())
-        );
+    private void registerConstructorDestructorEmissiveModels(final BlockColorMap<?, ?> blockMap,
+                                                             final String blockDirectory) {
+        blockMap.forEach((color, id, block) -> {
+            final ResourceLocation blockModelLocation = createIdentifier(
+                BLOCK_PREFIX + "/" + blockDirectory + "/active"
+            );
+            final ResourceLocation spriteLocation = createIdentifier(
+                BLOCK_PREFIX + "/" + blockDirectory + "/cutouts/active"
+            );
+            EmissiveModelRegistry.INSTANCE.register(blockModelLocation, spriteLocation);
+            EmissiveModelRegistry.INSTANCE.register(createIdentifier(ITEM_PREFIX + "/" + id.getPath()), spriteLocation);
+        });
     }
 
     private void registerEmissiveNetworkTransmitterModels(final DyeColor color, final ResourceLocation id) {
-        // Block
         EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/network_transmitter/" + color.getName()),
-            createIdentifier("block/network_transmitter/cutouts/" + color.getName())
+            createIdentifier(BLOCK_PREFIX + "/network_transmitter/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/network_transmitter/cutouts/" + color.getName())
         );
         EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/network_transmitter/error"),
-            createIdentifier("block/network_transmitter/cutouts/error")
+            createIdentifier(BLOCK_PREFIX + "/network_transmitter/error"),
+            createIdentifier(BLOCK_PREFIX + "/network_transmitter/cutouts/error")
         );
-        // Item
         EmissiveModelRegistry.INSTANCE.register(
-            id,
-            createIdentifier("block/network_transmitter/cutouts/" + color.getName())
+            createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
+            createIdentifier(BLOCK_PREFIX + "/network_transmitter/cutouts/" + color.getName())
         );
     }
 
     private void registerEmissiveSecurityManagerModels(final DyeColor color, final ResourceLocation id) {
-        // Block
         EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/security_manager/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+            createIdentifier(BLOCK_PREFIX + "/security_manager/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/top/" + color.getName())
         );
-        // Item
         EmissiveModelRegistry.INSTANCE.register(
-            id,
-            createIdentifier("block/security_manager/cutouts/back/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/front/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/left/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/right/" + color.getName()),
-            createIdentifier("block/security_manager/cutouts/top/" + color.getName())
+            createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/back/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/front/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/left/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/right/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/security_manager/cutouts/top/" + color.getName())
         );
     }
 
     private void registerEmissiveRelayModels(final DyeColor color, final ResourceLocation id) {
-        // Block
         EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier("block/relay/" + color.getName()),
-            createIdentifier("block/relay/cutouts/in/" + color.getName()),
-            createIdentifier("block/relay/cutouts/out/" + color.getName())
+            createIdentifier(BLOCK_PREFIX + "/relay/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/relay/cutouts/in/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/relay/cutouts/out/" + color.getName())
         );
-        // Item
         EmissiveModelRegistry.INSTANCE.register(
-            id,
-            createIdentifier("block/relay/cutouts/in/" + color.getName()),
-            createIdentifier("block/relay/cutouts/out/" + color.getName())
+            createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
+            createIdentifier(BLOCK_PREFIX + "/relay/cutouts/in/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/relay/cutouts/out/" + color.getName())
         );
     }
 
-    private void registerPackets() {
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.STORAGE_INFO_RESPONSE, new StorageInfoResponsePacket());
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.GRID_UPDATE, new GridUpdatePacket());
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.GRID_CLEAR, new GridClearPacket());
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.GRID_ACTIVE, new GridActivePacket());
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.ENERGY_INFO, new EnergyInfoPacket());
+    private void registerPacketHandlers() {
         ClientPlayNetworking.registerGlobalReceiver(
-            PacketIds.WIRELESS_TRANSMITTER_RANGE,
-            new WirelessTransmitterRangePacket()
+            StorageInfoResponsePacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> StorageInfoResponsePacket.handle(packet))
         );
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.RESOURCE_SLOT_UPDATE, new ResourceSlotUpdatePacket());
         ClientPlayNetworking.registerGlobalReceiver(
-            PacketIds.NETWORK_TRANSMITTER_STATUS,
-            new NetworkTransmitterStatusPacket()
+            GridUpdatePacket.PACKET_TYPE,
+            wrapHandler(GridUpdatePacket::handle)
         );
-        ClientPlayNetworking.registerGlobalReceiver(PacketIds.NO_PERMISSION, new NoPermissionPacket());
+        ClientPlayNetworking.registerGlobalReceiver(
+            GridClearPacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> GridClearPacket.handle(ctx))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            GridActivePacket.PACKET_TYPE,
+            wrapHandler(GridActivePacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            EnergyInfoPacket.PACKET_TYPE,
+            wrapHandler(EnergyInfoPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            WirelessTransmitterRangePacket.PACKET_TYPE,
+            wrapHandler(WirelessTransmitterRangePacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            ResourceSlotUpdatePacket.PACKET_TYPE,
+            wrapHandler(ResourceSlotUpdatePacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            NetworkTransmitterStatusPacket.PACKET_TYPE,
+            wrapHandler(NetworkTransmitterStatusPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            NoPermissionPacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
+        );
+    }
+
+    private static <T extends CustomPacketPayload> ClientPlayNetworking.PlayPayloadHandler<T> wrapHandler(
+        final PacketHandler<T> handler
+    ) {
+        return (packet, ctx) -> handler.handle(packet, ctx::player);
     }
 
     private void registerBlockEntityRenderers() {
@@ -366,21 +307,21 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                                                    final QuadRotators quadRotators) {
         pluginContext.resolveModel().register(context -> {
             if (context.id().getNamespace().equals(IdentifierUtil.MOD_ID)
-                && context.id().getPath().startsWith("item/")
+                && context.id().getPath().startsWith(ITEM_PREFIX + "/")
                 && context.id().getPath().endsWith("disk_interface")) {
                 final boolean isDefault = !context.id().getPath().endsWith("_disk_interface");
                 final DyeColor color = isDefault
                     ? Blocks.INSTANCE.getDiskInterface().getDefault().getColor()
                     : DyeColor.byName(context.id().getPath().replace("_disk_interface", "")
-                    .replace("item/", ""), Blocks.INSTANCE.getDiskInterface().getDefault().getColor());
+                    .replace(ITEM_PREFIX + "/", ""), Blocks.INSTANCE.getDiskInterface().getDefault().getColor());
                 return new DiskInterfaceUnbakedModel(quadRotators, color);
             }
             if (context.id().getNamespace().equals(IdentifierUtil.MOD_ID)
-                && context.id().getPath().startsWith("block/disk_interface/")
-                && !context.id().getPath().startsWith("block/disk_interface/base_")
-                && !context.id().getPath().equals("block/disk_interface/inactive")) {
+                && context.id().getPath().startsWith(BLOCK_PREFIX + "/disk_interface/")
+                && !context.id().getPath().startsWith(BLOCK_PREFIX + "/disk_interface/base_")
+                && !context.id().getPath().equals(BLOCK_PREFIX + "/disk_interface/inactive")) {
                 final DyeColor color = DyeColor.byName(
-                    context.id().getPath().replace("block/disk_interface/", ""),
+                    context.id().getPath().replace(BLOCK_PREFIX + "/disk_interface/", ""),
                     Blocks.INSTANCE.getDiskInterface().getDefault().getColor()
                 );
                 return new DiskInterfaceUnbakedModel(quadRotators, color);
@@ -391,10 +332,14 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
 
     private void registerCustomPortableGridModels(final ModelLoadingPlugin.Context pluginContext,
                                                   final QuadRotators quadRotators) {
-        final ResourceLocation portableGridIdentifier = createIdentifier("block/portable_grid");
-        final ResourceLocation portableGridIdentifierItem = createIdentifier("item/portable_grid");
-        final ResourceLocation creativePortableGridIdentifier = createIdentifier("block/creative_portable_grid");
-        final ResourceLocation creativePortableGridIdentifierItem = createIdentifier("item/creative_portable_grid");
+        final ResourceLocation portableGridIdentifier = createIdentifier(BLOCK_PREFIX + "/portable_grid");
+        final ResourceLocation portableGridIdentifierItem = createIdentifier(ITEM_PREFIX + "/portable_grid");
+        final ResourceLocation creativePortableGridIdentifier = createIdentifier(
+            BLOCK_PREFIX + "/creative_portable_grid"
+        );
+        final ResourceLocation creativePortableGridIdentifierItem = createIdentifier(
+            ITEM_PREFIX + "/creative_portable_grid"
+        );
         pluginContext.resolveModel().register(context -> {
             if (context.id().equals(portableGridIdentifier)
                 || context.id().equals(portableGridIdentifierItem)
@@ -408,8 +353,8 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
 
     private void registerCustomDiskDriveModels(final ModelLoadingPlugin.Context pluginContext,
                                                final QuadRotators quadRotators) {
-        final ResourceLocation diskDriveIdentifier = createIdentifier("block/disk_drive");
-        final ResourceLocation diskDriveIdentifierItem = createIdentifier("item/disk_drive");
+        final ResourceLocation diskDriveIdentifier = createIdentifier(BLOCK_PREFIX + "/disk_drive");
+        final ResourceLocation diskDriveIdentifierItem = createIdentifier(ITEM_PREFIX + "/disk_drive");
         pluginContext.resolveModel().register(context -> {
             if (context.id().equals(diskDriveIdentifier) || context.id().equals(diskDriveIdentifierItem)) {
                 return new DiskDriveUnbakedModel(quadRotators);

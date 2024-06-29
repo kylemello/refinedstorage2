@@ -13,6 +13,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 class CraftingGridSourceImpl implements CraftingGridSource {
     private final CraftingGridBlockEntity blockEntity;
@@ -32,8 +33,8 @@ class CraftingGridSourceImpl implements CraftingGridSource {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(final Player player) {
-        return blockEntity.getRemainingItems(player);
+    public NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput input) {
+        return blockEntity.getRemainingItems(player, input);
     }
 
     @Override
@@ -117,7 +118,7 @@ class CraftingGridSourceImpl implements CraftingGridSource {
         final ItemStack possibilityStack = possibility.toItemStack();
         for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
             final ItemStack playerStack = player.getInventory().getItem(i);
-            if (ItemStack.isSameItemSameTags(playerStack, possibilityStack)) {
+            if (ItemStack.isSameItemSameComponents(playerStack, possibilityStack)) {
                 player.getInventory().removeItem(i, 1);
                 return true;
             }

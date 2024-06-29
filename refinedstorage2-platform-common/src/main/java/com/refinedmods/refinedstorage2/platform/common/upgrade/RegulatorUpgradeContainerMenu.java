@@ -4,11 +4,11 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Sl
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.AbstractSingleAmountContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.SingleAmountData;
 
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +21,10 @@ public class RegulatorUpgradeContainerMenu extends AbstractSingleAmountContainer
     @Nullable
     private Consumer<Double> amountAcceptor;
 
-    public RegulatorUpgradeContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getRegulatorUpgrade(), syncId, playerInventory, buf, FILTER_HELP);
+    public RegulatorUpgradeContainerMenu(final int syncId,
+                                         final Inventory playerInventory,
+                                         final SingleAmountData singleAmountData) {
+        super(Menus.INSTANCE.getRegulatorUpgrade(), syncId, playerInventory, singleAmountData, FILTER_HELP);
     }
 
     RegulatorUpgradeContainerMenu(final int syncId,

@@ -19,11 +19,11 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.joml.Vector3f;
 
 public class DiskContainerItemOverrides<T> extends ItemOverrides {
@@ -56,18 +56,23 @@ public class DiskContainerItemOverrides<T> extends ItemOverrides {
 
     @Nullable
     @Override
+    @SuppressWarnings("deprecation")
     public BakedModel resolve(final BakedModel bakedModel,
                               final ItemStack stack,
                               @Nullable final ClientLevel level,
                               @Nullable final LivingEntity entity,
                               final int seed) {
-        final CompoundTag tag = BlockItem.getBlockEntityData(stack);
-        if (tag == null) {
+        final CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (customData == null || level == null) {
             return originalModel.getOverrides().resolve(bakedModel, stack, level, entity, seed);
         }
         final Disk[] disks = new Disk[diskTranslations.length];
         for (int i = 0; i < diskTranslations.length; ++i) {
-            final Item diskItem = AbstractDiskContainerBlockEntity.getDisk(tag, i);
+            final Item diskItem = AbstractDiskContainerBlockEntity.getDisk(
+                customData.getUnsafe(),
+                i,
+                level.registryAccess()
+            );
             disks[i] = new Disk(diskItem, diskItem == null ? StorageState.NONE : StorageState.INACTIVE);
         }
         return cache.getUnchecked(cacheKeyFactory.apply(disks));

@@ -1,9 +1,11 @@
 package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.MenuProvider;
 
-public interface ExtendedMenuProvider extends MenuProvider {
-    void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf);
+public interface ExtendedMenuProvider<T> extends MenuProvider {
+    T getMenuData();
+
+    StreamEncoder<RegistryFriendlyByteBuf, T> getMenuCodec();
 }

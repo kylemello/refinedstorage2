@@ -52,7 +52,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -71,6 +70,8 @@ public interface PlatformApi {
     PlatformApi INSTANCE = new PlatformApiProxy();
 
     PlatformRegistry<StorageType> getStorageTypeRegistry();
+
+    StorageRepository getClientStorageRepository();
 
     StorageRepository getStorageRepository(Level level);
 
@@ -105,8 +106,6 @@ public interface PlatformApi {
     ComponentMapFactory<NetworkComponent, Network> getNetworkComponentMapFactory();
 
     PlatformRegistry<GridSynchronizer> getGridSynchronizerRegistry();
-
-    void writeGridScreenOpeningData(Grid grid, FriendlyByteBuf buf);
 
     UpgradeRegistry getUpgradeRegistry();
 
@@ -188,10 +187,6 @@ public interface PlatformApi {
     NetworkBoundItemHelper getNetworkBoundItemHelper();
 
     PlatformRegistry<SlotReferenceFactory> getSlotReferenceFactoryRegistry();
-
-    void writeSlotReference(SlotReference slotReference, FriendlyByteBuf buf);
-
-    Optional<SlotReference> getSlotReference(FriendlyByteBuf buf);
 
     void addSlotReferenceProvider(SlotReferenceProvider slotReferenceProvider);
 

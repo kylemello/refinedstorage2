@@ -5,14 +5,13 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Sl
 
 import java.util.Optional;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public final class InventorySlotReference implements SlotReference {
-    private final int slotIndex;
+    final int slotIndex;
 
     InventorySlotReference(final int slotIndex) {
         this.slotIndex = slotIndex;
@@ -35,11 +34,6 @@ public final class InventorySlotReference implements SlotReference {
     @Override
     public boolean isDisabledSlot(final int playerSlotIndex) {
         return playerSlotIndex == slotIndex;
-    }
-
-    @Override
-    public void writeToBuffer(final FriendlyByteBuf buf) {
-        buf.writeInt(slotIndex);
     }
 
     public static SlotReference of(final Player player, final InteractionHand hand) {

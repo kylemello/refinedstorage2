@@ -4,8 +4,6 @@ import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.common.support.ClientToServerCommunications;
-import com.refinedmods.refinedstorage2.platform.common.support.ServerToClientCommunications;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage2.platform.common.support.render.FluidRenderer;
@@ -25,16 +23,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -51,16 +50,6 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public ServerToClientCommunications getServerToClientCommunications() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ClientToServerCommunications getClientToServerCommunications() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public MenuOpener getMenuOpener() {
         throw new UnsupportedOperationException();
     }
@@ -68,11 +57,6 @@ public class TestPlatform implements Platform {
     @Override
     public long getBucketAmount() {
         return bucketAmount;
-    }
-
-    @Override
-    public TagKey<Item> getWrenchTag() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -139,7 +123,7 @@ public class TestPlatform implements Platform {
 
     @Override
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player, final CraftingRecipe craftingRecipe,
-                                                            final CraftingContainer container) {
+                                                            final CraftingInput input) {
         throw new UnsupportedOperationException();
     }
 
@@ -198,6 +182,16 @@ public class TestPlatform implements Platform {
 
     @Override
     public Optional<EnergyStorage> getEnergyStorage(final ItemStack stack) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToServer(final T packet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 
 import net.minecraft.world.inventory.DataSlot;
 
@@ -26,7 +26,7 @@ public class ClientProperty<T> extends DataSlot implements Property<T> {
     }
 
     public void setValue(final T newValue) {
-        Platform.INSTANCE.getClientToServerCommunications().sendPropertyChange(type, newValue);
+        C2SPackets.sendPropertyChange(type, newValue);
     }
 
     @Override

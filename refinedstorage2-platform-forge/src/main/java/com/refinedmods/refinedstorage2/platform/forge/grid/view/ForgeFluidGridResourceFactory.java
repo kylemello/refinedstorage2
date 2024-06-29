@@ -25,6 +25,6 @@ public class ForgeFluidGridResourceFactory extends AbstractFluidGridResourceFact
 
     @Override
     protected String getName(final FluidResource fluidResource) {
-        return toFluidStack(fluidResource, FluidType.BUCKET_VOLUME).getDisplayName().getString();
+        return toFluidStack(fluidResource, FluidType.BUCKET_VOLUME).getHoverName().getString();
     }
 }

@@ -5,50 +5,45 @@ import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-class SecurityCardExtendedMenuProvider extends AbstractSecurityCardExtendedMenuProvider {
+class SecurityCardExtendedMenuProvider extends AbstractSecurityCardExtendedMenuProvider<PlayerBoundSecurityCardData> {
+    private final MinecraftServer server;
     private final SlotReference slotReference;
-    private final UUID boundPlayerId;
-    private final String boundPlayerName;
+    private final SecurityCardBoundPlayer boundPlayer;
 
-    SecurityCardExtendedMenuProvider(final SlotReference slotReference,
+    SecurityCardExtendedMenuProvider(final MinecraftServer server,
+                                     final SlotReference slotReference,
                                      final SecurityPolicy securityPolicy,
                                      final Set<PlatformPermission> dirtyPermissions,
-                                     final UUID boundPlayerId,
-                                     final String boundPlayerName) {
-        super(slotReference, securityPolicy, dirtyPermissions);
+                                     final SecurityCardBoundPlayer boundPlayer) {
+        super(securityPolicy, dirtyPermissions);
+        this.server = server;
         this.slotReference = slotReference;
-        this.boundPlayerId = boundPlayerId;
-        this.boundPlayerName = boundPlayerName;
+        this.boundPlayer = boundPlayer;
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        super.writeScreenOpeningData(player, buf);
+    public PlayerBoundSecurityCardData getMenuData() {
+        return new PlayerBoundSecurityCardData(
+            new SecurityCardData(slotReference, getDataPermissions()),
+            PlayerBoundSecurityCardData.Player.of(boundPlayer),
+            server.getPlayerList().getPlayers().stream().map(PlayerBoundSecurityCardData.Player::of).toList()
+        );
+    }
 
-        buf.writeUUID(boundPlayerId);
-        buf.writeUtf(boundPlayerName);
-
-        final List<ServerPlayer> players = player.getServer() == null
-            ? Collections.emptyList()
-            : player.getServer().getPlayerList().getPlayers();
-        buf.writeInt(players.size());
-        for (final ServerPlayer otherPlayer : players) {
-            buf.writeUUID(otherPlayer.getUUID());
-            buf.writeUtf(otherPlayer.getGameProfile().getName());
-        }
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, PlayerBoundSecurityCardData> getMenuCodec() {
+        return PlayerBoundSecurityCardData.STREAM_CODEC;
     }
 
     @Override

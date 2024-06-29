@@ -29,7 +29,7 @@ import static com.refinedmods.refinedstorage2.platform.forge.support.resource.Va
 import static com.refinedmods.refinedstorage2.platform.forge.support.resource.VariantUtil.toFluidStack;
 
 public class FluidGridExtractionStrategy implements GridExtractionStrategy {
-    private static final ItemResource BUCKET_ITEM_RESOURCE = new ItemResource(Items.BUCKET, null);
+    private static final ItemResource BUCKET_ITEM_RESOURCE = new ItemResource(Items.BUCKET);
 
     private final AbstractContainerMenu menu;
     private final GridOperations gridOperations;
@@ -148,6 +148,6 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
     }
 
     private boolean isSame(final ItemStack a, final ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b);
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 }

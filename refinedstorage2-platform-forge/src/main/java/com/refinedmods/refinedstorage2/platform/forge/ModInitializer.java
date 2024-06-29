@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.CreativeModeTabItems;
 import com.refinedmods.refinedstorage2.platform.common.content.DirectRegistryCallback;
+import com.refinedmods.refinedstorage2.platform.common.content.ExtendedMenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.RegistryCallback;
@@ -21,7 +22,30 @@ import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.Abs
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.CraftingGridClearPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridExtractPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridInsertPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.PropertyChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.ResourceSlotAmountChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardResetPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SingleAmountChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.StorageInfoRequestPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.EnergyInfoPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridActivePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridClearPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.ResourceSlotUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.StorageInfoResponsePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage2.platform.common.util.ServerEventQueue;
@@ -40,41 +64,22 @@ import com.refinedmods.refinedstorage2.platform.forge.storage.externalstorage.It
 import com.refinedmods.refinedstorage2.platform.forge.storage.portablegrid.ForgePortableGridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.forge.support.energy.EnergyStorageAdapter;
 import com.refinedmods.refinedstorage2.platform.forge.support.inventory.InsertExtractItemHandler;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridClearPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.CraftingGridRecipeTransferPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.GridExtractPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.GridInsertPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.GridScrollPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.PropertyChangePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceFilterSlotChangePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotAmountChangePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ResourceSlotChangePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardBoundPlayerPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SecurityCardResetPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.SingleAmountChangePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.StorageInfoRequestPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.UseNetworkBoundItemPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.EnergyInfoPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridActivePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridClearPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.GridUpdatePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NetworkTransmitterStatusPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.NoPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.ResourceSlotUpdatePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.StorageInfoResponsePacket;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.forge.support.resource.ResourceContainerFluidHandlerAdapter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.function.Supplier;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -89,6 +94,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -96,13 +102,14 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.RangedWrapper;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -131,9 +138,11 @@ public class ModInitializer extends AbstractModInitializer {
         DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, IdentifierUtil.MOD_ID);
     private final DeferredRegister<RecipeSerializer<?>> recipeSerializerRegistry =
         DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, IdentifierUtil.MOD_ID);
+    private final DeferredRegister<DataComponentType<?>> dataComponentTypeRegistry =
+        DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, IdentifierUtil.MOD_ID);
 
-    public ModInitializer(final IEventBus eventBus) {
-        PlatformProxy.loadPlatform(new PlatformImpl());
+    public ModInitializer(final IEventBus eventBus, final ModContainer modContainer) {
+        PlatformProxy.loadPlatform(new PlatformImpl(modContainer));
         initializePlatformApi();
         registerAdditionalGridInsertionStrategyFactories();
         registerGridExtractionStrategyFactories();
@@ -211,6 +220,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerItems(eventBus);
         registerBlockEntities(eventBus);
         registerMenus(eventBus);
+        registerDataComponents(eventBus);
     }
 
     private void registerBlocks(final IEventBus eventBus) {
@@ -239,7 +249,7 @@ public class ModInitializer extends AbstractModInitializer {
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
                                                        final boolean slotChanged) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
@@ -247,7 +257,7 @@ public class ModInitializer extends AbstractModInitializer {
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
                                                        final boolean slotChanged) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setCreativeWirelessGrid(callback.register(
@@ -257,7 +267,7 @@ public class ModInitializer extends AbstractModInitializer {
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                            final ItemStack newStack,
                                                            final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
@@ -268,7 +278,7 @@ public class ModInitializer extends AbstractModInitializer {
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
                                                        final boolean slotChanged) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setCreativePortableGrid(callback.register(
@@ -278,7 +288,7 @@ public class ModInitializer extends AbstractModInitializer {
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                            final ItemStack newStack,
                                                            final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
@@ -287,7 +297,7 @@ public class ModInitializer extends AbstractModInitializer {
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
                                                        final boolean slotChanged) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setFallbackSecurityCard(callback.register(
@@ -297,7 +307,7 @@ public class ModInitializer extends AbstractModInitializer {
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                            final ItemStack newStack,
                                                            final boolean slotChanged) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
@@ -325,10 +335,26 @@ public class ModInitializer extends AbstractModInitializer {
         registerMenus(new ForgeRegistryCallback<>(menuTypeRegistry), new MenuTypeFactory() {
             @Override
             public <T extends AbstractContainerMenu> MenuType<T> create(final MenuSupplier<T> supplier) {
-                return IMenuTypeExtension.create(supplier::create);
+                return new MenuType<>(supplier::create, FeatureFlags.DEFAULT_FLAGS);
+            }
+        }, new ExtendedMenuTypeFactory() {
+            @Override
+            public <T extends AbstractContainerMenu, D> MenuType<T> create(final MenuSupplier<T, D> supplier,
+                                                                           final StreamCodec<RegistryFriendlyByteBuf, D>
+                                                                               streamCodec) {
+                return IMenuTypeExtension.create((syncId, inventory, buf) -> {
+                    final D data = streamCodec.decode(buf);
+                    return supplier.create(syncId, inventory, data);
+                });
             }
         });
         menuTypeRegistry.register(eventBus);
+    }
+
+    private void registerDataComponents(final IEventBus eventBus) {
+        final RegistryCallback<DataComponentType<?>> callback = new ForgeRegistryCallback<>(dataComponentTypeRegistry);
+        registerDataComponents(callback);
+        dataComponentTypeRegistry.register(eventBus);
     }
 
     private void registerCapabilities(final RegisterCapabilitiesEvent event) {
@@ -462,143 +488,140 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     @SubscribeEvent
-    public void registerNetworkPackets(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(MOD_ID);
+    public void registerNetworkPackets(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(MOD_ID);
         registerServerToClientPackets(registrar);
         registerClientToServerPackets(registrar);
     }
 
-    private static void registerServerToClientPackets(final IPayloadRegistrar registrar) {
-        registrar.play(
-            PacketIds.ENERGY_INFO,
-            EnergyInfoPacket::decode,
-            handler -> handler.client(EnergyInfoPacket::handle)
+    private static void registerServerToClientPackets(final PayloadRegistrar registrar) {
+        registrar.playToClient(
+            EnergyInfoPacket.PACKET_TYPE,
+            EnergyInfoPacket.STREAM_CODEC,
+            wrapHandler(EnergyInfoPacket::handle)
         );
-        registrar.play(
-            PacketIds.GRID_ACTIVE,
-            GridActivePacket::decode,
-            handler -> handler.client(GridActivePacket::handle)
+        registrar.playToClient(
+            GridActivePacket.PACKET_TYPE,
+            GridActivePacket.STREAM_CODEC,
+            wrapHandler(GridActivePacket::handle)
         );
-        registrar.play(
-            PacketIds.GRID_CLEAR,
-            buf -> new GridClearPacket(),
-            handler -> handler.client((packet, ctx) -> GridClearPacket.handle(ctx))
+        registrar.playToClient(
+            GridClearPacket.PACKET_TYPE,
+            GridClearPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> GridClearPacket.handle(ctx))
         );
-        registrar.play(
-            PacketIds.GRID_UPDATE,
-            GridUpdatePacket::decode,
-            handler -> handler.client(GridUpdatePacket::handle)
+        registrar.playToClient(
+            GridUpdatePacket.PACKET_TYPE,
+            GridUpdatePacket.STREAM_CODEC,
+            wrapHandler(GridUpdatePacket::handle)
         );
-        registrar.play(
-            PacketIds.NETWORK_TRANSMITTER_STATUS,
-            NetworkTransmitterStatusPacket::decode,
-            handler -> handler.client(NetworkTransmitterStatusPacket::handle)
+        registrar.playToClient(
+            NetworkTransmitterStatusPacket.PACKET_TYPE,
+            NetworkTransmitterStatusPacket.STREAM_CODEC,
+            wrapHandler(NetworkTransmitterStatusPacket::handle)
         );
-        registrar.play(
-            PacketIds.RESOURCE_SLOT_UPDATE,
-            ResourceSlotUpdatePacket::decode,
-            handler -> handler.client(ResourceSlotUpdatePacket::handle)
+        registrar.playToClient(
+            ResourceSlotUpdatePacket.PACKET_TYPE,
+            ResourceSlotUpdatePacket.STREAM_CODEC,
+            wrapHandler(ResourceSlotUpdatePacket::handle)
         );
-        registrar.play(
-            PacketIds.STORAGE_INFO_RESPONSE,
-            StorageInfoResponsePacket::decode,
-            handler -> handler.client(StorageInfoResponsePacket::handle)
+        registrar.playToClient(
+            StorageInfoResponsePacket.PACKET_TYPE,
+            StorageInfoResponsePacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> StorageInfoResponsePacket.handle(packet))
         );
-        registrar.play(
-            PacketIds.WIRELESS_TRANSMITTER_RANGE,
-            WirelessTransmitterRangePacket::decode,
-            handler -> handler.client(WirelessTransmitterRangePacket::handle)
+        registrar.playToClient(
+            WirelessTransmitterRangePacket.PACKET_TYPE,
+            WirelessTransmitterRangePacket.STREAM_CODEC,
+            wrapHandler(WirelessTransmitterRangePacket::handle)
         );
-        registrar.play(
-            PacketIds.NO_PERMISSION,
-            NoPermissionPacket::decode,
-            handler -> handler.client(NoPermissionPacket::handle)
+        registrar.playToClient(
+            NoPermissionPacket.PACKET_TYPE,
+            NoPermissionPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
         );
     }
 
-    private static void registerClientToServerPackets(final IPayloadRegistrar registrar) {
-        registrar.play(
-            PacketIds.CRAFTING_GRID_CLEAR,
-            CraftingGridClearPacket::decode,
-            handler -> handler.server(CraftingGridClearPacket::handle)
+    private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
+        registrar.playToServer(
+            CraftingGridClearPacket.PACKET_TYPE,
+            CraftingGridClearPacket.STREAM_CODEC,
+            wrapHandler(CraftingGridClearPacket::handle)
         );
-        registrar.play(
-            PacketIds.CRAFTING_GRID_RECIPE_TRANSFER,
-            CraftingGridRecipeTransferPacket::decode,
-            handler -> handler.server(CraftingGridRecipeTransferPacket::handle)
+        registrar.playToServer(
+            CraftingGridRecipeTransferPacket.PACKET_TYPE,
+            CraftingGridRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(CraftingGridRecipeTransferPacket::handle)
         );
-        registrar.play(
-            PacketIds.GRID_EXTRACT,
-            GridExtractPacket::decode,
-            handler -> handler.server(GridExtractPacket::handle)
+        registrar.playToServer(
+            GridExtractPacket.PACKET_TYPE,
+            GridExtractPacket.STREAM_CODEC,
+            wrapHandler(GridExtractPacket::handle)
         );
-        registrar.play(
-            PacketIds.GRID_INSERT,
-            GridInsertPacket::decode,
-            handler -> handler.server(GridInsertPacket::handle)
+        registrar.playToServer(
+            GridInsertPacket.PACKET_TYPE,
+            GridInsertPacket.STREAM_CODEC,
+            wrapHandler(GridInsertPacket::handle)
         );
-        registrar.play(
-            PacketIds.GRID_SCROLL,
-            GridScrollPacket::decode,
-            handler -> handler.server(GridScrollPacket::handle)
+        registrar.playToServer(
+            GridScrollPacket.PACKET_TYPE,
+            GridScrollPacket.STREAM_CODEC,
+            wrapHandler(GridScrollPacket::handle)
         );
-        registrar.play(
-            PacketIds.PROPERTY_CHANGE,
-            PropertyChangePacket::decode,
-            handler -> handler.server(PropertyChangePacket::handle)
+        registrar.playToServer(
+            PropertyChangePacket.PACKET_TYPE,
+            PropertyChangePacket.STREAM_CODEC,
+            wrapHandler(PropertyChangePacket::handle)
         );
-        registrar.play(
-            PacketIds.RESOURCE_FILTER_SLOT_CHANGE,
-            ResourceFilterSlotChangePacket::decode,
-            handler -> handler.server(ResourceFilterSlotChangePacket::handle)
+        registrar.playToServer(
+            ResourceSlotAmountChangePacket.PACKET_TYPE,
+            ResourceSlotAmountChangePacket.STREAM_CODEC,
+            wrapHandler(ResourceSlotAmountChangePacket::handle)
         );
-        registrar.play(
-            PacketIds.RESOURCE_SLOT_AMOUNT_CHANGE,
-            ResourceSlotAmountChangePacket::decode,
-            handler -> handler.server(ResourceSlotAmountChangePacket::handle)
+        registrar.playToServer(
+            ResourceSlotChangePacket.PACKET_TYPE,
+            ResourceSlotChangePacket.STREAM_CODEC,
+            wrapHandler(ResourceSlotChangePacket::handle)
         );
-        registrar.play(
-            PacketIds.RESOURCE_SLOT_CHANGE,
-            ResourceSlotChangePacket::decode,
-            handler -> handler.server(ResourceSlotChangePacket::handle)
+        registrar.playToServer(
+            SingleAmountChangePacket.PACKET_TYPE,
+            SingleAmountChangePacket.STREAM_CODEC,
+            wrapHandler(SingleAmountChangePacket::handle)
         );
-        registrar.play(
-            PacketIds.SINGLE_AMOUNT_CHANGE,
-            SingleAmountChangePacket::decode,
-            handler -> handler.server(SingleAmountChangePacket::handle)
+        registrar.playToServer(
+            StorageInfoRequestPacket.PACKET_TYPE,
+            StorageInfoRequestPacket.STREAM_CODEC,
+            wrapHandler(StorageInfoRequestPacket::handle)
         );
-        registrar.play(
-            PacketIds.STORAGE_INFO_REQUEST,
-            StorageInfoRequestPacket::decode,
-            handler -> handler.server(StorageInfoRequestPacket::handle)
+        registrar.playToServer(
+            UseNetworkBoundItemPacket.PACKET_TYPE,
+            UseNetworkBoundItemPacket.STREAM_CODEC,
+            wrapHandler(UseNetworkBoundItemPacket::handle)
         );
-        registrar.play(
-            PacketIds.USE_NETWORK_BOUND_ITEM,
-            UseNetworkBoundItemPacket::decode,
-            handler -> handler.server(UseNetworkBoundItemPacket::handle)
+        registrar.playToServer(
+            SecurityCardPermissionPacket.PACKET_TYPE,
+            SecurityCardPermissionPacket.STREAM_CODEC,
+            wrapHandler(SecurityCardPermissionPacket::handle)
         );
-        registrar.play(
-            PacketIds.SECURITY_CARD_PERMISSION,
-            SecurityCardPermissionPacket::decode,
-            handler -> handler.server(SecurityCardPermissionPacket::handle)
+        registrar.playToServer(
+            SecurityCardResetPermissionPacket.PACKET_TYPE,
+            SecurityCardResetPermissionPacket.STREAM_CODEC,
+            wrapHandler(SecurityCardResetPermissionPacket::handle)
         );
-        registrar.play(
-            PacketIds.SECURITY_CARD_RESET_PERMISSION,
-            SecurityCardResetPermissionPacket::decode,
-            handler -> handler.server(SecurityCardResetPermissionPacket::handle)
+        registrar.playToServer(
+            SecurityCardBoundPlayerPacket.PACKET_TYPE,
+            SecurityCardBoundPlayerPacket.STREAM_CODEC,
+            wrapHandler(SecurityCardBoundPlayerPacket::handle)
         );
-        registrar.play(
-            PacketIds.SECURITY_CARD_BOUND_PLAYER,
-            SecurityCardBoundPlayerPacket::decode,
-            handler -> handler.server(SecurityCardBoundPlayerPacket::handle)
-        );
+    }
+
+    private static <T extends CustomPacketPayload> IPayloadHandler<T> wrapHandler(final PacketHandler<T> handler) {
+        return (packet, ctx) -> handler.handle(packet, ctx::player);
     }
 
     @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) {
-            ServerEventQueue.runQueuedActions();
-        }
+    public void onServerTick(final ServerTickEvent.Pre e) {
+        ServerEventQueue.runQueuedActions();
     }
 
     private record ForgeRegistryCallback<T>(DeferredRegister<T> registry) implements RegistryCallback<T> {

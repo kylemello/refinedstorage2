@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
@@ -76,8 +77,8 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     }
 
     @Override
-    public void fromTag(final ListTag tag) {
-        super.fromTag(tag);
+    public void fromTag(final ListTag tag, final HolderLookup.Provider provider) {
+        super.fromTag(tag, provider);
         updateIndex();
     }
 

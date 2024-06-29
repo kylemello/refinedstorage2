@@ -166,7 +166,9 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     }
 
     private int correctDelta(final N oldAmount, final int delta) {
-        if (oldAmount.intValue() == 1 && delta > 0) {
+        // if we do +10, and the current value is 1, we want to end up with 10, not 11
+        // if we do +1, and the current value is 1, we want to end up with 2
+        if (oldAmount.intValue() == 1 && delta > 1) {
             return delta - 1;
         }
         return delta;

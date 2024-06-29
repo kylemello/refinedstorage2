@@ -71,15 +71,12 @@ public abstract class AbstractStorageContainerBlockItem extends BlockItem {
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> tooltip,
-                                final TooltipFlag context) {
-        super.appendHoverText(stack, level, tooltip, context);
-        if (level == null) {
-            return;
-        }
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
-        helper.appendToTooltip(stack, storageRepository, tooltip, context, this::formatAmount, hasCapacity());
+                                final TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
+        final StorageRepository storageRepository = PlatformApi.INSTANCE.getClientStorageRepository();
+        helper.appendToTooltip(stack, storageRepository, tooltip, flag, this::formatAmount, hasCapacity());
     }
 
     protected abstract boolean hasCapacity();

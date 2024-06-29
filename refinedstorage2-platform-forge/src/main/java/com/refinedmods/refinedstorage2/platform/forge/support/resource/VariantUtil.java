@@ -17,18 +17,26 @@ public final class VariantUtil {
     }
 
     public static boolean isSame(final FluidResource resource, final FluidStack stack) {
-        return resource.fluid() == stack.getFluid() && Objects.equals(resource.tag(), stack.getTag());
+        return resource.fluid() == stack.getFluid() && Objects.equals(
+            resource.components(),
+            stack.getComponents().asPatch()
+        );
     }
 
     public static FluidResource ofFluidStack(final FluidStack fluidStack) {
-        return new FluidResource(fluidStack.getFluid(), fluidStack.getTag());
+        return new FluidResource(fluidStack.getFluid(), fluidStack.getComponents().asPatch());
     }
 
+    @SuppressWarnings("deprecation")
     public static FluidStack toFluidStack(final FluidResource fluidResource, final long amount) {
         if (amount > Integer.MAX_VALUE) {
             LOGGER.warn("Truncating too large amount for {} to fit into FluidStack {}", fluidResource, amount);
         }
-        return new FluidStack(fluidResource.fluid(), (int) amount, fluidResource.tag());
+        return new FluidStack(
+            fluidResource.fluid().builtInRegistryHolder(),
+            (int) amount,
+            fluidResource.components()
+        );
     }
 
     public static Action toAction(final IFluidHandler.FluidAction action) {

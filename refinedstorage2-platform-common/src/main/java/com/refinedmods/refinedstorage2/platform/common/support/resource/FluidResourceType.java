@@ -11,12 +11,13 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformRes
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.FluidGridResource;
 import com.refinedmods.refinedstorage2.platform.common.support.TextureIds;
-import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 
 import java.util.Optional;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
@@ -29,11 +30,6 @@ class FluidResourceType extends AbstractResourceType {
             16,
             128
         );
-    }
-
-    @Override
-    public PlatformResourceKey fromBuffer(final FriendlyByteBuf buf) {
-        return PacketUtil.readFluidResource(buf);
     }
 
     @Override
@@ -72,7 +68,20 @@ class FluidResourceType extends AbstractResourceType {
     }
 
     @Override
-    public Optional<PlatformResourceKey> fromTag(final CompoundTag tag) {
-        return FluidResource.fromTag(tag);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public MapCodec<PlatformResourceKey> getMapCodec() {
+        return (MapCodec) ResourceCodecs.FLUID_MAP_CODEC;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Codec<PlatformResourceKey> getCodec() {
+        return (Codec) ResourceCodecs.FLUID_CODEC;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public StreamCodec<RegistryFriendlyByteBuf, PlatformResourceKey> getStreamCodec() {
+        return (StreamCodec) ResourceCodecs.FLUID_STREAM_CODEC;
     }
 }

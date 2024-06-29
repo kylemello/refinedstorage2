@@ -14,8 +14,6 @@ import com.refinedmods.refinedstorage2.platform.fabric.grid.view.FabricFluidGrid
 import com.refinedmods.refinedstorage2.platform.fabric.grid.view.FabricItemGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.fabric.mixin.EditBoxAccessor;
 import com.refinedmods.refinedstorage2.platform.fabric.mixin.KeyMappingAccessor;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ClientToServerCommunicationsImpl;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.s2c.ServerToClientCommunicationsImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.support.containermenu.ContainerTransferDestination;
 import com.refinedmods.refinedstorage2.platform.fabric.support.containermenu.MenuOpenerImpl;
 import com.refinedmods.refinedstorage2.platform.fabric.support.energy.EnergyStorageAdapter;
@@ -29,8 +27,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -50,15 +50,14 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -66,9 +65,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -89,29 +88,13 @@ import static com.refinedmods.refinedstorage2.platform.fabric.support.resource.V
 import static com.refinedmods.refinedstorage2.platform.fabric.support.resource.VariantUtil.toItemVariant;
 
 public final class PlatformImpl extends AbstractPlatform {
-    private static final TagKey<Item> WRENCH_TAG = TagKey.create(
-        BuiltInRegistries.ITEM.key(),
-        new ResourceLocation("c", "wrenches")
-    );
-
     public PlatformImpl() {
-        super(
-            new ServerToClientCommunicationsImpl(),
-            new ClientToServerCommunicationsImpl(),
-            new MenuOpenerImpl(),
-            new FluidVariantFluidRenderer(),
-            ItemGridInsertionStrategy::new
-        );
+        super(new MenuOpenerImpl(), new FluidVariantFluidRenderer(), ItemGridInsertionStrategy::new);
     }
 
     @Override
     public long getBucketAmount() {
         return FluidConstants.BUCKET;
-    }
-
-    @Override
-    public TagKey<Item> getWrenchTag() {
-        return WRENCH_TAG;
     }
 
     @Override
@@ -209,11 +192,12 @@ public final class PlatformImpl extends AbstractPlatform {
         return state.getBlock().getCloneItemStack(level, hitResult.getBlockPos(), state);
     }
 
+
     @Override
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player,
                                                             final CraftingRecipe craftingRecipe,
-                                                            final CraftingContainer craftingContainer) {
-        return craftingRecipe.getRemainingItems(craftingContainer);
+                                                            final CraftingInput input) {
+        return craftingRecipe.getRemainingItems(input);
     }
 
     @Override
@@ -371,5 +355,15 @@ public final class PlatformImpl extends AbstractPlatform {
             .filter(EnergyStorageAdapter.class::isInstance)
             .map(EnergyStorageAdapter.class::cast)
             .map(EnergyStorageAdapter::getEnergyStorage);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToServer(final T packet) {
+        ClientPlayNetworking.send(packet);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
+        ServerPlayNetworking.send(player, packet);
     }
 }

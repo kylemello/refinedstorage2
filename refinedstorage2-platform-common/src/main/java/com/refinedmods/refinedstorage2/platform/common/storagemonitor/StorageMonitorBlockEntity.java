@@ -15,20 +15,22 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -43,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeMenuProvider {
+    implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageMonitorBlockEntity.class);
 
     private static final String TAG_CLIENT_FILTER = "cf";
@@ -258,30 +260,35 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_CLIENT_FILTER) && tag.contains(TAG_CLIENT_AMOUNT) && tag.contains(TAG_CLIENT_ACTIVE)) {
-            filter.getFilterContainer().fromTag(tag.getCompound(TAG_CLIENT_FILTER));
+            filter.getFilterContainer().fromTag(tag.getCompound(TAG_CLIENT_FILTER), provider);
             currentAmount = tag.getLong(TAG_CLIENT_AMOUNT);
             currentlyActive = tag.getBoolean(TAG_CLIENT_ACTIVE);
         }
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public ResourceContainerData getMenuData() {
+        return ResourceContainerData.of(filter.getFilterContainer());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
+        return ResourceContainerData.STREAM_CODEC;
     }
 
     @Override
@@ -301,9 +308,9 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
-        tag.put(TAG_CLIENT_FILTER, filter.getFilterContainer().toTag());
+        tag.put(TAG_CLIENT_FILTER, filter.getFilterContainer().toTag(provider));
         tag.putLong(TAG_CLIENT_AMOUNT, currentAmount);
         tag.putBoolean(TAG_CLIENT_ACTIVE, currentlyActive);
         return tag;

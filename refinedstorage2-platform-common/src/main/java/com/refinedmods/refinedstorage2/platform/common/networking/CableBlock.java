@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -41,10 +42,13 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class CableBlock extends AbstractColoredBlock<CableBlock>
     implements ColorableBlock<CableBlock, BaseBlockItem>, SimpleWaterloggedBlock, EntityBlock {
     private static final AbstractBlockEntityTicker<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getCable);
+    private static final Component HELP = createTranslation("item", "cable.help");
 
     public CableBlock(final DyeColor color, final MutableComponent name) {
         super(BlockConstants.CABLE_PROPERTIES, color, name);
@@ -80,11 +84,7 @@ public class CableBlock extends AbstractColoredBlock<CableBlock>
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public boolean isPathfindable(final BlockState state,
-                                  final BlockGetter world,
-                                  final BlockPos pos,
-                                  final PathComputationType type) {
+    protected boolean isPathfindable(final BlockState state, final PathComputationType type) {
         return false;
     }
 
@@ -134,6 +134,6 @@ public class CableBlock extends AbstractColoredBlock<CableBlock>
 
     @Override
     public BaseBlockItem createBlockItem() {
-        return new NetworkNodeBlockItem(this);
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

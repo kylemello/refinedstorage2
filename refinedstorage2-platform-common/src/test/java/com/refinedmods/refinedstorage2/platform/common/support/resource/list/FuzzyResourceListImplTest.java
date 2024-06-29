@@ -9,20 +9,24 @@ import com.refinedmods.refinedstorage2.platform.test.SetupMinecraft;
 import java.util.Collection;
 import java.util.Optional;
 
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage2.platform.test.TagHelper.createDummyTag;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SetupMinecraft
 class FuzzyResourceListImplTest {
-    private static final ItemResource DUMMY_A = new ItemResource(Items.DIRT, null);
-    private static final ItemResource DUMMY_B = new ItemResource(Items.DIRT, createDummyTag("b"));
-    private static final ItemResource DUMMY_C = new ItemResource(Items.DIRT, createDummyTag("c"));
-    private static final ItemResource DUMMY_D = new ItemResource(Items.GLASS, null);
-    private static final ItemResource DUMMY_E = new ItemResource(Items.DARK_OAK_DOOR, null);
+    private static final ItemResource DUMMY_A = new ItemResource(Items.DIRT, DataComponentPatch.EMPTY);
+    private static final ItemResource DUMMY_B = new ItemResource(Items.DIRT, DataComponentPatch.builder()
+        .set(DataComponents.BASE_COLOR, DyeColor.RED).build());
+    private static final ItemResource DUMMY_C = new ItemResource(Items.DIRT, DataComponentPatch.builder()
+        .set(DataComponents.BASE_COLOR, DyeColor.GREEN).build());
+    private static final ItemResource DUMMY_D = new ItemResource(Items.GLASS, DataComponentPatch.EMPTY);
+    private static final ItemResource DUMMY_E = new ItemResource(Items.DARK_OAK_DOOR, DataComponentPatch.EMPTY);
 
     FuzzyResourceList sut;
 

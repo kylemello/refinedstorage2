@@ -117,6 +117,9 @@ class PortableGridBakedModel extends BakedModelWrapper<BakedModel> {
                                   @Nullable final ClientLevel level,
                                   @Nullable final LivingEntity entity,
                                   final int seed) {
+            if (level == null) {
+                return null;
+            }
             final PortableGridBlockItemRenderInfo renderInfo = PortableGridBlockItem.getRenderInfo(stack, level);
             return itemCache.getUnchecked(new CacheKey(
                 null,

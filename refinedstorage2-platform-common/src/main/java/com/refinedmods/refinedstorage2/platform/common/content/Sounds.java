@@ -19,7 +19,7 @@ public final class Sounds {
         return Objects.requireNonNull(wrench).get();
     }
 
-    public void setWrench(final Supplier<SoundEvent> wrenchSupplier) {
-        this.wrench = wrenchSupplier;
+    public void setWrench(final Supplier<SoundEvent> supplier) {
+        this.wrench = supplier;
     }
 }

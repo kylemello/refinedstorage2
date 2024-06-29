@@ -50,8 +50,7 @@ public class PortableGridUnbakedGeometry implements IUnbakedGeometry<PortableGri
                            final ModelBaker baker,
                            final Function<Material, TextureAtlasSprite> spriteGetter,
                            final ModelState modelState,
-                           final ItemOverrides overrides,
-                           final ResourceLocation modelLocation) {
+                           final ItemOverrides overrides) {
         return new PortableGridBakedModel(
             requireNonNull(baker.bake(INACTIVE_MODEL, modelState, spriteGetter)),
             new RotationTranslationModelBaker(modelState, baker, spriteGetter, ACTIVE_MODEL),

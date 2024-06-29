@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ValidatedSlot;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -38,20 +38,19 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
 
     private final List<Slot> diskSlots = new ArrayList<>();
 
-    public DiskDriveContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public DiskDriveContainerMenu(final int syncId,
+                                  final Inventory playerInventory,
+                                  final ResourceContainerData resourceContainerData) {
         super(Menus.INSTANCE.getDiskDrive(), syncId);
-        this.storageInfoAccessor = new StorageDiskInfoAccessorImpl(PlatformApi.INSTANCE.getStorageRepository(
-            playerInventory.player.level()
-        ));
+        this.storageInfoAccessor = new StorageDiskInfoAccessorImpl(PlatformApi.INSTANCE.getClientStorageRepository());
         addSlots(
             playerInventory.player,
             new FilteredContainer(
                 AbstractDiskDriveBlockEntity.AMOUNT_OF_DISKS,
                 StorageContainerItem.stackValidator()
             ),
-            ResourceContainerImpl.createForFilter()
+            ResourceContainerImpl.createForFilter(resourceContainerData)
         );
-        initializeResourceSlots(buf);
     }
 
     DiskDriveContainerMenu(final int syncId,

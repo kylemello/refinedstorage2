@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.CreativeModeTabItems;
 import com.refinedmods.refinedstorage2.platform.common.content.DirectRegistryCallback;
+import com.refinedmods.refinedstorage2.platform.common.content.ExtendedMenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.RegistryCallback;
@@ -23,7 +24,31 @@ import com.refinedmods.refinedstorage2.platform.common.storage.diskinterface.Abs
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketIds;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.CraftingGridClearPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridExtractPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridInsertPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.PropertyChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.ResourceFilterSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.ResourceSlotAmountChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.ResourceSlotChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardBoundPlayerPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SecurityCardResetPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.SingleAmountChangePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.StorageInfoRequestPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.EnergyInfoPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridActivePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridClearPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.GridUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NetworkTransmitterStatusPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.ResourceSlotUpdatePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.StorageInfoResponsePacket;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.WirelessTransmitterRangePacket;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeItem;
@@ -34,21 +59,6 @@ import com.refinedmods.refinedstorage2.platform.fabric.grid.strategy.FluidGridIn
 import com.refinedmods.refinedstorage2.platform.fabric.grid.strategy.ItemGridExtractionStrategy;
 import com.refinedmods.refinedstorage2.platform.fabric.grid.strategy.ItemGridScrollingStrategy;
 import com.refinedmods.refinedstorage2.platform.fabric.importer.FabricStorageImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.CraftingGridClearPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.CraftingGridRecipeTransferPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.GridExtractPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.GridInsertPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.GridScrollPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.PropertyChangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceFilterSlotChangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotAmountChangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.ResourceSlotChangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardBoundPlayerPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SecurityCardResetPermissionPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.SingleAmountChangePacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.StorageInfoRequestPacket;
-import com.refinedmods.refinedstorage2.platform.fabric.packet.c2s.UseNetworkBoundItemPacket;
 import com.refinedmods.refinedstorage2.platform.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage2.platform.fabric.storage.diskinterface.FabricDiskInterfaceBlockEntity;
@@ -71,6 +81,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -84,10 +95,14 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.FilteringStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -128,6 +143,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerExternalStorageProviderFactories();
         registerContent();
         registerPackets();
+        registerPacketHandlers();
         registerSounds(new DirectRegistryCallback<>(BuiltInRegistries.SOUND_EVENT));
         registerRecipeSerializers(new DirectRegistryCallback<>(BuiltInRegistries.RECIPE_SERIALIZER));
         registerSidedHandlers();
@@ -248,10 +264,18 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerMenus(new DirectRegistryCallback<>(BuiltInRegistries.MENU), new MenuTypeFactory() {
             @Override
             public <T extends AbstractContainerMenu> MenuType<T> create(final MenuSupplier<T> supplier) {
-                return new ExtendedScreenHandlerType<>(supplier::create);
+                return new MenuType<>(supplier::create, FeatureFlags.DEFAULT_FLAGS);
+            }
+        }, new ExtendedMenuTypeFactory() {
+            @Override
+            public <T extends AbstractContainerMenu, D> MenuType<T> create(final MenuSupplier<T, D> supplier,
+                                                                           final StreamCodec<RegistryFriendlyByteBuf, D>
+                                                                               streamCodec) {
+                return new ExtendedScreenHandlerType<>(supplier::create, streamCodec);
             }
         });
         registerLootFunctions(new DirectRegistryCallback<>(BuiltInRegistries.LOOT_FUNCTION_TYPE));
+        registerDataComponents(new DirectRegistryCallback<>(BuiltInRegistries.DATA_COMPONENT_TYPE));
     }
 
     private void registerCustomItems(final RegistryCallback<Item> callback) {
@@ -259,31 +283,31 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             PlatformApi.INSTANCE.getUpgradeRegistry()
         ) {
             @Override
-            public boolean allowNbtUpdateAnimation(final Player player,
-                                                   final InteractionHand hand,
-                                                   final ItemStack oldStack,
-                                                   final ItemStack newStack) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            public boolean allowComponentsUpdateAnimation(final Player player,
+                                                          final InteractionHand hand,
+                                                          final ItemStack oldStack,
+                                                          final ItemStack newStack) {
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
             @Override
-            public boolean allowNbtUpdateAnimation(final Player player,
-                                                   final InteractionHand hand,
-                                                   final ItemStack oldStack,
-                                                   final ItemStack newStack) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            public boolean allowComponentsUpdateAnimation(final Player player,
+                                                          final InteractionHand hand,
+                                                          final ItemStack oldStack,
+                                                          final ItemStack newStack) {
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setCreativeWirelessGrid(callback.register(
             CREATIVE_WIRELESS_GRID,
             () -> new WirelessGridItem() {
                 @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
@@ -291,43 +315,43 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             Blocks.INSTANCE.getPortableGrid(), PortableGridType.NORMAL
         ) {
             @Override
-            public boolean allowNbtUpdateAnimation(final Player player,
-                                                   final InteractionHand hand,
-                                                   final ItemStack oldStack,
-                                                   final ItemStack newStack) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            public boolean allowComponentsUpdateAnimation(final Player player,
+                                                          final InteractionHand hand,
+                                                          final ItemStack oldStack,
+                                                          final ItemStack newStack) {
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setCreativePortableGrid(callback.register(
             CREATIVE_PORTABLE_GRID,
             () -> new PortableGridBlockItem(Blocks.INSTANCE.getCreativePortableGrid(), PortableGridType.CREATIVE) {
                 @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
         Items.INSTANCE.setSecurityCard(callback.register(SECURITY_CARD, () -> new SecurityCardItem() {
             @Override
-            public boolean allowNbtUpdateAnimation(final Player player,
-                                                   final InteractionHand hand,
-                                                   final ItemStack oldStack,
-                                                   final ItemStack newStack) {
-                return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+            public boolean allowComponentsUpdateAnimation(final Player player,
+                                                          final InteractionHand hand,
+                                                          final ItemStack oldStack,
+                                                          final ItemStack newStack) {
+                return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
         Items.INSTANCE.setFallbackSecurityCard(callback.register(
             FALLBACK_SECURITY_CARD,
             () -> new FallbackSecurityCardItem() {
                 @Override
-                public boolean allowNbtUpdateAnimation(final Player player,
-                                                       final InteractionHand hand,
-                                                       final ItemStack oldStack,
-                                                       final ItemStack newStack) {
-                    return AbstractModInitializer.allowNbtUpdateAnimation(oldStack, newStack);
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
                 }
             }
         ));
@@ -346,42 +370,155 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     }
 
     private void registerPackets() {
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.STORAGE_INFO_REQUEST, new StorageInfoRequestPacket());
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.GRID_INSERT, new GridInsertPacket());
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.GRID_EXTRACT, new GridExtractPacket());
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.GRID_SCROLL, new GridScrollPacket());
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.CRAFTING_GRID_CLEAR, new CraftingGridClearPacket());
-        ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.CRAFTING_GRID_RECIPE_TRANSFER,
-            new CraftingGridRecipeTransferPacket()
+        registerServerToClientPackets();
+        registerClientToServerPackets();
+    }
+
+    private void registerServerToClientPackets() {
+        PayloadTypeRegistry.playS2C().register(EnergyInfoPacket.PACKET_TYPE, EnergyInfoPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(
+            WirelessTransmitterRangePacket.PACKET_TYPE,
+            WirelessTransmitterRangePacket.STREAM_CODEC
         );
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.PROPERTY_CHANGE, new PropertyChangePacket());
+        PayloadTypeRegistry.playS2C().register(GridActivePacket.PACKET_TYPE, GridActivePacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(GridClearPacket.PACKET_TYPE, GridClearPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(GridUpdatePacket.PACKET_TYPE, GridUpdatePacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(
+            NetworkTransmitterStatusPacket.PACKET_TYPE,
+            NetworkTransmitterStatusPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            NoPermissionPacket.PACKET_TYPE,
+            NoPermissionPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            ResourceSlotUpdatePacket.PACKET_TYPE,
+            ResourceSlotUpdatePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            StorageInfoResponsePacket.PACKET_TYPE,
+            StorageInfoResponsePacket.STREAM_CODEC
+        );
+    }
+
+    private void registerClientToServerPackets() {
+        PayloadTypeRegistry.playC2S().register(
+            CraftingGridClearPacket.PACKET_TYPE,
+            CraftingGridClearPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            CraftingGridRecipeTransferPacket.PACKET_TYPE,
+            CraftingGridRecipeTransferPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(GridExtractPacket.PACKET_TYPE, GridExtractPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(GridInsertPacket.PACKET_TYPE, GridInsertPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(GridScrollPacket.PACKET_TYPE, GridScrollPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(PropertyChangePacket.PACKET_TYPE, PropertyChangePacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(
+            ResourceFilterSlotChangePacket.PACKET_TYPE,
+            ResourceFilterSlotChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            ResourceSlotAmountChangePacket.PACKET_TYPE,
+            ResourceSlotAmountChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            ResourceSlotChangePacket.PACKET_TYPE,
+            ResourceSlotChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            SecurityCardBoundPlayerPacket.PACKET_TYPE,
+            SecurityCardBoundPlayerPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            SecurityCardPermissionPacket.PACKET_TYPE,
+            SecurityCardPermissionPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            SecurityCardResetPermissionPacket.PACKET_TYPE,
+            SecurityCardResetPermissionPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            SingleAmountChangePacket.PACKET_TYPE,
+            SingleAmountChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            StorageInfoRequestPacket.PACKET_TYPE,
+            StorageInfoRequestPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            UseNetworkBoundItemPacket.PACKET_TYPE,
+            UseNetworkBoundItemPacket.STREAM_CODEC
+        );
+    }
+
+    private void registerPacketHandlers() {
         ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.RESOURCE_SLOT_AMOUNT_CHANGE,
-            new ResourceSlotAmountChangePacket()
+            StorageInfoRequestPacket.PACKET_TYPE,
+            wrapHandler(StorageInfoRequestPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.RESOURCE_FILTER_SLOT_CHANGE,
-            new ResourceFilterSlotChangePacket()
+            GridInsertPacket.PACKET_TYPE,
+            wrapHandler(GridInsertPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.RESOURCE_SLOT_CHANGE,
-            new ResourceSlotChangePacket()
-        );
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.SINGLE_AMOUNT_CHANGE, new SingleAmountChangePacket());
-        ServerPlayNetworking.registerGlobalReceiver(PacketIds.USE_NETWORK_BOUND_ITEM, new UseNetworkBoundItemPacket());
-        ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.SECURITY_CARD_PERMISSION,
-            new SecurityCardPermissionPacket()
+            GridExtractPacket.PACKET_TYPE,
+            wrapHandler(GridExtractPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.SECURITY_CARD_RESET_PERMISSION,
-            new SecurityCardResetPermissionPacket()
+            GridScrollPacket.PACKET_TYPE,
+            wrapHandler(GridScrollPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            PacketIds.SECURITY_CARD_BOUND_PLAYER,
-            new SecurityCardBoundPlayerPacket()
+            CraftingGridClearPacket.PACKET_TYPE,
+            wrapHandler(CraftingGridClearPacket::handle)
         );
+        ServerPlayNetworking.registerGlobalReceiver(
+            CraftingGridRecipeTransferPacket.PACKET_TYPE,
+            wrapHandler(CraftingGridRecipeTransferPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PropertyChangePacket.PACKET_TYPE,
+            wrapHandler(PropertyChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            ResourceSlotAmountChangePacket.PACKET_TYPE,
+            wrapHandler(ResourceSlotAmountChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            ResourceFilterSlotChangePacket.PACKET_TYPE,
+            wrapHandler(ResourceFilterSlotChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            ResourceSlotChangePacket.PACKET_TYPE,
+            wrapHandler(ResourceSlotChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            SingleAmountChangePacket.PACKET_TYPE,
+            wrapHandler(SingleAmountChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            UseNetworkBoundItemPacket.PACKET_TYPE,
+            wrapHandler(UseNetworkBoundItemPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            SecurityCardPermissionPacket.PACKET_TYPE,
+            wrapHandler(SecurityCardPermissionPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            SecurityCardResetPermissionPacket.PACKET_TYPE,
+            wrapHandler(SecurityCardResetPermissionPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            SecurityCardBoundPlayerPacket.PACKET_TYPE,
+            wrapHandler(SecurityCardBoundPlayerPacket::handle)
+        );
+    }
+
+    private static <T extends CustomPacketPayload> ServerPlayNetworking.PlayPayloadHandler<T> wrapHandler(
+        final PacketHandler<T> handler
+    ) {
+        return (packet, ctx) -> handler.handle(packet, ctx::player);
     }
 
     private void registerSidedHandlers() {

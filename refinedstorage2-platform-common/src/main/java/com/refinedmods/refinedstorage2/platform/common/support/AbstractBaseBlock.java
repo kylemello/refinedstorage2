@@ -11,8 +11,11 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,6 +23,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -35,6 +39,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
 public abstract class AbstractBaseBlock extends Block {
+    private static final TagKey<Item> WRENCH_TAG = TagKey.create(
+        Registries.ITEM,
+        ResourceLocation.fromNamespaceAndPath("c", "tools/wrench")
+    );
+
     protected AbstractBaseBlock(final Properties properties) {
         super(properties);
         registerDefaultState(getDefaultState());
@@ -45,15 +54,13 @@ public abstract class AbstractBaseBlock extends Block {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(final BlockState state,
-                                 final Level level,
-                                 final BlockPos pos,
-                                 final Player player,
-                                 final InteractionHand hand,
-                                 final BlockHitResult hit) {
-        return tryOpenScreen(state, level, pos, player, hit.getLocation())
-            .orElseGet(() -> super.use(state, level, pos, player, hand, hit));
+    public InteractionResult useWithoutItem(final BlockState state,
+                                            final Level level,
+                                            final BlockPos pos,
+                                            final Player player,
+                                            final BlockHitResult hitResult) {
+        return tryOpenScreen(state, level, pos, player, hitResult.getLocation())
+            .orElseGet(() -> super.useWithoutItem(state, level, pos, player, hitResult));
     }
 
     @Nullable
@@ -100,7 +107,7 @@ public abstract class AbstractBaseBlock extends Block {
     @SuppressWarnings("deprecation")
     public MenuProvider getMenuProvider(final BlockState state, final Level level, final BlockPos pos) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
-        return blockEntity instanceof MenuProvider factory ? factory : null;
+        return blockEntity instanceof MenuProvider provider ? provider : null;
     }
 
     @Override
@@ -202,7 +209,7 @@ public abstract class AbstractBaseBlock extends Block {
     }
 
     private boolean isWrench(final ItemStack item) {
-        return item.is(Platform.INSTANCE.getWrenchTag());
+        return item.is(WRENCH_TAG);
     }
 
     private boolean dismantle(final BlockState state,
@@ -220,7 +227,7 @@ public abstract class AbstractBaseBlock extends Block {
         }
         final ItemStack stack = Platform.INSTANCE.getCloneItemStack(state, level, hitResult, player);
         if (blockEntity != null) {
-            blockEntity.saveToItem(stack);
+            blockEntity.saveToItem(stack, level.registryAccess());
             // Ensure that we don't drop items
             level.removeBlockEntity(hitResult.getBlockPos());
         }

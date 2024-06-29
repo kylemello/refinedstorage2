@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 
 import javax.annotation.Nullable;
@@ -16,13 +16,14 @@ import javax.annotation.Nullable;
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,16 +37,16 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 
 public class NetworkTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeMenuProvider, BlockEntityWithDrops {
+    implements NetworkNodeExtendedMenuProvider<NetworkTransmitterData>, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 
-    private static final NetworkTransmitterStatus INACTIVE = NetworkTransmitterStatus.message(
+    private static final NetworkTransmitterData INACTIVE = NetworkTransmitterData.message(
         createTranslation("gui", "network_transmitter.status.inactive")
     );
-    private static final NetworkTransmitterStatus MISSING_NETWORK_CARD = NetworkTransmitterStatus.error(
+    private static final NetworkTransmitterData MISSING_NETWORK_CARD = NetworkTransmitterData.error(
         createTranslation("gui", "network_transmitter.status.missing_network_card").withStyle(ChatFormatting.DARK_RED)
     );
-    private static final NetworkTransmitterStatus RECEIVER_UNREACHABLE = NetworkTransmitterStatus.error(
+    private static final NetworkTransmitterData RECEIVER_UNREACHABLE = NetworkTransmitterData.error(
         createTranslation("gui", "network_transmitter.status.receiver_unreachable").withStyle(ChatFormatting.DARK_RED)
     );
 
@@ -102,7 +103,7 @@ public class NetworkTransmitterBlockEntity
         return receiverFound ? NetworkTransmitterState.ACTIVE : NetworkTransmitterState.ERROR;
     }
 
-    NetworkTransmitterStatus getStatus() {
+    NetworkTransmitterData getStatus() {
         final Network network = mainNode.getNetwork();
         if (!mainNode.isActive() || network == null || level == null) {
             return INACTIVE;
@@ -119,7 +120,7 @@ public class NetworkTransmitterBlockEntity
             "gui",
             "network_transmitter.status.transmitting",
             receiverKey.getDistance(worldPosition)) : receiverKey.getDimensionName();
-        return NetworkTransmitterStatus.message(message);
+        return NetworkTransmitterData.message(message);
     }
 
     @Override
@@ -152,16 +153,19 @@ public class NetworkTransmitterBlockEntity
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_NETWORK_CARD_INVENTORY, networkCardInventory.createTag());
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_NETWORK_CARD_INVENTORY, networkCardInventory.createTag(provider));
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         if (tag.contains(TAG_NETWORK_CARD_INVENTORY)) {
-            networkCardInventory.fromTag(tag.getList(TAG_NETWORK_CARD_INVENTORY, Tag.TAG_COMPOUND));
+            networkCardInventory.fromTag(
+                tag.getList(TAG_NETWORK_CARD_INVENTORY, Tag.TAG_COMPOUND),
+                provider
+            );
         }
         updateReceiverLocation();
     }
@@ -177,10 +181,13 @@ public class NetworkTransmitterBlockEntity
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        final NetworkTransmitterStatus status = getStatus();
-        buf.writeBoolean(status.error());
-        buf.writeComponent(status.message());
+    public NetworkTransmitterData getMenuData() {
+        return getStatus();
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, NetworkTransmitterData> getMenuCodec() {
+        return NetworkTransmitterData.STREAM_CODEC;
     }
 
     @Override

@@ -10,8 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
+
 public class NetworkBoundItemItemPropertyFunction implements ClampedItemPropertyFunction {
-    public static final ResourceLocation NAME = new ResourceLocation("active");
+    public static final ResourceLocation NAME = createIdentifier("network_bound_active");
 
     @Override
     public float unclampedCall(final ItemStack itemStack,

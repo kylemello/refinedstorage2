@@ -8,17 +8,21 @@ import com.refinedmods.refinedstorage2.api.storage.channel.StorageChannel;
 
 import java.util.Optional;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.4")
 public interface ResourceType {
-    Optional<PlatformResourceKey> fromTag(CompoundTag tag);
+    MapCodec<PlatformResourceKey> getMapCodec();
 
-    PlatformResourceKey fromBuffer(FriendlyByteBuf buf);
+    Codec<PlatformResourceKey> getCodec();
+
+    StreamCodec<RegistryFriendlyByteBuf, PlatformResourceKey> getStreamCodec();
 
     MutableComponent getTitle();
 

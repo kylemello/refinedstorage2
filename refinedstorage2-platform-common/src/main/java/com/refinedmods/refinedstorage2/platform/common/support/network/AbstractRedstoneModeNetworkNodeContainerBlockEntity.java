@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -42,30 +43,30 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        writeConfiguration(tag);
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        writeConfiguration(tag, provider);
         if (placedByPlayerId != null) {
             tag.putUUID(TAG_PLACED_BY_PLAYER_ID, placedByPlayerId);
         }
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(getRedstoneMode()));
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
-        readConfiguration(tag);
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        readConfiguration(tag, provider);
         if (tag.hasUUID(TAG_PLACED_BY_PLAYER_ID)) {
             placedByPlayerId = tag.getUUID(TAG_PLACED_BY_PLAYER_ID);
         }
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_REDSTONE_MODE)) {
             redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
         }

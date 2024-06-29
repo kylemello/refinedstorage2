@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
@@ -9,7 +10,6 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeSlot;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -39,7 +39,7 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
     protected AbstractSimpleFilterContainerMenu(final MenuType<?> type,
                                                 final int syncId,
                                                 final Player player,
-                                                final FriendlyByteBuf buf,
+                                                final ResourceContainerData resourceContainerData,
                                                 @Nullable final UpgradeDestinations upgradeDestination,
                                                 final Component filterHelp) {
         super(type, syncId);
@@ -47,12 +47,11 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
         registerClientProperties();
         addSlots(
             player,
-            ResourceContainerImpl.createForFilter(),
+            ResourceContainerImpl.createForFilter(resourceContainerData),
             upgradeDestination == null
                 ? null
                 : new UpgradeContainer(upgradeDestination, PlatformApi.INSTANCE.getUpgradeRegistry())
         );
-        initializeResourceSlots(buf);
     }
 
     protected abstract void registerClientProperties();

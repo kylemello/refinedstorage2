@@ -4,14 +4,16 @@ import com.refinedmods.refinedstorage2.api.network.impl.node.AbstractStorageCont
 import com.refinedmods.refinedstorage2.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import java.util.Optional;
@@ -19,9 +21,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 abstract class AbstractStorageBlockBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<StorageNetworkNode>
-    implements NetworkNodeMenuProvider, StorageBlockEntity, AbstractStorageContainerNetworkNode.Provider {
+    implements NetworkNodeExtendedMenuProvider<StorageBlockData>, StorageBlockEntity,
+    AbstractStorageContainerNetworkNode.Provider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageBlockBlockEntity.class);
 
     private static final String TAG_STORAGE_ID = "sid";
@@ -62,7 +66,7 @@ abstract class AbstractStorageBlockBlockEntity
         mainNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
     }
 
-    protected abstract Storage createStorage(Runnable listener);
+    protected abstract SerializableStorage createStorage(Runnable listener);
 
     @Override
     public void setLevel(final Level level) {
@@ -79,40 +83,40 @@ abstract class AbstractStorageBlockBlockEntity
             // In both cases listed above we need to clean up the storage we create here.
             storageId = UUID.randomUUID();
             final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
-            final Storage storage = createStorage(storageRepository::markAsChanged);
+            final SerializableStorage storage = createStorage(storageRepository::markAsChanged);
             storageRepository.set(storageId, storage);
         }
         mainNode.setProvider(this);
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_STORAGE_ID)) {
             setStorageId(tag.getUUID(TAG_STORAGE_ID));
         }
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
         configContainer.load(tag);
-        filter.load(tag);
+        filter.load(tag, provider);
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (storageId != null) {
             tag.putUUID(TAG_STORAGE_ID, storageId);
         }
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
         configContainer.save(tag);
-        filter.save(tag);
+        filter.save(tag, provider);
     }
 
     @Override
@@ -148,10 +152,17 @@ abstract class AbstractStorageBlockBlockEntity
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        buf.writeLong(mainNode.getStored());
-        buf.writeLong(mainNode.getCapacity());
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public StorageBlockData getMenuData() {
+        return new StorageBlockData(
+            mainNode.getStored(),
+            mainNode.getCapacity(),
+            ResourceContainerData.of(filter.getFilterContainer())
+        );
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, StorageBlockData> getMenuCodec() {
+        return StorageBlockData.STREAM_CODEC;
     }
 
     @Override
@@ -160,6 +171,6 @@ abstract class AbstractStorageBlockBlockEntity
             return Optional.empty();
         }
         final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
-        return storageRepository.get(storageId);
+        return storageRepository.get(storageId).map(Storage.class::cast);
     }
 }

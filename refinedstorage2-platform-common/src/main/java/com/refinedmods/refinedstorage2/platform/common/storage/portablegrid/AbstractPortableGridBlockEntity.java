@@ -10,6 +10,8 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.GridData;
+import com.refinedmods.refinedstorage2.platform.common.grid.PortableGridData;
 import com.refinedmods.refinedstorage2.platform.common.storage.Disk;
 import com.refinedmods.refinedstorage2.platform.common.storage.DiskInventory;
 import com.refinedmods.refinedstorage2.platform.common.storage.DiskStateChangeListener;
@@ -21,21 +23,24 @@ import com.refinedmods.refinedstorage2.platform.common.support.energy.CreativeEn
 import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemBlockEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -43,8 +48,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractPortableGridBlockEntity extends BlockEntity implements ExtendedMenuProvider,
-    ConfigurationCardTarget, TransferableBlockEntityEnergy {
+public abstract class AbstractPortableGridBlockEntity extends BlockEntity
+    implements ExtendedMenuProvider<PortableGridData>, ConfigurationCardTarget, TransferableBlockEntityEnergy {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPortableGridBlockEntity.class);
 
     private static final String TAG_DISK_INVENTORY = "inv";
@@ -69,21 +74,26 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
         this.grid = new InWorldPortableGrid(energyStorage, diskInventory, diskStateListener, this);
     }
 
-    static void readDiskInventory(final CompoundTag tag, final DiskInventory diskInventory) {
+    static void readDiskInventory(final CompoundTag tag,
+                                  final DiskInventory diskInventory,
+                                  final HolderLookup.Provider provider) {
         if (tag.contains(TAG_DISK_INVENTORY)) {
-            ContainerUtil.read(tag.getCompound(TAG_DISK_INVENTORY), diskInventory);
+            ContainerUtil.read(tag.getCompound(TAG_DISK_INVENTORY), diskInventory, provider);
         }
     }
 
-    static void writeDiskInventory(final CompoundTag tag, final DiskInventory diskInventory) {
-        tag.put(TAG_DISK_INVENTORY, ContainerUtil.write(diskInventory));
+    static void writeDiskInventory(final CompoundTag tag,
+                                   final DiskInventory diskInventory,
+                                   final HolderLookup.Provider provider) {
+        tag.put(TAG_DISK_INVENTORY, ContainerUtil.write(diskInventory, provider));
     }
 
-    static ItemStack getDisk(final CompoundTag tag) {
+    static ItemStack getDisk(final CustomData customData, final HolderLookup.Provider provider) {
+        final CompoundTag tag = customData.copyTag();
         if (!tag.contains(TAG_DISK_INVENTORY)) {
             return ItemStack.EMPTY;
         }
-        return ContainerUtil.getItemInSlot(tag.getCompound(TAG_DISK_INVENTORY), 0);
+        return ContainerUtil.getItemInSlot(tag.getCompound(TAG_DISK_INVENTORY), 0, provider);
     }
 
     private static EnergyStorage createEnergyStorage(final PortableGridType type, final BlockEntity blockEntity) {
@@ -146,16 +156,16 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         fromClientTag(tag);
-        readDiskInventory(tag, diskInventory);
+        readDiskInventory(tag, diskInventory, provider);
         ItemBlockEnergyStorage.readFromTag(energyStorage, tag);
-        readConfiguration(tag);
-        super.load(tag);
+        readConfiguration(tag, provider);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_REDSTONE_MODE)) {
             redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
         }
@@ -174,15 +184,15 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        writeDiskInventory(tag, diskInventory);
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        writeDiskInventory(tag, diskInventory, provider);
         ItemBlockEnergyStorage.writeToTag(tag, energyStorage.getStored());
-        writeConfiguration(tag);
+        writeConfiguration(tag, provider);
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(redstoneMode));
     }
 
@@ -192,7 +202,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         tag.put(TAG_DISKS, diskInventory.toSyncTag(idx -> grid.getStorageState()));
         return tag;
@@ -219,10 +229,18 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity implem
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        PlatformApi.INSTANCE.writeGridScreenOpeningData(grid, buf);
-        buf.writeLong(energyStorage.getStored());
-        buf.writeLong(energyStorage.getCapacity());
+    public PortableGridData getMenuData() {
+        return new PortableGridData(
+            GridData.of(grid),
+            energyStorage.getStored(),
+            energyStorage.getCapacity(),
+            Optional.empty()
+        );
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, PortableGridData> getMenuCodec() {
+        return PortableGridData.STREAM_CODEC;
     }
 
     DiskInventory getDiskInventory() {

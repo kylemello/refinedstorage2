@@ -4,8 +4,6 @@ import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.common.support.ClientToServerCommunications;
-import com.refinedmods.refinedstorage2.platform.common.support.ServerToClientCommunications;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage2.platform.common.support.render.FluidRenderer;
@@ -25,16 +23,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -46,15 +45,9 @@ import net.minecraft.world.phys.BlockHitResult;
 public interface Platform {
     Platform INSTANCE = new PlatformProxy();
 
-    ServerToClientCommunications getServerToClientCommunications();
-
-    ClientToServerCommunications getClientToServerCommunications();
-
     MenuOpener getMenuOpener();
 
     long getBucketAmount();
-
-    TagKey<Item> getWrenchTag();
 
     Config getConfig();
 
@@ -82,7 +75,7 @@ public interface Platform {
 
     NonNullList<ItemStack> getRemainingCraftingItems(Player player,
                                                      CraftingRecipe craftingRecipe,
-                                                     CraftingContainer container);
+                                                     CraftingInput input);
 
     void onItemCrafted(Player player, ItemStack craftedStack, CraftingContainer container);
 
@@ -114,6 +107,10 @@ public interface Platform {
     void renderTooltip(GuiGraphics graphics, List<ClientTooltipComponent> components, int x, int y);
 
     Optional<EnergyStorage> getEnergyStorage(ItemStack stack);
+
+    <T extends CustomPacketPayload> void sendPacketToServer(T packet);
+
+    <T extends CustomPacketPayload> void sendPacketToClient(ServerPlayer player, T packet);
 
     record ContainedFluid(ItemStack remainderContainer, FluidResource fluid, long amount) {
     }

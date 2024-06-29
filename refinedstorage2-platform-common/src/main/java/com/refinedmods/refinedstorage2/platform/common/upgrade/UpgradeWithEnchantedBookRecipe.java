@@ -2,59 +2,61 @@ package com.refinedmods.refinedstorage2.platform.common.upgrade;
 
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-import static java.util.Objects.requireNonNull;
-
 public class UpgradeWithEnchantedBookRecipe extends ShapedRecipe {
-    public static final Codec<UpgradeWithEnchantedBookRecipe> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<UpgradeWithEnchantedBookRecipe> CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
-            Codec.STRING.fieldOf("enchantment")
-                .xmap(ResourceLocation::new, ResourceLocation::toString)
-                .forGetter(UpgradeWithEnchantedBookRecipe::getEnchantmentId),
+            Enchantment.CODEC.fieldOf("enchantment")
+                .forGetter(UpgradeWithEnchantedBookRecipe::getEnchantment),
             Codec.INT.fieldOf("level").orElse(1)
                 .forGetter(UpgradeWithEnchantedBookRecipe::getEnchantmentLevel),
-            Codec.STRING.fieldOf("result")
-                .xmap(ResourceLocation::new, ResourceLocation::toString)
-                .forGetter(UpgradeWithEnchantedBookRecipe::getResultItemId)
+            ItemStack.CODEC.fieldOf("result")
+                .forGetter(UpgradeWithEnchantedBookRecipe::getResultItem)
         ).apply(instance, UpgradeWithEnchantedBookRecipe::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpgradeWithEnchantedBookRecipe> STREAM_CODEC =
+        StreamCodec.composite(
+            ByteBufCodecs.holderRegistry(Registries.ENCHANTMENT), UpgradeWithEnchantedBookRecipe::getEnchantment,
+            ByteBufCodecs.INT, UpgradeWithEnchantedBookRecipe::getEnchantmentLevel,
+            ItemStack.STREAM_CODEC, UpgradeWithEnchantedBookRecipe::getResultItem,
+            UpgradeWithEnchantedBookRecipe::new
+        );
 
-    private final ResourceLocation enchantmentId;
+    private final Holder<Enchantment> enchantment;
     private final int level;
-    private final ResourceLocation resultItemId;
+    private final ItemStack resultItem;
 
-    UpgradeWithEnchantedBookRecipe(final ResourceLocation enchantmentId,
+    UpgradeWithEnchantedBookRecipe(final Holder<Enchantment> enchantment,
                                    final int level,
-                                   final ResourceLocation resultItemId) {
+                                   final ItemStack resultItem) {
         super("", CraftingBookCategory.MISC, new ShapedRecipePattern(3, 3, NonNullList.of(
             Ingredient.EMPTY,
             Ingredient.of(new ItemStack(Items.INSTANCE.getQuartzEnrichedIron())),
-            Ingredient.of(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
-                getEnchantment(enchantmentId),
-                level
-            ))),
+            Ingredient.of(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level))),
             Ingredient.of(new ItemStack(Items.INSTANCE.getQuartzEnrichedIron())),
             Ingredient.of(new ItemStack(Blocks.BOOKSHELF)),
             Ingredient.of(new ItemStack(Items.INSTANCE.getUpgrade())),
@@ -62,22 +64,18 @@ public class UpgradeWithEnchantedBookRecipe extends ShapedRecipe {
             Ingredient.of(new ItemStack(Items.INSTANCE.getQuartzEnrichedIron())),
             Ingredient.of(new ItemStack(Items.INSTANCE.getQuartzEnrichedIron())),
             Ingredient.of(new ItemStack(Items.INSTANCE.getQuartzEnrichedIron()))
-        ), Optional.empty()), new ItemStack(BuiltInRegistries.ITEM.get(resultItemId)));
-        this.enchantmentId = enchantmentId;
+        ), Optional.empty()), resultItem);
+        this.enchantment = enchantment;
         this.level = level;
-        this.resultItemId = resultItemId;
+        this.resultItem = resultItem;
     }
 
-    private static Enchantment getEnchantment(final ResourceLocation enchantmentId) {
-        return requireNonNull(BuiltInRegistries.ENCHANTMENT.get(enchantmentId));
+    ItemStack getResultItem() {
+        return resultItem;
     }
 
-    ResourceLocation getResultItemId() {
-        return resultItemId;
-    }
-
-    ResourceLocation getEnchantmentId() {
-        return enchantmentId;
+    Holder<Enchantment> getEnchantment() {
+        return enchantment;
     }
 
     int getEnchantmentLevel() {
@@ -85,19 +83,13 @@ public class UpgradeWithEnchantedBookRecipe extends ShapedRecipe {
     }
 
     @Override
-    public boolean matches(final CraftingContainer craftingContainer, final Level theLevel) {
+    public boolean matches(final CraftingInput craftingContainer, final Level theLevel) {
         if (!super.matches(craftingContainer, theLevel)) {
             return false;
         }
-        final ListTag enchantments = EnchantedBookItem.getEnchantments(craftingContainer.getItem(1));
-        for (int i = 0; i < enchantments.size(); ++i) {
-            final CompoundTag tag = enchantments.getCompound(i);
-            final int containerLevel = EnchantmentHelper.getEnchantmentLevel(tag);
-            final ResourceLocation containerEnchantment = EnchantmentHelper.getEnchantmentId(tag);
-            if (Objects.equals(containerEnchantment, getEnchantmentId()) && containerLevel == level) {
-                return true;
-            }
-        }
-        return false;
+        final ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(
+            craftingContainer.getItem(1)
+        );
+        return enchantments.getLevel(enchantment) == level;
     }
 }

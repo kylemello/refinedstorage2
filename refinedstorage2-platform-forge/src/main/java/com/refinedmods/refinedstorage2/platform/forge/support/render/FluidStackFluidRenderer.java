@@ -23,10 +23,15 @@ import net.neoforged.neoforge.fluids.FluidType;
 public class FluidStackFluidRenderer extends AbstractFluidRenderer {
     private final Map<FluidResource, FluidStack> stackCache = new HashMap<>();
 
+    @SuppressWarnings("deprecation")
     private FluidStack getFluidStackFromCache(final FluidResource fluidResource) {
         return stackCache.computeIfAbsent(
             fluidResource,
-            r -> new FluidStack(r.fluid(), FluidType.BUCKET_VOLUME, r.tag())
+            r -> new FluidStack(
+                r.fluid().builtInRegistryHolder(),
+                FluidType.BUCKET_VOLUME,
+                r.components()
+            )
         );
     }
 
@@ -73,6 +78,6 @@ public class FluidStackFluidRenderer extends AbstractFluidRenderer {
 
     @Override
     public List<Component> getTooltip(final FluidResource fluidResource) {
-        return Collections.singletonList(getFluidStackFromCache(fluidResource).getDisplayName());
+        return Collections.singletonList(getFluidStackFromCache(fluidResource).getHoverName());
     }
 }
