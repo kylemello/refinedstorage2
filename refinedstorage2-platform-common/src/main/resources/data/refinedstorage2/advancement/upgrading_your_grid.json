@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:crafting_grids"
+            "items": "#refinedstorage2:crafting_grids"
           }
         ]
       }

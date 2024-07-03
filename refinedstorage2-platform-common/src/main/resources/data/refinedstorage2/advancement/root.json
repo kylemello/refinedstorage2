@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:controllers"
+            "items": "#refinedstorage2:controllers"
           }
         ]
       }
