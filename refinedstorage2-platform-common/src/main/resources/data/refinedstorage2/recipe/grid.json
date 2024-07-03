@@ -13,7 +13,7 @@
       "item": "refinedstorage2:construction_core"
     },
     "G": {
-      "item": "minecraft:glass"
+      "tag": "c:glass_blocks"
     },
     "E": {
       "item": "refinedstorage2:quartz_enriched_iron"

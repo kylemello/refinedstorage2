@@ -16,7 +16,7 @@
       "item": "refinedstorage2:machine_casing"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "c:dusts/redstone"
     },
     "U": {
       "item": "refinedstorage2:quartz_enriched_iron"

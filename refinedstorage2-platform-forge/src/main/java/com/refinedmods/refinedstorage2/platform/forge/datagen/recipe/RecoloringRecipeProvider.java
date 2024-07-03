@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
@@ -84,28 +83,28 @@ public class RecoloringRecipeProvider extends RecipeProvider {
     private ShapelessRecipeBuilder recipe(final TagKey<Item> dyeable, final Item result, final DyeColor color) {
         return ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result)
             .requires(dyeable)
-            .requires(getDyeItem(color))
+            .requires(getDyeTag(color))
             .unlockedBy("has_" + dyeable.location().getPath(), has(dyeable));
     }
 
-    private static Item getDyeItem(final DyeColor color) {
+    private static TagKey<Item> getDyeTag(final DyeColor color) {
         return switch (color) {
-            case RED -> Items.RED_DYE;
-            case WHITE -> Items.WHITE_DYE;
-            case ORANGE -> Items.ORANGE_DYE;
-            case MAGENTA -> Items.MAGENTA_DYE;
-            case LIGHT_BLUE -> Items.LIGHT_BLUE_DYE;
-            case YELLOW -> Items.YELLOW_DYE;
-            case LIME -> Items.LIME_DYE;
-            case PINK -> Items.PINK_DYE;
-            case GRAY -> Items.GRAY_DYE;
-            case LIGHT_GRAY -> Items.LIGHT_GRAY_DYE;
-            case CYAN -> Items.CYAN_DYE;
-            case PURPLE -> Items.PURPLE_DYE;
-            case BLUE -> Items.BLUE_DYE;
-            case BROWN -> Items.BROWN_DYE;
-            case GREEN -> Items.GREEN_DYE;
-            case BLACK -> Items.BLACK_DYE;
+            case RED -> net.neoforged.neoforge.common.Tags.Items.DYES_RED;
+            case WHITE -> net.neoforged.neoforge.common.Tags.Items.DYES_WHITE;
+            case ORANGE -> net.neoforged.neoforge.common.Tags.Items.DYES_ORANGE;
+            case MAGENTA -> net.neoforged.neoforge.common.Tags.Items.DYES_MAGENTA;
+            case LIGHT_BLUE -> net.neoforged.neoforge.common.Tags.Items.DYES_LIGHT_BLUE;
+            case YELLOW -> net.neoforged.neoforge.common.Tags.Items.DYES_YELLOW;
+            case LIME -> net.neoforged.neoforge.common.Tags.Items.DYES_LIME;
+            case PINK -> net.neoforged.neoforge.common.Tags.Items.DYES_PINK;
+            case GRAY -> net.neoforged.neoforge.common.Tags.Items.DYES_GRAY;
+            case LIGHT_GRAY -> net.neoforged.neoforge.common.Tags.Items.DYES_LIGHT_GRAY;
+            case CYAN -> net.neoforged.neoforge.common.Tags.Items.DYES_CYAN;
+            case PURPLE -> net.neoforged.neoforge.common.Tags.Items.DYES_PURPLE;
+            case BLUE -> net.neoforged.neoforge.common.Tags.Items.DYES_BLUE;
+            case BROWN -> net.neoforged.neoforge.common.Tags.Items.DYES_BROWN;
+            case GREEN -> net.neoforged.neoforge.common.Tags.Items.DYES_GREEN;
+            case BLACK -> net.neoforged.neoforge.common.Tags.Items.DYES_BLACK;
         };
     }
 }

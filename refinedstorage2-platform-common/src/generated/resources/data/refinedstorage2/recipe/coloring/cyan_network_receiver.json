@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:network_receivers"
     },
     {
-      "item": "minecraft:cyan_dye"
+      "tag": "c:dyes/cyan"
     }
   ],
   "result": {

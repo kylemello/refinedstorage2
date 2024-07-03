@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:disk_interfaces"
     },
     {
-      "item": "minecraft:green_dye"
+      "tag": "c:dyes/green"
     }
   ],
   "result": {

@@ -5,13 +5,13 @@
       "item": "refinedstorage2:processor_binding"
     },
     {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "refinedstorage2:silicon"
     },
     {
-      "item": "minecraft:redstone"
+      "tag": "c:dusts/redstone"
     }
   ],
   "result": {

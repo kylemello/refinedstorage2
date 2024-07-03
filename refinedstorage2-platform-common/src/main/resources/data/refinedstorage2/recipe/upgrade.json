@@ -10,7 +10,7 @@
       "item": "refinedstorage2:quartz_enriched_iron"
     },
     "G": {
-      "item": "minecraft:glass"
+      "tag": "c:glass_blocks"
     },
     "P": {
       "item": "refinedstorage2:improved_processor"

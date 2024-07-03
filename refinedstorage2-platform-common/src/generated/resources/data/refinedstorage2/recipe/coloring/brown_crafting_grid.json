@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:crafting_grids"
     },
     {
-      "item": "minecraft:brown_dye"
+      "tag": "c:dyes/brown"
     }
   ],
   "result": {

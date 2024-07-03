@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:exporters"
     },
     {
-      "item": "minecraft:gray_dye"
+      "tag": "c:dyes/gray"
     }
   ],
   "result": {

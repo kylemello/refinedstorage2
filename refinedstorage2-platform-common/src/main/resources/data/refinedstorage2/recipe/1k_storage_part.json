@@ -13,10 +13,10 @@
       "item": "refinedstorage2:quartz_enriched_iron"
     },
     "G": {
-      "item": "minecraft:glass"
+      "tag": "c:glass_blocks"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {

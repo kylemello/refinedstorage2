@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:security_managers"
     },
     {
-      "item": "minecraft:light_gray_dye"
+      "tag": "c:dyes/light_gray"
     }
   ],
   "result": {

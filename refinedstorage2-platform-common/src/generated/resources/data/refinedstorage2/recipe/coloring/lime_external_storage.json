@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:external_storages"
     },
     {
-      "item": "minecraft:lime_dye"
+      "tag": "c:dyes/lime"
     }
   ],
   "result": {

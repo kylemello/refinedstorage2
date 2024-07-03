@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:network_transmitters"
     },
     {
-      "item": "minecraft:red_dye"
+      "tag": "c:dyes/red"
     }
   ],
   "result": {

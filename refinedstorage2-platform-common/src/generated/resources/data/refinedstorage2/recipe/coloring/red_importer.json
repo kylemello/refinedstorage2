@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:importers"
     },
     {
-      "item": "minecraft:red_dye"
+      "tag": "c:dyes/red"
     }
   ],
   "result": {

@@ -5,7 +5,7 @@
       "item": "refinedstorage2:basic_processor"
     },
     {
-      "item": "minecraft:quartz"
+      "tag": "c:gems/quartz"
     }
   ],
   "result": {

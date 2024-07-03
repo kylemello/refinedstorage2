@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:disk_interfaces"
     },
     {
-      "item": "minecraft:red_dye"
+      "tag": "c:dyes/red"
     }
   ],
   "result": {

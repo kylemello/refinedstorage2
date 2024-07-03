@@ -10,7 +10,7 @@
       "item": "refinedstorage2:quartz_enriched_iron"
     },
     "C": {
-      "item": "minecraft:chest"
+      "tag": "c:chests"
     },
     "M": {
       "item": "refinedstorage2:machine_casing"
