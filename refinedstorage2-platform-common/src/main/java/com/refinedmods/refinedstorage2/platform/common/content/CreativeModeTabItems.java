@@ -50,6 +50,7 @@ public final class CreativeModeTabItems {
         ));
         itemConsumer.accept(Blocks.INSTANCE.getMachineCasing());
         itemConsumer.accept(Blocks.INSTANCE.getQuartzEnrichedIronBlock());
+        itemConsumer.accept(Blocks.INSTANCE.getQuartzEnrichedCopperBlock());
         itemConsumer.accept(Blocks.INSTANCE.getStorageMonitor());
         Items.INSTANCE.getNetworkTransmitters().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getNetworkReceivers().stream().map(Supplier::get).forEach(itemConsumer);
@@ -65,6 +66,7 @@ public final class CreativeModeTabItems {
     private static void appendItems(final Consumer<ItemStack> consumer) {
         final Consumer<ItemLike> itemConsumer = item -> consumer.accept(new ItemStack(item));
         itemConsumer.accept(Items.INSTANCE.getQuartzEnrichedIron());
+        itemConsumer.accept(Items.INSTANCE.getQuartzEnrichedCopper());
         itemConsumer.accept(Items.INSTANCE.getSilicon());
         itemConsumer.accept(Items.INSTANCE.getProcessorBinding());
         itemConsumer.accept(Items.INSTANCE.getWrench());

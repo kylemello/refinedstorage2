@@ -13,7 +13,11 @@ public final class ContentIds {
     public static final ResourceLocation MACHINE_CASING = createIdentifier("machine_casing");
     public static final ResourceLocation CABLE = createIdentifier("cable");
     public static final ResourceLocation QUARTZ_ENRICHED_IRON_BLOCK = createIdentifier("quartz_enriched_iron_block");
+    public static final ResourceLocation QUARTZ_ENRICHED_COPPER_BLOCK = createIdentifier(
+        "quartz_enriched_copper_block"
+    );
     public static final ResourceLocation QUARTZ_ENRICHED_IRON = createIdentifier("quartz_enriched_iron");
+    public static final ResourceLocation QUARTZ_ENRICHED_COPPER = createIdentifier("quartz_enriched_copper");
     public static final ResourceLocation SILICON = createIdentifier("silicon");
     public static final ResourceLocation PROCESSOR_BINDING = createIdentifier("processor_binding");
     public static final ResourceLocation WRENCH = createIdentifier("wrench");

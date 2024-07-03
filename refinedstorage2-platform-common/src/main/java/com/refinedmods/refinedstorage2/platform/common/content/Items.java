@@ -53,6 +53,8 @@ public final class Items {
     @Nullable
     private Supplier<Item> quartzEnrichedIron;
     @Nullable
+    private Supplier<Item> quartzEnrichedCopper;
+    @Nullable
     private Supplier<Item> silicon;
     @Nullable
     private Supplier<Item> processorBinding;
@@ -143,6 +145,14 @@ public final class Items {
 
     public Item getQuartzEnrichedIron() {
         return requireNonNull(quartzEnrichedIron).get();
+    }
+
+    public void setQuartzEnrichedCopper(final Supplier<Item> supplier) {
+        this.quartzEnrichedCopper = supplier;
+    }
+
+    public Item getQuartzEnrichedCopper() {
+        return requireNonNull(quartzEnrichedCopper).get();
     }
 
     public void setSilicon(final Supplier<Item> supplier) {

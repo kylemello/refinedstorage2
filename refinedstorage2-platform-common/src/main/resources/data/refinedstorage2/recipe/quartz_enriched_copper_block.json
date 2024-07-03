@@ -2,22 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "EEE",
-    "GRG",
+    "EEE",
     "EEE"
   ],
   "key": {
     "E": {
       "item": "refinedstorage2:quartz_enriched_copper"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
     }
   },
   "result": {
-    "id": "refinedstorage2:cable",
-    "count": 12
+    "id": "refinedstorage2:quartz_enriched_copper_block"
   }
 }
