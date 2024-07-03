@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:fluid_storage_disks"
+            "items": "#refinedstorage2:fluid_storage_disks"
           }
         ]
       }

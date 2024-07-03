@@ -17,9 +17,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "refinedstorage2:upgrade"
-            ]
+            "items": "refinedstorage2:upgrade"
           }
         ]
       }

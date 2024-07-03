@@ -11,6 +11,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Ported to Minecraft 1.21.
 -   More help information for items.
+-   Quartz Enriched Copper, used to craft cables.
+-   Block of Quartz Enriched Copper
 
 ### Fixed
 

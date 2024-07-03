@@ -185,6 +185,8 @@ import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.NETWORK_TRANSMITTER;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PORTABLE_GRID;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.PROCESSOR_BINDING;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_COPPER;
+import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.QUARTZ_ENRICHED_IRON_BLOCK;
 import static com.refinedmods.refinedstorage2.platform.common.content.ContentIds.REGULATOR_UPGRADE;
@@ -323,6 +325,7 @@ public abstract class AbstractModInitializer {
         final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> diskInterfaceBlockEntityFactory
     ) {
         Blocks.INSTANCE.setQuartzEnrichedIronBlock(callback.register(QUARTZ_ENRICHED_IRON_BLOCK, SimpleBlock::new));
+        Blocks.INSTANCE.setQuartzEnrichedCopperBlock(callback.register(QUARTZ_ENRICHED_COPPER_BLOCK, SimpleBlock::new));
         Blocks.INSTANCE.setDiskDrive(
             callback.register(DISK_DRIVE, () -> new DiskDriveBlock(diskDriveBlockEntityFactory))
         );
@@ -393,9 +396,14 @@ public abstract class AbstractModInitializer {
 
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(QUARTZ_ENRICHED_IRON, SimpleItem::new));
+        Items.INSTANCE.setQuartzEnrichedCopper(callback.register(QUARTZ_ENRICHED_COPPER, SimpleItem::new));
         callback.register(
             QUARTZ_ENRICHED_IRON_BLOCK,
             () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
+        );
+        callback.register(
+            QUARTZ_ENRICHED_COPPER_BLOCK,
+            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedCopperBlock())
         );
         Items.INSTANCE.setSilicon(callback.register(SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(PROCESSOR_BINDING, SimpleItem::new));

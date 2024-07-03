@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:cables"
+            "items": "#refinedstorage2:cables"
           }
         ]
       }

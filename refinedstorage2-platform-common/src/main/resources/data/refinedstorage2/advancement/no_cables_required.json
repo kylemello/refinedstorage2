@@ -17,10 +17,10 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:network_transmitters"
+            "items": "#refinedstorage2:network_transmitters"
           },
           {
-            "tag": "refinedstorage2:network_receivers"
+            "items": "#refinedstorage2:network_receivers"
           },
           {
             "items": [

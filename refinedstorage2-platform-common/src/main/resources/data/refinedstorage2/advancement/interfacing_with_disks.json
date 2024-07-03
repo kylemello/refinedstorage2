@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:disk_interfaces"
+            "items": "#refinedstorage2:disk_interfaces"
           }
         ]
       }

@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:relays"
+            "items": "#refinedstorage2:relays"
           }
         ]
       }

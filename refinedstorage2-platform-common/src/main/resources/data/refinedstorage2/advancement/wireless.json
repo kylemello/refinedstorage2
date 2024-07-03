@@ -22,7 +22,7 @@
             ]
           },
           {
-            "tag": "refinedstorage2:wireless_transmitters"
+            "items": "#refinedstorage2:wireless_transmitters"
           }
         ]
       }

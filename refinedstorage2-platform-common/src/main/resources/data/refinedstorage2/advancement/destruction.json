@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "refinedstorage2:destructors"
+            "items": "#refinedstorage2:destructors"
           }
         ]
       }

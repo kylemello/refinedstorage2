@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.KeyMappings;
-import com.refinedmods.refinedstorage2.platform.common.controller.ControllerModelPredicateProvider;
+import com.refinedmods.refinedstorage2.platform.common.controller.ControllerItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardItemPropertyFunction;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntityRenderer;
@@ -411,7 +411,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         Items.INSTANCE.getControllers().forEach(controllerBlockItem -> ItemPropertiesAccessor.register(
             controllerBlockItem.get(),
             createIdentifier("stored_in_controller"),
-            new ControllerModelPredicateProvider()
+            new ControllerItemPropertyFunction()
         ));
     }
 
