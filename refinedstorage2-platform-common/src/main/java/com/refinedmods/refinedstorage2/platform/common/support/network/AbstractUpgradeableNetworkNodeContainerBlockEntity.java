@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -88,18 +89,18 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag());
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND));
+            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
         }
         configureAccordingToUpgrades();
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     private void configureAccordingToUpgrades() {

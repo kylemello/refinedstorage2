@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -56,6 +57,7 @@ public class ItemResourceRendering implements ResourceRendering {
         }
         final Minecraft minecraft = Minecraft.getInstance();
         return getStack(itemResource).getTooltipLines(
+            Item.TooltipContext.EMPTY,
             minecraft.player,
             minecraft.options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL
         );
@@ -81,7 +83,7 @@ public class ItemResourceRendering implements ResourceRendering {
             return;
         }
         final ItemStack itemStack = getStack(itemResource);
-        poseStack.mulPoseMatrix(IN_WORLD_SCALE);
+        poseStack.mulPose(IN_WORLD_SCALE);
         poseStack.last().normal().rotateX(Mth.DEG_TO_RAD * -45f);
         Minecraft.getInstance().getItemRenderer().renderStatic(
             itemStack,

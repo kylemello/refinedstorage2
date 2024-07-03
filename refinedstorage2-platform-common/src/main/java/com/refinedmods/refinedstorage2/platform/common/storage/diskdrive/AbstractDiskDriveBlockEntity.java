@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -50,14 +51,14 @@ public abstract class AbstractDiskDriveBlockEntity extends AbstractDiskContainer
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
         configContainer.load(tag);
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
         configContainer.save(tag);
     }
 

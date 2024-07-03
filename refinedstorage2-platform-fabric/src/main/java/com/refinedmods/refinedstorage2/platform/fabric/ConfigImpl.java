@@ -331,7 +331,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
             if (synchronizer == null || synchronizer.trim().isBlank()) {
                 return Optional.empty();
             }
-            return Optional.of(synchronizer).map(ResourceLocation::new);
+            return Optional.of(synchronizer).map(ResourceLocation::tryParse);
         }
 
         @Override
@@ -373,7 +373,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage2.p
             if (resourceTypeId == null || resourceTypeId.trim().isBlank()) {
                 return Optional.empty();
             }
-            return Optional.of(resourceTypeId).map(ResourceLocation::new);
+            return Optional.of(resourceTypeId).map(ResourceLocation::tryParse);
         }
 
         @Override

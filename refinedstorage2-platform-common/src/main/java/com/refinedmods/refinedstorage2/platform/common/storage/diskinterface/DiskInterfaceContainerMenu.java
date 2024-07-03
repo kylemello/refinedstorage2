@@ -16,12 +16,12 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Res
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ValidatedSlot;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeSlot;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -66,7 +66,9 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
         ));
     }
 
-    public DiskInterfaceContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public DiskInterfaceContainerMenu(final int syncId,
+                                      final Inventory playerInventory,
+                                      final ResourceContainerData resourceContainerData) {
         super(Menus.INSTANCE.getDiskInterface(), syncId);
         addSlots(
             playerInventory.player,
@@ -74,10 +76,9 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
                 AbstractDiskInterfaceBlockEntity.AMOUNT_OF_DISKS,
                 StorageContainerItem.stackValidator()
             ),
-            ResourceContainerImpl.createForFilter(),
+            ResourceContainerImpl.createForFilter(resourceContainerData),
             new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, PlatformApi.INSTANCE.getUpgradeRegistry())
         );
-        initializeResourceSlots(buf);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));
         registerProperty(new ClientProperty<>(PropertyTypes.FILTER_MODE, FilterMode.BLOCK));

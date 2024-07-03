@@ -7,10 +7,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Abs
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.SingleAmountData;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +23,10 @@ public class DetectorContainerMenu extends AbstractSingleAmountContainerMenu {
     @Nullable
     private DetectorBlockEntity detector;
 
-    public DetectorContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getDetector(), syncId, playerInventory, buf, FILTER_HELP);
+    public DetectorContainerMenu(final int syncId,
+                                 final Inventory playerInventory,
+                                 final SingleAmountData singleAmountData) {
+        super(Menus.INSTANCE.getDetector(), syncId, playerInventory, singleAmountData, FILTER_HELP);
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));
         registerProperty(new ClientProperty<>(DetectorPropertyTypes.MODE, DetectorMode.EQUAL));
     }

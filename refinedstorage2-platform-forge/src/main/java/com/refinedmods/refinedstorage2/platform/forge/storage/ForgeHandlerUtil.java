@@ -17,7 +17,7 @@ final class ForgeHandlerUtil {
         long amount = 0;
         for (int i = 0; i < itemHandler.getSlots(); ++i) {
             final ItemStack slot = itemHandler.getStackInSlot(i);
-            if (ItemStack.isSameItemSameTags(slot, stack)) {
+            if (ItemStack.isSameItemSameComponents(slot, stack)) {
                 amount += slot.getCount();
             }
         }

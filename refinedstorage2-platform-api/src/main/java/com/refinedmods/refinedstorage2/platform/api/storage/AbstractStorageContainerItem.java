@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage2.platform.api.storage;
 
-import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 
 import java.util.List;
@@ -28,8 +27,8 @@ public abstract class AbstractStorageContainerItem extends Item implements Stora
     }
 
     @Override
-    public Optional<Storage> resolve(final StorageRepository storageRepository, final ItemStack stack) {
-        return helper.resolve(storageRepository, stack);
+    public Optional<SerializableStorage> resolve(final StorageRepository storageRepository, final ItemStack stack) {
+        return helper.resolveStorage(storageRepository, stack);
     }
 
     @Override
@@ -52,30 +51,27 @@ public abstract class AbstractStorageContainerItem extends Item implements Stora
                               final int slot,
                               final boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        if (!level.isClientSide() && !stack.hasTag() && entity instanceof Player) {
+        if (!level.isClientSide() && !helper.hasStorage(stack) && entity instanceof Player) {
             final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
-            helper.set(storageRepository, stack, createStorage(storageRepository));
+            helper.setStorage(storageRepository, stack, createStorage(storageRepository));
         }
     }
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> tooltip,
-                                final TooltipFlag context) {
-        super.appendHoverText(stack, level, tooltip, context);
-        if (level == null) {
-            return;
-        }
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
-        helper.appendToTooltip(stack, storageRepository, tooltip, context, this::formatAmount, hasCapacity());
+                                final TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
+        final StorageRepository storageRepository = PlatformApi.INSTANCE.getClientStorageRepository();
+        helper.appendToTooltip(stack, storageRepository, tooltip, flag, this::formatAmount, hasCapacity());
     }
 
     protected abstract boolean hasCapacity();
 
     protected abstract String formatAmount(long amount);
 
-    protected abstract Storage createStorage(StorageRepository storageRepository);
+    protected abstract SerializableStorage createStorage(StorageRepository storageRepository);
 
     protected abstract ItemStack createPrimaryDisassemblyByproduct(int count);
 

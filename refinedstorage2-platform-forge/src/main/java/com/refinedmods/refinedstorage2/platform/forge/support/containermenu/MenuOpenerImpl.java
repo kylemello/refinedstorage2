@@ -9,10 +9,18 @@ import net.minecraft.world.MenuProvider;
 public class MenuOpenerImpl implements MenuOpener {
     @Override
     public void openMenu(final ServerPlayer player, final MenuProvider menuProvider) {
-        if (menuProvider instanceof ExtendedMenuProvider extendedMenuProvider) {
-            player.openMenu(menuProvider, buf -> extendedMenuProvider.writeScreenOpeningData(player, buf));
+        if (menuProvider instanceof ExtendedMenuProvider<?> extendedMenuProvider) {
+            openExtendedMenu(player, extendedMenuProvider);
         } else {
             player.openMenu(menuProvider);
         }
+    }
+
+    private static <T> void openExtendedMenu(final ServerPlayer player,
+                                             final ExtendedMenuProvider<T> extendedMenuProvider) {
+        player.openMenu(
+            extendedMenuProvider,
+            buf -> extendedMenuProvider.getMenuCodec().encode(buf, extendedMenuProvider.getMenuData())
+        );
     }
 }

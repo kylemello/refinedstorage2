@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage2.platform.api.PlatformApiProxy;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardItem;
+import com.refinedmods.refinedstorage2.platform.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.BlockBreakDestructorStrategyFactory;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.ConstructorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.constructordestructor.ConstructorContainerMenu;
@@ -28,6 +29,8 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentIds;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
+import com.refinedmods.refinedstorage2.platform.common.content.ExtendedMenuTypeFactory;
 import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.content.LootFunctions;
 import com.refinedmods.refinedstorage2.platform.common.content.MenuTypeFactory;
@@ -36,6 +39,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.RegistryCallback;
 import com.refinedmods.refinedstorage2.platform.common.content.Sounds;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.controller.ControllerData;
 import com.refinedmods.refinedstorage2.platform.common.controller.ControllerType;
 import com.refinedmods.refinedstorage2.platform.common.detector.DetectorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.detector.DetectorContainerMenu;
@@ -45,10 +49,14 @@ import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridBlockEnt
 import com.refinedmods.refinedstorage2.platform.common.grid.CraftingGridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.grid.GridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.GridData;
+import com.refinedmods.refinedstorage2.platform.common.grid.PortableGridData;
 import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.grid.WirelessGridData;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlock;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.iface.InterfaceData;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.importer.ImporterContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.misc.ProcessorItem;
@@ -57,12 +65,17 @@ import com.refinedmods.refinedstorage2.platform.common.networking.NetworkCardIte
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.networking.NetworkTransmitterData;
 import com.refinedmods.refinedstorage2.platform.common.networking.RelayBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.networking.RelayContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage2.platform.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.security.PlatformSecurityNetworkComponentImpl;
+import com.refinedmods.refinedstorage2.platform.common.security.PlayerBoundSecurityCardData;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardBoundPlayer;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardData;
+import com.refinedmods.refinedstorage2.platform.common.security.SecurityCardPermissions;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
@@ -89,6 +102,7 @@ import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.Item
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlockBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.ItemStorageBlockContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.StorageBlockData;
 import com.refinedmods.refinedstorage2.platform.common.storage.storageblock.StorageBlockLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.storage.storagedisk.FluidStorageDiskItem;
 import com.refinedmods.refinedstorage2.platform.common.storage.storagedisk.ItemStorageDiskItem;
@@ -100,18 +114,20 @@ import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMon
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.storagemonitor.StorageMonitorContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.support.BaseBlockItem;
-import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.SimpleItem;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.SingleAmountData;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage2.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReferenceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.FortuneUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RangeUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.upgrade.RegulatorUpgradeState;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.SimpleUpgradeItem;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeWithEnchantedBookRecipeSerializer;
@@ -120,13 +136,20 @@ import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.Creat
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.RangeUpgradeWirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter.WirelessTransmitterData;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -200,7 +223,7 @@ public abstract class AbstractModInitializer {
         registerNetworkComponents();
         registerWirelessTransmitterRangeModifiers();
         registerPermissions();
-        registerSlotReferenceProvider();
+        registerInventorySlotReference();
     }
 
     private void registerStorageTypes() {
@@ -380,7 +403,7 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setWrench(callback.register(WRENCH, WrenchItem::new));
         Items.INSTANCE.setStorageHousing(callback.register(STORAGE_HOUSING, SimpleItem::new));
         callback.register(MACHINE_CASING, () -> new BaseBlockItem(Blocks.INSTANCE.getMachineCasing()));
-        callback.register(STORAGE_MONITOR, () -> new NetworkNodeBlockItem(Blocks.INSTANCE.getStorageMonitor()));
+        callback.register(STORAGE_MONITOR, () -> Blocks.INSTANCE.getStorageMonitor().createBlockItem());
         callback.register(INTERFACE, () -> Blocks.INSTANCE.getInterface().createBlockItem());
         Items.INSTANCE.setConstructionCore(callback.register(CONSTRUCTION_CORE, SimpleItem::new));
         Items.INSTANCE.setDestructionCore(callback.register(DESTRUCTION_CORE, SimpleItem::new));
@@ -450,20 +473,12 @@ public abstract class AbstractModInitializer {
         ));
         final Supplier<AbstractUpgradeItem> speedUpgrade = callback.register(
             ContentIds.SPEED_UPGRADE,
-            () -> new SimpleUpgradeItem(
-                PlatformApi.INSTANCE.getUpgradeRegistry(),
-                Platform.INSTANCE.getConfig().getUpgrade()::getSpeedUpgradeEnergyUsage,
-                false
-            )
+            SimpleUpgradeItem::speedUpgrade
         );
         Items.INSTANCE.setSpeedUpgrade(speedUpgrade);
         final Supplier<AbstractUpgradeItem> stackUpgrade = callback.register(
             ContentIds.STACK_UPGRADE,
-            () -> new SimpleUpgradeItem(
-                PlatformApi.INSTANCE.getUpgradeRegistry(),
-                Platform.INSTANCE.getConfig().getUpgrade()::getStackUpgradeEnergyUsage,
-                false
-            )
+            SimpleUpgradeItem::stackUpgrade
         );
         Items.INSTANCE.setStackUpgrade(stackUpgrade);
         final Supplier<AbstractUpgradeItem> fortune1Upgrade = callback.register(
@@ -483,11 +498,7 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setFortune3Upgrade(fortune3Upgrade);
         final Supplier<AbstractUpgradeItem> silkTouchUpgrade = callback.register(
             ContentIds.SILK_TOUCH_UPGRADE,
-            () -> new SimpleUpgradeItem(
-                PlatformApi.INSTANCE.getUpgradeRegistry(),
-                Platform.INSTANCE.getConfig().getUpgrade()::getSilkTouchUpgradeEnergyUsage,
-                true
-            )
+            SimpleUpgradeItem::silkTouchUpgrade
         );
         Items.INSTANCE.setSilkTouchUpgrade(silkTouchUpgrade);
         Items.INSTANCE.setRangeUpgrade(callback.register(
@@ -676,120 +687,125 @@ public abstract class AbstractModInitializer {
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
-                                       final MenuTypeFactory menuTypeFactory) {
+                                       final MenuTypeFactory menuTypeFactory,
+                                       final ExtendedMenuTypeFactory extendedMenuTypeFactory) {
         Menus.INSTANCE.setController(callback.register(
             CONTROLLER,
-            () -> menuTypeFactory.create(ControllerContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ControllerContainerMenu::new, ControllerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setDiskDrive(callback.register(
             DISK_DRIVE,
-            () -> menuTypeFactory.create(DiskDriveContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(DiskDriveContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setGrid(callback.register(
             GRID,
-            () -> menuTypeFactory.create(GridContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(GridContainerMenu::new, GridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setCraftingGrid(callback.register(
             CRAFTING_GRID,
-            () -> menuTypeFactory.create(CraftingGridContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(CraftingGridContainerMenu::new, GridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setWirelessGrid(callback.register(
             WIRELESS_GRID,
-            () -> menuTypeFactory.create(WirelessGridContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(WirelessGridContainerMenu::new, WirelessGridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setItemStorage(callback.register(
             ITEM_STORAGE_BLOCK,
-            () -> menuTypeFactory.create(ItemStorageBlockContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ItemStorageBlockContainerMenu::new, StorageBlockData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setFluidStorage(callback.register(
             FLUID_STORAGE_BLOCK,
-            () -> menuTypeFactory.create(FluidStorageBlockContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(FluidStorageBlockContainerMenu::new, StorageBlockData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setImporter(callback.register(
             IMPORTER,
-            () -> menuTypeFactory.create(ImporterContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ImporterContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setExporter(callback.register(
             EXPORTER,
-            () -> menuTypeFactory.create(ExporterContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ExporterContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setInterface(callback.register(
             INTERFACE,
-            () -> menuTypeFactory.create(InterfaceContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(InterfaceContainerMenu::new, InterfaceData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setExternalStorage(callback.register(
             EXTERNAL_STORAGE,
-            () -> menuTypeFactory.create(ExternalStorageContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ExternalStorageContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setDetector(callback.register(
             DETECTOR,
-            () -> menuTypeFactory.create(DetectorContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(DetectorContainerMenu::new, SingleAmountData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setDestructor(callback.register(
             DESTRUCTOR,
-            () -> menuTypeFactory.create(DestructorContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(DestructorContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setConstructor(callback.register(
             CONSTRUCTOR,
-            () -> menuTypeFactory.create(ConstructorContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(ConstructorContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setRegulatorUpgrade(callback.register(
             REGULATOR_UPGRADE,
-            () -> menuTypeFactory.create(RegulatorUpgradeContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(RegulatorUpgradeContainerMenu::new, SingleAmountData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setWirelessTransmitter(callback.register(
             WIRELESS_TRANSMITTER,
-            () -> menuTypeFactory.create(WirelessTransmitterContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(WirelessTransmitterContainerMenu::new,
+                WirelessTransmitterData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setStorageMonitor(callback.register(
             STORAGE_MONITOR,
-            () -> menuTypeFactory.create(StorageMonitorContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(StorageMonitorContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setNetworkTransmitter(callback.register(
             NETWORK_TRANSMITTER,
-            () -> menuTypeFactory.create(NetworkTransmitterContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(NetworkTransmitterContainerMenu::new,
+                NetworkTransmitterData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setPortableGridBlock(callback.register(
             createIdentifier("portable_grid_block"),
-            () -> menuTypeFactory.create(PortableGridBlockContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(PortableGridBlockContainerMenu::new, PortableGridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setPortableGridItem(callback.register(
             createIdentifier("portable_grid_item"),
-            () -> menuTypeFactory.create(PortableGridItemContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(PortableGridItemContainerMenu::new, PortableGridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setSecurityCard(callback.register(
             SECURITY_CARD,
-            () -> menuTypeFactory.create(SecurityCardContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(SecurityCardContainerMenu::new,
+                PlayerBoundSecurityCardData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setFallbackSecurityCard(callback.register(
             FALLBACK_SECURITY_CARD,
-            () -> menuTypeFactory.create(FallbackSecurityCardContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(FallbackSecurityCardContainerMenu::new, SecurityCardData.STREAM_CODEC)
         ));
-        Menus.INSTANCE.setSecurityManager(callback.register(SECURITY_MANAGER, () -> menuTypeFactory.create(
-            (syncId, playerInventory, buf) -> new SecurityManagerContainerMenu(syncId, playerInventory)
-        )));
+        Menus.INSTANCE.setSecurityManager(callback.register(
+            SECURITY_MANAGER,
+            () -> menuTypeFactory.create(SecurityManagerContainerMenu::new)
+        ));
         Menus.INSTANCE.setRelay(callback.register(
             RELAY,
-            () -> menuTypeFactory.create(RelayContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(RelayContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setDiskInterface(callback.register(
             DISK_INTERFACE,
-            () -> menuTypeFactory.create(DiskInterfaceContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(DiskInterfaceContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
     }
 
-    protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType> callback) {
+    protected final void registerLootFunctions(final RegistryCallback<LootItemFunctionType<?>> callback) {
         LootFunctions.INSTANCE.setStorageBlock(callback.register(
             STORAGE_BLOCK,
-            () -> new LootItemFunctionType(Codec.unit(new StorageBlockLootItemFunction()))
+            () -> new LootItemFunctionType<>(MapCodec.unit(new StorageBlockLootItemFunction()))
         ));
         LootFunctions.INSTANCE.setPortableGrid(callback.register(
             PORTABLE_GRID,
-            () -> new LootItemFunctionType(Codec.unit(new PortableGridLootItemFunction()))
+            () -> new LootItemFunctionType<>(MapCodec.unit(new PortableGridLootItemFunction()))
         ));
         LootFunctions.INSTANCE.setEnergy(callback.register(
             createIdentifier("energy"),
-            () -> new LootItemFunctionType(Codec.unit(new EnergyLootItemFunction()))
+            () -> new LootItemFunctionType<>(MapCodec.unit(new EnergyLootItemFunction()))
         ));
     }
 
@@ -807,14 +823,56 @@ public abstract class AbstractModInitializer {
         );
     }
 
-    protected final void registerSlotReferenceProvider() {
+    protected final void registerDataComponents(final RegistryCallback<DataComponentType<?>> callback) {
+        DataComponents.INSTANCE.setEnergy(
+            callback.register(createIdentifier("energy"), () -> DataComponentType.<Long>builder()
+                .persistent(Codec.LONG)
+                .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                .build()));
+        DataComponents.INSTANCE.setNetworkLocation(
+            callback.register(createIdentifier("network_location"), () -> DataComponentType.<GlobalPos>builder()
+                .persistent(GlobalPos.CODEC)
+                .networkSynchronized(GlobalPos.STREAM_CODEC)
+                .build()));
+        DataComponents.INSTANCE.setStorageReference(
+            callback.register(createIdentifier("storage_reference"), () -> DataComponentType.<UUID>builder()
+                .persistent(UUIDUtil.CODEC)
+                .networkSynchronized(UUIDUtil.STREAM_CODEC)
+                .build()));
+        DataComponents.INSTANCE.setRegulatorUpgradeState(
+            callback.register(createIdentifier("regulator_upgrade_state"),
+                () -> DataComponentType.<RegulatorUpgradeState>builder()
+                    .persistent(RegulatorUpgradeState.CODEC)
+                    .networkSynchronized(RegulatorUpgradeState.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setSecurityCardBoundPlayer(
+            callback.register(createIdentifier("security_card_bound_player"),
+                () -> DataComponentType.<SecurityCardBoundPlayer>builder()
+                    .persistent(SecurityCardBoundPlayer.CODEC)
+                    .networkSynchronized(SecurityCardBoundPlayer.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setSecurityCardPermissions(
+            callback.register(createIdentifier("security_card_permissions"),
+                () -> DataComponentType.<SecurityCardPermissions>builder()
+                    .persistent(SecurityCardPermissions.CODEC)
+                    .networkSynchronized(SecurityCardPermissions.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setConfigurationCardState(
+            callback.register(createIdentifier("configuration_card_state"),
+                () -> DataComponentType.<ConfigurationCardState>builder()
+                    .persistent(ConfigurationCardState.CODEC)
+                    .networkSynchronized(ConfigurationCardState.STREAM_CODEC)
+                    .build()));
+    }
+
+    protected final void registerInventorySlotReference() {
         PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
             createIdentifier("inventory"),
             InventorySlotReferenceFactory.INSTANCE
         );
     }
 
-    protected static boolean allowNbtUpdateAnimation(final ItemStack oldStack, final ItemStack newStack) {
+    protected static boolean allowComponentsUpdateAnimation(final ItemStack oldStack, final ItemStack newStack) {
         return oldStack.getItem() != newStack.getItem();
     }
 }

@@ -42,7 +42,7 @@ public abstract class AbstractItemGridResourceFactory implements GridResourceFac
 
     private String getTooltip(final ItemStack itemStack) {
         return itemStack
-            .getTooltipLines(null, TooltipFlag.ADVANCED)
+            .getTooltipLines(Item.TooltipContext.EMPTY, null, TooltipFlag.ADVANCED)
             .stream()
             .map(Component::getString)
             .collect(Collectors.joining("\n"));

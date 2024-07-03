@@ -24,7 +24,7 @@ public class ItemStorageMonitorExtractionStrategy implements StorageMonitorExtra
         }
         final long extracted = network.getComponent(StorageNetworkComponent.class).extract(
             itemResource,
-            fullStack ? itemResource.item().getMaxStackSize() : 1,
+            fullStack ? itemResource.item().getDefaultMaxStackSize() : 1,
             Action.EXECUTE,
             actor
         );

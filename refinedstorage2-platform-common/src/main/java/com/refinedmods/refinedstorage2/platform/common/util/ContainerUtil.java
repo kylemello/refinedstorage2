@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.util;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -8,28 +9,35 @@ public final class ContainerUtil {
     private ContainerUtil() {
     }
 
-    public static CompoundTag write(final Container container) {
+    public static CompoundTag write(final Container container, final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         for (int i = 0; i < container.getContainerSize(); ++i) {
             final ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
-                tag.put(getSlotKey(i), stack.save(new CompoundTag()));
+                tag.put(getSlotKey(i), stack.save(provider));
             }
         }
         return tag;
     }
 
-    public static void read(final CompoundTag tag, final Container container) {
+    public static void read(final CompoundTag tag,
+                            final Container container,
+                            final HolderLookup.Provider provider) {
         for (int i = 0; i < container.getContainerSize(); ++i) {
-            readSlot(tag, container, i);
+            readSlot(tag, container, i, provider);
         }
     }
 
-    private static void readSlot(final CompoundTag tag, final Container container, final int i) {
+    private static void readSlot(
+        final CompoundTag tag,
+        final Container container,
+        final int i,
+        final HolderLookup.Provider provider
+    ) {
         if (!hasItemInSlot(tag, i)) {
             return;
         }
-        final ItemStack stack = getItemInSlot(tag, i);
+        final ItemStack stack = getItemInSlot(tag, i, provider);
         if (stack.isEmpty()) {
             return;
         }
@@ -44,7 +52,11 @@ public final class ContainerUtil {
         return tag.contains(getSlotKey(slot));
     }
 
-    public static ItemStack getItemInSlot(final CompoundTag tag, final int i) {
-        return ItemStack.of(tag.getCompound(getSlotKey(i)));
+    public static ItemStack getItemInSlot(
+        final CompoundTag tag,
+        final int i,
+        final HolderLookup.Provider provider
+    ) {
+        return ItemStack.parseOptional(provider, tag.getCompound(getSlotKey(i)));
     }
 }

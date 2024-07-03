@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.network.NetworkNo
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -25,11 +26,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class NetworkReceiverBlock extends AbstractColoredBlock<NetworkReceiverBlock> implements EntityBlock {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     private static final AbstractBlockEntityTicker<NetworkReceiverBlockEntity> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getNetworkReceiver, ACTIVE);
+    private static final Component HELP = createTranslation("item", "network_receiver.help");
 
     public NetworkReceiverBlock(final DyeColor color, final MutableComponent name) {
         super(BlockConstants.PROPERTIES, color, name);
@@ -67,7 +71,7 @@ public class NetworkReceiverBlock extends AbstractColoredBlock<NetworkReceiverBl
 
     @Override
     public BaseBlockItem createBlockItem() {
-        return new NetworkNodeBlockItem(this);
+        return new NetworkNodeBlockItem(this, HELP);
     }
 
     @Override

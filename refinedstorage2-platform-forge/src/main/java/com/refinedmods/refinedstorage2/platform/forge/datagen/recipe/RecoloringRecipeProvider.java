@@ -3,6 +3,9 @@ package com.refinedmods.refinedstorage2.platform.forge.datagen.recipe;
 import com.refinedmods.refinedstorage2.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage2.platform.common.content.Tags;
 
+import java.util.concurrent.CompletableFuture;
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -17,8 +20,9 @@ import net.minecraft.world.item.Items;
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createIdentifier;
 
 public class RecoloringRecipeProvider extends RecipeProvider {
-    public RecoloringRecipeProvider(final PackOutput output) {
-        super(output);
+    public RecoloringRecipeProvider(final PackOutput output,
+                                    final CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
     }
 
     @Override

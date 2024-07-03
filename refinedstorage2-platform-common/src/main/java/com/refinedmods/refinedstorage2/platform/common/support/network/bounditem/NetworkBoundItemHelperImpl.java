@@ -5,19 +5,15 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Ne
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemSession;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -32,23 +28,14 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
         .withStyle(ChatFormatting.RED);
     private static final Component UNBOUND_HELP = createTranslation("item", "network_item.unbound.help");
 
-    private static final String TAG_X = "x";
-    private static final String TAG_Y = "y";
-    private static final String TAG_Z = "z";
-    private static final String TAG_DIMENSION = "dim";
-
     @Override
     public boolean isBound(final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return false;
-        }
-        return tag.contains(TAG_X) && tag.contains(TAG_Y) && tag.contains(TAG_Z) && tag.contains(TAG_DIMENSION);
+        return stack.has(DataComponents.INSTANCE.getNetworkLocation());
     }
 
     @Override
     public void addTooltip(final ItemStack stack, final List<Component> lines) {
-        getNetworkReference(stack).ifPresentOrElse(
+        getNetworkLocation(stack).ifPresentOrElse(
             network -> lines.add(createTranslation(
                 "item",
                 "network_item.bound_to",
@@ -70,11 +57,8 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
         if (!(blockEntity instanceof NetworkBoundItemTargetBlockEntity)) {
             return InteractionResult.PASS;
         }
-        final CompoundTag tag = stack.getOrCreateTag();
-        tag.putInt(TAG_X, blockEntity.getBlockPos().getX());
-        tag.putInt(TAG_Y, blockEntity.getBlockPos().getY());
-        tag.putInt(TAG_Z, blockEntity.getBlockPos().getZ());
-        tag.putString(TAG_DIMENSION, ctx.getLevel().dimension().location().toString());
+        final GlobalPos pos = GlobalPos.of(ctx.getLevel().dimension(), blockEntity.getBlockPos());
+        stack.set(DataComponents.INSTANCE.getNetworkLocation(), pos);
         return InteractionResult.SUCCESS;
     }
 
@@ -90,26 +74,15 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
     public NetworkBoundItemSession openSession(final ItemStack stack,
                                                final ServerPlayer player,
                                                final SlotReference slotReference) {
-        final Optional<NetworkBoundItemSessionImpl.NetworkReference> networkReference = getNetworkReference(stack);
+        final Optional<GlobalPos> location = getNetworkLocation(stack);
         return new NetworkBoundItemSessionImpl(
             player,
             slotReference,
-            networkReference.orElse(null)
+            location.orElse(null)
         );
     }
 
-    private Optional<NetworkBoundItemSessionImpl.NetworkReference> getNetworkReference(final ItemStack stack) {
-        if (!isBound(stack)) {
-            return Optional.empty();
-        }
-        final CompoundTag tag = Objects.requireNonNull(stack.getTag());
-        final int x = tag.getInt(TAG_X);
-        final int y = tag.getInt(TAG_Y);
-        final int z = tag.getInt(TAG_Z);
-        final ResourceLocation dimension = new ResourceLocation(tag.getString(TAG_DIMENSION));
-        return Optional.of(new NetworkBoundItemSessionImpl.NetworkReference(
-            ResourceKey.create(Registries.DIMENSION, dimension),
-            new BlockPos(x, y, z)
-        ));
+    private Optional<GlobalPos> getNetworkLocation(final ItemStack stack) {
+        return Optional.ofNullable(stack.get(DataComponents.INSTANCE.getNetworkLocation()));
     }
 }

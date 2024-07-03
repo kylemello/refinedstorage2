@@ -14,6 +14,7 @@ import com.refinedmods.refinedstorage2.platform.test.SetupMinecraft;
 import java.util.Comparator;
 import java.util.Optional;
 
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,9 +50,9 @@ class GridSortingTypesTest {
             view -> Comparator.comparing(GridResource::getName),
             view -> Comparator.comparing(GridResource::getAmount)
         );
-        dirt = new ItemResource(Items.DIRT, null);
-        stone = new ItemResource(Items.STONE, null);
-        gold = new ItemResource(Items.GOLD_INGOT, null);
+        dirt = new ItemResource(Items.DIRT, DataComponentPatch.EMPTY);
+        stone = new ItemResource(Items.STONE, DataComponentPatch.EMPTY);
+        gold = new ItemResource(Items.GOLD_INGOT, DataComponentPatch.EMPTY);
     }
 
     @ParameterizedTest

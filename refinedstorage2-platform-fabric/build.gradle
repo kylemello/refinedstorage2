@@ -9,10 +9,6 @@ repositories {
         name = 'Cloth Config'
         url 'https://maven.shedaniel.me/'
     }
-    maven {
-        name = 'NoIndium'
-        url = 'https://maven.cafeteria.dev/releases/'
-    }
 }
 
 fabricProject("refinedstorage2", project(":refinedstorage2-platform-common"), apis, compileApis)
@@ -28,10 +24,8 @@ dependencies {
     }
     include libs.teamreborn.energy
 
-    modApi "me.luligabi:NoIndium:${noIndiumVersion}"
-    include "me.luligabi:NoIndium:${noIndiumVersion}"
-
     modApi libs.modmenu
 }
 
 enablePublishing()
+

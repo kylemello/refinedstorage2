@@ -12,20 +12,23 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.AbstractSingleAmountContainerMenu;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.SingleAmountData;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -35,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<DetectorNetworkNode>
-    implements NetworkNodeMenuProvider {
+    implements NetworkNodeExtendedMenuProvider<SingleAmountData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectorBlockEntity.class);
 
     private static final String TAG_AMOUNT = "amount";
@@ -63,17 +66,17 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
         tag.putDouble(TAG_AMOUNT, amount);
         tag.putInt(TAG_MODE, DetectorModeSettings.getDetectorMode(mainNode.getMode()));
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
         if (tag.contains(TAG_AMOUNT)) {
             this.amount = tag.getDouble(TAG_AMOUNT);
         }
@@ -126,8 +129,17 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        AbstractSingleAmountContainerMenu.writeToBuf(buf, amount, filter.getFilterContainer(), null);
+    public SingleAmountData getMenuData() {
+        return new SingleAmountData(
+            Optional.empty(),
+            amount,
+            ResourceContainerData.of(filter.getFilterContainer())
+        );
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, SingleAmountData> getMenuCodec() {
+        return SingleAmountData.STREAM_CODEC;
     }
 
     @Override

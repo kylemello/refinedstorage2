@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage2.platform.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage2.api.network.impl.node.storage.StorageNetworkNode;
-import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.storage.FluidStorageType;
@@ -50,7 +50,7 @@ public class FluidStorageBlockBlockEntity extends AbstractStorageBlockBlockEntit
     }
 
     @Override
-    protected Storage createStorage(final Runnable listener) {
+    protected SerializableStorage createStorage(final Runnable listener) {
         return StorageTypes.FLUID.create(variant.getCapacity(), listener);
     }
 

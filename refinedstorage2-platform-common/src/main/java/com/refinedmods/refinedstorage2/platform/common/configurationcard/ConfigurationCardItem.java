@@ -2,17 +2,16 @@ package com.refinedmods.refinedstorage2.platform.common.configurationcard;
 
 import com.refinedmods.refinedstorage2.platform.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -30,18 +29,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
-import static java.util.Objects.requireNonNull;
 
 public class ConfigurationCardItem extends Item {
     private static final Component EMPTY_HELP = createTranslation("item", "configuration_card.empty_help");
     private static final Component CONFIGURED_HELP = createTranslation("item", "configuration_card.configured_help");
-
     private static final Component EMPTY = createTranslation("item", "configuration_card.empty")
         .withStyle(ChatFormatting.GRAY);
-
-    private static final String TAG_TYPE = "type";
-    private static final String TAG_CONFIG = "config";
-    private static final String TAG_UPGRADES = "upgrades";
 
     public ConfigurationCardItem() {
         super(new Item.Properties().stacksTo(1));
@@ -57,35 +50,40 @@ public class ConfigurationCardItem extends Item {
             return InteractionResult.CONSUME;
         }
         final ItemStack stack = ctx.getItemInHand();
-        if (stack.getTag() == null) {
-            writeConfiguration(stack, ctx.getPlayer(), target, blockEntity.getType());
+        final ConfigurationCardState state = stack.get(DataComponents.INSTANCE.getConfigurationCardState());
+        if (state == null) {
+            stack.set(DataComponents.INSTANCE.getConfigurationCardState(), new ConfigurationCardState(
+                blockEntity.getType(),
+                createConfigTag(target, ctx.getLevel().registryAccess()),
+                target.getUpgradeItems()
+            ));
+            sendCopiedConfigurationMessage(ctx.getPlayer(), blockEntity.getType());
             return InteractionResult.CONSUME;
         }
-        return applyConfiguration(ctx.getPlayer(), blockEntity, target, stack.getTag());
+        return applyConfiguration(ctx.getPlayer(), blockEntity, target, state, ctx.getLevel().registryAccess());
     }
 
     private InteractionResult applyConfiguration(
         final Player player,
         final BlockEntity targetBlockEntity,
         final ConfigurationCardTarget target,
-        final CompoundTag tag
+        final ConfigurationCardState state,
+        final HolderLookup.Provider provider
     ) {
-        final BlockEntityType<?> existingConfiguredType = getConfiguredType(tag);
-        if (existingConfiguredType != targetBlockEntity.getType()) {
-            return configurationCardIsConfiguredForDifferentType(player, existingConfiguredType);
+        if (state.blockEntityType() != targetBlockEntity.getType()) {
+            return configurationCardIsConfiguredForDifferentType(player, state.blockEntityType());
         }
-        target.readConfiguration(tag.getCompound(TAG_CONFIG));
-        tryTransferUpgrades(player, target, tag);
+        target.readConfiguration(state.config(), provider);
+        tryTransferUpgrades(player, target, state.upgradeItems());
         targetBlockEntity.setChanged();
         player.sendSystemMessage(createTranslation("item", "configuration_card.applied_configuration"));
         return InteractionResult.SUCCESS;
     }
 
-    private void tryTransferUpgrades(final Player player, final ConfigurationCardTarget target, final CompoundTag tag) {
-        final ListTag upgradesTag = tag.getList(TAG_UPGRADES, Tag.TAG_STRING);
-        for (final Tag upgradeItemTag : upgradesTag) {
-            final ResourceLocation upgradeItemKey = new ResourceLocation(upgradeItemTag.getAsString());
-            final Item upgradeItem = BuiltInRegistries.ITEM.get(upgradeItemKey);
+    private void tryTransferUpgrades(final Player player,
+                                     final ConfigurationCardTarget target,
+                                     final List<Item> upgradeItems) {
+        for (final Item upgradeItem : upgradeItems) {
             final int upgradeIndexInPlayerInventory = player.getInventory().findSlotMatchingItem(
                 new ItemStack(upgradeItem)
             );
@@ -109,30 +107,9 @@ public class ConfigurationCardItem extends Item {
         return InteractionResult.CONSUME;
     }
 
-    private void writeConfiguration(final ItemStack stack,
-                                    final Player player,
-                                    final ConfigurationCardTarget target,
-                                    final BlockEntityType<?> type) {
+    private CompoundTag createConfigTag(final ConfigurationCardTarget target, final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
-        tag.putString(TAG_TYPE, requireNonNull(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type)).toString());
-        tag.put(TAG_CONFIG, createConfigTag(target));
-        tag.put(TAG_UPGRADES, createUpgradesTag(target));
-        stack.setTag(tag);
-        sendCopiedConfigurationMessage(player, type);
-    }
-
-    private CompoundTag createConfigTag(final ConfigurationCardTarget target) {
-        final CompoundTag tag = new CompoundTag();
-        target.writeConfiguration(tag);
-        return tag;
-    }
-
-    private ListTag createUpgradesTag(final ConfigurationCardTarget target) {
-        final ListTag tag = new ListTag();
-        target.getUpgradeItems().forEach(item -> {
-            final ResourceLocation itemKey = BuiltInRegistries.ITEM.getKey(item);
-            tag.add(StringTag.valueOf(itemKey.toString()));
-        });
+        target.writeConfiguration(tag, provider);
         return tag;
     }
 
@@ -160,37 +137,20 @@ public class ConfigurationCardItem extends Item {
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> lines,
                                 final TooltipFlag flag) {
-        super.appendHoverText(stack, level, lines, flag);
-        if (stack.getTag() == null) {
+        super.appendHoverText(stack, context, lines, flag);
+        final ConfigurationCardState state = stack.get(DataComponents.INSTANCE.getConfigurationCardState());
+        if (state == null) {
             lines.add(EMPTY);
-            return;
-        }
-        final BlockEntityType<?> configuredType = getConfiguredType(stack.getTag());
-        if (configuredType == null) {
             return;
         }
         lines.add(createTranslation(
             "item",
             "configuration_card.configured",
-            getConfiguredTypeTranslation(configuredType).withStyle(ChatFormatting.WHITE)
+            getConfiguredTypeTranslation(state.blockEntityType()).withStyle(ChatFormatting.WHITE)
         ).withStyle(ChatFormatting.GRAY));
-    }
-
-    @Nullable
-    private BlockEntityType<?> getConfiguredType(final CompoundTag tag) {
-        final ResourceLocation type = new ResourceLocation(tag.getString(TAG_TYPE));
-        return BuiltInRegistries.BLOCK_ENTITY_TYPE.get(type);
-    }
-
-    private MutableComponent getConfiguredTypeTranslation(final BlockEntityType<?> type) {
-        final ResourceLocation typeId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        if (typeId == null) {
-            return Component.empty();
-        }
-        return Component.translatable("block." + typeId.getNamespace() + "." + typeId.getPath());
     }
 
     @Override
@@ -199,6 +159,14 @@ public class ConfigurationCardItem extends Item {
     }
 
     boolean isActive(final ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().contains(TAG_TYPE);
+        return stack.has(DataComponents.INSTANCE.getConfigurationCardState());
+    }
+
+    private static MutableComponent getConfiguredTypeTranslation(final BlockEntityType<?> type) {
+        final ResourceLocation typeId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
+        if (typeId == null) {
+            return Component.empty();
+        }
+        return Component.translatable("block." + typeId.getNamespace() + "." + typeId.getPath());
     }
 }

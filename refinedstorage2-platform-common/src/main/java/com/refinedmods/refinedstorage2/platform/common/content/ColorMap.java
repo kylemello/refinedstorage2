@@ -35,7 +35,7 @@ public class ColorMap<T> {
         if (color == defaultColor) {
             return baseId;
         }
-        return new ResourceLocation(baseId.getNamespace(), color.getName() + "_" + baseId.getPath());
+        return ResourceLocation.fromNamespaceAndPath(baseId.getNamespace(), color.getName() + "_" + baseId.getPath());
     }
 
     public void forEach(final ColoredConsumer<T> consumer) {

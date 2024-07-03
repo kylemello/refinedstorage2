@@ -62,8 +62,7 @@ public class DiskInterfaceUnbakedModel implements UnbakedModel {
     @Override
     public BakedModel bake(final ModelBaker baker,
                            final Function<Material, TextureAtlasSprite> spriteGetter,
-                           final ModelState state,
-                           final ResourceLocation location) {
+                           final ModelState state) {
         final Map<Item, BakedModel> diskModels = PlatformApi.INSTANCE.getStorageContainerItemHelper()
             .getDiskModelsByItem()
             .entrySet()

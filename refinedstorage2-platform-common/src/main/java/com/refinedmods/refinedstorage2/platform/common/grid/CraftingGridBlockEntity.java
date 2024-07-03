@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage2.platform.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
+import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,13 +24,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
+public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops {
     private static final String TAG_CRAFTING_MATRIX = "matrix";
 
     @Nullable
@@ -58,13 +61,14 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
         if (level.isClientSide()) {
             return;
         }
-        if (currentRecipe == null || !currentRecipe.matches(craftingMatrix, level)) {
+        final CraftingInput input = craftingMatrix.asCraftInput();
+        if (currentRecipe == null || !currentRecipe.matches(input, level)) {
             currentRecipe = loadRecipe(level);
         }
         if (currentRecipe == null) {
             setResult(ItemStack.EMPTY);
         } else {
-            setResult(currentRecipe.assemble(craftingMatrix, level.registryAccess()));
+            setResult(currentRecipe.assemble(input, level.registryAccess()));
         }
     }
 
@@ -76,7 +80,7 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
     private CraftingRecipe loadRecipe(final Level level) {
         return level
             .getRecipeManager()
-            .getRecipeFor(RecipeType.CRAFTING, craftingMatrix, level)
+            .getRecipeFor(RecipeType.CRAFTING, craftingMatrix.asCraftInput(), level)
             .map(RecipeHolder::value)
             .orElse(null);
     }
@@ -89,11 +93,11 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
         return craftingResult;
     }
 
-    NonNullList<ItemStack> getRemainingItems(final Player player) {
+    NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput input) {
         if (level == null || currentRecipe == null) {
             return NonNullList.create();
         }
-        return Platform.INSTANCE.getRemainingCraftingItems(player, currentRecipe, craftingMatrix);
+        return Platform.INSTANCE.getRemainingCraftingItems(player, currentRecipe, input);
     }
 
     @Override
@@ -108,16 +112,16 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_CRAFTING_MATRIX, ContainerUtil.write(craftingMatrix));
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_CRAFTING_MATRIX, ContainerUtil.write(craftingMatrix, provider));
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         if (tag.contains(TAG_CRAFTING_MATRIX)) {
-            ContainerUtil.read(tag.getCompound(TAG_CRAFTING_MATRIX), craftingMatrix);
+            ContainerUtil.read(tag.getCompound(TAG_CRAFTING_MATRIX), craftingMatrix, provider);
         }
     }
 
@@ -125,6 +129,15 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity {
     public void setLevel(final Level level) {
         super.setLevel(level);
         setOutputSilently(level);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getDrops() {
+        final NonNullList<ItemStack> drops = NonNullList.create();
+        for (int i = 0; i < craftingMatrix.getContainerSize(); ++i) {
+            drops.add(craftingMatrix.getItem(i));
+        }
+        return drops;
     }
 
     Optional<Network> getNetwork() {

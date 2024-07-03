@@ -4,8 +4,6 @@ import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.platform.api.grid.strategy.GridInsertionStrategyFactory;
-import com.refinedmods.refinedstorage2.platform.common.support.ClientToServerCommunications;
-import com.refinedmods.refinedstorage2.platform.common.support.ServerToClientCommunications;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage2.platform.common.support.render.FluidRenderer;
@@ -25,16 +23,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -56,16 +55,6 @@ public class PlatformProxy implements Platform {
     }
 
     @Override
-    public ServerToClientCommunications getServerToClientCommunications() {
-        return ensureLoaded().getServerToClientCommunications();
-    }
-
-    @Override
-    public ClientToServerCommunications getClientToServerCommunications() {
-        return ensureLoaded().getClientToServerCommunications();
-    }
-
-    @Override
     public MenuOpener getMenuOpener() {
         return ensureLoaded().getMenuOpener();
     }
@@ -73,11 +62,6 @@ public class PlatformProxy implements Platform {
     @Override
     public long getBucketAmount() {
         return ensureLoaded().getBucketAmount();
-    }
-
-    @Override
-    public TagKey<Item> getWrenchTag() {
-        return ensureLoaded().getWrenchTag();
     }
 
     @Override
@@ -149,8 +133,8 @@ public class PlatformProxy implements Platform {
     @Override
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player,
                                                             final CraftingRecipe craftingRecipe,
-                                                            final CraftingContainer container) {
-        return ensureLoaded().getRemainingCraftingItems(player, craftingRecipe, container);
+                                                            final CraftingInput input) {
+        return ensureLoaded().getRemainingCraftingItems(player, craftingRecipe, input);
     }
 
     @Override
@@ -221,6 +205,16 @@ public class PlatformProxy implements Platform {
     @Override
     public Optional<EnergyStorage> getEnergyStorage(final ItemStack stack) {
         return ensureLoaded().getEnergyStorage(stack);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToServer(final T packet) {
+        ensureLoaded().sendPacketToServer(packet);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
+        ensureLoaded().sendPacketToClient(player, packet);
     }
 
     private Platform ensureLoaded() {

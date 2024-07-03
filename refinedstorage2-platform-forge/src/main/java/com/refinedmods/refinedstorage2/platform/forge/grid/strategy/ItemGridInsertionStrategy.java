@@ -38,7 +38,7 @@ public class ItemGridInsertionStrategy implements GridInsertionStrategy {
         if (carried.isEmpty()) {
             return false;
         }
-        final ItemResource itemResource = new ItemResource(carried.getItem(), carried.getTag());
+        final ItemResource itemResource = ItemResource.ofItemStack(carried);
         gridOperations.insert(
             itemResource,
             insertMode,

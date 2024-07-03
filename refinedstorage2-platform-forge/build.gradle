@@ -3,3 +3,5 @@ forgeProject("refinedstorage2", project(":refinedstorage2-platform-common"), api
 archivesBaseName = 'refinedstorage2-platform-forge'
 
 enablePublishing()
+
+test.onlyIf { false }

@@ -4,10 +4,10 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceCon
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage2.platform.common.support.SchedulingModeType;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractSchedulingNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -27,10 +27,10 @@ public abstract class AbstractSchedulingContainerMenu<T extends AbstractScheduli
     protected AbstractSchedulingContainerMenu(final MenuType<?> type,
                                               final int syncId,
                                               final Player player,
-                                              final FriendlyByteBuf buf,
+                                              final ResourceContainerData resourceContainerData,
                                               final UpgradeDestinations upgradeDestination,
                                               final Component filterHelp) {
-        super(type, syncId, player, buf, upgradeDestination, filterHelp);
+        super(type, syncId, player, resourceContainerData, upgradeDestination, filterHelp);
     }
 
     @Override

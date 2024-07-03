@@ -1,17 +1,14 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -19,26 +16,16 @@ import net.minecraft.world.item.ItemStack;
 public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseContainerMenu
     implements ScreenSizeListener {
     protected final Inventory playerInventory;
-    private final List<Permission> permissions = new ArrayList<>();
+    private final List<SecurityCardData.Permission> permissions;
 
     protected AbstractSecurityCardContainerMenu(final MenuType<?> menuType,
                                                 final int syncId,
                                                 final Inventory playerInventory,
-                                                final FriendlyByteBuf buf) {
+                                                final SecurityCardData securityCardData) {
         super(menuType, syncId);
         this.playerInventory = playerInventory;
-        this.disabledSlot = PlatformApi.INSTANCE.getSlotReference(buf).orElse(null);
-        final int amountOfPermissions = buf.readInt();
-        for (int i = 0; i < amountOfPermissions; ++i) {
-            final ResourceLocation id = buf.readResourceLocation();
-            final boolean allowed = buf.readBoolean();
-            final boolean dirty = buf.readBoolean();
-            PlatformApi.INSTANCE.getPermissionRegistry().get(id).ifPresent(permission -> permissions.add(new Permission(
-                permission,
-                allowed,
-                dirty
-            )));
-        }
+        this.disabledSlot = securityCardData.slotReference();
+        this.permissions = securityCardData.permissions();
     }
 
     protected AbstractSecurityCardContainerMenu(final MenuType<?> menuType,
@@ -48,10 +35,11 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         super(menuType, syncId);
         this.playerInventory = playerInventory;
         this.disabledSlot = disabledSlot;
+        this.permissions = new ArrayList<>();
         onScreenReady(0);
     }
 
-    List<Permission> getPermissions() {
+    List<SecurityCardData.Permission> getPermissions() {
         return permissions;
     }
 
@@ -61,59 +49,57 @@ public abstract class AbstractSecurityCardContainerMenu extends AbstractBaseCont
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }
 
-    public void setPermission(final ResourceLocation permissionId, final boolean allowed) {
+    public void setPermission(final PlatformPermission permission, final boolean allowed) {
         if (disabledSlot == null) {
             return;
         }
-        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> setPermission(stack, permissionId, allowed));
+        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> setPermission(stack, permission, allowed));
     }
 
-    private void setPermission(final ItemStack stack, final ResourceLocation permissionId, final boolean allowed) {
-        if (stack.getItem() instanceof AbstractSecurityCardItem securityCardItem) {
-            securityCardItem.setPermission(stack, permissionId, allowed);
+    private void setPermission(final ItemStack stack, final PlatformPermission permission, final boolean allowed) {
+        if (stack.getItem() instanceof AbstractSecurityCardItem<?> securityCardItem) {
+            securityCardItem.setPermission(stack, permission, allowed);
         }
     }
 
-    public void resetPermission(final ResourceLocation permissionId) {
+    public void resetPermissionServer(final PlatformPermission permission) {
         if (disabledSlot == null) {
             return;
         }
-        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> resetPermission(stack, permissionId));
+        disabledSlot.resolve(playerInventory.player).ifPresent(stack -> resetPermissionServer(stack, permission));
     }
 
-    private void resetPermission(final ItemStack stack, final ResourceLocation permissionId) {
-        if (stack.getItem() instanceof AbstractSecurityCardItem securityCardItem) {
-            securityCardItem.resetPermission(stack, permissionId);
+    private void resetPermissionServer(final ItemStack stack, final PlatformPermission permission) {
+        if (stack.getItem() instanceof AbstractSecurityCardItem<?> securityCardItem) {
+            securityCardItem.resetPermission(stack, permission);
         }
     }
 
-    Permission resetPermission(final PlatformPermission permission) {
+    SecurityCardData.Permission resetPermission(final PlatformPermission permission) {
         final boolean allowed = permission.isAllowedByDefault();
-        Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardResetPermission(permission);
+        C2SPackets.sendSecurityCardResetPermission(permission);
         return updatePermissionLocally(permission, allowed, false);
     }
 
-    Permission changePermission(final PlatformPermission permission, final boolean selected) {
-        Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardPermission(permission, selected);
+    SecurityCardData.Permission changePermission(final PlatformPermission permission, final boolean selected) {
+        C2SPackets.sendSecurityCardPermission(permission, selected);
         return updatePermissionLocally(permission, selected, true);
     }
 
-    private Permission updatePermissionLocally(final PlatformPermission permission,
-                                               final boolean allowed,
-                                               final boolean dirty) {
-        final Permission localPermission = permissions.stream().filter(p -> p.platformPermission == permission)
+    private SecurityCardData.Permission updatePermissionLocally(final PlatformPermission permission,
+                                                                final boolean allowed,
+                                                                final boolean dirty) {
+        final SecurityCardData.Permission
+            localPermission = permissions.stream().filter(p -> p.permission() == permission)
             .findFirst()
             .orElseThrow();
         final int index = permissions.indexOf(localPermission);
-        final Permission updatedLocalPermission = new Permission(
-            localPermission.platformPermission,
+        final SecurityCardData.Permission updatedLocalPermission = new SecurityCardData.Permission(
+            localPermission.permission(),
             allowed,
             dirty
         );
         permissions.set(index, updatedLocalPermission);
         return updatedLocalPermission;
-    }
-
-    record Permission(PlatformPermission platformPermission, boolean allowed, boolean dirty) {
     }
 }

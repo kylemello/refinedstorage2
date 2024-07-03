@@ -14,7 +14,6 @@ import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 class PlatformStorage extends AbstractProxyStorage implements SerializableStorage, TrackedStorage {
     private final StorageType type;
@@ -31,14 +30,15 @@ class PlatformStorage extends AbstractProxyStorage implements SerializableStorag
         this.listener = listener;
     }
 
-    void load(final ResourceKey resource, final long amount, @Nullable final String changedBy, final long changedAt) {
+    void load(final StorageCodecs.StorageResource<? extends ResourceKey> storageResource) {
+        final ResourceKey resource = storageResource.resource();
         if (!type.isAllowed(resource)) {
             return;
         }
-        super.insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
-        if (changedBy != null && !changedBy.isBlank()) {
-            trackingRepository.update(resource, new PlayerActor(changedBy), changedAt);
-        }
+        super.insert(resource, storageResource.amount(), Action.EXECUTE, EmptyActor.INSTANCE);
+        storageResource.changed().ifPresent(
+            changed -> trackingRepository.update(resource, new PlayerActor(changed.changedBy()), changed.changedAt())
+        );
     }
 
     @Override

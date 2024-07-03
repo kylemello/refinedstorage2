@@ -14,8 +14,9 @@ import com.refinedmods.refinedstorage2.platform.common.content.Items;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractUpgradeableNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
@@ -26,11 +27,12 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -40,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class ImporterBlockEntity
     extends AbstractUpgradeableNetworkNodeContainerBlockEntity<ImporterNetworkNode>
-    implements AmountOverride, NetworkNodeMenuProvider {
+    implements AmountOverride, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImporterBlockEntity.class);
 
     private static final String TAG_FILTER_MODE = "fim";
@@ -82,19 +84,19 @@ public class ImporterBlockEntity
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
         tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
-        filter.save(tag);
+        filter.save(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
         if (tag.contains(TAG_FILTER_MODE)) {
             mainNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
         }
-        filter.load(tag);
+        filter.load(tag, provider);
     }
 
     void setFilters(final Set<ResourceKey> filters) {
@@ -125,8 +127,13 @@ public class ImporterBlockEntity
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public ResourceContainerData getMenuData() {
+        return ResourceContainerData.of(filter.getFilterContainer());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
+        return ResourceContainerData.STREAM_CODEC;
     }
 
     @Override

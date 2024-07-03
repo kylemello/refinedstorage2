@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.support.energy;
 
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,11 +46,7 @@ public class EnergyInfo {
         final boolean changed = stored != newStored || capacity != newCapacity;
         if (changed && rateLimiter.tryAcquire()) {
             setEnergy(newStored, newCapacity);
-            Platform.INSTANCE.getServerToClientCommunications().sendEnergyInfo(
-                (ServerPlayer) player,
-                newStored,
-                newCapacity
-            );
+            S2CPackets.sendEnergyInfo((ServerPlayer) player, newStored, newCapacity);
         }
     }
 

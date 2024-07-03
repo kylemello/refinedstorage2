@@ -5,13 +5,13 @@ import com.refinedmods.refinedstorage2.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceFactory;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -159,7 +159,7 @@ public class ResourceSlot extends Slot {
             return;
         }
         final long normalizedAmount = resource.getResourceType().normalizeAmount(amount);
-        Platform.INSTANCE.getClientToServerCommunications().sendResourceSlotAmountChange(index, normalizedAmount);
+        C2SPackets.sendResourceSlotAmountChange(index, normalizedAmount);
     }
 
     public boolean contains(final ItemStack stack) {
@@ -176,11 +176,7 @@ public class ResourceSlot extends Slot {
     }
 
     private void broadcastChange(final ServerPlayer player, @Nullable final ResourceAmount contents) {
-        Platform.INSTANCE.getServerToClientCommunications().sendResourceSlotUpdate(player, contents, index);
-    }
-
-    public void readFromUpdatePacket(final FriendlyByteBuf buf) {
-        resourceContainer.readFromUpdatePacket(getContainerSlot(), buf);
+        S2CPackets.sendResourceSlotUpdate(player, contents, index);
     }
 
     @Override

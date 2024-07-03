@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage2.platform.common.support.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -30,21 +31,23 @@ public abstract class AbstractFluidRenderer implements FluidRenderer {
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         final Tesselator tesselator = Tesselator.getInstance();
-        final BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferBuilder.vertex(poseStack.last().pose(), x, slotYEnd, 0)
-            .uv(sprite.getU0(), sprite.getV1())
-            .color(r, g, b, 255).endVertex();
-        bufferBuilder.vertex(poseStack.last().pose(), slotXEnd, slotYEnd, 0)
-            .uv(sprite.getU1(), sprite.getV1())
-            .color(r, g, b, 255).endVertex();
-        bufferBuilder.vertex(poseStack.last().pose(), slotXEnd, y, 0)
-            .uv(sprite.getU1(), sprite.getV0())
-            .color(r, g, b, 255).endVertex();
-        bufferBuilder.vertex(poseStack.last().pose(), x, y, 0)
-            .uv(sprite.getU0(), sprite.getV0())
-            .color(r, g, b, 255).endVertex();
-        tesselator.end();
+        final BufferBuilder bufferBuilder = tesselator.begin(
+            VertexFormat.Mode.QUADS,
+            DefaultVertexFormat.POSITION_TEX_COLOR
+        );
+        bufferBuilder.addVertex(poseStack.last().pose(), x, slotYEnd, 0)
+            .setUv(sprite.getU0(), sprite.getV1())
+            .setColor(r, g, b, 255);
+        bufferBuilder.addVertex(poseStack.last().pose(), slotXEnd, slotYEnd, 0)
+            .setUv(sprite.getU1(), sprite.getV1())
+            .setColor(r, g, b, 255);
+        bufferBuilder.addVertex(poseStack.last().pose(), slotXEnd, y, 0)
+            .setUv(sprite.getU1(), sprite.getV0())
+            .setColor(r, g, b, 255);
+        bufferBuilder.addVertex(poseStack.last().pose(), x, y, 0)
+            .setUv(sprite.getU0(), sprite.getV0())
+            .setColor(r, g, b, 255);
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
     }
 
     protected void render(final PoseStack poseStack,
@@ -60,33 +63,29 @@ public abstract class AbstractFluidRenderer implements FluidRenderer {
         final var x1 = scale / 2;
         final var y1 = -scale / 2;
         final var transform = poseStack.last().pose();
-        buffer.vertex(transform, x0, y1, 0)
-            .color(packedRgb)
-            .uv(sprite.getU0(), sprite.getV1())
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(0, 0, 1)
-            .endVertex();
-        buffer.vertex(transform, x1, y1, 0)
-            .color(packedRgb)
-            .uv(sprite.getU1(), sprite.getV1())
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(0, 0, 1)
-            .endVertex();
-        buffer.vertex(transform, x1, y0, 0)
-            .color(packedRgb)
-            .uv(sprite.getU1(), sprite.getV0())
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(0, 0, 1)
-            .endVertex();
-        buffer.vertex(transform, x0, y0, 0)
-            .color(packedRgb)
-            .uv(sprite.getU0(), sprite.getV0())
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(0, 0, 1)
-            .endVertex();
+        buffer.addVertex(transform, x0, y1, 0)
+            .setColor(packedRgb)
+            .setUv(sprite.getU0(), sprite.getV1())
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(0, 0, 1);
+        buffer.addVertex(transform, x1, y1, 0)
+            .setColor(packedRgb)
+            .setUv(sprite.getU1(), sprite.getV1())
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(0, 0, 1);
+        buffer.addVertex(transform, x1, y0, 0)
+            .setColor(packedRgb)
+            .setUv(sprite.getU1(), sprite.getV0())
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(0, 0, 1);
+        buffer.addVertex(transform, x0, y0, 0)
+            .setColor(packedRgb)
+            .setUv(sprite.getU0(), sprite.getV0())
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(0, 0, 1);
     }
 }

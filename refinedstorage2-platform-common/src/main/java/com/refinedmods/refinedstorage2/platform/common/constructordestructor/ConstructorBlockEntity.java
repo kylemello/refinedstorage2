@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -100,14 +101,14 @@ public class ConstructorBlockEntity
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
         tag.putBoolean(TAG_DROP_ITEMS, dropItems);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
         if (tag.contains(TAG_DROP_ITEMS)) {
             dropItems = tag.getBoolean(TAG_DROP_ITEMS);
         }

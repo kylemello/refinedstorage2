@@ -8,20 +8,21 @@ import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,9 +30,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNull;
+
 public class ExternalStorageBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ExternalStorageNetworkNode>
-    implements NetworkNodeMenuProvider {
+    implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalStorageBlockEntity.class);
     private static final String TAG_TRACKED_RESOURCES = "tr";
 
@@ -115,34 +118,41 @@ public class ExternalStorageBlockEntity
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_TRACKED_RESOURCES, trackedStorageRepository.toTag());
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_TRACKED_RESOURCES, trackedStorageRepository.toTag(provider));
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
         configContainer.save(tag);
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
-        trackedStorageRepository.fromTag(tag.getList(TAG_TRACKED_RESOURCES, Tag.TAG_COMPOUND));
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        if (tag.contains(TAG_TRACKED_RESOURCES)) {
+            trackedStorageRepository.fromTag(requireNonNull(tag.get(TAG_TRACKED_RESOURCES)), provider);
+        }
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
         configContainer.load(tag);
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public ResourceContainerData getMenuData() {
+        return ResourceContainerData.of(filter.getFilterContainer());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
+        return ResourceContainerData.STREAM_CODEC;
     }
 
     @Override

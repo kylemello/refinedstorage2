@@ -29,10 +29,10 @@ public class SecurityCardScreen extends AbstractSecurityCardScreen<SecurityCardC
         if (menu.getPlayers().isEmpty()) {
             return;
         }
-        final SecurityCardContainerMenu.Player currentPlayer = menu.getBoundTo();
+        final PlayerBoundSecurityCardData.Player currentPlayer = menu.getBoundTo();
         final int index = menu.getPlayers().indexOf(currentPlayer);
         final int nextIndex = (index + 1) % menu.getPlayers().size();
-        final SecurityCardContainerMenu.Player nextPlayer = menu.getPlayers().get(nextIndex);
+        final PlayerBoundSecurityCardData.Player nextPlayer = menu.getPlayers().get(nextIndex);
         menu.changeBoundPlayer(nextPlayer);
         button.setMessage(Component.literal(nextPlayer.name()));
     }

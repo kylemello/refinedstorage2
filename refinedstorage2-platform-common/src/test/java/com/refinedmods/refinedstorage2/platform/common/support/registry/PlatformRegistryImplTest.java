@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlatformRegistryImplTest {
-    private static final ResourceLocation A = new ResourceLocation("a");
-    private static final ResourceLocation B = new ResourceLocation("b");
-    private static final ResourceLocation C = new ResourceLocation("c");
+    private static final ResourceLocation A = ResourceLocation.parse("a");
+    private static final ResourceLocation B = ResourceLocation.parse("b");
+    private static final ResourceLocation C = ResourceLocation.parse("c");
 
     PlatformRegistry<Integer> sut;
 

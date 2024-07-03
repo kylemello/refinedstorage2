@@ -9,7 +9,6 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Res
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -27,13 +26,15 @@ public abstract class AbstractStorageBlockContainerMenu extends AbstractStorageC
     protected AbstractStorageBlockContainerMenu(final MenuType<?> type,
                                                 final int syncId,
                                                 final Player player,
-                                                final FriendlyByteBuf buf,
+                                                final StorageBlockData storageBlockData,
                                                 final ResourceFactory resourceFactory) {
         super(type, syncId);
-        this.stored = buf.readLong();
-        this.capacity = buf.readLong();
-        addSlots(player, ResourceContainerImpl.createForFilter(resourceFactory));
-        initializeResourceSlots(buf);
+        this.stored = storageBlockData.stored();
+        this.capacity = storageBlockData.capacity();
+        addSlots(
+            player,
+            ResourceContainerImpl.createForFilter(resourceFactory, storageBlockData.resourceContainerData())
+        );
     }
 
     protected AbstractStorageBlockContainerMenu(final MenuType<?> type,

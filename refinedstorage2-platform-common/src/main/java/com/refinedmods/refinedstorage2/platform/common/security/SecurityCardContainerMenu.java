@@ -1,47 +1,47 @@
 package com.refinedmods.refinedstorage2.platform.common.security;
 
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.stretching.ScreenSizeListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 public class SecurityCardContainerMenu extends AbstractSecurityCardContainerMenu implements ScreenSizeListener {
-    private final List<Player> players = new ArrayList<>();
-    private Player boundTo;
+    private final List<PlayerBoundSecurityCardData.Player> players;
+    private PlayerBoundSecurityCardData.Player boundTo;
 
     public SecurityCardContainerMenu(final int syncId,
                                      final Inventory playerInventory,
-                                     final FriendlyByteBuf buf) {
-        super(Menus.INSTANCE.getSecurityCard(), syncId, playerInventory, buf);
-        this.boundTo = new Player(buf.readUUID(), buf.readUtf());
-        final int amountOfPlayers = buf.readInt();
-        for (int i = 0; i < amountOfPlayers; ++i) {
-            final UUID id = buf.readUUID();
-            final String name = buf.readUtf();
-            players.add(new Player(id, name));
-        }
+                                     final PlayerBoundSecurityCardData playerBoundSecurityCardData) {
+        super(
+            Menus.INSTANCE.getSecurityCard(),
+            syncId,
+            playerInventory,
+            playerBoundSecurityCardData.securityCardData()
+        );
+        this.boundTo = playerBoundSecurityCardData.boundTo();
+        this.players = playerBoundSecurityCardData.players();
     }
 
     SecurityCardContainerMenu(final int syncId, final Inventory playerInventory, final SlotReference disabledSlot) {
         super(Menus.INSTANCE.getSecurityCard(), syncId, playerInventory, disabledSlot);
-        this.boundTo = new Player(UUID.randomUUID(), "");
+        this.boundTo = new PlayerBoundSecurityCardData.Player(UUID.randomUUID(), "");
+        this.players = new ArrayList<>();
     }
 
-    List<Player> getPlayers() {
+    List<PlayerBoundSecurityCardData.Player> getPlayers() {
         return players;
     }
 
-    Player getBoundTo() {
+    PlayerBoundSecurityCardData.Player getBoundTo() {
         return boundTo;
     }
 
@@ -62,11 +62,8 @@ public class SecurityCardContainerMenu extends AbstractSecurityCardContainerMenu
         }
     }
 
-    void changeBoundPlayer(final Player player) {
-        Platform.INSTANCE.getClientToServerCommunications().sendSecurityCardBoundPlayer(player.id());
+    void changeBoundPlayer(final PlayerBoundSecurityCardData.Player player) {
+        C2SPackets.sendSecurityCardBoundPlayer(player.id());
         this.boundTo = player;
-    }
-
-    record Player(UUID id, String name) {
     }
 }

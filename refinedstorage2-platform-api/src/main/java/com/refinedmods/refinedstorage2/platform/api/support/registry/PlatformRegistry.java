@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
@@ -48,4 +51,14 @@ public interface PlatformRegistry<T> {
      */
     @Nullable
     T nextOrNullIfLast(T value);
+
+    /**
+     * @return a {@link Codec} for this registry
+     */
+    Codec<T> codec();
+
+    /**
+     * @return a {@link StreamCodec} for this registry
+     */
+    StreamCodec<RegistryFriendlyByteBuf, T> streamCodec();
 }

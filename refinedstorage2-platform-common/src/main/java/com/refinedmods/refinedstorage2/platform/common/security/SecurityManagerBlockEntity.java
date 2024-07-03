@@ -18,9 +18,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -96,21 +96,21 @@ public class SecurityManagerBlockEntity
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_SECURITY_CARDS)) {
-            ContainerUtil.read(tag.getCompound(TAG_SECURITY_CARDS), securityCards);
+            ContainerUtil.read(tag.getCompound(TAG_SECURITY_CARDS), securityCards, provider);
         }
         if (tag.contains(TAG_FALLBACK_SECURITY_CARD)) {
-            ContainerUtil.read(tag.getCompound(TAG_FALLBACK_SECURITY_CARD), fallbackSecurityCard);
+            ContainerUtil.read(tag.getCompound(TAG_FALLBACK_SECURITY_CARD), fallbackSecurityCard, provider);
         }
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_SECURITY_CARDS, ContainerUtil.write(securityCards));
-        tag.put(TAG_FALLBACK_SECURITY_CARD, ContainerUtil.write(fallbackSecurityCard));
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_SECURITY_CARDS, ContainerUtil.write(securityCards, provider));
+        tag.put(TAG_FALLBACK_SECURITY_CARD, ContainerUtil.write(fallbackSecurityCard, provider));
     }
 
     @Override
@@ -139,11 +139,6 @@ public class SecurityManagerBlockEntity
 
     static boolean isValidFallbackSecurityCard(final ItemStack stack) {
         return stack.getItem() instanceof FallbackSecurityCardItem;
-    }
-
-    @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        // no op
     }
 
     @Override

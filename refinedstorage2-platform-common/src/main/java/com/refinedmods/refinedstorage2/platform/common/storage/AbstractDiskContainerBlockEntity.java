@@ -7,8 +7,9 @@ import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirection
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage2.platform.common.support.FilteredContainer;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage2.platform.common.util.ContainerUtil;
 
@@ -17,14 +18,15 @@ import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,7 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorageContainerNetworkNode>
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<T>
-    implements BlockEntityWithDrops, NetworkNodeMenuProvider {
+    implements BlockEntityWithDrops, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_DISK_INVENTORY = "inv";
     private static final String TAG_DISKS = "disks";
 
@@ -67,7 +69,7 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     protected abstract void setNormalizer(UnaryOperator<ResourceKey> normalizer);
 
     @Nullable
-    public static Item getDisk(final CompoundTag tag, final int slot) {
+    public static Item getDisk(final CompoundTag tag, final int slot, final HolderLookup.Provider provider) {
         if (!tag.contains(TAG_DISK_INVENTORY)) {
             return null;
         }
@@ -75,7 +77,7 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
         if (!ContainerUtil.hasItemInSlot(diskInventoryTag, slot)) {
             return null;
         }
-        final ItemStack diskStack = ContainerUtil.getItemInSlot(diskInventoryTag, slot);
+        final ItemStack diskStack = ContainerUtil.getItemInSlot(diskInventoryTag, slot, provider);
         return diskStack.isEmpty() ? null : diskStack.getItem();
     }
 
@@ -98,7 +100,7 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
      * However, when we place a block entity with nbt, the flow is different:
      * #setLevel(Level) -> #load(CompoundTag) -> #setChanged().
      * #setLevel(Level) is called first (before #load(CompoundTag)) and initialization will happen BEFORE
-     * we load the tag!
+     * we load the components!
      * That's why we need to override #setChanged() here, to ensure that the network and disks are still initialized
      * correctly in that case.
      */
@@ -122,30 +124,30 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         fromClientTag(tag);
         if (tag.contains(TAG_DISK_INVENTORY)) {
-            ContainerUtil.read(tag.getCompound(TAG_DISK_INVENTORY), diskInventory);
+            ContainerUtil.read(tag.getCompound(TAG_DISK_INVENTORY), diskInventory, provider);
         }
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_DISK_INVENTORY, ContainerUtil.write(diskInventory));
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_DISK_INVENTORY, ContainerUtil.write(diskInventory, provider));
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
     }
 
     public FilteredContainer getDiskInventory() {
@@ -183,7 +185,7 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         // This null check is important. #getUpdateTag() can be called before the node's network is initialized!
         if (mainNode.getNetwork() == null) {
@@ -203,8 +205,13 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
+    public ResourceContainerData getMenuData() {
+        return ResourceContainerData.of(filter.getFilterContainer());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
+        return ResourceContainerData.STREAM_CODEC;
     }
 
     @Override

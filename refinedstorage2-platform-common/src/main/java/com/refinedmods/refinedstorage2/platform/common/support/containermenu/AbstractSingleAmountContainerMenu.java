@@ -1,14 +1,12 @@
 package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
-import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceContainer;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,16 +20,16 @@ public abstract class AbstractSingleAmountContainerMenu extends AbstractResource
     protected AbstractSingleAmountContainerMenu(final MenuType<?> type,
                                                 final int syncId,
                                                 final Inventory playerInventory,
-                                                final FriendlyByteBuf buf,
+                                                final SingleAmountData singleAmountData,
                                                 final Component filterHelpText) {
         super(type, syncId);
-        if (buf.readBoolean()) {
-            disabledSlot = PlatformApi.INSTANCE.getSlotReference(buf).orElse(null);
-        }
-        this.clientAmount = buf.readDouble();
+        this.disabledSlot = singleAmountData.slotReference().orElse(null);
+        this.clientAmount = singleAmountData.amount();
         this.filterHelpText = filterHelpText;
-        addSlots(playerInventory.player, ResourceContainerImpl.createForFilter(1));
-        initializeResourceSlots(buf);
+        addSlots(
+            playerInventory.player,
+            ResourceContainerImpl.createForFilter(singleAmountData.resourceContainerData())
+        );
     }
 
     protected AbstractSingleAmountContainerMenu(final MenuType<?> type,
@@ -46,7 +44,8 @@ public abstract class AbstractSingleAmountContainerMenu extends AbstractResource
         addSlots(player, resourceContainer);
     }
 
-    private void addSlots(final Player player, final ResourceContainer resourceContainer) {
+    private void addSlots(final Player player,
+                          final ResourceContainer resourceContainer) {
         addSlot(new ResourceSlot(resourceContainer, 0, filterHelpText, 116, 47, ResourceSlotType.FILTER));
         addPlayerInventory(player.getInventory(), 8, 106);
         transferManager.addFilterTransfer(player.getInventory());
@@ -57,23 +56,9 @@ public abstract class AbstractSingleAmountContainerMenu extends AbstractResource
     }
 
     public void changeAmountOnClient(final double newAmount) {
-        Platform.INSTANCE.getClientToServerCommunications().sendSingleAmountChange(newAmount);
+        C2SPackets.sendSingleAmountChange(newAmount);
         this.clientAmount = newAmount;
     }
 
     public abstract void changeAmountOnServer(double newAmount);
-
-    public static void writeToBuf(final FriendlyByteBuf buf,
-                                  final double amount,
-                                  final ResourceContainer container,
-                                  @Nullable final SlotReference disabledSlotReference) {
-        if (disabledSlotReference != null) {
-            buf.writeBoolean(true);
-            PlatformApi.INSTANCE.writeSlotReference(disabledSlotReference, buf);
-        } else {
-            buf.writeBoolean(false);
-        }
-        buf.writeDouble(amount);
-        container.writeToUpdatePacket(buf);
-    }
 }

@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 public final class FilterWithFuzzyMode {
@@ -61,9 +62,9 @@ public final class FilterWithFuzzyMode {
         }
     }
 
-    public void load(final CompoundTag tag) {
+    public void load(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_RESOURCE_FILTER)) {
-            filterContainer.fromTag(tag.getCompound(TAG_RESOURCE_FILTER));
+            filterContainer.fromTag(tag.getCompound(TAG_RESOURCE_FILTER), provider);
         }
         if (tag.contains(TAG_FUZZY_MODE)) {
             fuzzyMode = tag.getBoolean(TAG_FUZZY_MODE);
@@ -80,9 +81,9 @@ public final class FilterWithFuzzyMode {
         }
     }
 
-    public void save(final CompoundTag tag) {
+    public void save(final CompoundTag tag, final HolderLookup.Provider provider) {
         tag.putBoolean(TAG_FUZZY_MODE, fuzzyMode);
-        tag.put(TAG_RESOURCE_FILTER, filterContainer.toTag());
+        tag.put(TAG_RESOURCE_FILTER, filterContainer.toTag(provider));
     }
 
     public UnaryOperator<ResourceKey> createNormalizer() {

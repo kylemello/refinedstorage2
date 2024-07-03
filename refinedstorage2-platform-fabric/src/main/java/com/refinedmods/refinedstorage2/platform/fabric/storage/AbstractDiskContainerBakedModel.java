@@ -11,14 +11,16 @@ import javax.annotation.Nullable;
 
 import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractDiskContainerBakedModel extends ForwardingBakedModel {
@@ -52,15 +54,21 @@ public abstract class AbstractDiskContainerBakedModel extends ForwardingBakedMod
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void emitItemQuads(final ItemStack stack,
                               final Supplier<RandomSource> randomSupplier,
                               final RenderContext context) {
-        final CompoundTag tag = BlockItem.getBlockEntityData(stack);
-        if (tag == null) {
+        final Level level = Minecraft.getInstance().level;
+        final CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (customData == null || level == null) {
             return;
         }
         for (int i = 0; i < diskTranslations.length; ++i) {
-            final Item diskItem = AbstractDiskContainerBlockEntity.getDisk(tag, i);
+            final Item diskItem = AbstractDiskContainerBlockEntity.getDisk(
+                customData.getUnsafe(),
+                i,
+                level.registryAccess()
+            );
             emitDiskQuads(stack, randomSupplier, context, diskItem, i);
         }
     }

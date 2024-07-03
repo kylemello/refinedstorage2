@@ -1,11 +1,12 @@
 package com.refinedmods.refinedstorage2.platform.common.storage;
 
-import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
+import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageBlockEntity;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +20,6 @@ import java.util.function.LongFunction;
 import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -36,21 +36,28 @@ import org.slf4j.LoggerFactory;
 
 public class StorageContainerItemHelperImpl implements StorageContainerItemHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageContainerItemHelperImpl.class);
-    private static final String TAG_ID = "id";
 
     private final Map<Item, ResourceLocation> diskModelsByItem = new HashMap<>();
     private final Set<ResourceLocation> diskModels = new HashSet<>();
 
     @Override
-    public Optional<Storage> resolve(final StorageRepository storageRepository, final ItemStack stack) {
+    public Optional<SerializableStorage> resolveStorage(final StorageRepository storageRepository,
+                                                        final ItemStack stack) {
         return getId(stack).flatMap(storageRepository::get);
     }
 
     @Override
-    public void set(final StorageRepository storageRepository, final ItemStack stack, final Storage storage) {
+    public void setStorage(final StorageRepository storageRepository,
+                           final ItemStack stack,
+                           final SerializableStorage storage) {
         final UUID id = UUID.randomUUID();
         setId(stack, id);
         storageRepository.set(id, storage);
+    }
+
+    @Override
+    public boolean hasStorage(final ItemStack stack) {
+        return stack.has(DataComponents.INSTANCE.getStorageReference());
     }
 
     @Override
@@ -162,15 +169,10 @@ public class StorageContainerItemHelperImpl implements StorageContainerItemHelpe
     }
 
     private Optional<UUID> getId(final ItemStack stack) {
-        if (stack.hasTag() && stack.getTag() != null && stack.getTag().hasUUID(TAG_ID)) {
-            return Optional.of(stack.getTag().getUUID(TAG_ID));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(stack.get(DataComponents.INSTANCE.getStorageReference()));
     }
 
     private void setId(final ItemStack stack, final UUID id) {
-        final CompoundTag tag = stack.hasTag() && stack.getTag() != null ? stack.getTag() : new CompoundTag();
-        tag.putUUID(TAG_ID, id);
-        stack.setTag(tag);
+        stack.set(DataComponents.INSTANCE.getStorageReference(), id);
     }
 }

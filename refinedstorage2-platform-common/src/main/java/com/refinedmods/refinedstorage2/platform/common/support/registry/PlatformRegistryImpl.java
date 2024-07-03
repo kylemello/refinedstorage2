@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
@@ -21,6 +25,21 @@ public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
     private final Map<T, ResourceLocation> valueToIdMap = new HashMap<>();
     private final List<T> order = new ArrayList<>();
     private final List<T> viewList = Collections.unmodifiableList(order);
+    private final Codec<T> codec = ResourceLocation.CODEC.comapFlatMap(
+        id -> get(id).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unknown ID: " + id)),
+        value -> getId(value).orElseThrow()
+    );
+    private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = new StreamCodec<>() {
+        @Override
+        public T decode(final RegistryFriendlyByteBuf buf) {
+            return get(buf.readResourceLocation()).orElseThrow();
+        }
+
+        @Override
+        public void encode(final RegistryFriendlyByteBuf buf, final T value) {
+            buf.writeResourceLocation(getId(value).orElseThrow());
+        }
+    };
 
     @Override
     public void register(final ResourceLocation id, final T value) {
@@ -64,5 +83,15 @@ public class PlatformRegistryImpl<T> implements PlatformRegistry<T> {
             return null;
         }
         return order.get(nextIndex);
+    }
+
+    @Override
+    public Codec<T> codec() {
+        return codec;
+    }
+
+    @Override
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        return streamCodec;
     }
 }

@@ -11,6 +11,7 @@ import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockI
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -23,11 +24,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class NetworkTransmitterBlock extends AbstractColoredBlock<NetworkTransmitterBlock> implements EntityBlock {
     public static final EnumProperty<NetworkTransmitterState> STATE = EnumProperty.create(
         "state",
         NetworkTransmitterState.class
     );
+
+    private static final Component HELP = createTranslation("item", "network_transmitter.help");
 
     private static final AbstractBlockEntityTicker<NetworkTransmitterBlockEntity> TICKER =
         new NetworkTransmitterBlockEntityTicker();
@@ -68,7 +73,7 @@ public class NetworkTransmitterBlock extends AbstractColoredBlock<NetworkTransmi
 
     @Override
     public BaseBlockItem createBlockItem() {
-        return new NetworkNodeBlockItem(this);
+        return new NetworkNodeBlockItem(this, HELP);
     }
 
     @Override

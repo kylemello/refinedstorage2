@@ -1,20 +1,17 @@
 package com.refinedmods.refinedstorage2.platform.common.networking;
 
 import com.refinedmods.refinedstorage2.platform.api.support.HelpTooltipComponent;
+import com.refinedmods.refinedstorage2.platform.common.content.DataComponents;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -33,12 +30,8 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 public class NetworkCardItem extends Item {
     private static final MutableComponent UNBOUND_HELP = createTranslation("item", "network_card.unbound_help");
     private static final MutableComponent BOUND_HELP = createTranslation("item", "network_card.bound_help");
-
     private static final MutableComponent UNBOUND = createTranslation("item", "network_card.unbound")
         .withStyle(ChatFormatting.RED);
-
-    private static final String TAG_POS = "pos";
-    private static final String TAG_DIMENSION = "dim";
 
     public NetworkCardItem() {
         super(new Item.Properties().stacksTo(1));
@@ -54,11 +47,9 @@ public class NetworkCardItem extends Item {
         if (!(blockState.getBlock() instanceof NetworkReceiverBlock)) {
             return InteractionResult.CONSUME;
         }
-        final CompoundTag tag = new CompoundTag();
-        tag.putLong(TAG_POS, pos.asLong());
         final ResourceKey<Level> dimension = ctx.getLevel().dimension();
-        tag.putString(TAG_DIMENSION, dimension.location().toString());
-        ctx.getItemInHand().setTag(tag);
+        final GlobalPos location = GlobalPos.of(dimension, pos);
+        ctx.getItemInHand().set(DataComponents.INSTANCE.getNetworkLocation(), location);
         ctx.getPlayer().sendSystemMessage(createTranslation(
             "item",
             "network_card.bound",
@@ -83,10 +74,10 @@ public class NetworkCardItem extends Item {
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> lines,
                                 final TooltipFlag flag) {
-        super.appendHoverText(stack, level, lines, flag);
+        super.appendHoverText(stack, context, lines, flag);
         getLocation(stack).ifPresentOrElse(location -> lines.add(createTranslation(
             "item",
             "network_card.bound",
@@ -97,26 +88,8 @@ public class NetworkCardItem extends Item {
         ).withStyle(ChatFormatting.GRAY)), () -> lines.add(UNBOUND));
     }
 
-    @Nullable
-    private ResourceKey<Level> getDimension(final String dimensionKey) {
-        final ResourceLocation name = ResourceLocation.tryParse(dimensionKey);
-        if (name == null) {
-            return null;
-        }
-        return ResourceKey.create(Registries.DIMENSION, name);
-    }
-
     Optional<GlobalPos> getLocation(final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return Optional.empty();
-        }
-        final ResourceKey<Level> dimension = getDimension(tag.getString(TAG_DIMENSION));
-        if (dimension == null) {
-            return Optional.empty();
-        }
-        final BlockPos pos = BlockPos.of(tag.getLong(TAG_POS));
-        return Optional.of(GlobalPos.of(dimension, pos));
+        return Optional.ofNullable(stack.get(DataComponents.INSTANCE.getNetworkLocation()));
     }
 
     @Override
@@ -125,6 +98,6 @@ public class NetworkCardItem extends Item {
     }
 
     boolean isActive(final ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().contains(TAG_POS) && stack.getTag().contains(TAG_DIMENSION);
+        return stack.has(DataComponents.INSTANCE.getNetworkLocation());
     }
 }

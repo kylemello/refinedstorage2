@@ -7,8 +7,9 @@ import com.refinedmods.refinedstorage2.platform.common.security.BuiltinPermissio
 import java.util.Set;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 
-public interface NetworkNodeMenuProvider extends ExtendedMenuProvider {
+public interface NetworkNodeMenuProvider extends MenuProvider {
     Set<InWorldNetworkNodeContainer> getContainers();
 
     default boolean canOpen(final ServerPlayer player) {

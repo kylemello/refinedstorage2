@@ -12,10 +12,8 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
@@ -23,12 +21,12 @@ class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
     private final Vec3 playerPosition;
     private final SlotReference slotReference;
     @Nullable
-    private final NetworkReference networkReference;
+    private final GlobalPos networkLocation;
 
     NetworkBoundItemSessionImpl(
         final Player player,
         final SlotReference slotReference,
-        @Nullable final NetworkReference networkReference
+        @Nullable final GlobalPos networkLocation
     ) {
         this.player = player;
         // We copy the player position as it can change after opening the network bound item (opening while walking)
@@ -37,18 +35,18 @@ class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
         // be removed after it was added).
         this.playerPosition = new Vec3(player.position().x, player.position().y, player.position().z);
         this.slotReference = slotReference;
-        this.networkReference = networkReference;
+        this.networkLocation = networkLocation;
     }
 
     @Override
     public Optional<Network> resolveNetwork() {
-        if (networkReference == null) {
+        if (networkLocation == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(player.getServer())
-            .map(server -> server.getLevel(networkReference.dimensionKey()))
-            .filter(level -> level.isLoaded(networkReference.pos()))
-            .map(level -> level.getBlockEntity(networkReference.pos()))
+            .map(server -> server.getLevel(networkLocation.dimension()))
+            .filter(level -> level.isLoaded(networkLocation.pos()))
+            .map(level -> level.getBlockEntity(networkLocation.pos()))
             .filter(NetworkBoundItemTargetBlockEntity.class::isInstance)
             .map(NetworkBoundItemTargetBlockEntity.class::cast)
             .map(NetworkBoundItemTargetBlockEntity::getNetworkForBoundItem)
@@ -78,8 +76,5 @@ class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
         slotReference.resolve(player).flatMap(Platform.INSTANCE::getEnergyStorage).ifPresent(
             energyStorage -> energyStorage.extract(amount, Action.EXECUTE)
         );
-    }
-
-    record NetworkReference(ResourceKey<Level> dimensionKey, BlockPos pos) {
     }
 }

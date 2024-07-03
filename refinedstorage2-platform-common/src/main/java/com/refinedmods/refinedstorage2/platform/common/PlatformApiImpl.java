@@ -49,7 +49,6 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.ResourceTyp
 import com.refinedmods.refinedstorage2.platform.api.upgrade.BuiltinUpgradeDestinations;
 import com.refinedmods.refinedstorage2.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage2.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
-import com.refinedmods.refinedstorage2.platform.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage2.platform.common.grid.screen.hint.ItemGridInsertionHint;
@@ -72,6 +71,8 @@ import com.refinedmods.refinedstorage2.platform.common.support.network.InWorldNe
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.InventorySlotReference;
 import com.refinedmods.refinedstorage2.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.registry.PlatformRegistryImpl;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.CompositeRecipeModIngredientConverter;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.FluidResourceFactory;
@@ -99,10 +100,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -121,8 +119,9 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 import static java.util.Objects.requireNonNull;
 
 public class PlatformApiImpl implements PlatformApi {
-    private final StorageRepository clientStorageRepository =
-        new ClientStorageRepository(Platform.INSTANCE.getClientToServerCommunications()::sendStorageInfoRequest);
+    private final StorageRepository clientStorageRepository = new ClientStorageRepository(
+        C2SPackets::sendStorageInfoRequest
+    );
     private final ComponentMapFactory<NetworkComponent, Network> networkComponentMapFactory =
         new ComponentMapFactory<>();
     private final NetworkBuilder networkBuilder =
@@ -180,16 +179,18 @@ public class PlatformApiImpl implements PlatformApi {
         return storageTypeRegistry;
     }
 
+    @Override
+    public StorageRepository getClientStorageRepository() {
+        return clientStorageRepository;
+    }
+
     @SuppressWarnings("DataFlowIssue") // NeoForge makes null datafixer safe
     @Override
     public StorageRepository getStorageRepository(final Level level) {
-        if (level.getServer() == null) {
-            return clientStorageRepository;
-        }
         final ServerLevel serverLevel = requireNonNull(level.getServer().getLevel(Level.OVERWORLD));
         return serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-            this::createStorageRepository,
-            this::createStorageRepository,
+            StorageRepositoryImpl::new,
+            StorageRepositoryImpl::new,
             null
         ), StorageRepositoryImpl.NAME);
     }
@@ -197,16 +198,6 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public StorageContainerItemHelper getStorageContainerItemHelper() {
         return storageContainerItemHelper;
-    }
-
-    private StorageRepositoryImpl createStorageRepository(final CompoundTag tag) {
-        final StorageRepositoryImpl repository = createStorageRepository();
-        repository.read(tag);
-        return repository;
-    }
-
-    private StorageRepositoryImpl createStorageRepository() {
-        return new StorageRepositoryImpl(storageTypeRegistry);
     }
 
     @Override
@@ -282,11 +273,6 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public PlatformRegistry<GridSynchronizer> getGridSynchronizerRegistry() {
         return gridSynchronizerRegistry;
-    }
-
-    @Override
-    public void writeGridScreenOpeningData(final Grid grid, final FriendlyByteBuf buf) {
-        AbstractGridContainerMenu.writeScreenOpeningData(grid, buf);
     }
 
     @Override
@@ -523,24 +509,6 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void writeSlotReference(final SlotReference slotReference, final FriendlyByteBuf buf) {
-        this.slotReferenceFactoryRegistry.getId(slotReference.getFactory()).ifPresentOrElse(id -> {
-            buf.writeBoolean(true);
-            buf.writeResourceLocation(id);
-            slotReference.writeToBuffer(buf);
-        }, () -> buf.writeBoolean(false));
-    }
-
-    @Override
-    public Optional<SlotReference> getSlotReference(final FriendlyByteBuf buf) {
-        if (!buf.readBoolean()) {
-            return Optional.empty();
-        }
-        final ResourceLocation id = buf.readResourceLocation();
-        return slotReferenceFactoryRegistry.get(id).map(factory -> factory.create(buf));
-    }
-
-    @Override
     public void addSlotReferenceProvider(final SlotReferenceProvider provider) {
         slotReferenceProvider.addProvider(provider);
     }
@@ -553,9 +521,7 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public void useNetworkBoundItem(final Player player, final Item... items) {
         final Set<Item> validItems = new HashSet<>(Arrays.asList(items));
-        slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(
-            slotReference -> Platform.INSTANCE.getClientToServerCommunications().sendUseNetworkBoundItem(slotReference)
-        );
+        slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(C2SPackets::sendUseNetworkBoundItem);
     }
 
     @Override
@@ -583,7 +549,7 @@ public class PlatformApiImpl implements PlatformApi {
 
     @Override
     public void sendNoPermissionMessage(final ServerPlayer player, final Component message) {
-        Platform.INSTANCE.getServerToClientCommunications().sendNoPermission(player, message);
+        S2CPackets.sendNoPermission(player, message);
     }
 
     @Override

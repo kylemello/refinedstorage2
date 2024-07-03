@@ -1,12 +1,9 @@
 package com.refinedmods.refinedstorage2.platform.common.storage;
 
 import com.refinedmods.refinedstorage2.api.core.CoreValidations;
-import com.refinedmods.refinedstorage2.api.storage.Storage;
 import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
-import com.refinedmods.refinedstorage2.platform.api.storage.StorageType;
-import com.refinedmods.refinedstorage2.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractSafeSavedData;
 
 import java.util.HashMap;
@@ -14,55 +11,50 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.nbt.NbtOps;
 
 public class StorageRepositoryImpl extends AbstractSafeSavedData implements StorageRepository {
     public static final String NAME = "refinedstorage2_storages";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StorageRepositoryImpl.class);
+    private final Codec<Map<UUID, SerializableStorage>> codec = Codec.unboundedMap(
+        UUIDUtil.STRING_CODEC,
+        SerializableStorage.getCodec(this::markAsChanged)
+    );
+    private final Map<UUID, SerializableStorage> entries;
 
-    private static final String TAG_STORAGES = "storages";
-    private static final String TAG_STORAGE_ID = "id";
-    private static final String TAG_STORAGE_TYPE = "type";
-    private static final String TAG_STORAGE_DATA = "data";
+    public StorageRepositoryImpl(final CompoundTag tag, final HolderLookup.Provider provider) {
+        this.entries = new HashMap<>(codec.decode(
+            provider.createSerializationContext(NbtOps.INSTANCE),
+            tag
+        ).getOrThrow().getFirst());
+    }
 
-    private final Map<UUID, Storage> entries = new HashMap<>();
-    private final PlatformRegistry<StorageType> storageTypeRegistry;
-
-    public StorageRepositoryImpl(final PlatformRegistry<StorageType> storageTypeRegistry) {
-        this.storageTypeRegistry = storageTypeRegistry;
+    public StorageRepositoryImpl() {
+        this.entries = new HashMap<>();
     }
 
     @Override
-    public Optional<Storage> get(final UUID id) {
+    public Optional<SerializableStorage> get(final UUID id) {
         return Optional.ofNullable(entries.get(id));
     }
 
     @Override
-    public void set(final UUID id, final Storage storage) {
-        setSilently(id, storage);
-        setDirty();
-    }
-
-    private void setSilently(final UUID id, final Storage storage) {
+    public void set(final UUID id, final SerializableStorage storage) {
         CoreValidations.validateNotNull(storage, "Storage must not be null");
-        if (!(storage instanceof SerializableStorage)) {
-            throw new IllegalArgumentException("Storage is not serializable");
-        }
         CoreValidations.validateNotNull(id, "ID must not be null");
         if (entries.containsKey(id)) {
             throw new IllegalArgumentException(id + " already exists");
         }
         entries.put(id, storage);
+        setDirty();
     }
 
     @Override
-    public Optional<Storage> removeIfEmpty(final UUID id) {
+    public Optional<SerializableStorage> removeIfEmpty(final UUID id) {
         return get(id).map(storage -> {
             if (storage.getStored() == 0) {
                 entries.remove(id);
@@ -83,47 +75,9 @@ public class StorageRepositoryImpl extends AbstractSafeSavedData implements Stor
         setDirty();
     }
 
-    public void read(final CompoundTag tag) {
-        final ListTag storages = tag.getList(TAG_STORAGES, Tag.TAG_COMPOUND);
-        for (final Tag storageTag : storages) {
-            final UUID id = ((CompoundTag) storageTag).getUUID(TAG_STORAGE_ID);
-            final ResourceLocation typeId = new ResourceLocation(
-                ((CompoundTag) storageTag).getString(TAG_STORAGE_TYPE)
-            );
-            final CompoundTag data = ((CompoundTag) storageTag).getCompound(TAG_STORAGE_DATA);
-
-            storageTypeRegistry.get(typeId).ifPresentOrElse(
-                type -> setSilently(id, type.fromTag(data, this::markAsChanged)),
-                () -> LOGGER.warn("Cannot find storage type {} for storage {}", typeId, id)
-            );
-        }
-    }
-
     @Override
-    public CompoundTag save(final CompoundTag tag) {
-        final ListTag storageList = new ListTag();
-        for (final Map.Entry<UUID, Storage> entry : entries.entrySet()) {
-            if (entry.getValue() instanceof SerializableStorage serializableStorage) {
-                storageList.add(convertStorageToTag(entry.getKey(), entry.getValue(), serializableStorage));
-            } else {
-                LOGGER.warn("Tried to persist non-serializable storage {}", entry.getKey());
-            }
-        }
-        tag.put(TAG_STORAGES, storageList);
-        return tag;
-    }
-
-    private Tag convertStorageToTag(final UUID id,
-                                    final Storage storage,
-                                    final SerializableStorage serializableStorage) {
-        final ResourceLocation typeIdentifier = storageTypeRegistry
-            .getId(serializableStorage.getType())
-            .orElseThrow(() -> new RuntimeException("Storage type is not registered"));
-
-        final CompoundTag tag = new CompoundTag();
-        tag.putUUID(TAG_STORAGE_ID, id);
-        tag.put(TAG_STORAGE_DATA, serializableStorage.getType().toTag(storage));
-        tag.putString(TAG_STORAGE_TYPE, typeIdentifier.toString());
-        return tag;
+    public CompoundTag save(final CompoundTag tag, final HolderLookup.Provider provider) {
+        return (CompoundTag) codec.encode(entries, provider.createSerializationContext(NbtOps.INSTANCE), tag)
+            .getOrThrow();
     }
 }

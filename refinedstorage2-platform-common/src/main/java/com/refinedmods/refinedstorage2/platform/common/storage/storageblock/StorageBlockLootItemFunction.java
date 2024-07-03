@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class StorageBlockLootItemFunction implements LootItemFunction {
     @Override
-    public LootItemFunctionType getType() {
+    public LootItemFunctionType<StorageBlockLootItemFunction> getType() {
         return LootFunctions.INSTANCE.getStorageBlock();
     }
 

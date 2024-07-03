@@ -11,18 +11,18 @@ public final class VariantUtil {
     }
 
     public static ItemVariant toItemVariant(final ItemResource itemResource) {
-        return ItemVariant.of(itemResource.item(), itemResource.tag());
+        return ItemVariant.of(itemResource.item(), itemResource.components());
     }
 
     public static ItemResource ofItemVariant(final ItemVariant itemVariant) {
-        return new ItemResource(itemVariant.getItem(), itemVariant.getNbt());
+        return new ItemResource(itemVariant.getItem(), itemVariant.getComponents());
     }
 
     public static FluidVariant toFluidVariant(final FluidResource fluidResource) {
-        return FluidVariant.of(fluidResource.fluid(), fluidResource.tag());
+        return FluidVariant.of(fluidResource.fluid(), fluidResource.components());
     }
 
     public static FluidResource ofFluidVariant(final FluidVariant fluidVariant) {
-        return new FluidResource(fluidVariant.getFluid(), fluidVariant.getNbt());
+        return new FluidResource(fluidVariant.getFluid(), fluidVariant.getComponents());
     }
 }

@@ -8,10 +8,10 @@ import com.refinedmods.refinedstorage2.platform.common.support.containermenu.Abs
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,12 +21,14 @@ import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUti
 public class ImporterContainerMenu extends AbstractSimpleFilterContainerMenu<ImporterBlockEntity> {
     private static final MutableComponent FILTER_HELP = createTranslation("gui", "importer.filter_help");
 
-    public ImporterContainerMenu(final int syncId, final Inventory playerInventory, final FriendlyByteBuf buf) {
+    public ImporterContainerMenu(final int syncId,
+                                 final Inventory playerInventory,
+                                 final ResourceContainerData resourceContainerData) {
         super(
             Menus.INSTANCE.getImporter(),
             syncId,
             playerInventory.player,
-            buf,
+            resourceContainerData,
             UpgradeDestinations.IMPORTER,
             FILTER_HELP
         );

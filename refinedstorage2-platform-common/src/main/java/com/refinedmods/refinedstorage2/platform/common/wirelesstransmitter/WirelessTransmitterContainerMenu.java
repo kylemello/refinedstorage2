@@ -1,13 +1,13 @@
 package com.refinedmods.refinedstorage2.platform.common.wirelesstransmitter;
 
 import com.refinedmods.refinedstorage2.platform.api.PlatformApi;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.Menus;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage2.platform.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage2.platform.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeSlot;
@@ -15,7 +15,6 @@ import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeSlot;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,14 +29,14 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
 
     public WirelessTransmitterContainerMenu(final int syncId,
                                             final Inventory playerInventory,
-                                            final FriendlyByteBuf buf) {
+                                            final WirelessTransmitterData data) {
         super(Menus.INSTANCE.getWirelessTransmitter(), syncId);
         addSlots(playerInventory, new UpgradeContainer(
             UpgradeDestinations.WIRELESS_TRANSMITTER,
             PlatformApi.INSTANCE.getUpgradeRegistry()
         ));
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
-        this.range = buf.readInt();
+        this.range = data.range();
         this.wirelessTransmitter = null;
         this.player = playerInventory.player;
     }
@@ -76,10 +75,7 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
         final boolean changed = range != newRange;
         if (changed && rangeRateLimiter.tryAcquire()) {
             this.range = newRange;
-            Platform.INSTANCE.getServerToClientCommunications().sendWirelessTransmitterRange(
-                (ServerPlayer) player,
-                range
-            );
+            S2CPackets.sendWirelessTransmitterRange((ServerPlayer) player, range);
         }
     }
 

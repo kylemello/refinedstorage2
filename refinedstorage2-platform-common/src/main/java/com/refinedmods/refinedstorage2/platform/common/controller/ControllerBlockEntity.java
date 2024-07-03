@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage2.platform.api.support.energy.TransferableB
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.BlockEntityEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.CreativeEnergyStorage;
 import com.refinedmods.refinedstorage2.platform.common.support.energy.ItemBlockEnergyStorage;
@@ -15,10 +15,11 @@ import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractR
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ControllerNetworkNode>
-    implements NetworkNodeMenuProvider, TransferableBlockEntityEnergy {
+    implements NetworkNodeExtendedMenuProvider<ControllerData>, TransferableBlockEntityEnergy {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerBlockEntity.class);
 
     private static final String TAG_CAPACITY = "capacity";
@@ -76,8 +77,8 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         ItemBlockEnergyStorage.writeToTag(tag, mainNode.getActualStored());
         saveRenderingInfo(tag);
     }
@@ -87,8 +88,8 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         ItemBlockEnergyStorage.readFromTag(energyStorage, tag);
     }
 
@@ -103,9 +104,13 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        buf.writeLong(getActualStored());
-        buf.writeLong(getActualCapacity());
+    public ControllerData getMenuData() {
+        return new ControllerData(getActualStored(), getActualCapacity());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, ControllerData> getMenuCodec() {
+        return ControllerData.STREAM_CODEC;
     }
 
     long getActualStored() {

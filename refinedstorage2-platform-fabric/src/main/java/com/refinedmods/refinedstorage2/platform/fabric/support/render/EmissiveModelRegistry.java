@@ -8,7 +8,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,7 @@ public final class EmissiveModelRegistry {
     }
 
     @Nullable
-    public BakedModel makeEmissive(final ResourceLocation model, final BakedModel bakedModel) {
-        if (model instanceof ModelResourceLocation modelResourceLocation) {
-            return makeEmissive(
-                new ResourceLocation(modelResourceLocation.getNamespace(), modelResourceLocation.getPath()),
-                bakedModel
-            );
-        }
+    public BakedModel tryWrapAsEmissiveModel(final ResourceLocation model, final BakedModel bakedModel) {
         final Function<BakedModel, EmissiveBakedModel> wrapper = factories.get(model);
         if (wrapper != null) {
             LOGGER.debug("Made {} an emissive model", model);

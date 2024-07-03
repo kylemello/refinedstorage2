@@ -12,18 +12,20 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage2.platform.common.support.FilterWithFuzzyMode;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class InterfaceBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<InterfaceNetworkNode>
-    implements NetworkNodeMenuProvider, BlockEntityWithDrops {
+    implements NetworkNodeExtendedMenuProvider<InterfaceData>, BlockEntityWithDrops {
     private static final String TAG_EXPORT_ITEMS = "ei";
     private static final int EXPORT_SLOTS = 9;
 
@@ -67,8 +69,31 @@ public class InterfaceBlockEntity
         );
     }
 
+    static ResourceContainer createFilterContainer(final InterfaceData interfaceData) {
+        final ResourceContainer filterContainer = createFilterContainer();
+        final ResourceContainerData resourceContainerData = interfaceData.filterContainerData();
+        for (int i = 0; i < resourceContainerData.resources().size(); ++i) {
+            final int ii = i;
+            resourceContainerData.resources().get(i).ifPresent(resource -> filterContainer.set(ii, resource));
+        }
+        return filterContainer;
+    }
+
     static ExportedResourcesContainer createExportedResourcesContainer(final FilterWithFuzzyMode filter) {
         return new ExportedResourcesContainer(EXPORT_SLOTS, filter);
+    }
+
+    static ResourceContainer createExportedResourcesContainer(final InterfaceData interfaceData,
+                                                              final FilterWithFuzzyMode filter) {
+        final ExportedResourcesContainer exportedResourcesContainer = createExportedResourcesContainer(filter);
+        final ResourceContainerData resourceContainerData = interfaceData.exportedResourcesContainerData();
+        for (int i = 0; i < resourceContainerData.resources().size(); ++i) {
+            final int ii = i;
+            resourceContainerData.resources().get(i).ifPresent(
+                resource -> exportedResourcesContainer.set(ii, resource)
+            );
+        }
+        return exportedResourcesContainer;
     }
 
     static long getTransferQuota(final ResourceKey resource) {
@@ -79,29 +104,29 @@ public class InterfaceBlockEntity
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_EXPORT_ITEMS, exportedResources.toTag());
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_EXPORT_ITEMS, exportedResources.toTag(provider));
     }
 
     @Override
-    public void writeConfiguration(final CompoundTag tag) {
-        super.writeConfiguration(tag);
-        filter.save(tag);
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        filter.save(tag, provider);
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_EXPORT_ITEMS)) {
-            exportedResources.fromTag(tag.getCompound(TAG_EXPORT_ITEMS));
+            exportedResources.fromTag(tag.getCompound(TAG_EXPORT_ITEMS), provider);
         }
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void readConfiguration(final CompoundTag tag) {
-        super.readConfiguration(tag);
-        filter.load(tag);
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        filter.load(tag, provider);
     }
 
     boolean isFuzzyMode() {
@@ -134,9 +159,16 @@ public class InterfaceBlockEntity
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        filter.getFilterContainer().writeToUpdatePacket(buf);
-        exportedResources.writeToUpdatePacket(buf);
+    public InterfaceData getMenuData() {
+        return new InterfaceData(
+            ResourceContainerData.of(filter.getFilterContainer()),
+            ResourceContainerData.of(exportedResources)
+        );
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, InterfaceData> getMenuCodec() {
+        return InterfaceData.STREAM_CODEC;
     }
 
     @Override

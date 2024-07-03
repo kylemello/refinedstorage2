@@ -14,7 +14,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class EnergyLootItemFunction implements LootItemFunction {
     @Override
-    public LootItemFunctionType getType() {
+    public LootItemFunctionType<? extends EnergyLootItemFunction> getType() {
         return LootFunctions.INSTANCE.getEnergy();
     }
 

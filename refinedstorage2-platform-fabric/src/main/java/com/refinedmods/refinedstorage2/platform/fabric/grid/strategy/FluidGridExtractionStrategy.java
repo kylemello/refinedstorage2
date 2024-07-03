@@ -27,7 +27,7 @@ import static com.refinedmods.refinedstorage2.platform.fabric.support.resource.V
 
 public class FluidGridExtractionStrategy implements GridExtractionStrategy {
     private static final ItemVariant BUCKET_ITEM_VARIANT = ItemVariant.of(Items.BUCKET);
-    private static final ItemResource BUCKET_ITEM_RESOURCE = new ItemResource(Items.BUCKET, null);
+    private static final ItemResource BUCKET_ITEM_RESOURCE = new ItemResource(Items.BUCKET);
 
     private final GridOperations gridOperations;
     private final PlayerInventoryStorage playerInventoryStorage;

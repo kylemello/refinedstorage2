@@ -11,12 +11,13 @@ import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformRes
 import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.ItemGridResource;
 import com.refinedmods.refinedstorage2.platform.common.support.TextureIds;
-import com.refinedmods.refinedstorage2.platform.common.util.PacketUtil;
 
 import java.util.Optional;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
 
@@ -29,11 +30,6 @@ class ItemResourceType extends AbstractResourceType {
             0,
             128
         );
-    }
-
-    @Override
-    public ItemResource fromBuffer(final FriendlyByteBuf buf) {
-        return PacketUtil.readItemResource(buf);
     }
 
     @Override
@@ -62,18 +58,32 @@ class ItemResourceType extends AbstractResourceType {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public GridOperations createGridOperations(final StorageChannel storageChannel, final Actor actor) {
         return new GridOperationsImpl(
             storageChannel,
             actor,
-            resource -> resource instanceof ItemResource itemResource ? itemResource.item().getMaxStackSize() : 0,
+            resource -> resource instanceof ItemResource itemResource
+                ? itemResource.item().getDefaultMaxStackSize()
+                : 0,
             1
         );
     }
 
     @Override
-    public Optional<PlatformResourceKey> fromTag(final CompoundTag tag) {
-        return ItemResource.fromTag(tag);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public MapCodec<PlatformResourceKey> getMapCodec() {
+        return (MapCodec) ResourceCodecs.ITEM_MAP_CODEC;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Codec<PlatformResourceKey> getCodec() {
+        return (Codec) ResourceCodecs.ITEM_CODEC;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public StreamCodec<RegistryFriendlyByteBuf, PlatformResourceKey> getStreamCodec() {
+        return (StreamCodec) ResourceCodecs.ITEM_STREAM_CODEC;
     }
 }

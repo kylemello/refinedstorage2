@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage2.platform.common.storage;
 
 import com.refinedmods.refinedstorage2.api.core.CoreValidations;
-import com.refinedmods.refinedstorage2.api.storage.Storage;
+import com.refinedmods.refinedstorage2.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage2.platform.api.storage.StorageRepository;
 
@@ -30,17 +30,17 @@ public class ClientStorageRepository implements StorageRepository {
     }
 
     @Override
-    public Optional<Storage> get(final UUID id) {
+    public Optional<SerializableStorage> get(final UUID id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void set(final UUID id, final Storage storage) {
+    public void set(final UUID id, final SerializableStorage storage) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Optional<Storage> removeIfEmpty(final UUID id) {
+    public Optional<SerializableStorage> removeIfEmpty(final UUID id) {
         throw new UnsupportedOperationException();
     }
 

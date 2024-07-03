@@ -1,7 +1,5 @@
 package com.refinedmods.refinedstorage2.platform.api.storage;
 
-import com.refinedmods.refinedstorage2.api.storage.Storage;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,9 +19,11 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.5")
 public interface StorageContainerItemHelper {
-    Optional<Storage> resolve(StorageRepository storageRepository, ItemStack stack);
+    Optional<SerializableStorage> resolveStorage(StorageRepository storageRepository, ItemStack stack);
 
-    void set(StorageRepository storageRepository, ItemStack stack, Storage storage);
+    void setStorage(StorageRepository storageRepository, ItemStack stack, SerializableStorage storage);
+
+    boolean hasStorage(ItemStack stack);
 
     Optional<StorageInfo> getInfo(StorageRepository storageRepository, ItemStack stack);
 

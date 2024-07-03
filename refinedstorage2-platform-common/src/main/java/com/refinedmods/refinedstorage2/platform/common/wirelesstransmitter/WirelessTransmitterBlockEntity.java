@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeMenuProvider;
+import com.refinedmods.refinedstorage2.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage2.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage2.platform.common.upgrade.UpgradeDestinations;
@@ -17,11 +17,12 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,7 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeMenuProvider {
+    implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData> {
     private static final String TAG_UPGRADES = "u";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
@@ -50,18 +51,18 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    public void saveAdditional(final CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag());
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
     }
 
     @Override
-    public void load(final CompoundTag tag) {
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND));
+            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
         }
         configureAccordingToUpgrades();
-        super.load(tag);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
@@ -93,13 +94,18 @@ public class WirelessTransmitterBlockEntity
         return new WirelessTransmitterContainerMenu(syncId, inventory, this, upgradeContainer);
     }
 
-    int getRange() {
-        return PlatformApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
+    @Override
+    public WirelessTransmitterData getMenuData() {
+        return new WirelessTransmitterData(getRange());
     }
 
     @Override
-    public void writeScreenOpeningData(final ServerPlayer player, final FriendlyByteBuf buf) {
-        buf.writeInt(getRange());
+    public StreamEncoder<RegistryFriendlyByteBuf, WirelessTransmitterData> getMenuCodec() {
+        return WirelessTransmitterData.STREAM_CODEC;
+    }
+
+    int getRange() {
+        return PlatformApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
     }
 
     private void upgradeContainerChanged() {

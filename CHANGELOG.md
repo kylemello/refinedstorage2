@@ -7,6 +7,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Ported to Minecraft 1.21.
+-   More help information for items.
+
+### Fixed
+
+-   Regulator Upgrade having wrong GUI title.
+-   Crafting Grid not dropping crafting matrix contents when broken.
+-   "+1" amount screen button not doing anything.
+
+### Changed
+
+-   Internal data format for storages. Storages from milestone 3 are incompatible and will not be transferred.
+
 ## [2.0.0-milestone.3.14] - 2024-06-28
 
 ### Added

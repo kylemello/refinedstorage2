@@ -4,9 +4,11 @@ import com.refinedmods.refinedstorage2.api.core.Action;
 import com.refinedmods.refinedstorage2.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage2.api.network.impl.energy.AbstractListeningEnergyStorage;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class ItemBlockEnergyStorage extends AbstractListeningEnergyStorage {
@@ -21,18 +23,16 @@ public class ItemBlockEnergyStorage extends AbstractListeningEnergyStorage {
         super(energyStorage);
         this.stack = stack;
         this.blockEntityType = blockEntityType;
-        final CompoundTag tag = BlockItem.getBlockEntityData(stack);
-        if (tag != null) {
-            readFromTag(energyStorage, tag);
+        final CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (customData != null) {
+            readFromTag(energyStorage, customData.copyTag());
         }
     }
 
     @Override
     protected void onStoredChanged(final long stored) {
-        CompoundTag tag = BlockItem.getBlockEntityData(stack);
-        if (tag == null) {
-            tag = new CompoundTag();
-        }
+        final CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        final CompoundTag tag = customData == null ? new CompoundTag() : customData.copyTag();
         writeToTag(tag, stored);
         BlockItem.setBlockEntityData(stack, blockEntityType, tag);
     }

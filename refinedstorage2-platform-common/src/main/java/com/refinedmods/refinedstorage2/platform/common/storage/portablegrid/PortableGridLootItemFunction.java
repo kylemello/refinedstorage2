@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class PortableGridLootItemFunction extends EnergyLootItemFunction {
     @Override
-    public LootItemFunctionType getType() {
+    public LootItemFunctionType<? extends EnergyLootItemFunction> getType() {
         return LootFunctions.INSTANCE.getPortableGrid();
     }
 
@@ -19,7 +19,11 @@ public class PortableGridLootItemFunction extends EnergyLootItemFunction {
     public ItemStack apply(final ItemStack itemStack, final LootContext lootContext) {
         final BlockEntity blockEntity = lootContext.getParam(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof AbstractPortableGridBlockEntity portableGrid) {
-            PortableGridBlockItem.setDiskInventory(itemStack, portableGrid.getDiskInventory());
+            PortableGridBlockItem.setDiskInventory(
+                itemStack,
+                portableGrid.getDiskInventory(),
+                lootContext.getLevel().registryAccess()
+            );
         }
         return super.apply(itemStack, lootContext);
     }

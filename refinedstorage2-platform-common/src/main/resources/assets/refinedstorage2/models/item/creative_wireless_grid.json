@@ -3,13 +3,13 @@
   "overrides": [
     {
       "predicate": {
-        "active": 0
+        "refinedstorage2:network_bound_active": 0
       },
       "model": "refinedstorage2:item/wireless_grid/inactive"
     },
     {
       "predicate": {
-        "active": 1
+        "refinedstorage2:network_bound_active": 1
       },
       "model": "refinedstorage2:item/wireless_grid/active"
     }

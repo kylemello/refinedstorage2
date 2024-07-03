@@ -93,6 +93,6 @@ public final class CubeBuilder {
                                   final float x,
                                   final float y,
                                   final float z) {
-        builder.vertex(poseStack.last().pose(), x, y, z).color(r, g, b, a).endVertex();
+        builder.addVertex(poseStack.last().pose(), x, y, z).setColor(r, g, b, a);
     }
 }

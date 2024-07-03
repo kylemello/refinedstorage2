@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage2.platform.api.support.network.bounditem.Sl
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,10 +44,10 @@ public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem 
 
     @Override
     public void appendHoverText(final ItemStack stack,
-                                @Nullable final Level level,
+                                final TooltipContext context,
                                 final List<Component> tooltip,
                                 final TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, tooltip, flag);
         networkBoundItemHelper.addTooltip(stack, tooltip);
     }
 

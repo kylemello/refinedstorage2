@@ -44,8 +44,8 @@ class FluidBreakDestructorStrategy implements DestructorStrategy {
             || blockState.getValue(LiquidBlock.LEVEL) != 0) {
             return false;
         }
-        final Fluid fluid = liquidBlock.getFluidState(blockState).getType();
-        final FluidResource fluidResource = new FluidResource(fluid, null);
+        final Fluid fluid = blockState.getFluidState().getType();
+        final FluidResource fluidResource = new FluidResource(fluid);
         if (!filter.isAllowed(fluidResource)) {
             return false;
         }

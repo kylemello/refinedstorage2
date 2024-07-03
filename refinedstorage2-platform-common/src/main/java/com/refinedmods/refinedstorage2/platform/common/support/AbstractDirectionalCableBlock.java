@@ -77,11 +77,7 @@ public abstract class AbstractDirectionalCableBlock
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public boolean isPathfindable(final BlockState state,
-                                  final BlockGetter world,
-                                  final BlockPos pos,
-                                  final PathComputationType type) {
+    protected boolean isPathfindable(final BlockState state, final PathComputationType type) {
         return false;
     }
 

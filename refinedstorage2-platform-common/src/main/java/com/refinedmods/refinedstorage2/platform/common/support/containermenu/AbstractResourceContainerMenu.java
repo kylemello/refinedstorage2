@@ -2,15 +2,14 @@ package com.refinedmods.refinedstorage2.platform.common.support.containermenu;
 
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.PlatformResourceKey;
-import com.refinedmods.refinedstorage2.platform.common.Platform;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -29,12 +28,6 @@ public abstract class AbstractResourceContainerMenu extends AbstractBaseContaine
     protected AbstractResourceContainerMenu(@Nullable final MenuType<?> type, final int syncId) {
         super(type, syncId);
         this.player = null;
-    }
-
-    protected void initializeResourceSlots(final FriendlyByteBuf buf) {
-        for (final ResourceSlot resourceSlot : resourceSlots) {
-            resourceSlot.readFromUpdatePacket(buf);
-        }
     }
 
     private Optional<ResourceSlot> getResourceSlot(final int slotIndex) {
@@ -60,7 +53,7 @@ public abstract class AbstractResourceContainerMenu extends AbstractBaseContaine
     }
 
     public void sendResourceSlotChange(final int slotIndex, final boolean tryAlternatives) {
-        Platform.INSTANCE.getClientToServerCommunications().sendResourceSlotChange(slotIndex, tryAlternatives);
+        C2SPackets.sendResourceSlotChange(slotIndex, tryAlternatives);
     }
 
     public void handleResourceSlotAmountChange(final int slotIndex, final long amount) {

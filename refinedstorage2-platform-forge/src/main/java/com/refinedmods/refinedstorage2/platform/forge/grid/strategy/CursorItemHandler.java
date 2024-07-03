@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 class CursorItemHandler implements IItemHandler {
     private final AbstractContainerMenu containerMenu;
@@ -57,7 +56,7 @@ class CursorItemHandler implements IItemHandler {
         if (!simulate) {
             containerMenu.getCarried().grow(toInsert);
         }
-        return ItemHandlerHelper.copyStackWithSize(itemStack, remainder);
+        return itemStack.copyWithCount(remainder);
     }
 
     @Override
@@ -70,7 +69,7 @@ class CursorItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
         final int extracted = Math.min(containerMenu.getCarried().getCount(), amount);
-        final ItemStack extractedStack = ItemHandlerHelper.copyStackWithSize(containerMenu.getCarried(), extracted);
+        final ItemStack extractedStack = containerMenu.getCarried().copyWithCount(extracted);
         if (!simulate) {
             containerMenu.getCarried().shrink(extracted);
         }
@@ -88,6 +87,6 @@ class CursorItemHandler implements IItemHandler {
     }
 
     private boolean isSame(final ItemStack a, final ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b);
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 }

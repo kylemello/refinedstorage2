@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
@@ -57,13 +57,9 @@ public interface ResourceContainer {
 
     List<ResourceKey> getResources();
 
-    void writeToUpdatePacket(FriendlyByteBuf buf);
+    CompoundTag toTag(HolderLookup.Provider provider);
 
-    void readFromUpdatePacket(int index, FriendlyByteBuf buf);
-
-    CompoundTag toTag();
-
-    void fromTag(CompoundTag tag);
+    void fromTag(CompoundTag tag, HolderLookup.Provider provider);
 
     ResourceFactory getPrimaryResourceFactory();
 

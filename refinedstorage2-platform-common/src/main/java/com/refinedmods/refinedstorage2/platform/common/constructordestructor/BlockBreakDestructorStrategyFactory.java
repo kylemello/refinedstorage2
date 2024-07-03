@@ -12,6 +12,8 @@ import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -19,11 +21,11 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 public class BlockBreakDestructorStrategyFactory implements DestructorStrategyFactory {
     private static final ItemStack DEFAULT_TOOL = new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE);
-    private static final List<Tool> TOOLS = List.of(
-        Tool.of(Items.INSTANCE::getSilkTouchUpgrade, Enchantments.SILK_TOUCH, 1),
-        Tool.of(Items.INSTANCE::getFortune3Upgrade, Enchantments.BLOCK_FORTUNE, 3),
-        Tool.of(Items.INSTANCE::getFortune2Upgrade, Enchantments.BLOCK_FORTUNE, 2),
-        Tool.of(Items.INSTANCE::getFortune1Upgrade, Enchantments.BLOCK_FORTUNE, 1)
+    private static final List<UpgradeMapping> UPGRADE_MAPPINGS = List.of(
+        new UpgradeMapping(Items.INSTANCE::getSilkTouchUpgrade, Enchantments.SILK_TOUCH, 1),
+        new UpgradeMapping(Items.INSTANCE::getFortune3Upgrade, Enchantments.FORTUNE, 3),
+        new UpgradeMapping(Items.INSTANCE::getFortune2Upgrade, Enchantments.FORTUNE, 2),
+        new UpgradeMapping(Items.INSTANCE::getFortune1Upgrade, Enchantments.FORTUNE, 1)
     );
 
     @Override
@@ -32,24 +34,26 @@ public class BlockBreakDestructorStrategyFactory implements DestructorStrategyFa
                                                final Direction direction,
                                                final UpgradeState upgradeState,
                                                final boolean pickupItems) {
-        final ItemStack tool = createTool(upgradeState);
+        final ItemStack tool = DEFAULT_TOOL.copy();
+        enchantTool(level, upgradeState, tool);
         return Optional.of(new BlockBreakDestructorStrategy(level, pos, direction, tool));
     }
 
-    private ItemStack createTool(final UpgradeState state) {
-        for (final Tool tool : TOOLS) {
-            if (state.has(tool.itemSupplier.get())) {
-                return tool.tool;
+    private static void enchantTool(final ServerLevel level, final UpgradeState upgradeState, final ItemStack tool) {
+        for (final UpgradeMapping upgradeMapping : UPGRADE_MAPPINGS) {
+            if (upgradeState.has(upgradeMapping.upgradeItemSupplier.get())) {
+                level.holderLookup(Registries.ENCHANTMENT).get(upgradeMapping.enchantment).ifPresent(
+                    enchantment -> tool.enchant(enchantment, upgradeMapping.level)
+                );
+                return;
             }
         }
-        return DEFAULT_TOOL;
     }
 
-    private record Tool(Supplier<UpgradeItem> itemSupplier, ItemStack tool) {
-        private static Tool of(final Supplier<UpgradeItem> item, final Enchantment enchantment, final int level) {
-            final ItemStack resultingTool = DEFAULT_TOOL.copy();
-            resultingTool.enchant(enchantment, level);
-            return new Tool(item, resultingTool);
-        }
+    private record UpgradeMapping(
+        Supplier<UpgradeItem> upgradeItemSupplier,
+        ResourceKey<Enchantment> enchantment,
+        int level
+    ) {
     }
 }

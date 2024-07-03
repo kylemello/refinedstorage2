@@ -15,8 +15,6 @@ import com.refinedmods.refinedstorage2.platform.forge.grid.view.ForgeItemGridRes
 import com.refinedmods.refinedstorage2.platform.forge.support.containermenu.ContainerTransferDestination;
 import com.refinedmods.refinedstorage2.platform.forge.support.containermenu.MenuOpenerImpl;
 import com.refinedmods.refinedstorage2.platform.forge.support.energy.EnergyStorageAdapter;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.c2s.ClientToServerCommunicationsImpl;
-import com.refinedmods.refinedstorage2.platform.forge.support.packet.s2c.ServerToClientCommunicationsImpl;
 import com.refinedmods.refinedstorage2.platform.forge.support.render.FluidStackFluidRenderer;
 
 import java.util.ArrayList;
@@ -35,12 +33,11 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -48,10 +45,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -60,7 +57,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -77,37 +74,22 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static com.refinedmods.refinedstorage2.platform.forge.support.resource.VariantUtil.ofFluidStack;
 import static com.refinedmods.refinedstorage2.platform.forge.support.resource.VariantUtil.toFluidStack;
 
 public final class PlatformImpl extends AbstractPlatform {
-    private static final TagKey<Item> WRENCH_TAG = TagKey.create(
-        Registries.ITEM,
-        new ResourceLocation("forge", "tools/wrench")
-    );
-
     private final ConfigImpl config = new ConfigImpl();
 
-    public PlatformImpl() {
-        super(
-            new ServerToClientCommunicationsImpl(),
-            new ClientToServerCommunicationsImpl(),
-            new MenuOpenerImpl(),
-            new FluidStackFluidRenderer(),
-            ItemGridInsertionStrategy::new
-        );
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, config.getSpec());
+    public PlatformImpl(final ModContainer modContainer) {
+        super(new MenuOpenerImpl(), new FluidStackFluidRenderer(), ItemGridInsertionStrategy::new);
+        modContainer.registerConfig(ModConfig.Type.COMMON, config.getSpec());
     }
 
     @Override
     public long getBucketAmount() {
         return FluidType.BUCKET_VOLUME;
-    }
-
-    @Override
-    public TagKey<Item> getWrenchTag() {
-        return WRENCH_TAG;
     }
 
     @Override
@@ -200,9 +182,9 @@ public final class PlatformImpl extends AbstractPlatform {
     @SuppressWarnings("DataFlowIssue") // NeoForge allows null
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player,
                                                             final CraftingRecipe craftingRecipe,
-                                                            final CraftingContainer container) {
+                                                            final CraftingInput input) {
         CommonHooks.setCraftingPlayer(player);
-        final NonNullList<ItemStack> remainingItems = craftingRecipe.getRemainingItems(container);
+        final NonNullList<ItemStack> remainingItems = craftingRecipe.getRemainingItems(input);
         CommonHooks.setCraftingPlayer(null);
         return remainingItems;
     }
@@ -329,5 +311,15 @@ public final class PlatformImpl extends AbstractPlatform {
             .filter(EnergyStorageAdapter.class::isInstance)
             .map(EnergyStorageAdapter.class::cast)
             .map(EnergyStorageAdapter::getEnergyStorage);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToServer(final T packet) {
+        PacketDistributor.sendToServer(packet);
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
+        PacketDistributor.sendToPlayer(player, packet);
     }
 }

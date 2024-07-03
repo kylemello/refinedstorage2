@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage2.platform.common.content.BlockConstants;
 import com.refinedmods.refinedstorage2.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractBlockEntityTicker;
 import com.refinedmods.refinedstorage2.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage2.platform.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.BiDirectionType;
 import com.refinedmods.refinedstorage2.platform.common.support.direction.DirectionType;
@@ -13,9 +14,12 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
@@ -26,7 +30,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import static com.refinedmods.refinedstorage2.platform.common.util.IdentifierUtil.createTranslation;
+
 public class StorageMonitorBlock extends AbstractDirectionalBlock<BiDirection> implements EntityBlock {
+    private static final Component HELP = createTranslation("item", "storage_monitor.help");
     private static final AbstractBlockEntityTicker<StorageMonitorBlockEntity> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getStorageMonitor);
 
@@ -53,19 +60,15 @@ public class StorageMonitorBlock extends AbstractDirectionalBlock<BiDirection> i
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(final BlockState state,
-                                 final Level level,
-                                 final BlockPos pos,
-                                 final Player player,
-                                 final InteractionHand hand,
-                                 final BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(final ItemStack stack,
+                                              final BlockState state,
+                                              final Level level,
+                                              final BlockPos pos,
+                                              final Player player,
+                                              final InteractionHand hand,
+                                              final BlockHitResult hitResult) {
         if (player.isCrouching()) {
-            return super.use(state, level, pos, player, hand, hit);
-        }
-        final BiDirection direction = getDirection(state);
-        if (direction == null || hit.getDirection() != direction.asDirection()) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             final BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -73,7 +76,7 @@ public class StorageMonitorBlock extends AbstractDirectionalBlock<BiDirection> i
                 storageMonitor.insert(player, hand);
             }
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -108,5 +111,9 @@ public class StorageMonitorBlock extends AbstractDirectionalBlock<BiDirection> i
             ClipContext.Fluid.NONE,
             player
         )).getDirection();
+    }
+
+    public BlockItem createBlockItem() {
+        return new NetworkNodeBlockItem(this, HELP);
     }
 }

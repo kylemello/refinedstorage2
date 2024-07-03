@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage2.platform.common.grid;
 
-import com.refinedmods.refinedstorage2.platform.common.Platform;
+import com.refinedmods.refinedstorage2.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
 
 import java.util.List;
@@ -9,6 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 class ClientCraftingGridSource implements CraftingGridSource {
     private final CraftingMatrix craftingMatrix;
@@ -30,7 +31,7 @@ class ClientCraftingGridSource implements CraftingGridSource {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(final Player player) {
+    public NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput input) {
         throw new UnsupportedOperationException();
     }
 
@@ -46,13 +47,13 @@ class ClientCraftingGridSource implements CraftingGridSource {
 
     @Override
     public boolean clearMatrix(final Player player, final boolean toPlayerInventory) {
-        Platform.INSTANCE.getClientToServerCommunications().sendCraftingGridClear(toPlayerInventory);
+        C2SPackets.sendCraftingGridClear(toPlayerInventory);
         return true;
     }
 
     @Override
     public void transferRecipe(final Player player, final List<List<ItemResource>> recipe) {
-        Platform.INSTANCE.getClientToServerCommunications().sendCraftingGridRecipeTransfer(recipe);
+        C2SPackets.sendCraftingGridRecipeTransfer(recipe);
     }
 
     @Override
