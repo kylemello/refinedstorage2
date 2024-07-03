@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:detectors"
     },
     {
-      "item": "minecraft:red_dye"
+      "tag": "c:dyes/red"
     }
   ],
   "result": {

@@ -10,7 +10,7 @@
       "item": "refinedstorage2:machine_casing"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "c:dusts/redstone"
     },
     "P": {
       "item": "refinedstorage2:4096b_fluid_storage_part"

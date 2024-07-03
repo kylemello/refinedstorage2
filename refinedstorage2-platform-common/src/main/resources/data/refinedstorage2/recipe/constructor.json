@@ -13,7 +13,7 @@
       "item": "refinedstorage2:construction_core"
     },
     "R": {
-      "item": "minecraft:diamond"
+      "tag": "c:gems/diamond"
     },
     "M": {
       "item": "refinedstorage2:cable"

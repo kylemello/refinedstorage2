@@ -16,7 +16,7 @@
       "item": "refinedstorage2:destruction_core"
     },
     "H": {
-      "item": "minecraft:chest"
+      "tag": "c:chests"
     },
     "M": {
       "item": "refinedstorage2:cable"

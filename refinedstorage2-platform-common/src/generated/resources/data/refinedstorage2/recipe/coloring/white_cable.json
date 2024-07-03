@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:cables"
     },
     {
-      "item": "minecraft:white_dye"
+      "tag": "c:dyes/white"
     }
   ],
   "result": {

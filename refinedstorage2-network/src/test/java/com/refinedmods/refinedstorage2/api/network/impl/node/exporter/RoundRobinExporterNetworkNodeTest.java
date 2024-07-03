@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 class RoundRobinExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
     private Runnable listener;
 
+    @Override
     @BeforeEach
     void setUp() {
         listener = mock(Runnable.class);

@@ -7,10 +7,10 @@
   ],
   "key": {
     "G": {
-      "item": "minecraft:glass"
+      "tag": "c:glass_blocks"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "tag": "c:dusts/redstone"
     },
     "P": {
       "item": "refinedstorage2:64b_fluid_storage_part"

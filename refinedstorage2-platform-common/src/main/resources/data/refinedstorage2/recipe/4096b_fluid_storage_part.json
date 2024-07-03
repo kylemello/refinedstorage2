@@ -16,7 +16,7 @@
       "item": "refinedstorage2:1024b_fluid_storage_part"
     },
     "R": {
-      "item": "minecraft:bucket"
+      "tag": "c:buckets/empty"
     }
   },
   "result": {

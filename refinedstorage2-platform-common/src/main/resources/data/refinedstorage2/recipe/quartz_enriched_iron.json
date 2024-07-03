@@ -6,10 +6,10 @@
   ],
   "key": {
     "I": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     "Q": {
-      "item": "minecraft:quartz"
+      "tag": "c:gems/quartz"
     }
   },
   "result": {

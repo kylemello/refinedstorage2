@@ -21,6 +21,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 -   Internal data format for storages. Storages from milestone 3 are incompatible and will not be transferred.
+-   Recipes now use common tag conventions from NeoForge and Fabric.
 
 ## [2.0.0-milestone.3.14] - 2024-06-28
 

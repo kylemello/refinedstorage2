@@ -6,7 +6,7 @@
       "tag": "refinedstorage2:grids"
     },
     {
-      "item": "minecraft:black_dye"
+      "tag": "c:dyes/black"
     }
   ],
   "result": {

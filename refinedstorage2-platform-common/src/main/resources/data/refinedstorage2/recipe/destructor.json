@@ -13,7 +13,7 @@
       "item": "refinedstorage2:destruction_core"
     },
     "I": {
-      "item": "minecraft:diamond"
+      "tag": "c:gems/diamond"
     },
     "C": {
       "item": "refinedstorage2:cable"

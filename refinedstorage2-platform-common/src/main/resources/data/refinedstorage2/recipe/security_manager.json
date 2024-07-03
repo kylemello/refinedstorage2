@@ -10,7 +10,7 @@
       "item": "refinedstorage2:quartz_enriched_iron"
     },
     "C": {
-      "item": "minecraft:chest"
+      "tag": "c:chests"
     },
     "S": {
       "item": "refinedstorage2:security_card"
