@@ -14,16 +14,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Quartz Enriched Copper, used to craft cables.
 -   Block of Quartz Enriched Copper
 
+### Changed
+
+-   The mod ID has been changed from "refinedstorage2" to "refinedstorage". Worlds that used milestone 3 on Minecraft 1.20.4 are no longer compatible.
+-   Recipes now use common tag conventions from NeoForge and Fabric.
+
 ### Fixed
 
 -   Regulator Upgrade having wrong GUI title.
 -   Crafting Grid not dropping crafting matrix contents when broken.
--   "+1" amount screen button not doing anything.
-
-### Changed
-
--   Internal data format for storages. Storages from milestone 3 are incompatible and will not be transferred.
--   Recipes now use common tag conventions from NeoForge and Fabric.
+-   "+1" button on amount screen not doing anything.
 
 ## [2.0.0-milestone.3.14] - 2024-06-28
 
