@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage2.platform.common.support.resource.list;
 import com.refinedmods.refinedstorage2.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage2.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage2.platform.api.support.resource.list.FuzzyResourceList;
+import com.refinedmods.refinedstorage2.platform.common.SetupMinecraft;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
-import com.refinedmods.refinedstorage2.platform.test.SetupMinecraft;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,10 +15,11 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SetupMinecraft
+@ExtendWith(SetupMinecraft.class)
 class FuzzyResourceListImplTest {
     private static final ItemResource DUMMY_A = new ItemResource(Items.DIRT, DataComponentPatch.EMPTY);
     private static final ItemResource DUMMY_B = new ItemResource(Items.DIRT, DataComponentPatch.builder()

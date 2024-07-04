@@ -42,7 +42,7 @@ public class History {
         if (value.trim().isEmpty()) {
             return false;
         }
-        if (!items.isEmpty() && items.get(items.size() - 1).equals(value)) {
+        if (!items.isEmpty() && items.getLast().equals(value)) {
             return false;
         }
         items.add(value);

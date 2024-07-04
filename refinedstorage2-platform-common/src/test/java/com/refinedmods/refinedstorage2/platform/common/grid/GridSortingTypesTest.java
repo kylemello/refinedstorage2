@@ -7,9 +7,9 @@ import com.refinedmods.refinedstorage2.api.grid.view.GridView;
 import com.refinedmods.refinedstorage2.api.grid.view.GridViewBuilder;
 import com.refinedmods.refinedstorage2.api.grid.view.GridViewBuilderImpl;
 import com.refinedmods.refinedstorage2.api.storage.tracked.TrackedResource;
+import com.refinedmods.refinedstorage2.platform.common.SetupMinecraft;
 import com.refinedmods.refinedstorage2.platform.common.grid.view.AbstractItemGridResourceFactory;
 import com.refinedmods.refinedstorage2.platform.common.support.resource.ItemResource;
-import com.refinedmods.refinedstorage2.platform.test.SetupMinecraft;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -18,13 +18,14 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@SetupMinecraft
+@ExtendWith(SetupMinecraft.class)
 class GridSortingTypesTest {
     private static final GridResourceFactory FACTORY = new AbstractItemGridResourceFactory() {
         @Override
