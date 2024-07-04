@@ -1,0 +1,4 @@
+# Use via: git config --local --add blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Rename "refinedstorage2" to "refinedstorage"
+03d02f1e07e1e6e9726404c236c3af227126ade0

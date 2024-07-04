@@ -1,5 +1,0 @@
-forgeProject("refinedstorage2", project(":refinedstorage2-platform-common"), apis, compileApis)
-
-archivesBaseName = 'refinedstorage2-platform-forge'
-
-enablePublishing()

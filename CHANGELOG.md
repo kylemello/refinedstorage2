@@ -7,6 +7,26 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.0] - 2024-07-04
+
+### Added
+
+-   Ported to Minecraft 1.21.
+-   More help information for items.
+-   Quartz Enriched Copper, used to craft cables.
+-   Block of Quartz Enriched Copper
+
+### Changed
+
+-   The mod ID has been changed from "refinedstorage2" to "refinedstorage". Worlds that used milestone 3 on Minecraft 1.20.4 are no longer compatible.
+-   Recipes now use common tag conventions from NeoForge and Fabric.
+
+### Fixed
+
+-   Regulator Upgrade having wrong GUI title.
+-   Crafting Grid not dropping crafting matrix contents when broken.
+-   "+1" button on amount screen not doing anything.
+
 ## [2.0.0-milestone.3.14] - 2024-06-28
 
 ### Added
@@ -619,7 +639,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.14...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.0...HEAD
+
+[2.0.0-milestone.4.0]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.14...v2.0.0-milestone.4.0
 
 [2.0.0-milestone.3.14]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.13...v2.0.0-milestone.3.14
 
