@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed creative mode tab icon on NeoForge showing a durability bar.
+
 ## [2.0.0-milestone.4.0] - 2024-07-04
 
 ### Added
