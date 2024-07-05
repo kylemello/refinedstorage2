@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.1] - 2024-07-05
+
+### Fixed
+
+-   Fixed creative mode tab icon on NeoForge showing a durability bar.
+
 ## [2.0.0-milestone.4.0] - 2024-07-04
 
 ### Added
@@ -639,7 +645,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.0...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.1...HEAD
+
+[2.0.0-milestone.4.1]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.0...v2.0.0-milestone.4.1
 
 [2.0.0-milestone.4.0]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.3.14...v2.0.0-milestone.4.0
 
