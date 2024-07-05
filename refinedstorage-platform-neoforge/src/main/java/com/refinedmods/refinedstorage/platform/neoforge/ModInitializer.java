@@ -448,7 +448,7 @@ public class ModInitializer extends AbstractModInitializer {
             createIdentifier("general"),
             CreativeModeTab.builder()
                 .title(ContentNames.MOD)
-                .icon(() -> new ItemStack(Blocks.INSTANCE.getController().getDefault()))
+                .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))
                 .displayItems((params, output) -> CreativeModeTabItems.append(output::accept))
                 .build()
         ));
