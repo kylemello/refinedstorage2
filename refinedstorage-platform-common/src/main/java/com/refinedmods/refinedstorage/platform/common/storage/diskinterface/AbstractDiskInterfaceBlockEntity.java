@@ -15,6 +15,7 @@ import com.refinedmods.refinedstorage.platform.common.storage.AbstractDiskContai
 import com.refinedmods.refinedstorage.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,7 +38,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     implements StorageTransferListener {
     public static final int AMOUNT_OF_DISKS = 6;
 
-    private static final String TAG_UPGRADES = "u";
+    private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_TRANSFER_MODE = "tm";
 
@@ -96,7 +96,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
         super.loadAdditional(tag, provider);
     }
@@ -104,7 +104,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
         tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
     }
 

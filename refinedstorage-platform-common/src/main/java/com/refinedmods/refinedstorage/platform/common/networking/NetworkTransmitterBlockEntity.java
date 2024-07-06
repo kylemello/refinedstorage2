@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +20,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -155,17 +155,14 @@ public class NetworkTransmitterBlockEntity
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_NETWORK_CARD_INVENTORY, networkCardInventory.createTag(provider));
+        tag.put(TAG_NETWORK_CARD_INVENTORY, ContainerUtil.write(networkCardInventory, provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         if (tag.contains(TAG_NETWORK_CARD_INVENTORY)) {
-            networkCardInventory.fromTag(
-                tag.getList(TAG_NETWORK_CARD_INVENTORY, Tag.TAG_COMPOUND),
-                provider
-            );
+            ContainerUtil.read(tag.getCompound(TAG_NETWORK_CARD_INVENTORY), networkCardInventory, provider);
         }
         updateReceiverLocation();
     }

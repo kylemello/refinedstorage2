@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.platform.common.support.containermenu.Netw
 import com.refinedmods.refinedstorage.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -20,7 +21,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamEncoder;
@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData> {
-    private static final String TAG_UPGRADES = "u";
+    private static final String TAG_UPGRADES = "upgr";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
         UpgradeDestinations.WIRELESS_TRANSMITTER,
@@ -55,13 +55,13 @@ public class WirelessTransmitterBlockEntity
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
         super.loadAdditional(tag, provider);
     }
