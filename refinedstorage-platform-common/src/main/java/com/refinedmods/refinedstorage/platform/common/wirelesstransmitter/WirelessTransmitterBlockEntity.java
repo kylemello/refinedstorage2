@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.platform.common.support.network.AbstractRe
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -26,6 +27,7 @@ import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
@@ -61,8 +63,17 @@ public class WirelessTransmitterBlockEntity
         if (tag.contains(TAG_UPGRADES)) {
             upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
+    }
+
+    @Override
+    public List<Item> getUpgradeItems() {
+        return upgradeContainer.getUpgradeItems();
+    }
+
+    @Override
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
@@ -109,13 +120,9 @@ public class WirelessTransmitterBlockEntity
     }
 
     private void upgradeContainerChanged() {
-        setChanged();
-        configureAccordingToUpgrades();
-    }
-
-    private void configureAccordingToUpgrades() {
         final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
         mainNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
+        setChanged();
     }
 
     @Override

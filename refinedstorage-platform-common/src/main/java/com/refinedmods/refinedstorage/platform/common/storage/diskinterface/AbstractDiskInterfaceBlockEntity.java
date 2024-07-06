@@ -16,7 +16,6 @@ import com.refinedmods.refinedstorage.platform.common.support.FilterModeSettings
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -34,7 +33,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO: upgradeable + level interacting class hierarchy? Disk Interface is copying stuff now... :(
 public abstract class AbstractDiskInterfaceBlockEntity
     extends AbstractDiskContainerBlockEntity<StorageTransferNetworkNode>
     implements StorageTransferListener {
@@ -71,15 +69,11 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     private void upgradeContainerChanged() {
-        configureAccordingToUpgrades();
-        setChanged();
-    }
-
-    private void configureAccordingToUpgrades() {
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
         this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
         mainNode.setEnergyUsage(baseEnergyUsage + upgradeContainer.getEnergyUsage());
+        setChanged();
     }
 
     @Override
@@ -104,7 +98,6 @@ public abstract class AbstractDiskInterfaceBlockEntity
         if (tag.contains(TAG_UPGRADES)) {
             upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
     }
 
@@ -134,20 +127,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
 
     @Override
     public List<Item> getUpgradeItems() {
-        final List<Item> upgradeItems = new ArrayList<>();
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            final ItemStack itemStack = upgradeContainer.getItem(i);
-            if (itemStack.isEmpty()) {
-                continue;
-            }
-            upgradeItems.add(itemStack.getItem());
-        }
-        return upgradeItems;
+        return upgradeContainer.getUpgradeItems();
     }
 
     @Override
     public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addItem(new ItemStack(upgradeItem)).isEmpty();
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override

@@ -7,6 +7,8 @@ import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -122,5 +124,21 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
             usage += upgradeItem.getEnergyUsage();
         }
         return usage;
+    }
+
+    public List<Item> getUpgradeItems() {
+        final List<Item> upgradeItems = new ArrayList<>();
+        for (int i = 0; i < getContainerSize(); ++i) {
+            final ItemStack itemStack = getItem(i);
+            if (itemStack.isEmpty()) {
+                continue;
+            }
+            upgradeItems.add(itemStack.getItem());
+        }
+        return upgradeItems;
+    }
+
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return addItem(new ItemStack(upgradeItem)).isEmpty();
     }
 }

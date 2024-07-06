@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage.platform.common.support.BlockEntityWithDro
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
@@ -63,7 +62,10 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     }
 
     private void upgradeContainerChanged() {
-        configureAccordingToUpgrades();
+        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
+        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
+        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
+        this.setEnergyUsage(upgradeContainer.getEnergyUsage());
         setChanged();
         if (level instanceof ServerLevel serverLevel) {
             initialize(serverLevel);
@@ -72,20 +74,12 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
 
     @Override
     public List<Item> getUpgradeItems() {
-        final List<Item> upgradeItems = new ArrayList<>();
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            final ItemStack itemStack = upgradeContainer.getItem(i);
-            if (itemStack.isEmpty()) {
-                continue;
-            }
-            upgradeItems.add(itemStack.getItem());
-        }
-        return upgradeItems;
+        return upgradeContainer.getUpgradeItems();
     }
 
     @Override
     public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addItem(new ItemStack(upgradeItem)).isEmpty();
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
@@ -99,15 +93,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
         if (tag.contains(TAG_UPGRADES)) {
             upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
-    }
-
-    private void configureAccordingToUpgrades() {
-        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
-        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
-        this.setEnergyUsage(upgradeContainer.getEnergyUsage());
     }
 
     protected abstract void setEnergyUsage(long upgradeEnergyUsage);
