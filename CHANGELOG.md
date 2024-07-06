@@ -18,6 +18,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Fixed extra dark backgrounds due to drawing background on GUIs twice.
 -   Fixed Configuration Card not being able to transfer upgrades for the Wireless Transmitter.
 -   Fixed upgrade inventories not maintaining order after reloading. Upgrade inventories from the milestone 4.2 are incompatible and will be empty.
+-   Fixed Wireless Transmitter not dropping upgrades when breaking block.
 
 ## [2.0.0-milestone.4.2] - 2024-07-06
 

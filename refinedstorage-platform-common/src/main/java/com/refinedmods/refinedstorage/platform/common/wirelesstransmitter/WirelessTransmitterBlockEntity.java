@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
@@ -20,6 +21,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -28,11 +30,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData> {
+    implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData>, BlockEntityWithDrops {
     private static final String TAG_UPGRADES = "upgr";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
@@ -123,6 +126,15 @@ public class WirelessTransmitterBlockEntity
         final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
         mainNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
         setChanged();
+    }
+
+    @Override
+    public NonNullList<ItemStack> getDrops() {
+        final NonNullList<ItemStack> drops = NonNullList.create();
+        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
+            drops.add(upgradeContainer.getItem(i));
+        }
+        return drops;
     }
 
     @Override

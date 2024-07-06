@@ -99,7 +99,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     protected abstract void setEnergyUsage(long upgradeEnergyUsage);
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));
