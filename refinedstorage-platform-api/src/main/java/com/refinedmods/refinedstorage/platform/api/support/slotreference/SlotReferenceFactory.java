@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.platform.api.support.network.bounditem;
+package com.refinedmods.refinedstorage.platform.api.support.slotreference;
 
 import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 

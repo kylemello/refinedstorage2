@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.platform.common.grid;
 
 import com.refinedmods.refinedstorage.platform.api.grid.Grid;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.ExtendedMenuProvider;
 

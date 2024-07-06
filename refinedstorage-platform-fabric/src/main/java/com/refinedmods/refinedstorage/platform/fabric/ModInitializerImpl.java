@@ -39,7 +39,7 @@ import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.Securit
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.StorageInfoRequestPacket;
-import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.UseSlotReferencedItemPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.GridClearPacket;
@@ -447,8 +447,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             StorageInfoRequestPacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playC2S().register(
-            UseNetworkBoundItemPacket.PACKET_TYPE,
-            UseNetworkBoundItemPacket.STREAM_CODEC
+            UseSlotReferencedItemPacket.PACKET_TYPE,
+            UseSlotReferencedItemPacket.STREAM_CODEC
         );
     }
 
@@ -498,8 +498,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             wrapHandler(SingleAmountChangePacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            UseNetworkBoundItemPacket.PACKET_TYPE,
-            wrapHandler(UseNetworkBoundItemPacket::handle)
+            UseSlotReferencedItemPacket.PACKET_TYPE,
+            wrapHandler(UseSlotReferencedItemPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
             SecurityCardPermissionPacket.PACKET_TYPE,

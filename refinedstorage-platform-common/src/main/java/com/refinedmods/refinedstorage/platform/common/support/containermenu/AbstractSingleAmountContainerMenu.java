@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.platform.common.support.containermenu;
 
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceContainer;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ResourceContainerImpl;
 

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.platform.common.support;
 
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.DisabledSlot;

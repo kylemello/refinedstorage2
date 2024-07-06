@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.platform.common.storage.portablegrid;
 
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.platform.api.grid.Grid;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.content.Menus;
 import com.refinedmods.refinedstorage.platform.common.grid.PortableGridData;
 import com.refinedmods.refinedstorage.platform.common.storage.DiskInventory;

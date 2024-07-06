@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridExt
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridScrollPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.PropertyChangePacket;
+import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceSlotChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SecurityCardBoundPlayerPacket;
@@ -36,7 +37,7 @@ import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.Securit
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SecurityCardResetPermissionPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.StorageInfoRequestPacket;
-import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.UseNetworkBoundItemPacket;
+import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.UseSlotReferencedItemPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.GridClearPacket;
@@ -574,6 +575,11 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(PropertyChangePacket::handle)
         );
         registrar.playToServer(
+            ResourceFilterSlotChangePacket.PACKET_TYPE,
+            ResourceFilterSlotChangePacket.STREAM_CODEC,
+            wrapHandler(ResourceFilterSlotChangePacket::handle)
+        );
+        registrar.playToServer(
             ResourceSlotAmountChangePacket.PACKET_TYPE,
             ResourceSlotAmountChangePacket.STREAM_CODEC,
             wrapHandler(ResourceSlotAmountChangePacket::handle)
@@ -594,9 +600,9 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(StorageInfoRequestPacket::handle)
         );
         registrar.playToServer(
-            UseNetworkBoundItemPacket.PACKET_TYPE,
-            UseNetworkBoundItemPacket.STREAM_CODEC,
-            wrapHandler(UseNetworkBoundItemPacket::handle)
+            UseSlotReferencedItemPacket.PACKET_TYPE,
+            UseSlotReferencedItemPacket.STREAM_CODEC,
+            wrapHandler(UseSlotReferencedItemPacket::handle)
         );
         registrar.playToServer(
             SecurityCardPermissionPacket.PACKET_TYPE,
