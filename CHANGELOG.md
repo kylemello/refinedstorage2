@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed Relay model not being able to load correctly.
+
 ## [2.0.0-milestone.4.2] - 2024-07-06
 
 ## [2.0.0-milestone.4.1] - 2024-07-05
