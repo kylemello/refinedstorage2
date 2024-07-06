@@ -8,30 +8,35 @@ import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage.platform.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.platform.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData> {
-    private static final String TAG_UPGRADES = "u";
+    implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData>, BlockEntityWithDrops {
+    private static final String TAG_UPGRADES = "upgr";
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
         UpgradeDestinations.WIRELESS_TRANSMITTER,
@@ -53,16 +58,25 @@ public class WirelessTransmitterBlockEntity
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
+    }
+
+    @Override
+    public List<Item> getUpgradeItems() {
+        return upgradeContainer.getUpgradeItems();
+    }
+
+    @Override
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
@@ -109,13 +123,18 @@ public class WirelessTransmitterBlockEntity
     }
 
     private void upgradeContainerChanged() {
-        setChanged();
-        configureAccordingToUpgrades();
-    }
-
-    private void configureAccordingToUpgrades() {
         final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
         mainNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
+        setChanged();
+    }
+
+    @Override
+    public NonNullList<ItemStack> getDrops() {
+        final NonNullList<ItemStack> drops = NonNullList.create();
+        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
+            drops.add(upgradeContainer.getItem(i));
+        }
+        return drops;
     }
 
     @Override
