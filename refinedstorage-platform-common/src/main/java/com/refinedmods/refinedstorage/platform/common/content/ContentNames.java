@@ -5,10 +5,12 @@ import net.minecraft.network.chat.MutableComponent;
 
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public final class ContentNames {
     public static final String MOD_TRANSLATION_KEY = "mod." + MOD_ID;
     public static final MutableComponent MOD = Component.translatable(MOD_TRANSLATION_KEY);
+
     public static final MutableComponent CABLE = name("cable");
     public static final MutableComponent GRID = name("grid");
     public static final MutableComponent CRAFTING_GRID = name("crafting_grid");
@@ -34,6 +36,14 @@ public final class ContentNames {
     public static final MutableComponent SECURITY_MANAGER = name("security_manager");
     public static final MutableComponent RELAY = name("relay");
     public static final MutableComponent DISK_INTERFACE = name("disk_interface");
+
+    public static final String CLEAR_CRAFTING_MATRIX_TO_NETWORK_TRANSLATION_KEY =
+        createTranslationKey("key", "clear_crafting_grid_matrix_to_network");
+    public static final String CLEAR_CRAFTING_MATRIX_TO_INVENTORY_TRANSLATION_KEY =
+        createTranslationKey("key", "clear_crafting_grid_matrix_to_inventory");
+    public static final String FOCUS_SEARCH_BAR_TRANSLATION_KEY = createTranslationKey("key", "focus_search_bar");
+    public static final String OPEN_WIRELESS_GRID_TRANSLATION_KEY = createTranslationKey("key", "open_wireless_grid");
+    public static final String OPEN_PORTABLE_GRID_TRANSLATION_KEY = createTranslationKey("key", "open_portable_grid");
 
     private ContentNames() {
     }

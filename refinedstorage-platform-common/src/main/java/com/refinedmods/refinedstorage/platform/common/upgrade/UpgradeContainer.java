@@ -7,14 +7,14 @@ import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.stream.IntStream;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -76,12 +76,6 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
             .findFirst();
     }
 
-    @Override
-    public void fromTag(final ListTag tag, final HolderLookup.Provider provider) {
-        super.fromTag(tag, provider);
-        updateIndex();
-    }
-
     private void updateIndex() {
         LOGGER.debug("Updating upgrade index for {}", destination);
         index.clear();
@@ -122,5 +116,21 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
             usage += upgradeItem.getEnergyUsage();
         }
         return usage;
+    }
+
+    public List<Item> getUpgradeItems() {
+        final List<Item> upgradeItems = new ArrayList<>();
+        for (int i = 0; i < getContainerSize(); ++i) {
+            final ItemStack itemStack = getItem(i);
+            if (itemStack.isEmpty()) {
+                continue;
+            }
+            upgradeItems.add(itemStack.getItem());
+        }
+        return upgradeItems;
+    }
+
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return addItem(new ItemStack(upgradeItem)).isEmpty();
     }
 }

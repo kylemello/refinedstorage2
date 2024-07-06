@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.platform.common.upgrade;
 
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceContainer;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.content.Menus;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.AbstractSingleAmountContainerMenu;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.SingleAmountData;

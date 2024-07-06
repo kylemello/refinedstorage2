@@ -7,6 +7,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.3] - 2024-07-06
+
+### Added
+
+-   Ability to open Portable Grid with a keybinding.
+
+### Fixed
+
+-   Fixed Relay model not being able to load correctly.
+-   Fixed not being able to ghost drag resources from recipe viewers into filter slots on NeoForge.
+-   Fixed extra dark backgrounds due to drawing background on GUIs twice.
+-   Fixed Configuration Card not being able to transfer upgrades for the Wireless Transmitter.
+-   Fixed upgrade inventories not maintaining order after reloading. Upgrade inventories from the milestone 4.2 are incompatible and will be empty.
+-   Fixed Wireless Transmitter not dropping upgrades when breaking block.
+
 ## [2.0.0-milestone.4.2] - 2024-07-06
 
 ## [2.0.0-milestone.4.1] - 2024-07-05
@@ -647,7 +662,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.2...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.3...HEAD
+
+[2.0.0-milestone.4.3]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.2...v2.0.0-milestone.4.3
 
 [2.0.0-milestone.4.2]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.1...v2.0.0-milestone.4.2
 

@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.platform.api.support.network.bounditem;
 
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+
 import java.util.List;
 import java.util.Optional;
 

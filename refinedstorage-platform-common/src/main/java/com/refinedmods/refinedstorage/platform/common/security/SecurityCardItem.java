@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.network.security.SecurityActor;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.platform.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.platform.api.support.HelpTooltipComponent;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.DataComponents;
 

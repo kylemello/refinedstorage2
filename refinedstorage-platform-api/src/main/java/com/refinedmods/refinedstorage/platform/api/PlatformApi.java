@@ -33,14 +33,14 @@ import com.refinedmods.refinedstorage.platform.api.support.energy.EnergyItemHelp
 import com.refinedmods.refinedstorage.platform.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceFactory;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.platform.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceFactory;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.platform.api.upgrade.BuiltinUpgradeDestinations;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
@@ -192,7 +192,7 @@ public interface PlatformApi {
 
     SlotReference createInventorySlotReference(Player player, InteractionHand hand);
 
-    void useNetworkBoundItem(Player player, Item... items);
+    void useSlotReferencedItem(Player player, Item... items);
 
     BuiltinPermissions getBuiltinPermissions();
 

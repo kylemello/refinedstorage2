@@ -15,8 +15,8 @@ import com.refinedmods.refinedstorage.platform.common.storage.AbstractDiskContai
 import com.refinedmods.refinedstorage.platform.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -25,7 +25,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -34,13 +33,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO: upgradeable + level interacting class hierarchy? Disk Interface is copying stuff now... :(
 public abstract class AbstractDiskInterfaceBlockEntity
     extends AbstractDiskContainerBlockEntity<StorageTransferNetworkNode>
     implements StorageTransferListener {
     public static final int AMOUNT_OF_DISKS = 6;
 
-    private static final String TAG_UPGRADES = "u";
+    private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_TRANSFER_MODE = "tm";
 
@@ -71,15 +69,11 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     private void upgradeContainerChanged() {
-        configureAccordingToUpgrades();
-        setChanged();
-    }
-
-    private void configureAccordingToUpgrades() {
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
         this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
         mainNode.setEnergyUsage(baseEnergyUsage + upgradeContainer.getEnergyUsage());
+        setChanged();
     }
 
     @Override
@@ -102,16 +96,15 @@ public abstract class AbstractDiskInterfaceBlockEntity
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
     }
 
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
         tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
     }
 
@@ -134,20 +127,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
 
     @Override
     public List<Item> getUpgradeItems() {
-        final List<Item> upgradeItems = new ArrayList<>();
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            final ItemStack itemStack = upgradeContainer.getItem(i);
-            if (itemStack.isEmpty()) {
-                continue;
-            }
-            upgradeItems.add(itemStack.getItem());
-        }
-        return upgradeItems;
+        return upgradeContainer.getUpgradeItems();
     }
 
     @Override
     public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addItem(new ItemStack(upgradeItem)).isEmpty();
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override

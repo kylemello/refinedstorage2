@@ -6,15 +6,14 @@ import com.refinedmods.refinedstorage.platform.common.content.Items;
 import com.refinedmods.refinedstorage.platform.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.platform.common.util.ContainerUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +29,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
         AbstractUpgradeableNetworkNodeContainerBlockEntity.class
     );
 
-    private static final String TAG_UPGRADES = "u";
+    private static final String TAG_UPGRADES = "upgr";
 
     protected final UpgradeContainer upgradeContainer;
     private int workTickRate = 9;
@@ -63,7 +62,10 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
     }
 
     private void upgradeContainerChanged() {
-        configureAccordingToUpgrades();
+        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
+        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
+        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
+        this.setEnergyUsage(upgradeContainer.getEnergyUsage());
         setChanged();
         if (level instanceof ServerLevel serverLevel) {
             initialize(serverLevel);
@@ -72,48 +74,32 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
 
     @Override
     public List<Item> getUpgradeItems() {
-        final List<Item> upgradeItems = new ArrayList<>();
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            final ItemStack itemStack = upgradeContainer.getItem(i);
-            if (itemStack.isEmpty()) {
-                continue;
-            }
-            upgradeItems.add(itemStack.getItem());
-        }
-        return upgradeItems;
+        return upgradeContainer.getUpgradeItems();
     }
 
     @Override
     public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addItem(new ItemStack(upgradeItem)).isEmpty();
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_UPGRADES, upgradeContainer.createTag(provider));
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_UPGRADES)) {
-            upgradeContainer.fromTag(tag.getList(TAG_UPGRADES, Tag.TAG_COMPOUND), provider);
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
-        configureAccordingToUpgrades();
         super.loadAdditional(tag, provider);
-    }
-
-    private void configureAccordingToUpgrades() {
-        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
-        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
-        this.setEnergyUsage(upgradeContainer.getEnergyUsage());
     }
 
     protected abstract void setEnergyUsage(long upgradeEnergyUsage);
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));
