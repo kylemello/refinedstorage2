@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridExt
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.GridScrollPacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.PropertyChangePacket;
+import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceSlotAmountChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.ResourceSlotChangePacket;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.SecurityCardBoundPlayerPacket;
@@ -572,6 +573,11 @@ public class ModInitializer extends AbstractModInitializer {
             PropertyChangePacket.PACKET_TYPE,
             PropertyChangePacket.STREAM_CODEC,
             wrapHandler(PropertyChangePacket::handle)
+        );
+        registrar.playToServer(
+            ResourceFilterSlotChangePacket.PACKET_TYPE,
+            ResourceFilterSlotChangePacket.STREAM_CODEC,
+            wrapHandler(ResourceFilterSlotChangePacket::handle)
         );
         registrar.playToServer(
             ResourceSlotAmountChangePacket.PACKET_TYPE,
