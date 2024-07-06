@@ -15,6 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Fixed Relay model not being able to load correctly.
 -   Fixed not being able to ghost drag resources from recipe viewers into filter slots on NeoForge.
+-   Fixed extra dark backgrounds due to drawing background on GUIs twice.
 
 ## [2.0.0-milestone.4.2] - 2024-07-06
 
