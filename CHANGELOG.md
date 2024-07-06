@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.3] - 2024-07-06
+
 ### Added
 
 -   Ability to open Portable Grid with a keybinding.
@@ -660,7 +662,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.2...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.3...HEAD
+
+[2.0.0-milestone.4.3]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.2...v2.0.0-milestone.4.3
 
 [2.0.0-milestone.4.2]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.1...v2.0.0-milestone.4.2
 
