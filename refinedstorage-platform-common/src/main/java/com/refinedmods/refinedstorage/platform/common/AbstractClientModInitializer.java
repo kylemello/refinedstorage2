@@ -95,10 +95,18 @@ public abstract class AbstractClientModInitializer {
         }
         final KeyMapping openWirelessGrid = KeyMappings.INSTANCE.getOpenWirelessGrid();
         while (openWirelessGrid != null && openWirelessGrid.consumeClick()) {
-            PlatformApi.INSTANCE.useNetworkBoundItem(
+            PlatformApi.INSTANCE.useSlotReferencedItem(
                 player,
                 Items.INSTANCE.getWirelessGrid(),
                 Items.INSTANCE.getCreativeWirelessGrid()
+            );
+        }
+        final KeyMapping openPortableGrid = KeyMappings.INSTANCE.getOpenPortableGrid();
+        while (openPortableGrid != null && openPortableGrid.consumeClick()) {
+            PlatformApi.INSTANCE.useSlotReferencedItem(
+                player,
+                Items.INSTANCE.getPortableGrid(),
+                Items.INSTANCE.getCreativePortableGrid()
             );
         }
     }

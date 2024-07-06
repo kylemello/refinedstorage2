@@ -38,14 +38,14 @@ import com.refinedmods.refinedstorage.platform.api.support.network.ConnectionLog
 import com.refinedmods.refinedstorage.platform.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.platform.api.support.network.NetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceFactory;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.platform.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceFactory;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.platform.api.upgrade.BuiltinUpgradeDestinations;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
@@ -68,8 +68,6 @@ import com.refinedmods.refinedstorage.platform.common.support.energy.ItemBlockEn
 import com.refinedmods.refinedstorage.platform.common.support.energy.ItemEnergyStorage;
 import com.refinedmods.refinedstorage.platform.common.support.network.ConnectionProviderImpl;
 import com.refinedmods.refinedstorage.platform.common.support.network.InWorldNetworkNodeContainerImpl;
-import com.refinedmods.refinedstorage.platform.common.support.network.bounditem.CompositeSlotReferenceProvider;
-import com.refinedmods.refinedstorage.platform.common.support.network.bounditem.InventorySlotReference;
 import com.refinedmods.refinedstorage.platform.common.support.network.bounditem.NetworkBoundItemHelperImpl;
 import com.refinedmods.refinedstorage.platform.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.platform.common.support.packet.s2c.S2CPackets;
@@ -77,6 +75,8 @@ import com.refinedmods.refinedstorage.platform.common.support.registry.PlatformR
 import com.refinedmods.refinedstorage.platform.common.support.resource.CompositeRecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResourceFactory;
+import com.refinedmods.refinedstorage.platform.common.support.slotreference.CompositeSlotReferenceProvider;
+import com.refinedmods.refinedstorage.platform.common.support.slotreference.InventorySlotReference;
 import com.refinedmods.refinedstorage.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeRegistryImpl;
 import com.refinedmods.refinedstorage.platform.common.util.ServerEventQueue;
@@ -519,9 +519,9 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void useNetworkBoundItem(final Player player, final Item... items) {
+    public void useSlotReferencedItem(final Player player, final Item... items) {
         final Set<Item> validItems = new HashSet<>(Arrays.asList(items));
-        slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(C2SPackets::sendUseNetworkBoundItem);
+        slotReferenceProvider.findForUse(player, items[0], validItems).ifPresent(C2SPackets::sendUseSlotReferencedItem);
     }
 
     @Override

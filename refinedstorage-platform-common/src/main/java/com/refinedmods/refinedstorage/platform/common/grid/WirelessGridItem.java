@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.platform.api.grid.Grid;
 import com.refinedmods.refinedstorage.platform.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage.platform.api.support.energy.AbstractNetworkBoundEnergyItem;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemSession;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.ContentNames;
 import com.refinedmods.refinedstorage.platform.common.security.BuiltinPermission;
@@ -33,9 +33,9 @@ public class WirelessGridItem extends AbstractNetworkBoundEnergyItem {
     }
 
     @Override
-    public void use(final ServerPlayer player,
-                    final SlotReference slotReference,
-                    final NetworkBoundItemSession session) {
+    protected void use(final ServerPlayer player,
+                       final SlotReference slotReference,
+                       final NetworkBoundItemSession session) {
         final boolean isAllowed = session.resolveNetwork()
             .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
             .orElse(true); // if the network can't be resolved that will be apparent later in the UI.

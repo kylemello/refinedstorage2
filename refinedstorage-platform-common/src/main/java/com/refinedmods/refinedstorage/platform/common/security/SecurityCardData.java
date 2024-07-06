@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.platform.common.security;
 
 import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage.platform.api.security.PlatformPermission;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceFactory;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceFactory;
 
 import java.util.ArrayList;
 import java.util.List;

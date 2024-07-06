@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.platform.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.platform.api.security.PlatformPermission;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.PropertyType;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResource;
@@ -65,8 +65,8 @@ public final class C2SPackets {
         Platform.INSTANCE.sendPacketToServer(new SingleAmountChangePacket(amount));
     }
 
-    public static void sendUseNetworkBoundItem(final SlotReference slotReference) {
-        Platform.INSTANCE.sendPacketToServer(new UseNetworkBoundItemPacket(slotReference));
+    public static void sendUseSlotReferencedItem(final SlotReference slotReference) {
+        Platform.INSTANCE.sendPacketToServer(new UseSlotReferencedItemPacket(slotReference));
     }
 
     public static void sendSecurityCardPermission(final PlatformPermission permission, final boolean allowed) {

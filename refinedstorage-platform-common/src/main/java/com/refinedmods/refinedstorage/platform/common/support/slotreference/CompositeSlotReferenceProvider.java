@@ -1,7 +1,7 @@
-package com.refinedmods.refinedstorage.platform.common.support.network.bounditem;
+package com.refinedmods.refinedstorage.platform.common.support.slotreference;
 
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReferenceProvider;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +48,6 @@ public class CompositeSlotReferenceProvider implements SlotReferenceProvider {
             ).withStyle(ChatFormatting.RED));
             return Optional.empty();
         }
-        return Optional.of(foundReferences.get(0));
+        return Optional.of(foundReferences.getFirst());
     }
 }

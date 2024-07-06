@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemSession;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.wirelesstransmitter.WirelessTransmitter;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 

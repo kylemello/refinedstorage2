@@ -69,7 +69,6 @@ import net.minecraft.world.level.block.Block;
 import org.lwjgl.glfw.GLFW;
 
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createIdentifier;
-import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public class ClientModInitializerImpl extends AbstractClientModInitializer implements ClientModInitializer {
     private static final String BLOCK_PREFIX = "block";
@@ -393,13 +392,19 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
 
     private void registerKeyBindings() {
         KeyMappings.INSTANCE.setFocusSearchBar(KeyBindingHelper.registerKeyBinding(new KeyMapping(
-            createTranslationKey("key", "focus_search_bar"),
+            ContentNames.FOCUS_SEARCH_BAR_TRANSLATION_KEY,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB,
             ContentNames.MOD_TRANSLATION_KEY
         )));
         KeyMappings.INSTANCE.setOpenWirelessGrid(KeyBindingHelper.registerKeyBinding(new KeyMapping(
-            createTranslationKey("key", "open_wireless_grid"),
+            ContentNames.OPEN_WIRELESS_GRID_TRANSLATION_KEY,
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            ContentNames.MOD_TRANSLATION_KEY
+        )));
+        KeyMappings.INSTANCE.setOpenPortableGrid(KeyBindingHelper.registerKeyBinding(new KeyMapping(
+            ContentNames.OPEN_PORTABLE_GRID_TRANSLATION_KEY,
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
             ContentNames.MOD_TRANSLATION_KEY

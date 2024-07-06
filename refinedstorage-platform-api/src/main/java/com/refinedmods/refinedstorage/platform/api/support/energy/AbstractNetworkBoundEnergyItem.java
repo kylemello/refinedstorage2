@@ -3,7 +3,8 @@ package com.refinedmods.refinedstorage.platform.api.support.energy;
 import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemSession;
-import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
+import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceHandlerItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.Level;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.1")
-public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem {
+public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem implements SlotReferenceHandlerItem {
     protected final NetworkBoundItemHelper networkBoundItemHelper;
 
     protected AbstractNetworkBoundEnergyItem(final Properties properties,
@@ -56,17 +57,22 @@ public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem 
         final ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer && level.getServer() != null) {
             final SlotReference slotReference = PlatformApi.INSTANCE.createInventorySlotReference(player, hand);
-            final NetworkBoundItemSession session = networkBoundItemHelper.openSession(
-                stack,
-                serverPlayer,
-                slotReference
-            );
-            use(serverPlayer, slotReference, session);
+            slotReference.resolve(player).ifPresent(s -> use(serverPlayer, s, slotReference));
         }
         return InteractionResultHolder.consume(stack);
     }
 
-    public abstract void use(ServerPlayer player, SlotReference slotReference, NetworkBoundItemSession session);
+    @Override
+    public void use(final ServerPlayer player, final ItemStack stack, final SlotReference slotReference) {
+        final NetworkBoundItemSession session = PlatformApi.INSTANCE.getNetworkBoundItemHelper().openSession(
+            stack,
+            player,
+            slotReference
+        );
+        use(player, slotReference, session);
+    }
+
+    protected abstract void use(ServerPlayer player, SlotReference slotReference, NetworkBoundItemSession session);
 
     public boolean isBound(final ItemStack stack) {
         return networkBoundItemHelper.isBound(stack);
