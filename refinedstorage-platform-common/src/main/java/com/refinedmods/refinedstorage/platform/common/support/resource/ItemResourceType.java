@@ -14,7 +14,6 @@ import com.refinedmods.refinedstorage.platform.common.support.TextureIds;
 
 import java.util.Optional;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -73,12 +72,6 @@ class ItemResourceType extends AbstractResourceType {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public MapCodec<PlatformResourceKey> getMapCodec() {
         return (MapCodec) ResourceCodecs.ITEM_MAP_CODEC;
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public Codec<PlatformResourceKey> getCodec() {
-        return (Codec) ResourceCodecs.ITEM_CODEC;
     }
 
     @Override

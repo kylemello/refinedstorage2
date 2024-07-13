@@ -11,13 +11,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 public enum UpgradeDestinations implements UpgradeDestination {
-    IMPORTER(ContentNames.IMPORTER, () -> new ItemStack(Items.INSTANCE.getImporters().get(0).get())),
-    EXPORTER(ContentNames.EXPORTER, () -> new ItemStack(Items.INSTANCE.getExporters().get(0).get())),
-    DESTRUCTOR(ContentNames.DESTRUCTOR, () -> new ItemStack(Items.INSTANCE.getDestructors().get(0).get())),
-    CONSTRUCTOR(ContentNames.CONSTRUCTOR, () -> new ItemStack(Items.INSTANCE.getConstructors().get(0).get())),
-    WIRELESS_TRANSMITTER(ContentNames.WIRELESS_TRANSMITTER,
-        () -> new ItemStack(Items.INSTANCE.getWirelessTransmitters().get(0).get())),
-    DISK_INTERFACE(ContentNames.DISK_INTERFACE, () -> new ItemStack(Items.INSTANCE.getDiskInterfaces().get(0).get()));
+    IMPORTER(ContentNames.IMPORTER, () -> new ItemStack(Items.INSTANCE.getImporters().getFirst().get())),
+    EXPORTER(ContentNames.EXPORTER, () -> new ItemStack(Items.INSTANCE.getExporters().getFirst().get())),
+    DESTRUCTOR(ContentNames.DESTRUCTOR, () -> new ItemStack(Items.INSTANCE.getDestructors().getFirst().get())),
+    CONSTRUCTOR(ContentNames.CONSTRUCTOR, () -> new ItemStack(Items.INSTANCE.getConstructors().getFirst().get())),
+    WIRELESS_TRANSMITTER(ContentNames.WIRELESS_TRANSMITTER, () -> new ItemStack(
+        Items.INSTANCE.getWirelessTransmitters().getFirst().get()
+    )),
+    DISK_INTERFACE(ContentNames.DISK_INTERFACE, () -> new ItemStack(
+        Items.INSTANCE.getDiskInterfaces().getFirst().get()
+    ));
 
     private final Component name;
     private final Supplier<ItemStack> stackFactory;

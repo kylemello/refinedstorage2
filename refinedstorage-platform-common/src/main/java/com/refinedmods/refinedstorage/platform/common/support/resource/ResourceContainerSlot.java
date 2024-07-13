@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage.platform.common.support.resource;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.platform.api.support.resource.PlatformResourceKey;
-import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
 
 import java.util.Objects;
 
@@ -19,20 +18,12 @@ class ResourceContainerSlot {
             : ItemStack.EMPTY;
     }
 
-    long getAmount() {
-        return resourceAmount.getAmount();
-    }
-
     ResourceAmount getResourceAmount() {
         return resourceAmount;
     }
 
     PlatformResourceKey getPlatformResource() {
         return (PlatformResourceKey) resourceAmount.getResource();
-    }
-
-    ResourceType getResourceType() {
-        return getPlatformResource().getResourceType();
     }
 
     ItemStack getStackRepresentation() {

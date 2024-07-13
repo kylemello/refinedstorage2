@@ -12,6 +12,7 @@ eclipse/
 *.iws
 .idea/
 !.idea/dictionaries/refinedstorage.xml
+!.idea/inspectionProfiles/refinedstorage.xml
 !.idea/icon.png
 out/
 /bin/

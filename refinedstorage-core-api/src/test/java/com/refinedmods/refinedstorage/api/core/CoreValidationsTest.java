@@ -35,6 +35,7 @@ class CoreValidationsTest {
     }
 
     @Test
+    @SuppressWarnings("ObviousNullCheck")
     void shouldValidateNull() {
         // Act & assert
         final Exception e = assertThrows(
@@ -47,6 +48,7 @@ class CoreValidationsTest {
     }
 
     @Test
+    @SuppressWarnings("ObviousNullCheck")
     void shouldValidateNotNull() {
         // Act & assert
         final Exception e = assertThrows(

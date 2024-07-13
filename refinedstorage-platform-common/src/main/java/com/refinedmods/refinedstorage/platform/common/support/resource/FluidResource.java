@@ -10,7 +10,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.apiguardian.api.API;
 
-@API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
+@API(status = API.Status.INTERNAL)
 public record FluidResource(Fluid fluid, DataComponentPatch components)
     implements PlatformResourceKey, FuzzyModeNormalizer {
     public FluidResource(final Fluid fluid) {

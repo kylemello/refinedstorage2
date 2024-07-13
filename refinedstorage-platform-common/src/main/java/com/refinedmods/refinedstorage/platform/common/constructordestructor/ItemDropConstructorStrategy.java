@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.platform.common.constructordestructor;
 
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResource;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,12 +29,7 @@ class ItemDropConstructorStrategy extends AbstractItemConstructorStrategy {
     }
 
     @Override
-    protected boolean apply(
-        final ItemResource itemResource,
-        final ItemStack itemStack,
-        final Actor actor,
-        final Player actingPlayer
-    ) {
+    protected boolean apply(final ItemStack itemStack, final Actor actor, final Player actingPlayer) {
         final Vec3 position = new Vec3(
             getDispensePositionX(),
             getDispensePositionY(),

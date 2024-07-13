@@ -41,5 +41,6 @@ public interface PlatformGridResource extends GridResource {
     List<ClientTooltipComponent> getExtractionHints();
 
     @Nullable
+    @API(status = API.Status.INTERNAL)
     PlatformResourceKey getUnderlyingResource();
 }

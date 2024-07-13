@@ -23,6 +23,7 @@ class CraftingGridResultSlot extends ResultSlot {
         this.source = source;
     }
 
+    @SuppressWarnings("resource")
     public ItemStack onQuickCraft(final Player player) {
         if (!hasItem() || player.level().isClientSide()) {
             return ItemStack.EMPTY;
@@ -40,6 +41,7 @@ class CraftingGridResultSlot extends ResultSlot {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void onTake(final Player player, final ItemStack stack) {
         if (player.level().isClientSide()) {
             return;

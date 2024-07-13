@@ -20,16 +20,16 @@ import net.neoforged.neoforge.client.model.SimpleModelState;
 public class RotationTranslationModelBaker {
     private final ModelState state;
     private final ModelBaker baker;
-    private final Function<Material, TextureAtlasSprite> spriterGetter;
+    private final Function<Material, TextureAtlasSprite> spriteGetter;
     private final ResourceLocation model;
 
     public RotationTranslationModelBaker(final ModelState state,
                                          final ModelBaker baker,
-                                         final Function<Material, TextureAtlasSprite> spriterGetter,
+                                         final Function<Material, TextureAtlasSprite> spriteGetter,
                                          final ResourceLocation model) {
         this.state = state;
         this.baker = baker;
-        this.spriterGetter = spriterGetter;
+        this.spriteGetter = spriteGetter;
         this.model = model;
     }
 
@@ -38,7 +38,7 @@ public class RotationTranslationModelBaker {
                                 @Nullable final Direction side,
                                 final RandomSource rand) {
         final ModelState wrappedState = new SimpleModelState(transformation, state.isUvLocked());
-        final BakedModel bakedModel = baker.bake(model, wrappedState, spriterGetter);
+        final BakedModel bakedModel = baker.bake(model, wrappedState, spriteGetter);
         if (bakedModel == null) {
             return new ArrayList<>();
         }

@@ -204,6 +204,7 @@ class CompositeStorageImplTest {
         assertThat(storage2.getStored()).isEqualTo(2);
     }
 
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     @Test
     void shouldFindMostRecentChange() {
         // Arrange

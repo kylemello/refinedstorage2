@@ -13,6 +13,7 @@ public interface GridSynchronizer {
 
     Component getHelpText();
 
+    @SuppressWarnings("EmptyMethod")
     void synchronizeFromGrid(String text);
 
     @Nullable

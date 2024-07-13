@@ -15,6 +15,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraft.resources.ResourceLocation;
 
+@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "CanBeFinal"})
 @Config(name = IdentifierUtil.MOD_ID)
 public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.platform.common.Config {
     private ScreenSize screenSize = ScreenSize.STRETCH;
@@ -328,7 +329,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.pl
 
         @Override
         public Optional<ResourceLocation> getSynchronizer() {
-            if (synchronizer == null || synchronizer.trim().isBlank()) {
+            if (synchronizer.trim().isBlank()) {
                 return Optional.empty();
             }
             return Optional.of(synchronizer).map(ResourceLocation::tryParse);
@@ -370,7 +371,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.pl
 
         @Override
         public Optional<ResourceLocation> getResourceTypeId() {
-            if (resourceTypeId == null || resourceTypeId.trim().isBlank()) {
+            if (resourceTypeId.trim().isBlank()) {
                 return Optional.empty();
             }
             return Optional.of(resourceTypeId).map(ResourceLocation::tryParse);

@@ -10,11 +10,10 @@ class TransferModeSettings {
     }
 
     static StorageTransferMode getTransferMode(final int transferMode) {
-        return switch (transferMode) {
-            case INSERT_INTO_NETWORK -> StorageTransferMode.INSERT_INTO_NETWORK;
-            case EXTRACT_FROM_NETWORK -> StorageTransferMode.EXTRACT_FROM_NETWORK;
-            default -> StorageTransferMode.INSERT_INTO_NETWORK;
-        };
+        if (transferMode == EXTRACT_FROM_NETWORK) {
+            return StorageTransferMode.EXTRACT_FROM_NETWORK;
+        }
+        return StorageTransferMode.INSERT_INTO_NETWORK;
     }
 
     static int getTransferMode(final StorageTransferMode transferMode) {

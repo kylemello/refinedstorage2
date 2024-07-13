@@ -28,7 +28,6 @@ public abstract class AbstractLevelInteractingNetworkNodeContainerBlockEntity<T 
 
     // used to handle rotations
     @Override
-    @SuppressWarnings("deprecation")
     public void setBlockState(final BlockState newBlockState) {
         super.setBlockState(newBlockState);
         if (!(level instanceof ServerLevel serverLevel)) {

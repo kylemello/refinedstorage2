@@ -45,7 +45,7 @@ public class GridQueryParserImpl implements GridQueryParser {
 
     @Override
     public Predicate<GridResource> parse(final String query) throws GridQueryParserException {
-        if ("".equals(query.trim())) {
+        if (query.trim().isEmpty()) {
             return resource -> true;
         }
         final List<Token> tokens = getTokens(query);
@@ -82,16 +82,13 @@ public class GridQueryParserImpl implements GridQueryParser {
     }
 
     private Predicate<GridResource> parseNode(final Node node) throws GridQueryParserException {
-        if (node instanceof LiteralNode literalNode) {
-            return parseLiteral(literalNode);
-        } else if (node instanceof UnaryOpNode unaryOpNode) {
-            return parseUnaryOp(unaryOpNode);
-        } else if (node instanceof BinOpNode binOpNode) {
-            return parseBinOp(binOpNode);
-        } else if (node instanceof ParenNode parenNode) {
-            return implicitAnd(parenNode.nodes());
-        }
-        throw new GridQueryParserException("Unsupported node", null);
+        return switch (node) {
+            case LiteralNode literalNode -> parseLiteral(literalNode);
+            case UnaryOpNode unaryOpNode -> parseUnaryOp(unaryOpNode);
+            case BinOpNode binOpNode -> parseBinOp(binOpNode);
+            case ParenNode parenNode -> implicitAnd(parenNode.nodes());
+            default -> throw new GridQueryParserException("Unsupported node", null);
+        };
     }
 
     private Predicate<GridResource> parseBinOp(final BinOpNode node) throws GridQueryParserException {

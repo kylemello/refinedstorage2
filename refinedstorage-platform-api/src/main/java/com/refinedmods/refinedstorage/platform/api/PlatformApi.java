@@ -42,7 +42,6 @@ import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceProvider;
-import com.refinedmods.refinedstorage.platform.api.upgrade.BuiltinUpgradeDestinations;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 
@@ -109,8 +108,6 @@ public interface PlatformApi {
     PlatformRegistry<GridSynchronizer> getGridSynchronizerRegistry();
 
     UpgradeRegistry getUpgradeRegistry();
-
-    BuiltinUpgradeDestinations getBuiltinUpgradeDestinations();
 
     InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(BlockEntity blockEntity,
                                                                   NetworkNode node,

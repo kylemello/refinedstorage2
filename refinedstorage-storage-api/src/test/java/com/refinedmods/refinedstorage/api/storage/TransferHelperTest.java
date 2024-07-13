@@ -273,12 +273,12 @@ class TransferHelperTest {
         assertThrows(NullPointerException.class, action3);
     }
 
-    record Transfer(@Nullable ResourceAmount amountInSource,
-                    @Nullable ResourceAmount amountInDestination,
-                    ResourceAmount amountToTransfer,
-                    long amountExpectedToBeTransferred,
-                    @Nullable ResourceAmount amountExpectedAfterTransferInSource,
-                    @Nullable ResourceAmount amountExpectedAfterTransferInDestination) {
+    public record Transfer(@Nullable ResourceAmount amountInSource,
+                           @Nullable ResourceAmount amountInDestination,
+                           ResourceAmount amountToTransfer,
+                           long amountExpectedToBeTransferred,
+                           @Nullable ResourceAmount amountExpectedAfterTransferInSource,
+                           @Nullable ResourceAmount amountExpectedAfterTransferInDestination) {
     }
 
     public static class TransferBuilder {

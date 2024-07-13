@@ -122,7 +122,7 @@ class RemoveNetworkBuilderImplTest extends AbstractNetworkBuilderImplTest {
 
         final List<Set<Network>> splits = getNetworkSplits(container4.getNode().getNetwork());
         assertThat(splits).hasSize(1);
-        assertThat(splits.get(0)).containsExactlyInAnyOrder(container1.getNode().getNetwork());
+        assertThat(splits.getFirst()).containsExactlyInAnyOrder(container1.getNode().getNetwork());
 
         assertThat(getAddedContainers(container4.getNode().getNetwork()))
             .containsExactlyInAnyOrder(container1, container2, container3, container4, container5);
@@ -197,7 +197,7 @@ class RemoveNetworkBuilderImplTest extends AbstractNetworkBuilderImplTest {
 
         final List<Set<Network>> splits = getNetworkSplits(container4.getNode().getNetwork());
         assertThat(splits).hasSize(1);
-        assertThat(splits.get(0))
+        assertThat(splits.getFirst())
             .containsExactlyInAnyOrder(container2.getNode().getNetwork(), container3.getNode().getNetwork());
 
         assertThat(getAddedContainers(container4.getNode().getNetwork()))

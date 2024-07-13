@@ -12,6 +12,7 @@ These are the most important things to know before contributing (also explained 
 - Branch names must be formatted correctly. The format is `{category}/GH-{issue number}/{lowercase-description}`.
   Category must match a
   category [used in our Commitlint config](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum).
+  You can also use `NO-ISSUE` instead of a GitHub issue number.
 - We use [Checkstyle](https://checkstyle.sourceforge.io/) in our build workflow to validate coding style. It is
   recommended to import the [config/checkstyle/checkstyle.xml](../config/checkstyle/checkstyle.xml)
   or [config/intellij-code-style.xml](../config/intellij-code-style.xml) file into your
@@ -47,7 +48,7 @@ Because we use merge commits when merging a PR, branch names will be part of the
 branch names must follow a certain standard.
 
 The format is `{category}/GH-{issue number}/{lowercase-description}` and a branch name can be maximum 50 characters of
-length.
+length. You can also use `NO-ISSUE` instead of a GitHub issue number.
 
 Category must match a
 category [used in our Commitlint config](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum).

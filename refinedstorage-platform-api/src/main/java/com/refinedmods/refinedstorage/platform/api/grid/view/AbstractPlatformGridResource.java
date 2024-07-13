@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage.platform.api.grid.view;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.Collections;
@@ -28,13 +27,9 @@ public abstract class AbstractPlatformGridResource implements PlatformGridResour
         this.attributes = attributes;
     }
 
-    public ResourceKey getResource() {
-        return resourceAmount.getResource();
-    }
-
     @Override
     public Optional<TrackedResource> getTrackedResource(final GridView view) {
-        return view.getTrackedResource(getResource());
+        return view.getTrackedResource(resourceAmount.getResource());
     }
 
     @Override

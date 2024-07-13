@@ -404,6 +404,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("resource")
     @Override
     public ItemStack quickMoveStack(final Player playerEntity, final int slotIndex) {
         if (!playerEntity.level().isClientSide() && grid != null && grid.isGridActive()) {

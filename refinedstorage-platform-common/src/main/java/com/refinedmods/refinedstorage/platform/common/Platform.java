@@ -104,7 +104,7 @@ public interface Platform {
         ItemStack stack,
         GuiGraphics graphics,
         int mouseX,
-        Optional<TooltipComponent> imageComponent,
+        @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<TooltipComponent> imageComponent,
         List<Component> components
     );
 

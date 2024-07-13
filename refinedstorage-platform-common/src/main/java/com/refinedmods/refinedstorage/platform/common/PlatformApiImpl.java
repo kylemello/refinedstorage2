@@ -47,7 +47,6 @@ import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.slotreference.SlotReferenceProvider;
-import com.refinedmods.refinedstorage.platform.api.upgrade.BuiltinUpgradeDestinations;
 import com.refinedmods.refinedstorage.platform.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.platform.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage.platform.common.grid.NoopGridSynchronizer;
@@ -78,7 +77,6 @@ import com.refinedmods.refinedstorage.platform.common.support.resource.FluidReso
 import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResourceFactory;
 import com.refinedmods.refinedstorage.platform.common.support.slotreference.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage.platform.common.support.slotreference.InventorySlotReference;
-import com.refinedmods.refinedstorage.platform.common.upgrade.BuiltinUpgradeDestinationsImpl;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeRegistryImpl;
 import com.refinedmods.refinedstorage.platform.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage.platform.common.wirelesstransmitter.CompositeWirelessTransmitterRangeModifier;
@@ -136,7 +134,6 @@ public class PlatformApiImpl implements PlatformApi {
     private final PlatformRegistry<ExporterTransferStrategyFactory> exporterTransferStrategyRegistry =
         new PlatformRegistryImpl<>();
     private final UpgradeRegistry upgradeRegistry = new UpgradeRegistryImpl();
-    private final BuiltinUpgradeDestinations builtinUpgradeDestinations = new BuiltinUpgradeDestinationsImpl();
     private final Queue<PlatformExternalStorageProviderFactory> externalStorageProviderFactories = new PriorityQueue<>(
         Comparator.comparingInt(PlatformExternalStorageProviderFactory::getPriority)
     );
@@ -281,11 +278,6 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public UpgradeRegistry getUpgradeRegistry() {
         return upgradeRegistry;
-    }
-
-    @Override
-    public BuiltinUpgradeDestinations getBuiltinUpgradeDestinations() {
-        return builtinUpgradeDestinations;
     }
 
     @Override

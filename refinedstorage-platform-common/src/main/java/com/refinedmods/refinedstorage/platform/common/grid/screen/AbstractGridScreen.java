@@ -8,7 +8,6 @@ import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage.platform.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.platform.api.grid.view.PlatformGridResource;
-import com.refinedmods.refinedstorage.platform.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.platform.common.grid.NoopGridSynchronizer;
@@ -36,6 +35,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -354,6 +354,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             && lastModified.amount() <= MODIFIED_JUST_NOW_MAX_SECONDS;
     }
 
+    @API(status = API.Status.INTERNAL)
     @Nullable
     public PlatformGridResource getCurrentGridResource() {
         if (currentGridSlotIndex < 0) {
@@ -364,12 +365,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             return null;
         }
         return (PlatformGridResource) viewList.get(currentGridSlotIndex);
-    }
-
-    @Nullable
-    public PlatformResourceKey getCurrentResource() {
-        final PlatformGridResource resource = getCurrentGridResource();
-        return resource != null ? resource.getUnderlyingResource() : null;
     }
 
     @Override
@@ -509,7 +504,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     @Override
     public boolean keyPressed(final int key, final int scanCode, final int modifiers) {
-        // First do the prevent sorting.
+        // First check if we have to prevent sorting.
         // Order matters. In auto-selected mode, the search field will swallow the SHIFT key.
         if (hasShiftDown() && Platform.INSTANCE.getConfig().getGrid().isPreventSortingWhileShiftIsDown()) {
             getMenu().getView().setPreventSorting(true);

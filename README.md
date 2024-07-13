@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
   <img width="280" alt="Refined Storage logo" src="https://raw.githubusercontent.com/refinedmods/refinedstorage2/develop/images/logo.png" />
   <h1 style="margin-top: 0">Refined Storage 2</h1>
@@ -15,7 +16,7 @@ access the inventories of many devices through a single unified GUI.
 
 This mod not only adds storage solutions, but also devices that can be used to manipulate items and blocks in the world
 and from within the system, such as importers, exporters, constructors, destructors, and more! There are also devices in
-this mod that allow the player to setup auto-crafting, allowing the crafting of complex recipes in a few simple clicks.
+this mod that allow the player to set up auto-crafting, allowing the crafting of complex recipes in a few simple clicks.
 
 ## Links
 

@@ -52,7 +52,6 @@ public abstract class AbstractDirectionalCableBlock
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public FluidState getFluidState(final BlockState state) {
         return Boolean.TRUE.equals(state.getValue(BlockStateProperties.WATERLOGGED))
             ? Fluids.WATER.getSource(false)
@@ -60,7 +59,6 @@ public abstract class AbstractDirectionalCableBlock
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public BlockState updateShape(final BlockState state,
                                   final Direction direction,
                                   final BlockState newState,
@@ -100,7 +98,6 @@ public abstract class AbstractDirectionalCableBlock
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public VoxelShape getShape(final BlockState state,
                                final BlockGetter world,
                                final BlockPos pos,

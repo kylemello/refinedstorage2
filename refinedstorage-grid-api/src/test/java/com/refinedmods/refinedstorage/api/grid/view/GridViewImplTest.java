@@ -28,8 +28,12 @@ class GridViewImplTest {
 
     @BeforeEach
     void setUp() {
-        viewBuilder = new GridViewBuilderImpl(
-            resourceAmount -> Optional.of(new GridResourceImpl(resourceAmount)),
+        viewBuilder = getViewBuilder(resourceAmount -> Optional.of(new GridResourceImpl(resourceAmount)));
+    }
+
+    private static GridViewBuilderImpl getViewBuilder(final GridResourceFactory resourceFactory) {
+        return new GridViewBuilderImpl(
+            resourceFactory,
             view -> Comparator.comparing(GridResource::getName),
             view -> Comparator.comparing(GridResource::getAmount)
         );
@@ -42,10 +46,8 @@ class GridViewImplTest {
         // in the view, but actually isn't because it has a different identity.
 
         // Arrange
-        final GridViewBuilder builder = new GridViewBuilderImpl(
-            resourceAmount -> Optional.of(new GridResourceWithMetadata(resourceAmount)),
-            view -> Comparator.comparing(GridResource::getName),
-            view -> Comparator.comparing(GridResource::getAmount)
+        final GridViewBuilder builder = getViewBuilder(
+            resourceAmount -> Optional.of(new GridResourceWithMetadata(resourceAmount))
         );
         final GridView view = builder.build();
 
@@ -92,6 +94,7 @@ class GridViewImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void shouldLoadResourcesAndRetrieveTrackedResourcesProperly() {
         // Arrange
         final GridView view = viewBuilder
@@ -344,6 +347,7 @@ class GridViewImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void shouldUpdateTrackedResourceAfterReceivingChange() {
         // Act
         final GridView view = viewBuilder.build();

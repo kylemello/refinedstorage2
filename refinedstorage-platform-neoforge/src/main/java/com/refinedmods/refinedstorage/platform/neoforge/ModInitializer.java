@@ -318,6 +318,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerBlockEntities(
             new ForgeRegistryCallback<>(blockEntityTypeRegistry),
             new BlockEntityTypeFactory() {
+                @SuppressWarnings("DataFlowIssue") // data type can be null
                 @Override
                 public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntitySupplier<T> factory,
                                                                          final Block... allowedBlocks) {

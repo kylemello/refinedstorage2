@@ -49,9 +49,9 @@ public class QuadRotator implements RenderContext.QuadTransform {
         if (cullFace != null) {
             quad.cullFace(rotate(cullFace, mat));
         }
-
-        quad.nominalFace(rotate(nominalFace, mat));
-
+        if (nominalFace != null) {
+            quad.nominalFace(rotate(nominalFace, mat));
+        }
         return true;
     }
 

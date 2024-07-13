@@ -61,7 +61,6 @@ public class PortableGridBlock extends AbstractDirectionalBlock<BiDirection> imp
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public VoxelShape getShape(final BlockState state,
                                final BlockGetter level,
                                final BlockPos pos,

@@ -80,7 +80,6 @@ public class StorageMonitorBlock extends AbstractDirectionalBlock<BiDirection> i
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void attack(final BlockState state, final Level level, final BlockPos pos, final Player player) {
         super.attack(state, level, pos, player);
         if (level.isClientSide()) {

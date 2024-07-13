@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @NetworkTest
 @SetupNetwork(energyStored = 10, energyCapacity = 100)
 class SimpleNetworkNodeTest {
+    @SuppressWarnings("DefaultAnnotationParam")
     @AddNetworkNode(properties = {
         @AddNetworkNode.Property(key = PROPERTY_ENERGY_USAGE, longValue = 10),
         @AddNetworkNode.Property(key = PROPERTY_ACTIVE, boolValue = false)

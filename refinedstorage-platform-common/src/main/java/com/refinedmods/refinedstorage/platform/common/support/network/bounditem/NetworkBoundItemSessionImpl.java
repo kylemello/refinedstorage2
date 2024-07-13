@@ -53,6 +53,7 @@ class NetworkBoundItemSessionImpl implements NetworkBoundItemSession {
             .filter(this::isInRange);
     }
 
+    @SuppressWarnings("resource")
     private boolean isInRange(final Network network) {
         return network.getComponent(GraphNetworkComponent.class)
             .getContainers(WirelessTransmitter.class)

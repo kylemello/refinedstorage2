@@ -1,7 +1,7 @@
 name: Lock resolved issues and PRs
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 1'
 jobs:
   lock:
-    uses: refinedmods/refinedarchitect/.github/workflows/resolved-issue-locking.yml@v0.16.4
+    uses: refinedmods/refinedarchitect/.github/workflows/resolved-issue-locking.yml@v0.16.6

@@ -36,6 +36,7 @@ class NetworkTestExtensionTest {
     })
     StorageNetworkNode storageInA;
 
+    @SuppressWarnings("DefaultAnnotationParam")
     @AddNetworkNode(networkId = "b", properties = {
         @AddNetworkNode.Property(key = AbstractNetworkNodeFactory.PROPERTY_ACTIVE, boolValue = false)
     })

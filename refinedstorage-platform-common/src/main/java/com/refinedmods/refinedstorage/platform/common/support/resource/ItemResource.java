@@ -13,7 +13,7 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
+@API(status = API.Status.INTERNAL)
 public record ItemResource(Item item, DataComponentPatch components)
     implements PlatformResourceKey, FuzzyModeNormalizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemResource.class);

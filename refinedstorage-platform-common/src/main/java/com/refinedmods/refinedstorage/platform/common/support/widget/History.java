@@ -16,14 +16,13 @@ public class History {
         }
         if (index == -1) {
             index = items.size() - 1;
-            return items.get(index);
         } else {
             index--;
             if (index < 0) {
                 index = 0;
             }
-            return items.get(index);
         }
+        return items.get(index);
     }
 
     public String newer() {
