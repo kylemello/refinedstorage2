@@ -120,6 +120,7 @@ import com.refinedmods.refinedstorage.platform.common.support.containermenu.Sing
 import com.refinedmods.refinedstorage.platform.common.support.energy.EnergyLootItemFunction;
 import com.refinedmods.refinedstorage.platform.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.support.network.component.PlatformStorageNetworkComponent;
+import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceFactory;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ResourceTypes;
@@ -218,6 +219,7 @@ public abstract class AbstractModInitializer {
         registerStorageTypes();
         registerResourceTypes();
         registerAdditionalResourceFactories();
+        registerResourceContainerInsertStrategies();
         registerDestructorStrategyFactories();
         registerConstructorStrategyFactories();
         registerStorageMonitorInsertionStrategies();
@@ -252,6 +254,10 @@ public abstract class AbstractModInitializer {
 
     private void registerAdditionalResourceFactories() {
         PlatformApi.INSTANCE.addResourceFactory(new FluidResourceFactory());
+    }
+
+    private void registerResourceContainerInsertStrategies() {
+        PlatformApi.INSTANCE.addResourceContainerInsertStrategy(new FluidResourceContainerInsertStrategy());
     }
 
     private void registerDestructorStrategyFactories() {

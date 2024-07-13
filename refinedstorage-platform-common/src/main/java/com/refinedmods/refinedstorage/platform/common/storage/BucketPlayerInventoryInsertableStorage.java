@@ -37,7 +37,7 @@ public class BucketPlayerInventoryInsertableStorage implements InsertableStorage
         if (amount != Platform.INSTANCE.getBucketAmount()) {
             return 0;
         }
-        return Platform.INSTANCE.convertToBucket(fluidResource).map(
+        return Platform.INSTANCE.getFilledBucket(fluidResource).map(
             filledBucketStack -> insert(filledBucketStack, amount, action, actor)
         ).orElse(0L);
     }

@@ -3,6 +3,8 @@ package com.refinedmods.refinedstorage.platform.fabric;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.AbstractPlatform;
 import com.refinedmods.refinedstorage.platform.common.Config;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.TransferManager;
@@ -126,12 +128,12 @@ public final class PlatformImpl extends AbstractPlatform {
     }
 
     @Override
-    public Optional<ContainedFluid> getContainedFluid(final ItemStack stack) {
-        if (stack.isEmpty()) {
+    public Optional<FluidOperationResult> drainContainer(final ItemStack container) {
+        if (container.isEmpty()) {
             return Optional.empty();
         }
-        final SimpleSingleStackStorage interceptingStorage = new SimpleSingleStackStorage(stack);
-        final Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, ContainerItemContext.ofSingleSlot(
+        final SimpleSingleStackStorage interceptingStorage = new SimpleSingleStackStorage(container);
+        final Storage<FluidVariant> storage = FluidStorage.ITEM.find(container, ContainerItemContext.ofSingleSlot(
             interceptingStorage
         ));
         try (Transaction tx = Transaction.openOuter()) {
@@ -139,7 +141,7 @@ public final class PlatformImpl extends AbstractPlatform {
             if (extracted == null) {
                 return Optional.empty();
             }
-            return Optional.of(new ContainedFluid(
+            return Optional.of(new FluidOperationResult(
                 interceptingStorage.getStack(),
                 ofFluidVariant(extracted.resource()),
                 extracted.amount()
@@ -148,7 +150,30 @@ public final class PlatformImpl extends AbstractPlatform {
     }
 
     @Override
-    public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
+    public Optional<FluidOperationResult> fillContainer(final ItemStack container,
+                                                        final ResourceAmount resourceAmount) {
+        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+            return Optional.empty();
+        }
+        final SimpleSingleStackStorage interceptingStorage = new SimpleSingleStackStorage(container);
+        final Storage<FluidVariant> storage = FluidStorage.ITEM.find(container, ContainerItemContext.ofSingleSlot(
+            interceptingStorage
+        ));
+        if (storage == null) {
+            return Optional.empty();
+        }
+        try (Transaction tx = Transaction.openOuter()) {
+            final long inserted = storage.insert(toFluidVariant(fluidResource), resourceAmount.getAmount(), tx);
+            return Optional.of(new FluidOperationResult(
+                interceptingStorage.getStack(),
+                fluidResource,
+                inserted
+            ));
+        }
+    }
+
+    @Override
+    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
         final SimpleSingleStackStorage interceptingStorage = SimpleSingleStackStorage.forEmptyBucket();
         final Storage<FluidVariant> destination = FluidStorage.ITEM.find(
             interceptingStorage.getStack(),

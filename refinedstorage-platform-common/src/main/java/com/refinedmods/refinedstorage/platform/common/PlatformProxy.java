@@ -3,7 +3,9 @@ package com.refinedmods.refinedstorage.platform.common;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.platform.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage.platform.common.support.render.FluidRenderer;
@@ -100,13 +102,19 @@ public class PlatformProxy implements Platform {
     }
 
     @Override
-    public Optional<ContainedFluid> getContainedFluid(final ItemStack stack) {
-        return ensureLoaded().getContainedFluid(stack);
+    public Optional<FluidOperationResult> drainContainer(final ItemStack container) {
+        return ensureLoaded().drainContainer(container);
     }
 
     @Override
-    public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
-        return ensureLoaded().convertToBucket(fluidResource);
+    public Optional<FluidOperationResult> fillContainer(final ItemStack container,
+                                                        final ResourceAmount resourceAmount) {
+        return ensureLoaded().fillContainer(container, resourceAmount);
+    }
+
+    @Override
+    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
+        return ensureLoaded().getFilledBucket(fluidResource);
     }
 
     @Override

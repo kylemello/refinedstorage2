@@ -3,7 +3,9 @@ package com.refinedmods.refinedstorage.platform.common;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.platform.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage.platform.common.support.render.FluidRenderer;
@@ -63,9 +65,11 @@ public interface Platform {
 
     FluidRenderer getFluidRenderer();
 
-    Optional<ContainedFluid> getContainedFluid(ItemStack stack);
+    Optional<FluidOperationResult> drainContainer(ItemStack container);
 
-    Optional<ItemStack> convertToBucket(FluidResource fluidResource);
+    Optional<FluidOperationResult> fillContainer(ItemStack container, ResourceAmount resourceAmount);
+
+    Optional<ItemStack> getFilledBucket(FluidResource fluidResource);
 
     TransferManager createTransferManager(AbstractContainerMenu containerMenu);
 
@@ -111,7 +115,4 @@ public interface Platform {
     <T extends CustomPacketPayload> void sendPacketToServer(T packet);
 
     <T extends CustomPacketPayload> void sendPacketToClient(ServerPlayer player, T packet);
-
-    record ContainedFluid(ItemStack remainderContainer, FluidResource fluid, long amount) {
-    }
 }

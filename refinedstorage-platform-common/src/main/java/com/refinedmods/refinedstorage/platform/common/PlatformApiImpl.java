@@ -40,6 +40,7 @@ import com.refinedmods.refinedstorage.platform.api.support.network.NetworkNodeCo
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.platform.api.support.resource.RecipeModIngredientConverter;
+import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
@@ -85,6 +86,7 @@ import com.refinedmods.refinedstorage.platform.common.wirelesstransmitter.Compos
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -169,6 +171,7 @@ public class PlatformApiImpl implements PlatformApi {
     private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>();
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
     private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
+    private final List<ResourceContainerInsertStrategy> resourceExtractStrategies = new ArrayList<>();
 
     public PlatformApiImpl() {
         gridSynchronizerRegistry.register(createIdentifier("off"), NoopGridSynchronizer.INSTANCE);
@@ -370,6 +373,16 @@ public class PlatformApiImpl implements PlatformApi {
     @Override
     public void addGridInsertionStrategyFactory(final GridInsertionStrategyFactory insertionStrategyFactory) {
         gridInsertionStrategyFactories.add(insertionStrategyFactory);
+    }
+
+    @Override
+    public void addResourceContainerInsertStrategy(final ResourceContainerInsertStrategy strategy) {
+        resourceExtractStrategies.add(strategy);
+    }
+
+    @Override
+    public Collection<ResourceContainerInsertStrategy> getResourceContainerInsertStrategies() {
+        return Collections.unmodifiableList(resourceExtractStrategies);
     }
 
     @Override

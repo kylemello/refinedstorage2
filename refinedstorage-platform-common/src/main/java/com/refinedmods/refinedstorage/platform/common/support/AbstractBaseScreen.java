@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.platform.common.support.amount.ResourceAmo
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.AbstractResourceContainerMenu;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage.platform.common.support.tooltip.HelpClientTooltipComponent;
-import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseWithIconClientTooltipComponent;
+import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseClientTooltipComponent;
 import com.refinedmods.refinedstorage.platform.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.platform.common.support.widget.AbstractSideButtonWidget;
 import com.refinedmods.refinedstorage.platform.common.upgrade.UpgradeItemClientTooltipComponent;
@@ -243,25 +243,21 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         }
         final List<ClientTooltipComponent> lines = new ArrayList<>();
         resourceSlot.getPrimaryResourceFactory().create(carried).ifPresent(primaryResourceInstance -> lines.add(
-            new MouseWithIconClientTooltipComponent(
-                MouseWithIconClientTooltipComponent.Type.LEFT,
-                getResourceRendering(primaryResourceInstance.getResource()),
+            MouseClientTooltipComponent.resource(
+                MouseClientTooltipComponent.Type.LEFT,
+                primaryResourceInstance.getResource(),
                 null
             )
         ));
         for (final ResourceFactory alternativeResourceFactory : resourceSlot.getAlternativeResourceFactories()) {
             final var result = alternativeResourceFactory.create(carried);
-            result.ifPresent(alternativeResourceInstance -> lines.add(new MouseWithIconClientTooltipComponent(
-                MouseWithIconClientTooltipComponent.Type.RIGHT,
-                getResourceRendering(alternativeResourceInstance.getResource()),
+            result.ifPresent(alternativeResourceInstance -> lines.add(MouseClientTooltipComponent.resource(
+                MouseClientTooltipComponent.Type.RIGHT,
+                alternativeResourceInstance.getResource(),
                 null
             )));
         }
         return lines;
-    }
-
-    public static MouseWithIconClientTooltipComponent.IconRenderer getResourceRendering(final ResourceKey resource) {
-        return (graphics, x, y) -> PlatformApi.INSTANCE.getResourceRendering(resource).render(resource, graphics, x, y);
     }
 
     private List<ClientTooltipComponent> getTooltipForResource(final ResourceKey resource,
@@ -275,6 +271,18 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             .collect(Collectors.toList());
         if (!resourceSlot.isDisabled() && !resourceSlot.supportsItemSlotInteractions()) {
             tooltip.add(CLICK_TO_CLEAR);
+        }
+        if (resourceSlot.supportsItemSlotInteractions()) {
+            PlatformApi.INSTANCE.getResourceContainerInsertStrategies()
+                .stream()
+                .flatMap(strategy -> strategy.getConversionInfo(resource).stream())
+                .map(conversionInfo -> MouseClientTooltipComponent.itemConversion(
+                    MouseClientTooltipComponent.Type.LEFT,
+                    conversionInfo.from(),
+                    conversionInfo.to(),
+                    null
+                ))
+                .forEach(tooltip::add);
         }
         return tooltip;
     }

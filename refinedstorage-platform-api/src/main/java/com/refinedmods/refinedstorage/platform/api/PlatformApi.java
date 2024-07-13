@@ -35,6 +35,7 @@ import com.refinedmods.refinedstorage.platform.api.support.network.InWorldNetwor
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.platform.api.support.resource.RecipeModIngredientConverter;
+import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
@@ -131,6 +132,10 @@ public interface PlatformApi {
                                                       Grid grid);
 
     void addGridInsertionStrategyFactory(GridInsertionStrategyFactory insertionStrategyFactory);
+
+    void addResourceContainerInsertStrategy(ResourceContainerInsertStrategy strategy);
+
+    Collection<ResourceContainerInsertStrategy> getResourceContainerInsertStrategies();
 
     void addAlternativeGridInsertionHint(GridInsertionHint hint);
 

@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -117,5 +118,22 @@ public abstract class AbstractResourceContainerMenu extends AbstractBaseContaine
             return resourceSlot.supportsItemSlotInteractions();
         }
         return super.canTakeItemForPickAll(stack, slot);
+    }
+
+    @Override
+    public void clicked(final int id, final int dragType, final ClickType clickType, final Player p) {
+        final Slot slot = id >= 0 ? getSlot(id) : null;
+        if (slot instanceof ResourceSlot resourceSlot
+            && resourceSlot.supportsItemSlotInteractions()
+            && !resourceSlot.isEmpty()
+            && !getCarried().isEmpty()
+        ) {
+            final ItemStack result = resourceSlot.insertInto(getCarried());
+            if (result != null) {
+                setCarried(result);
+                return;
+            }
+        }
+        super.clicked(id, dragType, clickType, p);
     }
 }

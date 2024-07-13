@@ -1,9 +1,11 @@
 package com.refinedmods.refinedstorage.platform.common.grid.screen.hint;
 
 import com.refinedmods.refinedstorage.platform.api.grid.GridInsertionHint;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.Platform;
+import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceRendering;
-import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseWithIconClientTooltipComponent;
+import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseClientTooltipComponent;
 
 import java.util.Optional;
 
@@ -13,18 +15,13 @@ import net.minecraft.world.item.ItemStack;
 public class FluidGridInsertionHint implements GridInsertionHint {
     @Override
     public Optional<ClientTooltipComponent> getHint(final ItemStack carried) {
-        return Platform.INSTANCE.getContainedFluid(carried).map(this::createComponent);
+        return Platform.INSTANCE.drainContainer(carried).map(this::createComponent);
     }
 
-    private MouseWithIconClientTooltipComponent createComponent(final Platform.ContainedFluid result) {
-        return new MouseWithIconClientTooltipComponent(
-            MouseWithIconClientTooltipComponent.Type.RIGHT,
-            (graphics, x, y) -> Platform.INSTANCE.getFluidRenderer().render(
-                graphics.pose(),
-                x,
-                y,
-                result.fluid()
-            ),
+    private ClientTooltipComponent createComponent(final FluidOperationResult result) {
+        return MouseClientTooltipComponent.fluid(
+            MouseClientTooltipComponent.Type.RIGHT,
+            (FluidResource) result.fluid(),
             result.amount() == Platform.INSTANCE.getBucketAmount()
                 ? null
                 : FluidResourceRendering.format(result.amount())

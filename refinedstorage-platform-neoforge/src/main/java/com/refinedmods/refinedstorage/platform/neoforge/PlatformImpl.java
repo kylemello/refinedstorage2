@@ -3,6 +3,8 @@ package com.refinedmods.refinedstorage.platform.neoforge;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.AbstractPlatform;
 import com.refinedmods.refinedstorage.platform.common.Config;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.TransferManager;
@@ -121,10 +123,10 @@ public final class PlatformImpl extends AbstractPlatform {
     }
 
     @Override
-    public Optional<ContainedFluid> getContainedFluid(final ItemStack stack) {
+    public Optional<FluidOperationResult> drainContainer(final ItemStack container) {
         final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
         final FluidActionResult result = FluidUtil.tryEmptyContainer(
-            stack,
+            container,
             tank,
             Integer.MAX_VALUE,
             null,
@@ -134,7 +136,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return Optional.empty();
         }
         final FluidResource fluidResource = ofFluidStack(tank.getFluid());
-        return Optional.of(new ContainedFluid(
+        return Optional.of(new FluidOperationResult(
             result.getResult(),
             fluidResource,
             tank.getFluidAmount()
@@ -142,7 +144,20 @@ public final class PlatformImpl extends AbstractPlatform {
     }
 
     @Override
-    public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
+    public Optional<FluidOperationResult> fillContainer(final ItemStack container,
+                                                        final ResourceAmount resourceAmount) {
+        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+            return Optional.empty();
+        }
+        return FluidUtil.getFluidHandler(container).map(handler -> {
+            final FluidStack fluidStack = toFluidStack(fluidResource, resourceAmount.getAmount());
+            final long filled = handler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+            return new FluidOperationResult(handler.getContainer(), fluidResource, filled);
+        });
+    }
+
+    @Override
+    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
         return Optional.ofNullable(
             new ItemStack(Items.BUCKET).getCapability(Capabilities.FluidHandler.ITEM)
         ).map(dest -> {
