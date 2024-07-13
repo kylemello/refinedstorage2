@@ -3,7 +3,9 @@ package com.refinedmods.refinedstorage.platform.common;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.platform.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.platform.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage.platform.common.support.render.FluidRenderer;
@@ -95,12 +97,18 @@ public class TestPlatform implements Platform {
     }
 
     @Override
-    public Optional<ContainedFluid> getContainedFluid(final ItemStack stack) {
+    public Optional<FluidOperationResult> drainContainer(final ItemStack container) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Optional<ItemStack> convertToBucket(final FluidResource fluidResource) {
+    public Optional<FluidOperationResult> fillContainer(final ItemStack container,
+                                                        final ResourceAmount resourceAmount) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
         throw new UnsupportedOperationException();
     }
 

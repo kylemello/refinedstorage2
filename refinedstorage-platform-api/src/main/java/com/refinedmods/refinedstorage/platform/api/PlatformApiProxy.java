@@ -35,6 +35,7 @@ import com.refinedmods.refinedstorage.platform.api.support.network.InWorldNetwor
 import com.refinedmods.refinedstorage.platform.api.support.network.bounditem.NetworkBoundItemHelper;
 import com.refinedmods.refinedstorage.platform.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.platform.api.support.resource.RecipeModIngredientConverter;
+import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.platform.api.support.resource.ResourceType;
@@ -228,6 +229,16 @@ public class PlatformApiProxy implements PlatformApi {
     @Override
     public void addGridInsertionStrategyFactory(final GridInsertionStrategyFactory insertionStrategyFactory) {
         ensureLoaded().addGridInsertionStrategyFactory(insertionStrategyFactory);
+    }
+
+    @Override
+    public void addResourceContainerInsertStrategy(final ResourceContainerInsertStrategy strategy) {
+        ensureLoaded().addResourceContainerInsertStrategy(strategy);
+    }
+
+    @Override
+    public Collection<ResourceContainerInsertStrategy> getResourceContainerInsertStrategies() {
+        return ensureLoaded().getResourceContainerInsertStrategies();
     }
 
     @Override

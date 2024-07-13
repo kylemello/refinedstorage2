@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 public class FluidResourceFactory implements ResourceFactory {
     @Override
     public Optional<ResourceAmount> create(final ItemStack stack) {
-        return Platform.INSTANCE.getContainedFluid(stack).map(result -> new ResourceAmount(
+        return Platform.INSTANCE.drainContainer(stack).map(result -> new ResourceAmount(
             result.fluid(),
             Platform.INSTANCE.getBucketAmount()
         ));

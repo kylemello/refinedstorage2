@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
 import com.refinedmods.refinedstorage.platform.api.storagemonitor.StorageMonitorInsertionStrategy;
+import com.refinedmods.refinedstorage.platform.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResource;
 
@@ -27,16 +28,16 @@ public class FluidStorageMonitorInsertionStrategy implements StorageMonitorInser
             return Optional.empty();
         }
         final StorageChannel fluidStorageChannel = network.getComponent(StorageNetworkComponent.class);
-        return Platform.INSTANCE.getContainedFluid(stack)
+        return Platform.INSTANCE.drainContainer(stack)
             .map(extracted -> tryInsert(actor, configuredFluidResource, extracted, fluidStorageChannel))
             .map(extracted -> doInsert(actor, extracted, fluidStorageChannel));
     }
 
     @Nullable
-    private Platform.ContainedFluid tryInsert(final Actor actor,
-                                              final FluidResource configuredResource,
-                                              final Platform.ContainedFluid result,
-                                              final StorageChannel storageChannel) {
+    private FluidOperationResult tryInsert(final Actor actor,
+                                           final FluidResource configuredResource,
+                                           final FluidOperationResult result,
+                                           final StorageChannel storageChannel) {
         if (!result.fluid().equals(configuredResource)) {
             return null;
         }
@@ -51,14 +52,14 @@ public class FluidStorageMonitorInsertionStrategy implements StorageMonitorInser
     }
 
     private ItemStack doInsert(final Actor actor,
-                               final Platform.ContainedFluid extracted,
+                               final FluidOperationResult result,
                                final StorageChannel storageChannel) {
         storageChannel.insert(
-            extracted.fluid(),
-            extracted.amount(),
+            result.fluid(),
+            result.amount(),
             Action.EXECUTE,
             actor
         );
-        return extracted.remainderContainer();
+        return result.container();
     }
 }

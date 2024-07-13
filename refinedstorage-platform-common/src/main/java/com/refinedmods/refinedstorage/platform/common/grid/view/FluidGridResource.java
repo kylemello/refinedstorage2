@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.platform.api.support.resource.PlatformReso
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceRendering;
-import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseWithIconClientTooltipComponent;
+import com.refinedmods.refinedstorage.platform.common.support.tooltip.MouseClientTooltipComponent;
 
 import java.util.List;
 import java.util.Map;
@@ -52,13 +52,11 @@ public class FluidGridResource extends AbstractPlatformGridResource {
 
     @Override
     public List<ClientTooltipComponent> getExtractionHints() {
-        return Platform.INSTANCE.convertToBucket(fluidResource).map(
-            bucket -> (ClientTooltipComponent) new MouseWithIconClientTooltipComponent(
-                MouseWithIconClientTooltipComponent.Type.LEFT,
-                (graphics, x, y) -> graphics.renderItem(bucket, x, y),
-                null
-            )
-        ).stream().toList();
+        return Platform.INSTANCE.getFilledBucket(fluidResource).map(bucket -> MouseClientTooltipComponent.item(
+            MouseClientTooltipComponent.Type.LEFT,
+            bucket,
+            null
+        )).stream().toList();
     }
 
     @Nullable
