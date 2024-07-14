@@ -5,17 +5,7 @@ import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class EnergyStorageAdapter implements IEnergyStorage {
-    private final EnergyStorage energyStorage;
-
-    public EnergyStorageAdapter(final EnergyStorage energyStorage) {
-        this.energyStorage = energyStorage;
-    }
-
-    public EnergyStorage getEnergyStorage() {
-        return energyStorage;
-    }
-
+public record EnergyStorageAdapter(EnergyStorage energyStorage) implements IEnergyStorage {
     @Override
     public int receiveEnergy(final int maxReceive, final boolean simulate) {
         return (int) energyStorage.receive(maxReceive, simulate ? Action.SIMULATE : Action.EXECUTE);

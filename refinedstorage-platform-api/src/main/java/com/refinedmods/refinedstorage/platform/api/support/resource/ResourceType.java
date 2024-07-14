@@ -8,7 +8,6 @@ import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
 
 import java.util.Optional;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,8 +18,6 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.4")
 public interface ResourceType {
     MapCodec<PlatformResourceKey> getMapCodec();
-
-    Codec<PlatformResourceKey> getCodec();
 
     StreamCodec<RegistryFriendlyByteBuf, PlatformResourceKey> getStreamCodec();
 

@@ -26,7 +26,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("hello");
+        assertThat(nodes.getFirst()).hasToString("hello");
     }
 
     @Test
@@ -39,7 +39,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(2);
-        assertThat(nodes.get(0)).hasToString("1");
+        assertThat(nodes.getFirst()).hasToString("1");
         assertThat(nodes.get(1)).hasToString("2.345");
     }
 
@@ -54,7 +54,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(1 + 2)");
+        assertThat(nodes.getFirst()).hasToString("(1 + 2)");
     }
 
     @Test
@@ -72,7 +72,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(((1 + 2) + 3) + 4)");
+        assertThat(nodes.getFirst()).hasToString("(((1 + 2) + 3) + 4)");
     }
 
     @Test
@@ -90,7 +90,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(1 ^ (2 ^ (3 ^ 4)))");
+        assertThat(nodes.getFirst()).hasToString("(1 ^ (2 ^ (3 ^ 4)))");
     }
 
     @Test
@@ -114,7 +114,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(((1 + 2) + 3) + (4 * (5 ^ (6 ^ 7))))");
+        assertThat(nodes.getFirst()).hasToString("(((1 + 2) + 3) + (4 * (5 ^ (6 ^ 7))))");
     }
 
     @Test
@@ -134,7 +134,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(x = ((1 + (2 * 3)) + 4))");
+        assertThat(nodes.getFirst()).hasToString("(x = ((1 + (2 * 3)) + 4))");
     }
 
     @Test
@@ -152,7 +152,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("((x && y) || (z && a))");
+        assertThat(nodes.getFirst()).hasToString("((x && y) || (z && a))");
     }
 
     @Test
@@ -173,7 +173,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(3);
-        assertThat(nodes.get(0)).hasToString("!true");
+        assertThat(nodes.getFirst()).hasToString("!true");
         assertThat(nodes.get(1)).hasToString("++x");
         assertThat(nodes.get(2)).hasToString("!((x && y))");
     }
@@ -202,7 +202,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(1)");
+        assertThat(nodes.getFirst()).hasToString("(1)");
     }
 
     @Test
@@ -226,7 +226,7 @@ class ParserTest {
 
         // Assert
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(((1 + (1 * ((2 ^ 4))))))");
+        assertThat(nodes.getFirst()).hasToString("(((1 + (1 * ((2 ^ 4))))))");
     }
 
     @Test
@@ -274,7 +274,7 @@ class ParserTest {
         // Assert
         final List<Node> nodes = builder.getNodes();
         assertThat(nodes).hasSize(1);
-        assertThat(nodes.get(0)).hasToString("(a b)");
+        assertThat(nodes.getFirst()).hasToString("(a b)");
     }
 
     @Test

@@ -72,7 +72,7 @@ public interface GridView {
 
     /**
      * Applies a change to a resource. Will update the backing list, and will also update the view list (depending
-     * if the view is preventing sorting).
+     * on if the view is preventing sorting).
      *
      * @param resource        the resource
      * @param amount          the amount, can be negative or positive

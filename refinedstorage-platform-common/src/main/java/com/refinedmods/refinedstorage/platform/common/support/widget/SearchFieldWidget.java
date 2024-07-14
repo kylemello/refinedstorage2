@@ -72,7 +72,7 @@ public class SearchFieldWidget extends EditBox {
             saveHistory();
             setFocused(false);
             // If we are autoselected, we need to move control back to the parent straight away.
-            // If we are not autoselected, we can just unfocus (which will require another ESC press to close).
+            // If we are not autoselected, we can just lose focus (which will require another ESC press to close).
             return !canLoseFocus;
         }
         return false;

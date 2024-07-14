@@ -15,9 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apiguardian.api.API;
-
-@API(status = API.Status.STABLE, since = "2.0.0-milestone.2.4")
 public class FuzzyResourceListImpl extends AbstractProxyResourceList implements FuzzyResourceList {
     private final Map<ResourceKey, Set<ResourceAmount>> normalizedFuzzyMap = new HashMap<>();
 

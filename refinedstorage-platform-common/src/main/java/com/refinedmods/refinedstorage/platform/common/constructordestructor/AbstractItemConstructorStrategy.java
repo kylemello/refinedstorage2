@@ -50,19 +50,14 @@ abstract class AbstractItemConstructorStrategy implements ConstructorStrategy {
             return false;
         }
         final ItemStack itemStack = itemResource.toItemStack(extractedAmount);
-        final boolean success = apply(itemResource, itemStack, actor, actingPlayer);
+        final boolean success = apply(itemStack, actor, actingPlayer);
         if (success) {
             storageChannel.extract(itemResource, extractedAmount, Action.EXECUTE, actor);
         }
         return success;
     }
 
-    protected abstract boolean apply(
-        ItemResource itemResource,
-        ItemStack itemStack,
-        Actor actor,
-        Player actingPlayer
-    );
+    protected abstract boolean apply(ItemStack itemStack, Actor actor, Player actingPlayer);
 
     protected double getDispensePositionX() {
         return pos.getX() + 0.5D;

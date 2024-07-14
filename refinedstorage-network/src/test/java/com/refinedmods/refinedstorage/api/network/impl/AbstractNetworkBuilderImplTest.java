@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.NetworkBuilder;
 import com.refinedmods.refinedstorage.api.network.NetworkComponent;
+import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage.network.test.NetworkTestFixtures;
@@ -74,7 +75,7 @@ abstract class AbstractNetworkBuilderImplTest {
     }
 
     private static NetworkNode createNode() {
-        return new SpyingNetworkNode(0);
+        return new SimpleNetworkNode(0);
     }
 
     protected static List<NetworkNodeContainer> getAddedContainers(final Network network) {

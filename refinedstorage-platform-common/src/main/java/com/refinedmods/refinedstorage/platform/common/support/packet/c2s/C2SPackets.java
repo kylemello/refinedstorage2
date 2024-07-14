@@ -13,6 +13,8 @@ import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResou
 import java.util.List;
 import java.util.UUID;
 
+import org.apiguardian.api.API;
+
 public final class C2SPackets {
     private C2SPackets() {
     }
@@ -53,6 +55,7 @@ public final class C2SPackets {
         Platform.INSTANCE.sendPacketToServer(new ResourceSlotChangePacket(slotIndex, tryAlternatives));
     }
 
+    @API(status = API.Status.INTERNAL)
     public static void sendResourceFilterSlotChange(final PlatformResourceKey resource, final int slotIndex) {
         Platform.INSTANCE.sendPacketToServer(new ResourceFilterSlotChangePacket(slotIndex, resource));
     }

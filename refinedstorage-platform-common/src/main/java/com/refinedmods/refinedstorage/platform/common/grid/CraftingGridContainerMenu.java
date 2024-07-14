@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.apiguardian.api.API;
 
 public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 69;
@@ -78,6 +79,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public ItemStack quickMoveStack(final Player actor, final int slotIndex) {
         final Slot slot = getSlot(slotIndex);
         if (!actor.level().isClientSide() && slot instanceof CraftingGridResultSlot resultSlot) {
@@ -117,6 +119,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
         source.clearMatrix(player, toPlayerInventory);
     }
 
+    @API(status = API.Status.INTERNAL)
     public ResourceList getAvailableListForRecipeTransfer() {
         final ResourceList available = getView().copyBackingList();
         addContainerToList(source.getCraftingMatrix(), available);
@@ -142,7 +145,8 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
         final Set<ItemResource> craftingMatrixItems = getCraftingMatrixItems();
         filterBeforeFilteringBasedOnCraftingMatrixItems = getView().setFilterAndSort(
             gridResource -> gridResource instanceof ItemGridResource itemGridResource
-                && craftingMatrixItems.contains(itemGridResource.getResource())
+                && itemGridResource.getUnderlyingResource() != null
+                && craftingMatrixItems.contains((ItemResource) itemGridResource.getUnderlyingResource())
         );
     }
 

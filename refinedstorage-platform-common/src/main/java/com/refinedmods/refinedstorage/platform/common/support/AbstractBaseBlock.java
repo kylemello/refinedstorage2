@@ -104,14 +104,12 @@ public abstract class AbstractBaseBlock extends Block {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public MenuProvider getMenuProvider(final BlockState state, final Level level, final BlockPos pos) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity instanceof MenuProvider provider ? provider : null;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void onRemove(final BlockState state,
                          final Level level,
                          final BlockPos pos,
@@ -203,7 +201,6 @@ public abstract class AbstractBaseBlock extends Block {
         return !state.equals(rotated);
     }
 
-    @SuppressWarnings("deprecation")
     protected BlockState getRotatedBlockState(final BlockState state, final Level level, final BlockPos pos) {
         return state.rotate(Rotation.CLOCKWISE_90);
     }

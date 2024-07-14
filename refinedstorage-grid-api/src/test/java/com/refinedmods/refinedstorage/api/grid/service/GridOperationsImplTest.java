@@ -41,6 +41,7 @@ class GridOperationsImplTest {
     class InsertTest {
         @ParameterizedTest
         @EnumSource(GridInsertMode.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldInsertIntoDestination(final GridInsertMode insertMode) {
             // Arrange
             final Storage source = new LimitedStorageImpl(100);
@@ -120,6 +121,7 @@ class GridOperationsImplTest {
     @Nested
     class InsertEntireResourceTest {
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldInsertIntoDestinationWithRemainder() {
             // Arrange
             final Storage source = new LimitedStorageImpl(100);
@@ -192,6 +194,7 @@ class GridOperationsImplTest {
     class ExtractTest {
         @ParameterizedTest
         @EnumSource(GridExtractMode.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldExtractFromSourceToDestination(final GridExtractMode extractMode) {
             // Arrange
             final Storage destination = new LimitedStorageImpl(100);
@@ -272,6 +275,7 @@ class GridOperationsImplTest {
     @Nested
     class ExtractEntireResourceTest {
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldExtractEntireResourceFromSourceToDestinationIfResourceIsLessThanMaxCount() {
             // Arrange
             final Storage destination = new LimitedStorageImpl(100);
@@ -296,6 +300,7 @@ class GridOperationsImplTest {
         }
 
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldExtractEntireResourceWithRemainderFromSourceToDestinationIfThereIsNotEnoughSpaceInDestination() {
             // Arrange
             final Storage destination = new LimitedStorageImpl(MAX_COUNT - 1);
@@ -325,6 +330,7 @@ class GridOperationsImplTest {
     @Nested
     class ExtractHalfResourceTest {
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
         void shouldExtractSingleAmountIfResourceHasSingleAmountWhenExtractingHalfResourceFromSourceToDestination() {
             // Arrange
             final Storage destination = new LimitedStorageImpl(MAX_COUNT);

@@ -34,6 +34,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import org.apiguardian.api.API;
 
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslationAsHeading;
 import static java.util.Objects.requireNonNullElse;
@@ -171,6 +172,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         addRenderableWidget(button);
     }
 
+    @API(status = API.Status.INTERNAL)
     public List<Rect2i> getExclusionZones() {
         return exclusionZones;
     }
@@ -315,6 +317,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     }
 
     @Nullable
+    @API(status = API.Status.INTERNAL)
     public PlatformResourceKey getHoveredResource() {
         if (hoveredSlot instanceof ResourceSlot resourceSlot) {
             return resourceSlot.getResource();
@@ -322,10 +325,12 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         return null;
     }
 
+    @API(status = API.Status.INTERNAL)
     public int getLeftPos() {
         return leftPos;
     }
 
+    @API(status = API.Status.INTERNAL)
     public int getTopPos() {
         return topPos;
     }

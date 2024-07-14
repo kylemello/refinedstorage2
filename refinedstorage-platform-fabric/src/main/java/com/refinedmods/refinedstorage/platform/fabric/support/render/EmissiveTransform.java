@@ -24,6 +24,7 @@ public class EmissiveTransform implements RenderContext.QuadTransform {
         return true;
     }
 
+    @SuppressWarnings("resource")
     private void doTransform(final MutableQuadView quad) {
         final SpriteFinder finder = SpriteFinder.get(getAtlas());
         if (finder == null) {

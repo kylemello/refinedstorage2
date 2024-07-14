@@ -130,22 +130,11 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
         implements TooltipComponent {
     }
 
-    private static class ExtendedMenuProviderImpl implements ExtendedMenuProvider<SingleAmountData> {
-        private final ResourceContainer resourceContainer;
-        private final double amount;
-        private final Consumer<Double> amountAcceptor;
-        private final SlotReference slotReference;
-
-        private ExtendedMenuProviderImpl(final ResourceContainer resourceContainer,
-                                         final double amount,
-                                         final Consumer<Double> amountAcceptor,
-                                         final SlotReference slotReference) {
-            this.resourceContainer = resourceContainer;
-            this.amount = amount;
-            this.amountAcceptor = amountAcceptor;
-            this.slotReference = slotReference;
-        }
-
+    private record ExtendedMenuProviderImpl(ResourceContainer resourceContainer,
+                                            double amount,
+                                            Consumer<Double> amountAcceptor,
+                                            SlotReference slotReference)
+        implements ExtendedMenuProvider<SingleAmountData> {
         @Override
         public SingleAmountData getMenuData() {
             return new SingleAmountData(

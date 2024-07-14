@@ -12,7 +12,6 @@ public class AccessModeSettings {
 
     public static AccessMode getAccessMode(final int accessMode) {
         return switch (accessMode) {
-            case INSERT_EXTRACT -> AccessMode.INSERT_EXTRACT;
             case INSERT -> AccessMode.INSERT;
             case EXTRACT -> AccessMode.EXTRACT;
             default -> AccessMode.INSERT_EXTRACT;

@@ -42,7 +42,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(1);
 
-        final Token token = tokens.get(0);
+        final Token token = tokens.getFirst();
         assertToken(token, "hel1lo", TokenType.IDENTIFIER);
         assertPosition(token.position(), SOURCE_NAME, 1, 1, 1, 6);
     }
@@ -55,7 +55,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(3);
 
-        final Token hello = tokens.get(0);
+        final Token hello = tokens.getFirst();
         assertToken(hello, "hello", TokenType.IDENTIFIER);
         assertPosition(hello.position(), SOURCE_NAME, 1, 1, 1, 5);
 
@@ -76,7 +76,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(1);
 
-        final Token token = tokens.get(0);
+        final Token token = tokens.getFirst();
         assertToken(token, "h_el1lo", TokenType.IDENTIFIER);
         assertPosition(token.position(), SOURCE_NAME, 1, 1, 1, 9);
     }
@@ -89,7 +89,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(3);
 
-        final Token hello = tokens.get(0);
+        final Token hello = tokens.getFirst();
         assertToken(hello, "hello", TokenType.IDENTIFIER);
         assertPosition(hello.position(), SOURCE_NAME, 1, 1, 1, 7);
 
@@ -103,14 +103,14 @@ class LexerTest {
     }
 
     @Test
-    void testEmptyStirngIdentifier() {
+    void testEmptyStringIdentifier() {
         // Act
         final List<Token> tokens = getTokens("\"\"");
 
         // Assert
         assertThat(tokens).hasSize(1);
 
-        final Token text = tokens.get(0);
+        final Token text = tokens.getFirst();
         assertToken(text, "", TokenType.IDENTIFIER);
         assertPosition(text.position(), SOURCE_NAME, 1, 1, 1, 2);
     }
@@ -133,7 +133,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(4);
 
-        final Token hello = tokens.get(0);
+        final Token hello = tokens.getFirst();
         assertToken(hello, "hello", TokenType.IDENTIFIER);
         assertPosition(hello.position(), SOURCE_NAME, 1, 1, 1, 5);
 
@@ -158,7 +158,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(1);
 
-        final Token token = tokens.get(0);
+        final Token token = tokens.getFirst();
         assertToken(token, "123", TokenType.INTEGER_NUMBER);
         assertPosition(token.position(), SOURCE_NAME, 1, 1, 1, 3);
     }
@@ -171,7 +171,7 @@ class LexerTest {
         // Assert
         assertThat(tokens).hasSize(1);
 
-        final Token token = tokens.get(0);
+        final Token token = tokens.getFirst();
         assertToken(token, "123.45", TokenType.FLOATING_NUMBER);
         assertPosition(token.position(), SOURCE_NAME, 1, 1, 1, 6);
     }
@@ -209,7 +209,7 @@ class LexerTest {
 
         assertThat(tokens).hasSize(9);
 
-        assertToken(tokens.get(0), "(", TokenType.PAREN_OPEN);
+        assertToken(tokens.getFirst(), "(", TokenType.PAREN_OPEN);
         assertToken(tokens.get(1), ")", TokenType.PAREN_CLOSE);
         assertToken(tokens.get(2), "+", TokenType.BIN_OP);
         assertToken(tokens.get(3), "-", TokenType.BIN_OP);
@@ -219,7 +219,7 @@ class LexerTest {
         assertToken(tokens.get(7), "&&", TokenType.BIN_OP);
         assertToken(tokens.get(8), "||", TokenType.BIN_OP);
 
-        assertPosition(tokens.get(0).position(), SOURCE_NAME, 1, 1, 1, 1);
+        assertPosition(tokens.getFirst().position(), SOURCE_NAME, 1, 1, 1, 1);
         assertPosition(tokens.get(1).position(), SOURCE_NAME, 1, 2, 1, 2);
         assertPosition(tokens.get(2).position(), SOURCE_NAME, 1, 3, 1, 3);
         assertPosition(tokens.get(3).position(), SOURCE_NAME, 1, 4, 1, 4);

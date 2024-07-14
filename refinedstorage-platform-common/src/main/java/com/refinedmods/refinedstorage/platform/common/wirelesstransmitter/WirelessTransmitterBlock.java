@@ -57,7 +57,6 @@ public class WirelessTransmitterBlock
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public VoxelShape getShape(final BlockState state,
                                final BlockGetter world,
                                final BlockPos pos,

@@ -150,7 +150,6 @@ public class NetworkTestExtension implements BeforeEachCallback, ParameterResolv
             final Class<?> type = field.getType();
             final Map<String, Object> properties = getProperties(annotation.properties());
             final NetworkNode resolvedNode = networkNodeFactories.get(type).create(
-                annotation,
                 properties
             );
             final Network network = networkMap.get(annotation.networkId());

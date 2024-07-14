@@ -10,7 +10,6 @@ public class RedstoneModeSettings {
 
     public static RedstoneMode getRedstoneMode(final int redstoneMode) {
         return switch (redstoneMode) {
-            case IGNORE -> RedstoneMode.IGNORE;
             case HIGH -> RedstoneMode.HIGH;
             case LOW -> RedstoneMode.LOW;
             default -> RedstoneMode.IGNORE;

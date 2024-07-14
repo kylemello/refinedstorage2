@@ -435,7 +435,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public Optional<ResourceLocation> getSynchronizer() {
-            if (synchronizer == null || synchronizer.get().trim().isBlank()) {
+            if (synchronizer.get().trim().isBlank()) {
                 return Optional.empty();
             }
             return Optional.of(synchronizer.get()).map(ResourceLocation::tryParse);
@@ -473,7 +473,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public Optional<ResourceLocation> getResourceTypeId() {
-            if (resourceType == null || resourceType.get().trim().isBlank()) {
+            if (resourceType.get().trim().isBlank()) {
                 return Optional.empty();
             }
             return Optional.of(resourceType.get()).map(ResourceLocation::tryParse);

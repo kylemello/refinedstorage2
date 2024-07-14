@@ -43,6 +43,7 @@ class PlatformRegistryImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void shouldRegisterAndRetrieve() {
         // Act
         sut.register(A, 10);

@@ -87,9 +87,6 @@ public final class GameTestUtil {
         final Class<T> clazz
     ) {
         final BlockEntity blockEntity = helper.getBlockEntity(pos);
-        if (blockEntity == null) {
-            throw new GameTestAssertException("Block entity not found at " + pos);
-        }
         if (!clazz.isInstance(blockEntity)) {
             throw new GameTestAssertException(
                 "Expected block entity of type " + clazz + " but was " + blockEntity.getClass()

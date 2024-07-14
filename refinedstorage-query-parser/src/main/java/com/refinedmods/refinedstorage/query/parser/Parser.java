@@ -78,7 +78,7 @@ public class Parser {
 
                 final Token currentAfterExpression = currentOrNull();
                 if (currentAfterExpression == null) {
-                    throw new ParserException("Expected ')'", tokens.get(tokens.size() - 1));
+                    throw new ParserException("Expected ')'", tokens.getLast());
                 }
 
                 if (currentAfterExpression.type() == TokenType.PAREN_CLOSE

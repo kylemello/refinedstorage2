@@ -325,7 +325,7 @@ public final class PlatformImpl extends AbstractPlatform {
         return Optional.ofNullable(stack.getCapability(Capabilities.EnergyStorage.ITEM))
             .filter(EnergyStorageAdapter.class::isInstance)
             .map(EnergyStorageAdapter.class::cast)
-            .map(EnergyStorageAdapter::getEnergyStorage);
+            .map(EnergyStorageAdapter::energyStorage);
     }
 
     @Override

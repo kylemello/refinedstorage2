@@ -250,6 +250,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerBlockEntities(
             new DirectRegistryCallback<>(BuiltInRegistries.BLOCK_ENTITY_TYPE),
             new BlockEntityTypeFactory() {
+                @SuppressWarnings("DataFlowIssue") // data type can be null
                 @Override
                 public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntitySupplier<T> factory,
                                                                          final Block... allowedBlocks) {

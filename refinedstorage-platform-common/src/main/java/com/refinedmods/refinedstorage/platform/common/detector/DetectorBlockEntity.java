@@ -60,7 +60,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
                 propagateAmount();
                 setChanged();
             },
-            filters -> mainNode.setConfiguredResource(filters.isEmpty() ? null : filters.get(0))
+            filters -> mainNode.setConfiguredResource(filters.isEmpty() ? null : filters.getFirst())
         );
         initialize();
     }

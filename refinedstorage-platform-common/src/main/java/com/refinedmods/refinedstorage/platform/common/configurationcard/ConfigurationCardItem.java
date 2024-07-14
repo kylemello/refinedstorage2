@@ -113,6 +113,7 @@ public class ConfigurationCardItem extends Item {
         return tag;
     }
 
+    @SuppressWarnings("resource")
     private void sendCopiedConfigurationMessage(final Player player, final BlockEntityType<?> configuredType) {
         if (player.level().isClientSide()) {
             return;

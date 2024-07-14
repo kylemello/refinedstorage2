@@ -37,6 +37,7 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void testRetrievingFuzzy() {
         // Arrange
         sut.add(DUMMY_A, 5);
@@ -92,6 +93,7 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void shouldRemoveEntireResourceFromFuzzyIndexAfterRemoval() {
         // Arrange
         sut.add(DUMMY_A, 5);
@@ -137,6 +139,7 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
     void shouldRemoveSingleResourceFromFuzzyIndexAfterRemoval() {
         // Arrange
         sut.add(DUMMY_A, 5);

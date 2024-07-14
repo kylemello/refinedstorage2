@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.platform.common.constructordestructor;
 
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResource;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,12 +20,7 @@ public class PlaceFireworksConstructorStrategy extends AbstractItemConstructorSt
     }
 
     @Override
-    protected boolean apply(
-        final ItemResource itemResource,
-        final ItemStack itemStack,
-        final Actor actor,
-        final Player actingPlayer
-    ) {
+    protected boolean apply(final ItemStack itemStack, final Actor actor, final Player actingPlayer) {
         if (!(itemStack.getItem() instanceof FireworkRocketItem)) {
             return false;
         }
