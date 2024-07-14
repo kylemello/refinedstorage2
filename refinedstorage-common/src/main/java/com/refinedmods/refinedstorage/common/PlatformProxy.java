@@ -119,11 +119,6 @@ public class PlatformProxy implements Platform {
     }
 
     @Override
-    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
-        return ensureLoaded().getFilledBucket(fluidResource);
-    }
-
-    @Override
     public TransferManager createTransferManager(final AbstractContainerMenu containerMenu) {
         return ensureLoaded().createTransferManager(containerMenu);
     }

@@ -75,8 +75,6 @@ public interface Platform {
 
     Optional<FluidOperationResult> fillContainer(ItemStack container, ResourceAmount resourceAmount);
 
-    Optional<ItemStack> getFilledBucket(FluidResource fluidResource);
-
     TransferManager createTransferManager(AbstractContainerMenu containerMenu);
 
     long insertIntoContainer(Container container, ItemResource itemResource, long amount, Action action);

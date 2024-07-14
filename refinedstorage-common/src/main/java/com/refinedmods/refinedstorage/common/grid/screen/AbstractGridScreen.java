@@ -349,7 +349,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             addDetailedTooltip(view, platformResource, processedLines);
         }
         if (!platformResource.isZeroed()) {
-            processedLines.addAll(platformResource.getExtractionHints(getMenu().getView()));
+            processedLines.addAll(platformResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
     }
@@ -419,7 +419,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final ItemStack carriedStack = getMenu().getCarried();
         final PlatformGridResource resource = getCurrentGridResource();
 
-        if (resource != null && carriedStack.isEmpty()) {
+        if (resource != null && resource.canExtract(carriedStack, getMenu().getView())) {
             mouseClickedInGrid(clickedButton, resource);
             return true;
         }

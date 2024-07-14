@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
@@ -9,6 +10,7 @@ import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.view.AbstractPlatformGridResource;
+import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
@@ -25,8 +27,12 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class FluidGridResource extends AbstractPlatformGridResource<FluidResource> {
+    private static final ItemStack EMPTY_BUCKET = new ItemStack(Items.BUCKET);
+
     private final int id;
     private final ResourceRendering rendering;
 
@@ -52,12 +58,32 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
     }
 
     @Override
-    public List<ClientTooltipComponent> getExtractionHints(final GridView view) {
-        return Platform.INSTANCE.getFilledBucket(resource).map(bucket -> MouseClientTooltipComponent.item(
-            MouseClientTooltipComponent.Type.LEFT,
-            bucket,
-            null
-        )).stream().toList();
+    public List<ClientTooltipComponent> getExtractionHints(final ItemStack carriedStack, final GridView view) {
+        return tryFillFluidContainer(carriedStack)
+            .filter(result -> result.amount() > 0)
+            .map(result -> MouseClientTooltipComponent.item(
+                MouseClientTooltipComponent.Type.LEFT,
+                result.container(),
+                null
+            )).stream().toList();
+    }
+
+    private Optional<FluidOperationResult> tryFillFluidContainer(final ItemStack carriedStack) {
+        final ResourceAmount toFill = new ResourceAmount(resource, Platform.INSTANCE.getBucketAmount());
+        return carriedStack.isEmpty()
+            ? Platform.INSTANCE.fillContainer(EMPTY_BUCKET, toFill)
+            : Platform.INSTANCE.fillContainer(carriedStack, toFill);
+    }
+
+    @Override
+    public boolean canExtract(final ItemStack carriedStack, final GridView view) {
+        if (carriedStack.isEmpty()) {
+            return true;
+        }
+        final ResourceAmount toFill = new ResourceAmount(resource, view.getAmount(resource));
+        return Platform.INSTANCE.fillContainer(carriedStack, toFill)
+            .map(result -> result.amount() > 0)
+            .orElse(false);
     }
 
     @Override
