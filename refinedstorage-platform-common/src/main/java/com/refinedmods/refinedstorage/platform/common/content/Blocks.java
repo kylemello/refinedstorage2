@@ -19,8 +19,8 @@ import com.refinedmods.refinedstorage.platform.common.networking.NetworkReceiver
 import com.refinedmods.refinedstorage.platform.common.networking.NetworkTransmitterBlock;
 import com.refinedmods.refinedstorage.platform.common.networking.RelayBlock;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityManagerBlock;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.diskdrive.DiskDriveBlock;
 import com.refinedmods.refinedstorage.platform.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.storage.diskinterface.DiskInterfaceBlock;
@@ -167,10 +167,10 @@ public final class Blocks {
     private Supplier<DiskDriveBlock> diskDrive;
     @Nullable
     private Supplier<SimpleBlock> machineCasing;
-    private final Map<ItemStorageType.Variant, Supplier<ItemStorageBlock>> itemStorageBlocks =
-        new EnumMap<>(ItemStorageType.Variant.class);
-    private final Map<FluidStorageType.Variant, Supplier<FluidStorageBlock>> fluidStorageBlocks =
-        new EnumMap<>(FluidStorageType.Variant.class);
+    private final Map<ItemStorageVariant, Supplier<ItemStorageBlock>> itemStorageBlocks =
+        new EnumMap<>(ItemStorageVariant.class);
+    private final Map<FluidStorageVariant, Supplier<FluidStorageBlock>> fluidStorageBlocks =
+        new EnumMap<>(FluidStorageVariant.class);
     @Nullable
     private Supplier<InterfaceBlock> iface;
     @Nullable
@@ -237,20 +237,20 @@ public final class Blocks {
         this.machineCasing = machineCasingSupplier;
     }
 
-    public void setItemStorageBlock(final ItemStorageType.Variant variant, final Supplier<ItemStorageBlock> supplier) {
+    public void setItemStorageBlock(final ItemStorageVariant variant, final Supplier<ItemStorageBlock> supplier) {
         itemStorageBlocks.put(variant, supplier);
     }
 
-    public ItemStorageBlock getItemStorageBlock(final ItemStorageType.Variant variant) {
+    public ItemStorageBlock getItemStorageBlock(final ItemStorageVariant variant) {
         return itemStorageBlocks.get(variant).get();
     }
 
-    public void setFluidStorageBlock(final FluidStorageType.Variant variant,
+    public void setFluidStorageBlock(final FluidStorageVariant variant,
                                      final Supplier<FluidStorageBlock> supplier) {
         fluidStorageBlocks.put(variant, supplier);
     }
 
-    public FluidStorageBlock getFluidStorageBlock(final FluidStorageType.Variant variant) {
+    public FluidStorageBlock getFluidStorageBlock(final FluidStorageVariant variant) {
         return fluidStorageBlocks.get(variant).get();
     }
 

@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.BlockEntities;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.StorageTypes;
 
 import net.minecraft.core.BlockPos;
@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslation;
 
 public class FluidStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity {
-    private final FluidStorageType.Variant variant;
+    private final FluidStorageVariant variant;
     private final Component displayName;
 
     public FluidStorageBlockBlockEntity(final BlockPos pos,
                                         final BlockState state,
-                                        final FluidStorageType.Variant variant) {
+                                        final FluidStorageVariant variant) {
         super(
             BlockEntities.INSTANCE.getFluidStorageBlock(variant),
             pos,
@@ -38,7 +38,7 @@ public class FluidStorageBlockBlockEntity extends AbstractStorageBlockBlockEntit
         );
     }
 
-    private static long getEnergyUsage(final FluidStorageType.Variant variant) {
+    private static long getEnergyUsage(final FluidStorageVariant variant) {
         return switch (variant) {
             case SIXTY_FOUR_B -> Platform.INSTANCE.getConfig().getFluidStorageBlock().get64bEnergyUsage();
             case TWO_HUNDRED_FIFTY_SIX_B -> Platform.INSTANCE.getConfig().getFluidStorageBlock().get256bEnergyUsage();

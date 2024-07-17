@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.platform.neoforge.datagen.tag;
 
 import com.refinedmods.refinedstorage.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage.platform.common.content.Items;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.support.BaseBlockItem;
 
 import java.util.Arrays;
@@ -58,8 +58,8 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
             .map(c -> (Supplier<Item>) () -> c)
             .toList());
         addAllToTag(FLUID_STORAGE_DISKS,
-            Arrays.stream(FluidStorageType.Variant.values())
-                .filter(variant -> variant != FluidStorageType.Variant.CREATIVE)
+            Arrays.stream(FluidStorageVariant.values())
+                .filter(variant -> variant != FluidStorageVariant.CREATIVE)
                 .map(Items.INSTANCE::getFluidStorageDisk)
                 .map(t -> (Supplier<Item>) () -> t)
                 .toList());
@@ -72,8 +72,8 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
         addAllToTag(STORAGE_DISKS,
-            Arrays.stream(ItemStorageType.Variant.values())
-                .filter(variant -> variant != ItemStorageType.Variant.CREATIVE)
+            Arrays.stream(ItemStorageVariant.values())
+                .filter(variant -> variant != ItemStorageVariant.CREATIVE)
                 .map(Items.INSTANCE::getItemStorageDisk)
                 .map(t -> (Supplier<Item>) () -> t)
                 .toList());

@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.platform.common.constructordestructor;
 
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,10 +21,10 @@ final class ConstructorTestPlots {
                             final Direction direction,
                             final TriConsumer<ConstructorBlockEntity, BlockPos, GameTestSequence> consumer) {
         helper.setBlock(ZERO.above(), RSBLOCKS.getCreativeController().getDefault());
-        helper.setBlock(ZERO.above().above(), RSBLOCKS.getItemStorageBlock(ItemStorageType.Variant.ONE_K));
+        helper.setBlock(ZERO.above().above(), RSBLOCKS.getItemStorageBlock(ItemStorageVariant.ONE_K));
         helper.setBlock(
             ZERO.above().above().north(),
-            RSBLOCKS.getFluidStorageBlock(FluidStorageType.Variant.SIXTY_FOUR_B)
+            RSBLOCKS.getFluidStorageBlock(FluidStorageVariant.SIXTY_FOUR_B)
         );
         final BlockPos constructorPos = ZERO.above().above().above();
         helper.setBlock(constructorPos, RSBLOCKS.getConstructor().getDefault().rotated(direction));

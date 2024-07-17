@@ -40,7 +40,7 @@ public final class StorageCodecs {
     private StorageCodecs() {
     }
 
-    static <T extends ResourceKey> MapCodec<StorageData<T>> homogeneousStorageData(final Codec<T> resourceCodec) {
+    static <T extends ResourceKey> MapCodec<StorageData<T>> sameTypeStorageData(final Codec<T> resourceCodec) {
         final Codec<StorageResource<T>> storageResourceCodec = RecordCodecBuilder.create(instance -> instance.group(
             resourceCodec.fieldOf("resource").forGetter(StorageResource::resource),
             Codec.LONG.fieldOf("amount").forGetter(StorageResource::amount),
@@ -58,7 +58,7 @@ public final class StorageCodecs {
             return new StorageData<>(Optional.ofNullable(capacity), List.of());
         }
 
-        static <T extends ResourceKey> StorageData<T> ofHomogeneousStorage(
+        static <T extends ResourceKey> StorageData<T> ofSameTypeStorage(
             final Storage storage,
             final Predicate<ResourceKey> valid,
             final Function<ResourceKey, T> caster

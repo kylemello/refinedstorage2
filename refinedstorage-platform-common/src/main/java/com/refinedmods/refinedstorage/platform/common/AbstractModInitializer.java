@@ -78,8 +78,8 @@ import com.refinedmods.refinedstorage.platform.common.security.SecurityCardData;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityCardPermissions;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityManagerContainerMenu;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.StorageTypes;
 import com.refinedmods.refinedstorage.platform.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.storage.diskdrive.DiskDriveBlock;
@@ -336,13 +336,13 @@ public abstract class AbstractModInitializer {
             callback.register(DISK_DRIVE, () -> new DiskDriveBlock(diskDriveBlockEntityFactory))
         );
         Blocks.INSTANCE.setMachineCasing(callback.register(MACHINE_CASING, SimpleBlock::new));
-        for (final ItemStorageType.Variant variant : ItemStorageType.Variant.values()) {
+        for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             Blocks.INSTANCE.setItemStorageBlock(variant, callback.register(
                 forItemStorageBlock(variant),
                 () -> new ItemStorageBlock(variant)
             ));
         }
-        for (final FluidStorageType.Variant variant : FluidStorageType.Variant.values()) {
+        for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             Blocks.INSTANCE.setFluidStorageBlock(variant, callback.register(
                 forFluidStorageBlock(variant),
                 () -> new FluidStorageBlock(variant)
@@ -436,17 +436,17 @@ public abstract class AbstractModInitializer {
     }
 
     private void registerStorageItems(final RegistryCallback<Item> callback) {
-        for (final ItemStorageType.Variant variant : ItemStorageType.Variant.values()) {
+        for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             registerItemStorageItems(callback, variant);
         }
-        for (final FluidStorageType.Variant variant : FluidStorageType.Variant.values()) {
+        for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             registerFluidStorageItems(callback, variant);
         }
     }
 
     private void registerItemStorageItems(final RegistryCallback<Item> callback,
-                                          final ItemStorageType.Variant variant) {
-        if (variant != ItemStorageType.Variant.CREATIVE) {
+                                          final ItemStorageVariant variant) {
+        if (variant != ItemStorageVariant.CREATIVE) {
             Items.INSTANCE.setItemStoragePart(variant, callback.register(
                 forItemStoragePart(variant),
                 SimpleItem::new)
@@ -463,8 +463,8 @@ public abstract class AbstractModInitializer {
     }
 
     private void registerFluidStorageItems(final RegistryCallback<Item> callback,
-                                           final FluidStorageType.Variant variant) {
-        if (variant != FluidStorageType.Variant.CREATIVE) {
+                                           final FluidStorageVariant variant) {
+        if (variant != FluidStorageVariant.CREATIVE) {
             Items.INSTANCE.setFluidStoragePart(variant, callback.register(
                 forFluidStoragePart(variant),
                 SimpleItem::new)
@@ -602,7 +602,7 @@ public abstract class AbstractModInitializer {
             CRAFTING_GRID,
             () -> typeFactory.create(CraftingGridBlockEntity::new, Blocks.INSTANCE.getCraftingGrid().toArray())
         ));
-        for (final ItemStorageType.Variant variant : ItemStorageType.Variant.values()) {
+        for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             BlockEntities.INSTANCE.setItemStorageBlock(variant, callback.register(
                 forItemStorageBlock(variant),
                 () -> typeFactory.create(
@@ -611,7 +611,7 @@ public abstract class AbstractModInitializer {
                 )
             ));
         }
-        for (final FluidStorageType.Variant variant : FluidStorageType.Variant.values()) {
+        for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             BlockEntities.INSTANCE.setFluidStorageBlock(variant, callback.register(
                 forFluidStorageBlock(variant),
                 () -> typeFactory.create(

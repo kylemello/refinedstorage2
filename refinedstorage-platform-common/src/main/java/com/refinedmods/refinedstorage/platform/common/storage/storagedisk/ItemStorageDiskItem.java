@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.platform.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.platform.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.platform.common.content.Items;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.StorageTypes;
 
 import java.util.Optional;
@@ -23,10 +23,10 @@ import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil
 public class ItemStorageDiskItem extends AbstractStorageContainerItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_storage_disk.help");
 
-    private final ItemStorageType.Variant variant;
+    private final ItemStorageVariant variant;
     private final Component helpText;
 
-    public ItemStorageDiskItem(final ItemStorageType.Variant variant) {
+    public ItemStorageDiskItem(final ItemStorageVariant variant) {
         super(
             new Item.Properties().stacksTo(1).fireResistant(),
             PlatformApi.INSTANCE.getStorageContainerItemHelper()
@@ -60,7 +60,7 @@ public class ItemStorageDiskItem extends AbstractStorageContainerItem {
     @Override
     @Nullable
     protected ItemStack createSecondaryDisassemblyByproduct(final int count) {
-        if (variant == ItemStorageType.Variant.CREATIVE) {
+        if (variant == ItemStorageVariant.CREATIVE) {
             return null;
         }
         return new ItemStack(Items.INSTANCE.getItemStoragePart(variant), count);

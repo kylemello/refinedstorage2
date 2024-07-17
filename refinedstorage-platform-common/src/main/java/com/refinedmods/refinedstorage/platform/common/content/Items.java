@@ -7,8 +7,8 @@ import com.refinedmods.refinedstorage.platform.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage.platform.common.misc.ProcessorItem;
 import com.refinedmods.refinedstorage.platform.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityCardItem;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage.platform.common.support.BaseBlockItem;
 
@@ -27,14 +27,14 @@ import static java.util.Objects.requireNonNull;
 public final class Items {
     public static final Items INSTANCE = new Items();
 
-    private final Map<ItemStorageType.Variant, Supplier<Item>> itemStorageParts
-        = new EnumMap<>(ItemStorageType.Variant.class);
-    private final Map<FluidStorageType.Variant, Supplier<Item>> fluidStorageParts
-        = new EnumMap<>(FluidStorageType.Variant.class);
-    private final Map<ItemStorageType.Variant, Supplier<Item>> itemStorageDisks
-        = new EnumMap<>(ItemStorageType.Variant.class);
-    private final Map<FluidStorageType.Variant, Supplier<Item>> fluidStorageDisks
-        = new EnumMap<>(FluidStorageType.Variant.class);
+    private final Map<ItemStorageVariant, Supplier<Item>> itemStorageParts
+        = new EnumMap<>(ItemStorageVariant.class);
+    private final Map<FluidStorageVariant, Supplier<Item>> fluidStorageParts
+        = new EnumMap<>(FluidStorageVariant.class);
+    private final Map<ItemStorageVariant, Supplier<Item>> itemStorageDisks
+        = new EnumMap<>(ItemStorageVariant.class);
+    private final Map<FluidStorageVariant, Supplier<Item>> fluidStorageDisks
+        = new EnumMap<>(FluidStorageVariant.class);
     private final List<Supplier<ControllerBlockItem>> allControllers = new ArrayList<>();
     private final List<Supplier<CreativeControllerBlockItem>> allCreativeControllers = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allCables = new ArrayList<>();
@@ -107,35 +107,35 @@ public final class Items {
     private Items() {
     }
 
-    public Item getItemStoragePart(final ItemStorageType.Variant variant) {
+    public Item getItemStoragePart(final ItemStorageVariant variant) {
         return itemStorageParts.get(variant).get();
     }
 
-    public void setItemStoragePart(final ItemStorageType.Variant variant, final Supplier<Item> supplier) {
+    public void setItemStoragePart(final ItemStorageVariant variant, final Supplier<Item> supplier) {
         itemStorageParts.put(variant, supplier);
     }
 
-    public Item getItemStorageDisk(final ItemStorageType.Variant variant) {
+    public Item getItemStorageDisk(final ItemStorageVariant variant) {
         return itemStorageDisks.get(variant).get();
     }
 
-    public void setItemStorageDisk(final ItemStorageType.Variant variant, final Supplier<Item> supplier) {
+    public void setItemStorageDisk(final ItemStorageVariant variant, final Supplier<Item> supplier) {
         itemStorageDisks.put(variant, supplier);
     }
 
-    public Item getFluidStoragePart(final FluidStorageType.Variant type) {
+    public Item getFluidStoragePart(final FluidStorageVariant type) {
         return fluidStorageParts.get(type).get();
     }
 
-    public void setFluidStoragePart(final FluidStorageType.Variant variant, final Supplier<Item> supplier) {
+    public void setFluidStoragePart(final FluidStorageVariant variant, final Supplier<Item> supplier) {
         fluidStorageParts.put(variant, supplier);
     }
 
-    public Item getFluidStorageDisk(final FluidStorageType.Variant variant) {
+    public Item getFluidStorageDisk(final FluidStorageVariant variant) {
         return fluidStorageDisks.get(variant).get();
     }
 
-    public void setFluidStorageDisk(final FluidStorageType.Variant variant, final Supplier<Item> supplier) {
+    public void setFluidStorageDisk(final FluidStorageVariant variant, final Supplier<Item> supplier) {
         fluidStorageDisks.put(variant, supplier);
     }
 

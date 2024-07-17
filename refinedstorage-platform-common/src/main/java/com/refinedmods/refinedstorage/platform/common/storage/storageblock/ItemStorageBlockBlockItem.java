@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.platform.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage.platform.common.content.Items;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -25,10 +25,10 @@ import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil
 public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_storage_block.help");
 
-    private final ItemStorageType.Variant variant;
+    private final ItemStorageVariant variant;
     private final Component helpText;
 
-    public ItemStorageBlockBlockItem(final Block block, final ItemStorageType.Variant variant) {
+    public ItemStorageBlockBlockItem(final Block block, final ItemStorageVariant variant) {
         super(
             block,
             new Item.Properties().stacksTo(1).fireResistant(),
@@ -58,7 +58,7 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
     @Override
     @Nullable
     protected ItemStack createSecondaryDisassemblyByproduct(final int count) {
-        if (variant == ItemStorageType.Variant.CREATIVE) {
+        if (variant == ItemStorageVariant.CREATIVE) {
             return null;
         }
         return new ItemStack(Items.INSTANCE.getItemStoragePart(variant), count);
