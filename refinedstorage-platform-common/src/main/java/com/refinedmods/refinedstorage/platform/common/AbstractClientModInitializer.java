@@ -21,8 +21,8 @@ import com.refinedmods.refinedstorage.platform.common.networking.RelayScreen;
 import com.refinedmods.refinedstorage.platform.common.security.FallbackSecurityCardScreen;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityCardScreen;
 import com.refinedmods.refinedstorage.platform.common.security.SecurityManagerScreen;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.diskdrive.DiskDriveScreen;
 import com.refinedmods.refinedstorage.platform.common.storage.diskinterface.DiskInterfaceScreen;
 import com.refinedmods.refinedstorage.platform.common.storage.externalstorage.ExternalStorageScreen;
@@ -113,7 +113,7 @@ public abstract class AbstractClientModInitializer {
 
     protected static void registerDiskModels() {
         final ResourceLocation diskModel = createIdentifier("block/disk/disk");
-        for (final ItemStorageType.Variant variant : ItemStorageType.Variant.values()) {
+        for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getItemStorageDisk(variant),
                 diskModel
@@ -121,7 +121,7 @@ public abstract class AbstractClientModInitializer {
         }
 
         final ResourceLocation fluidDiskModel = createIdentifier("block/disk/fluid_disk");
-        for (final FluidStorageType.Variant variant : FluidStorageType.Variant.values()) {
+        for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getFluidStorageDisk(variant),
                 fluidDiskModel

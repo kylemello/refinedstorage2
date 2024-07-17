@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.platform.api.PlatformApi;
 import com.refinedmods.refinedstorage.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.platform.common.Platform;
 import com.refinedmods.refinedstorage.platform.common.content.BlockEntities;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.StorageTypes;
 
 import net.minecraft.core.BlockPos;
@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslation;
 
 public class ItemStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity {
-    private final ItemStorageType.Variant variant;
+    private final ItemStorageVariant variant;
     private final Component displayName;
 
     public ItemStorageBlockBlockEntity(final BlockPos pos,
                                        final BlockState state,
-                                       final ItemStorageType.Variant variant) {
+                                       final ItemStorageVariant variant) {
         super(
             BlockEntities.INSTANCE.getItemStorageBlock(variant),
             pos,
@@ -35,7 +35,7 @@ public class ItemStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity
         this.displayName = createTranslation("block", String.format("%s_storage_block", variant.getName()));
     }
 
-    private static long getEnergyUsage(final ItemStorageType.Variant variant) {
+    private static long getEnergyUsage(final ItemStorageVariant variant) {
         return switch (variant) {
             case ONE_K -> Platform.INSTANCE.getConfig().getStorageBlock().get1kEnergyUsage();
             case FOUR_K -> Platform.INSTANCE.getConfig().getStorageBlock().get4kEnergyUsage();

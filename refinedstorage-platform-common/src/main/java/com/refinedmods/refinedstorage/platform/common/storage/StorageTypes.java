@@ -1,34 +1,27 @@
 package com.refinedmods.refinedstorage.platform.common.storage;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
-import com.refinedmods.refinedstorage.api.storage.tracked.InMemoryTrackedStorageRepository;
-import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
-import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageRepository;
 import com.refinedmods.refinedstorage.platform.api.storage.StorageType;
+import com.refinedmods.refinedstorage.platform.common.Platform;
+import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResource;
+import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage.platform.common.support.resource.ResourceCodecs;
 
 public final class StorageTypes {
-    public static final StorageType ITEM = new ItemStorageType();
-    public static final StorageType FLUID = new FluidStorageType();
+    public static final StorageType ITEM = new SameTypeStorageType<>(
+        ResourceCodecs.ITEM_CODEC,
+        ItemResource.class::isInstance,
+        ItemResource.class::cast,
+        1,
+        64
+    );
+    public static final StorageType FLUID = new SameTypeStorageType<>(
+        ResourceCodecs.FLUID_CODEC,
+        FluidResource.class::isInstance,
+        FluidResource.class::cast,
+        Platform.INSTANCE.getBucketAmount(),
+        Platform.INSTANCE.getBucketAmount() * 16
+    );
 
     private StorageTypes() {
-    }
-
-    static <T extends ResourceKey> PlatformStorage createHomogeneousStorage(final StorageType type,
-                                                                            final StorageCodecs.StorageData<T> data,
-                                                                            final Runnable listener) {
-        final TrackedStorageRepository trackingRepository = new InMemoryTrackedStorageRepository();
-        final TrackedStorageImpl tracked = new TrackedStorageImpl(
-            new InMemoryStorageImpl(),
-            trackingRepository,
-            System::currentTimeMillis
-        );
-        final PlatformStorage storage = data.capacity().map(capacity -> {
-            final LimitedStorageImpl limited = new LimitedStorageImpl(tracked, capacity);
-            return (PlatformStorage) new LimitedPlatformStorage(limited, type, trackingRepository, listener);
-        }).orElseGet(() -> new PlatformStorage(tracked, type, trackingRepository, listener));
-        data.resources().forEach(storage::load);
-        return storage;
     }
 }

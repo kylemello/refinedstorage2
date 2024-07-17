@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.platform.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.platform.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.platform.common.content.Blocks;
 import com.refinedmods.refinedstorage.platform.common.content.Items;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResourceRendering;
 
 import java.util.Optional;
@@ -26,10 +26,10 @@ import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil
 public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_fluid_storage_block.help");
 
-    private final FluidStorageType.Variant variant;
+    private final FluidStorageVariant variant;
     private final Component helpText;
 
-    public FluidStorageBlockBlockItem(final Block block, final FluidStorageType.Variant variant) {
+    public FluidStorageBlockBlockItem(final Block block, final FluidStorageVariant variant) {
         super(
             block,
             new Item.Properties().stacksTo(1).fireResistant(),
@@ -39,7 +39,7 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
         this.helpText = getHelpText(variant);
     }
 
-    private static Component getHelpText(final FluidStorageType.Variant variant) {
+    private static Component getHelpText(final FluidStorageVariant variant) {
         if (variant.getCapacityInBuckets() == null) {
             return CREATIVE_HELP;
         }
@@ -68,7 +68,7 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
     @Override
     @Nullable
     protected ItemStack createSecondaryDisassemblyByproduct(final int count) {
-        if (variant == FluidStorageType.Variant.CREATIVE) {
+        if (variant == FluidStorageVariant.CREATIVE) {
             return null;
         }
         return new ItemStack(Items.INSTANCE.getFluidStoragePart(variant), count);

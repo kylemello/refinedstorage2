@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.platform.common.content;
 
 import com.refinedmods.refinedstorage.platform.common.misc.ProcessorItem;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -42,10 +42,10 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getCreativePortableGrid());
         Items.INSTANCE.getDetectors().stream().map(Supplier::get).forEach(itemConsumer);
         itemConsumer.accept(Blocks.INSTANCE.getInterface());
-        Arrays.stream(ItemStorageType.Variant.values()).forEach(variant -> itemConsumer.accept(
+        Arrays.stream(ItemStorageVariant.values()).forEach(variant -> itemConsumer.accept(
             Blocks.INSTANCE.getItemStorageBlock(variant)
         ));
-        Arrays.stream(FluidStorageType.Variant.values()).forEach(variant -> itemConsumer.accept(
+        Arrays.stream(FluidStorageVariant.values()).forEach(variant -> itemConsumer.accept(
             Blocks.INSTANCE.getFluidStorageBlock(variant)
         ));
         itemConsumer.accept(Blocks.INSTANCE.getMachineCasing());
@@ -76,19 +76,19 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getConstructionCore());
         itemConsumer.accept(Items.INSTANCE.getDestructionCore());
 
-        Arrays.stream(ItemStorageType.Variant.values())
-            .filter(variant -> variant != ItemStorageType.Variant.CREATIVE)
+        Arrays.stream(ItemStorageVariant.values())
+            .filter(variant -> variant != ItemStorageVariant.CREATIVE)
             .map(Items.INSTANCE::getItemStoragePart)
             .forEach(itemConsumer);
-        Arrays.stream(FluidStorageType.Variant.values())
-            .filter(variant -> variant != FluidStorageType.Variant.CREATIVE)
+        Arrays.stream(FluidStorageVariant.values())
+            .filter(variant -> variant != FluidStorageVariant.CREATIVE)
             .map(Items.INSTANCE::getFluidStoragePart)
             .forEach(itemConsumer);
 
-        Arrays.stream(ItemStorageType.Variant.values()).forEach(variant -> itemConsumer.accept(
+        Arrays.stream(ItemStorageVariant.values()).forEach(variant -> itemConsumer.accept(
             Items.INSTANCE.getItemStorageDisk(variant)
         ));
-        Arrays.stream(FluidStorageType.Variant.values()).forEach(variant -> itemConsumer.accept(
+        Arrays.stream(FluidStorageVariant.values()).forEach(variant -> itemConsumer.accept(
             Items.INSTANCE.getFluidStorageDisk(variant)
         ));
         itemConsumer.accept(Items.INSTANCE.getStorageHousing());

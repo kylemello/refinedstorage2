@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.platform.common.content;
 
 import com.refinedmods.refinedstorage.platform.common.misc.ProcessorItem;
-import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageType;
-import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageType;
+import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -67,19 +67,19 @@ public final class ContentIds {
     private ContentIds() {
     }
 
-    public static ResourceLocation forItemStoragePart(final ItemStorageType.Variant variant) {
+    public static ResourceLocation forItemStoragePart(final ItemStorageVariant variant) {
         return createIdentifier(variant.getName() + "_storage_part");
     }
 
-    public static ResourceLocation forItemStorageBlock(final ItemStorageType.Variant variant) {
+    public static ResourceLocation forItemStorageBlock(final ItemStorageVariant variant) {
         return createIdentifier(variant.getName() + "_storage_block");
     }
 
-    public static ResourceLocation forFluidStoragePart(final FluidStorageType.Variant variant) {
+    public static ResourceLocation forFluidStoragePart(final FluidStorageVariant variant) {
         return createIdentifier(variant.getName() + "_fluid_storage_part");
     }
 
-    public static ResourceLocation forFluidStorageBlock(final FluidStorageType.Variant variant) {
+    public static ResourceLocation forFluidStorageBlock(final FluidStorageVariant variant) {
         return createIdentifier(variant.getName() + "_fluid_storage_block");
     }
 
@@ -87,11 +87,11 @@ public final class ContentIds {
         return createIdentifier(type.getName() + "_processor");
     }
 
-    public static ResourceLocation forStorageDisk(final ItemStorageType.Variant variant) {
+    public static ResourceLocation forStorageDisk(final ItemStorageVariant variant) {
         return createIdentifier(variant.getName() + "_storage_disk");
     }
 
-    public static ResourceLocation forFluidStorageDisk(final FluidStorageType.Variant variant) {
+    public static ResourceLocation forFluidStorageDisk(final FluidStorageVariant variant) {
         return createIdentifier(variant.getName() + "_fluid_storage_disk");
     }
 }
