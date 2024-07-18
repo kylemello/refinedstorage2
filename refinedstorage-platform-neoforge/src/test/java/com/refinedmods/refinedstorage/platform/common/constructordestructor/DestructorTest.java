@@ -72,17 +72,17 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
-                    .thenExecute(() -> helper.setBlock(pos.east(), Blocks.STONE))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.STONE, pos.east()))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 11),
-                            new ResourceAmount(asResource(STONE), 15)
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
+                .thenExecute(() -> helper.setBlock(pos.east(), Blocks.STONE))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.STONE, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 11),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
         });
     }
 
@@ -103,17 +103,17 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
-                    .thenExecute(() -> helper.setBlock(pos.east(), Blocks.STONE))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.STONE, pos.east()))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 11),
-                            new ResourceAmount(asResource(STONE), 15)
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
+                .thenExecute(() -> helper.setBlock(pos.east(), Blocks.STONE))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.STONE, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 11),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
         });
     }
 
@@ -135,17 +135,17 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertItemEntityNotPresent(DIRT, pos.east(), 1))
-                    .thenExecute(() -> helper.spawnItem(STONE, pos.east()))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertItemEntityPresent(STONE, pos.east(), 1))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 11),
-                            new ResourceAmount(asResource(STONE), 15)
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertItemEntityNotPresent(DIRT, pos.east(), 1))
+                .thenExecute(() -> helper.spawnItem(STONE, pos.east()))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertItemEntityPresent(STONE, pos.east(), 1))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 11),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
         });
     }
 
@@ -167,17 +167,17 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertItemEntityNotPresent(DIRT, pos.east(), 1))
-                    .thenExecute(() -> helper.spawnItem(STONE, pos.east()))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertItemEntityPresent(STONE, pos.east(), 1))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 11),
-                            new ResourceAmount(asResource(STONE), 15)
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertItemEntityNotPresent(DIRT, pos.east(), 1))
+                .thenExecute(() -> helper.spawnItem(STONE, pos.east()))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertItemEntityPresent(STONE, pos.east(), 1))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 11),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
         });
     }
 
@@ -198,18 +198,18 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.WATER, pos.east()))
-                    .thenExecute(() -> helper.setBlock(pos.east(), Blocks.DIRT))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.DIRT, pos.east()))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 10),
-                            new ResourceAmount(asResource(STONE), 15),
-                            new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount())
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.WATER, pos.east()))
+                .thenExecute(() -> helper.setBlock(pos.east(), Blocks.DIRT))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.DIRT, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 10),
+                    new ResourceAmount(asResource(STONE), 15),
+                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount())
+                ))
+                .thenSucceed();
         });
     }
 
@@ -230,18 +230,18 @@ public final class DestructorTest {
 
             // Assert
             sequence
-                    .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.WATER, pos.east()))
-                    .thenExecute(() -> helper.setBlock(pos.east(), Blocks.LAVA))
-                    .thenIdle(20)
-                    .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, pos.east()))
-                    .thenWaitUntil(storageContainsExactly(
-                            helper,
-                            pos,
-                            new ResourceAmount(asResource(DIRT), 10),
-                            new ResourceAmount(asResource(STONE), 15),
-                            new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount())
-                    ))
-                    .thenSucceed();
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.WATER, pos.east()))
+                .thenExecute(() -> helper.setBlock(pos.east(), Blocks.LAVA))
+                .thenIdle(20)
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 10),
+                    new ResourceAmount(asResource(STONE), 15),
+                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount())
+                ))
+                .thenSucceed();
         });
     }
 }

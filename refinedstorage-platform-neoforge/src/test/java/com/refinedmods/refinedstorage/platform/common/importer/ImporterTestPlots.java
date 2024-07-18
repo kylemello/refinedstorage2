@@ -1,5 +1,8 @@
 package com.refinedmods.refinedstorage.platform.common.importer;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.platform.common.iface.ExportedResourcesContainer;
+import com.refinedmods.refinedstorage.platform.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage.platform.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.platform.common.storage.ItemStorageVariant;
 
@@ -45,6 +48,18 @@ final class ImporterTestPlots {
         final var chestBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
         for (int i = 0; i < stacks.length; i++) {
             chestBlockEntity.setItem(i, stacks[i]);
+        }
+    }
+
+    static void prepareInterface(final GameTestHelper helper,
+                                 final BlockPos pos,
+                                 final ResourceAmount... resource) {
+        helper.setBlock(pos, RSBLOCKS.getInterface());
+        final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
+        final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
+
+        for (int i = 0; i < resource.length; i++) {
+            exportedResources.set(i, resource[i]);
         }
     }
 }

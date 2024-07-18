@@ -15,8 +15,10 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.RSITEMS;
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.asResource;
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.assertFluidPresent;
+import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.assertItemEntityPresentExactly;
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.networkIsAvailable;
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.storageContainsExactly;
@@ -100,11 +102,56 @@ public final class ConstructorTest {
             // Assert
             sequence
                 .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
-                .thenWaitUntil(() -> helper.assertItemEntityPresent(DIRT, pos.east(), 1))
+                .thenWaitUntil(() -> assertItemEntityPresentExactly(
+                    helper,
+                    DIRT.getDefaultInstance().copyWithCount(1),
+                    pos.east(),
+                    1
+                ))
                 .thenWaitUntil(storageContainsExactly(
                     helper,
                     pos,
                     new ResourceAmount(asResource(DIRT), 9),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
+        });
+    }
+
+    @GameTest(template = "empty_15x15")
+    public static void shouldDropItemWithStackUpgrade(final GameTestHelper helper) {
+        preparePlot(helper, Direction.EAST, (constructor, pos, sequence) -> {
+            // Arrange
+            sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
+                insert(helper, network, DIRT, 65);
+                insert(helper, network, STONE, 15);
+            }));
+
+            // Act
+            constructor.setDropItems(true);
+            constructor.setFilters(List.of(asResource(DIRT)));
+            constructor.addUpgradeItem(RSITEMS.getStackUpgrade());
+
+            // Assert
+            sequence
+                .thenIdle(9)
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
+                .thenExecute(() -> assertItemEntityPresentExactly(
+                    helper,
+                    DIRT.getDefaultInstance().copyWithCount(64),
+                    pos.east(),
+                    1
+                ))
+                .thenExecute(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 1),
+                    new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenIdle(9)
+                .thenExecute(storageContainsExactly(
+                    helper,
+                    pos,
                     new ResourceAmount(asResource(STONE), 15)
                 ))
                 .thenSucceed();

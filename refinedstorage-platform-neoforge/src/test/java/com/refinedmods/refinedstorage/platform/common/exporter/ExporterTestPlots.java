@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestSequence;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.function.TriConsumer;
 
 import static com.refinedmods.refinedstorage.platform.common.GameTestUtil.RSBLOCKS;
@@ -19,7 +19,7 @@ final class ExporterTestPlots {
     }
 
     static void preparePlot(final GameTestHelper helper,
-                            final boolean itemTest,
+                            final Block block,
                             final Direction direction,
                             final TriConsumer<ExporterBlockEntity, BlockPos, GameTestSequence> consumer) {
         helper.setBlock(ZERO.above(), RSBLOCKS.getCreativeController().getDefault());
@@ -30,7 +30,7 @@ final class ExporterTestPlots {
         );
         final BlockPos exporterPos = ZERO.above().above().above();
         helper.setBlock(exporterPos, RSBLOCKS.getExporter().getDefault().rotated(direction));
-        helper.setBlock(exporterPos.east(), itemTest ? Blocks.CHEST : Blocks.CAULDRON);
+        helper.setBlock(exporterPos.east(), block);
         consumer.accept(
             requireBlockEntity(helper, exporterPos, ExporterBlockEntity.class),
             exporterPos,
