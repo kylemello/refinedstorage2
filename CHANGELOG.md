@@ -9,11 +9,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
--  Ability to extract fluids from the Interface using an empty bucket or other empty fluid container.
+-   Ability to extract fluids from the Interface using an empty bucket or other empty fluid container.
+-   Support for the NeoForge config screen.
 
 ### Fixed
 
--  Fixed crash when trying to export fluids into an Interface on Fabric.
+-   Fixed crash when trying to export fluids into an Interface on Fabric.
+-   Fixed Relay configuration not being correct on NeoForge.
+-   Fixed crash in logs when trying to quick craft an empty result slot in the Crafting Grid.
 
 ## [2.0.0-milestone.4.4] - 2024-07-10
 

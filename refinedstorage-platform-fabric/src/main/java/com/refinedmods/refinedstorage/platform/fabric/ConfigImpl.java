@@ -285,7 +285,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.pl
 
         private String synchronizer = "";
 
-        private String resourceTypeId = "";
+        private String resourceType = "";
 
         private GridSortingDirection sortingDirection = GridSortingDirection.ASCENDING;
 
@@ -370,22 +370,22 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.pl
         }
 
         @Override
-        public Optional<ResourceLocation> getResourceTypeId() {
-            if (resourceTypeId.trim().isBlank()) {
+        public Optional<ResourceLocation> getResourceType() {
+            if (resourceType.trim().isBlank()) {
                 return Optional.empty();
             }
-            return Optional.of(resourceTypeId).map(ResourceLocation::tryParse);
+            return Optional.of(resourceType).map(ResourceLocation::tryParse);
         }
 
         @Override
-        public void setResourceTypeId(final ResourceLocation resourceTypeId) {
-            this.resourceTypeId = resourceTypeId.toString();
+        public void setResourceType(final ResourceLocation resourceType) {
+            this.resourceType = resourceType.toString();
             save();
         }
 
         @Override
         public void clearResourceType() {
-            this.resourceTypeId = "";
+            this.resourceType = "";
             save();
         }
 

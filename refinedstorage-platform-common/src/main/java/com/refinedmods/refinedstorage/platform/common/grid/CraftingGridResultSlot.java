@@ -23,11 +23,7 @@ class CraftingGridResultSlot extends ResultSlot {
         this.source = source;
     }
 
-    @SuppressWarnings("resource")
     public ItemStack onQuickCraft(final Player player) {
-        if (!hasItem() || player.level().isClientSide()) {
-            return ItemStack.EMPTY;
-        }
         final ItemStack singleResultStack = getItem().copy();
         final int maxCrafted = singleResultStack.getMaxStackSize();
         int crafted = 0;

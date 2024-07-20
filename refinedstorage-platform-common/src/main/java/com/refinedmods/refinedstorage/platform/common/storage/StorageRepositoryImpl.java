@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.core.CoreValidations;
 import com.refinedmods.refinedstorage.platform.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.platform.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage.platform.api.storage.StorageRepository;
-import com.refinedmods.refinedstorage.platform.common.support.AbstractSafeSavedData;
+import com.refinedmods.refinedstorage.platform.common.support.AbstractPlatformSavedData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 
-public class StorageRepositoryImpl extends AbstractSafeSavedData implements StorageRepository {
+public class StorageRepositoryImpl extends AbstractPlatformSavedData implements StorageRepository {
     public static final String NAME = "refinedstorage_storages";
 
     private final Codec<Map<UUID, SerializableStorage>> codec = Codec.unboundedMap(

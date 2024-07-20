@@ -82,7 +82,9 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     @SuppressWarnings("resource")
     public ItemStack quickMoveStack(final Player actor, final int slotIndex) {
         final Slot slot = getSlot(slotIndex);
-        if (!actor.level().isClientSide() && slot instanceof CraftingGridResultSlot resultSlot) {
+        if (!actor.level().isClientSide()
+            && slot instanceof CraftingGridResultSlot resultSlot
+            && resultSlot.hasItem()) {
             final ItemStack craftedStack = resultSlot.onQuickCraft(actor);
             source.acceptQuickCraft(actor, craftedStack);
             return ItemStack.EMPTY;

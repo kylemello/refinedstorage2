@@ -12,9 +12,11 @@ import com.refinedmods.refinedstorage.platform.common.support.render.FluidRender
 import com.refinedmods.refinedstorage.platform.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.platform.common.support.resource.ItemResource;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.KeyMapping;
@@ -23,6 +25,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -42,6 +45,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.BlockHitResult;
 
 public interface Platform {
@@ -115,4 +119,9 @@ public interface Platform {
     <T extends CustomPacketPayload> void sendPacketToServer(T packet);
 
     <T extends CustomPacketPayload> void sendPacketToClient(ServerPlayer player, T packet);
+
+    void saveSavedData(SavedData savedData,
+                       File file,
+                       HolderLookup.Provider provider,
+                       BiConsumer<File, HolderLookup.Provider> defaultSaveFunction);
 }
