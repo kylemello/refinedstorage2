@@ -9,8 +9,11 @@ import com.refinedmods.refinedstorage.platform.common.support.stretching.ScreenS
 
 import java.util.Optional;
 
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import static com.refinedmods.refinedstorage.platform.common.util.IdentifierUtil.createTranslationKey;
 
 public class ConfigImpl implements Config {
     private static final String ENERGY_USAGE = "energyUsage";
@@ -51,15 +54,18 @@ public class ConfigImpl implements Config {
 
     public ConfigImpl() {
         screenSize = builder
-            .comment("The screen size")
+            .comment(tooltipTranslation("screenSize"))
+            .translation(translationKey("screenSize"))
             .defineEnum("screenSize", ScreenSize.STRETCH);
         smoothScrolling = builder
-            .comment("Whether scrollbars should use smooth scrolling")
+            .comment(tooltipTranslation("smoothScrolling"))
+            .translation(translationKey("smoothScrolling"))
             .define("smoothScrolling", true);
         maxRowsStretch = builder
-            .comment("The maximum amount of rows that can be displayed when the screen size is stretched")
+            .comment(tooltipTranslation("maxRowsStretch"))
+            .translation(translationKey("maxRowsStretch"))
             .defineInRange("maxRowsStretch", 256, 3, 256);
-        cable = new SimpleEnergyUsageEntryImpl("cable", "Cable", DefaultEnergyUsage.CABLE);
+        cable = new SimpleEnergyUsageEntryImpl("cable", DefaultEnergyUsage.CABLE);
         controller = new ControllerEntryImpl();
         diskDrive = new DiskDriveEntryImpl();
         diskInterface = new DiskInterfaceEntryImpl();
@@ -67,51 +73,29 @@ public class ConfigImpl implements Config {
         craftingGrid = new CraftingGridEntryImpl();
         storageBlock = new StorageBlockEntryImpl();
         fluidStorageBlock = new FluidStorageBlockEntryImpl();
-        importer = new SimpleEnergyUsageEntryImpl("importer", "Importer", DefaultEnergyUsage.IMPORTER);
-        exporter = new SimpleEnergyUsageEntryImpl("exporter", "Exporter", DefaultEnergyUsage.EXPORTER);
+        importer = new SimpleEnergyUsageEntryImpl("importer", DefaultEnergyUsage.IMPORTER);
+        exporter = new SimpleEnergyUsageEntryImpl("exporter", DefaultEnergyUsage.EXPORTER);
         upgrade = new UpgradeEntryImpl();
-        iface = new SimpleEnergyUsageEntryImpl("interface", "Interface", DefaultEnergyUsage.INTERFACE);
-        externalStorage = new SimpleEnergyUsageEntryImpl(
-            "externalStorage",
-            "External Storage",
-            DefaultEnergyUsage.EXTERNAL_STORAGE
-        );
-        detector = new SimpleEnergyUsageEntryImpl("detector", "Detector", DefaultEnergyUsage.DETECTOR);
-        destructor = new SimpleEnergyUsageEntryImpl("destructor", "Destructor", DefaultEnergyUsage.DESTRUCTOR);
-        constructor = new SimpleEnergyUsageEntryImpl("constructor", "Constructor", DefaultEnergyUsage.CONSTRUCTOR);
+        iface = new SimpleEnergyUsageEntryImpl("interface", DefaultEnergyUsage.INTERFACE);
+        externalStorage = new SimpleEnergyUsageEntryImpl("externalStorage", DefaultEnergyUsage.EXTERNAL_STORAGE);
+        detector = new SimpleEnergyUsageEntryImpl("detector", DefaultEnergyUsage.DETECTOR);
+        destructor = new SimpleEnergyUsageEntryImpl("destructor", DefaultEnergyUsage.DESTRUCTOR);
+        constructor = new SimpleEnergyUsageEntryImpl("constructor", DefaultEnergyUsage.CONSTRUCTOR);
         wirelessGrid = new WirelessGridEntryImpl();
         wirelessTransmitter = new WirelessTransmitterEntryImpl();
-        storageMonitor = new SimpleEnergyUsageEntryImpl(
-            "storageMonitor",
-            "Storage Monitor",
-            DefaultEnergyUsage.STORAGE_MONITOR
-        );
-        networkReceiver = new SimpleEnergyUsageEntryImpl(
-            "networkReceiver",
-            "Network Receiver",
-            DefaultEnergyUsage.NETWORK_RECEIVER
-        );
+        storageMonitor = new SimpleEnergyUsageEntryImpl("storageMonitor", DefaultEnergyUsage.STORAGE_MONITOR);
+        networkReceiver = new SimpleEnergyUsageEntryImpl("networkReceiver", DefaultEnergyUsage.NETWORK_RECEIVER);
         networkTransmitter = new SimpleEnergyUsageEntryImpl(
             "networkTransmitter",
-            "Network Transmitter",
             DefaultEnergyUsage.NETWORK_TRANSMITTER
         );
         portableGrid = new PortableGridEntryImpl();
-        securityCard = new SimpleEnergyUsageEntryImpl(
-            "securityCard",
-            "Security Card",
-            DefaultEnergyUsage.SECURITY_CARD
-        );
+        securityCard = new SimpleEnergyUsageEntryImpl("securityCard", DefaultEnergyUsage.SECURITY_CARD);
         fallbackSecurityCard = new SimpleEnergyUsageEntryImpl(
             "fallbackSecurityCard",
-            "Fallback Security Card",
             DefaultEnergyUsage.FALLBACK_SECURITY_CARD
         );
-        securityManager = new SimpleEnergyUsageEntryImpl(
-            "securityManager",
-            "Security Manager",
-            DefaultEnergyUsage.SECURITY_MANAGER
-        );
+        securityManager = new SimpleEnergyUsageEntryImpl("securityManager", DefaultEnergyUsage.SECURITY_MANAGER);
         relay = new RelayEntryImpl();
         spec = builder.build();
     }
@@ -270,13 +254,23 @@ public class ConfigImpl implements Config {
         return relay;
     }
 
+    private static String translationKey(final String value) {
+        return createTranslationKey("text.autoconfig", "option." + value);
+    }
+
+    private static String tooltipTranslation(final String value) {
+        return I18n.get(createTranslationKey("text.autoconfig", "option." + value + ".tooltip"));
+    }
+
     private class SimpleEnergyUsageEntryImpl implements SimpleEnergyUsageEntry {
         private final ModConfigSpec.LongValue energyUsage;
 
-        SimpleEnergyUsageEntryImpl(final String path, final String readableName, final long defaultValue) {
-            builder.push(path);
+        SimpleEnergyUsageEntryImpl(final String path, final long defaultValue) {
+            final String correctedPath = "interface".equals(path) ? "iface" : path;
+            builder.translation(translationKey(correctedPath)).push(path);
             energyUsage = builder
-                .comment("The energy used by the " + readableName)
+                .comment(tooltipTranslation(correctedPath + "." + ENERGY_USAGE))
+                .translation(translationKey(correctedPath + "." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, defaultValue, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -291,8 +285,10 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue energyCapacity;
 
         private ControllerEntryImpl() {
-            builder.push("controller");
-            energyCapacity = builder.comment("The energy capacity of the Controller")
+            builder.translation(translationKey("controller")).push("controller");
+            energyCapacity = builder
+                .comment(tooltipTranslation("controller." + ENERGY_CAPACITY))
+                .translation(translationKey("controller." + ENERGY_CAPACITY))
                 .defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.CONTROLLER_CAPACITY, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -308,10 +304,14 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue energyUsagePerDisk;
 
         private DiskDriveEntryImpl() {
-            builder.push("diskDrive");
-            energyUsage = builder.comment("The energy used by the Disk Drive")
+            builder.translation(translationKey("diskDrive")).push("diskDrive");
+            energyUsage = builder
+                .comment(tooltipTranslation("diskDrive." + ENERGY_USAGE))
+                .translation(translationKey("diskDrive." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.DISK_DRIVE, 0, Long.MAX_VALUE);
-            energyUsagePerDisk = builder.comment("The energy used per disk")
+            energyUsagePerDisk = builder
+                .comment(tooltipTranslation("diskDrive.energyUsagePerDisk"))
+                .translation(translationKey("diskDrive.energyUsagePerDisk"))
                 .defineInRange("energyUsagePerDisk", DefaultEnergyUsage.DISK_DRIVE_PER_DISK, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -332,10 +332,14 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue energyUsagePerDisk;
 
         private DiskInterfaceEntryImpl() {
-            builder.push("diskInterface");
-            energyUsage = builder.comment("The energy used by the Disk Interface")
+            builder.translation(translationKey("diskInterface")).push("diskInterface");
+            energyUsage = builder
+                .comment(tooltipTranslation("diskInterface." + ENERGY_USAGE))
+                .translation(translationKey("diskInterface." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.DISK_INTERFACE, 0, Long.MAX_VALUE);
-            energyUsagePerDisk = builder.comment("The energy used per disk")
+            energyUsagePerDisk = builder
+                .comment(tooltipTranslation("diskInterface.energyUsagePerDisk"))
+                .translation(translationKey("diskInterface.energyUsagePerDisk"))
                 .defineInRange("energyUsagePerDisk", DefaultEnergyUsage.DISK_INTERFACE_PER_DISK, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -364,36 +368,46 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.EnumValue<GridSortingTypes> sortingType;
 
         GridEntryImpl() {
-            builder.push("grid");
+            builder.translation(translationKey("grid")).push("grid");
             largeFont = builder
-                .comment("Whether the Grid should use a large font for quantities")
+                .comment(tooltipTranslation("grid.largeFont"))
+                .translation(translationKey("grid.largeFont"))
                 .define("largeFont", false);
             preventSortingWhileShiftIsDown = builder
-                .comment("Whether the Grid should avoid sorting when shift is held down")
+                .comment(tooltipTranslation("grid.preventSortingWhileShiftIsDown"))
+                .translation(translationKey("grid.preventSortingWhileShiftIsDown"))
                 .define("preventSortingWhileShiftIsDown", true);
             detailedTooltip = builder
-                .comment("Whether the Grid should show a detailed tooltip")
+                .comment(tooltipTranslation("grid.detailedTooltip"))
+                .translation(translationKey("grid.detailedTooltip"))
                 .define("detailedTooltip", true);
             rememberSearchQuery = builder
-                .comment("Whether the search query should persist when closing and re-opening the Grid")
+                .comment(tooltipTranslation("grid.rememberSearchQuery"))
+                .translation(translationKey("grid.rememberSearchQuery"))
                 .define("rememberSearchQuery", false);
             energyUsage = builder
-                .comment("The energy used by the Grid")
+                .comment(tooltipTranslation("grid." + ENERGY_USAGE))
+                .translation(translationKey("grid." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.GRID, 0, Long.MAX_VALUE);
             autoSelected = builder
-                .comment("Whether the Grid search box is auto selected")
+                .comment(tooltipTranslation("grid.autoSelected"))
+                .translation(translationKey("grid.autoSelected"))
                 .define("autoSelected", false);
             synchronizer = builder
-                .comment("The synchronization type of the Grid search box")
+                .comment(tooltipTranslation("grid.synchronizer"))
+                .translation(translationKey("grid.synchronizer"))
                 .define("synchronizer", "");
             resourceType = builder
-                .comment("The resource type to be shown")
+                .comment(tooltipTranslation("grid.resourceType"))
+                .translation(translationKey("grid.resourceType"))
                 .define("resourceType", "");
             sortingDirection = builder
-                .comment("The sorting direction")
+                .comment(tooltipTranslation("grid.sortingDirection"))
+                .translation(translationKey("grid.sortingDirection"))
                 .defineEnum("sortingDirection", GridSortingDirection.ASCENDING);
             sortingType = builder
-                .comment("The sorting type")
+                .comment(tooltipTranslation("grid.sortingType"))
+                .translation(translationKey("grid.sortingType"))
                 .defineEnum("sortingType", GridSortingTypes.QUANTITY);
             builder.pop();
         }
@@ -472,7 +486,7 @@ public class ConfigImpl implements Config {
         }
 
         @Override
-        public Optional<ResourceLocation> getResourceTypeId() {
+        public Optional<ResourceLocation> getResourceType() {
             if (resourceType.get().trim().isBlank()) {
                 return Optional.empty();
             }
@@ -480,7 +494,7 @@ public class ConfigImpl implements Config {
         }
 
         @Override
-        public void setResourceTypeId(final ResourceLocation resourceTypeId) {
+        public void setResourceType(final ResourceLocation resourceTypeId) {
             this.resourceType.set(resourceTypeId.toString());
         }
 
@@ -495,12 +509,14 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.EnumValue<CraftingGridMatrixCloseBehavior> craftingMatrixCloseBehavior;
 
         CraftingGridEntryImpl() {
-            builder.push("craftingGrid");
+            builder.translation(translationKey("craftingGrid")).push("craftingGrid");
             energyUsage = builder
-                .comment("The energy used by the Crafting Grid")
+                .comment(tooltipTranslation("craftingGrid." + ENERGY_USAGE))
+                .translation(translationKey("craftingGrid." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.CRAFTING_GRID, 0, Long.MAX_VALUE);
             craftingMatrixCloseBehavior = builder
-                .comment("What should happen to the crafting matrix slots when closing the Crafting Grid")
+                .comment(tooltipTranslation("craftingGrid.craftingMatrixCloseBehavior"))
+                .translation(translationKey("craftingGrid.craftingMatrixCloseBehavior"))
                 .defineEnum("craftingMatrixCloseBehavior", CraftingGridMatrixCloseBehavior.NONE);
             builder.pop();
         }
@@ -521,24 +537,29 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue fourKEnergyUsage;
         private final ModConfigSpec.LongValue sixteenKEnergyUsage;
         private final ModConfigSpec.LongValue sixtyFourKEnergyUsage;
-        private final ModConfigSpec.LongValue creativeUsage;
+        private final ModConfigSpec.LongValue creativeEnergyUsage;
 
         StorageBlockEntryImpl() {
-            builder.push("storageBlock");
+            builder.translation(translationKey("storageBlock")).push("storageBlock");
             oneKEnergyUsage = builder
-                .comment("The energy used by the 1K Storage Block")
+                .comment(tooltipTranslation("storageBlock.oneKEnergyUsage"))
+                .translation(translationKey("storageBlock.oneKEnergyUsage"))
                 .defineInRange("1kEnergyUsage", DefaultEnergyUsage.ONE_K_STORAGE_BLOCK, 0, Long.MAX_VALUE);
             fourKEnergyUsage = builder
-                .comment("The energy used by the 4K Storage Block")
+                .comment(tooltipTranslation("storageBlock.fourKEnergyUsage"))
+                .translation(translationKey("storageBlock.fourKEnergyUsage"))
                 .defineInRange("4kEnergyUsage", DefaultEnergyUsage.FOUR_K_STORAGE_BLOCK, 0, Long.MAX_VALUE);
             sixteenKEnergyUsage = builder
-                .comment("The energy used by the 16K Storage Block")
+                .comment(tooltipTranslation("storageBlock.sixteenKEnergyUsage"))
+                .translation(translationKey("storageBlock.sixteenKEnergyUsage"))
                 .defineInRange("16kEnergyUsage", DefaultEnergyUsage.SIXTEEN_K_STORAGE_BLOCK, 0, Long.MAX_VALUE);
             sixtyFourKEnergyUsage = builder
-                .comment("The energy used by the 64K Storage Block")
+                .comment(tooltipTranslation("storageBlock.sixtyFourKEnergyUsage"))
+                .translation(translationKey("storageBlock.sixtyFourKEnergyUsage"))
                 .defineInRange("64kEnergyUsage", DefaultEnergyUsage.SIXTY_FOUR_K_STORAGE_BLOCK, 0, Long.MAX_VALUE);
-            creativeUsage = builder
-                .comment("The energy used by the Creative Storage Block")
+            creativeEnergyUsage = builder
+                .comment(tooltipTranslation("storageBlock.creativeEnergyUsage"))
+                .translation(translationKey("storageBlock.creativeEnergyUsage"))
                 .defineInRange("creativeEnergyUsage", DefaultEnergyUsage.CREATIVE_STORAGE_BLOCK, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -565,7 +586,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public long getCreativeEnergyUsage() {
-            return creativeUsage.get();
+            return creativeEnergyUsage.get();
         }
     }
 
@@ -574,12 +595,13 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue twoHundredFiftySixBEnergyUsage;
         private final ModConfigSpec.LongValue thousandTwentyFourBEnergyUsage;
         private final ModConfigSpec.LongValue fourThousandNinetySixBEnergyUsage;
-        private final ModConfigSpec.LongValue creativeUsage;
+        private final ModConfigSpec.LongValue creativeEnergyUsage;
 
         FluidStorageBlockEntryImpl() {
-            builder.push("fluidStorageBlock");
+            builder.translation(translationKey("fluidStorageBlock")).push("fluidStorageBlock");
             sixtyFourBEnergyUsage = builder
-                .comment("The energy used by the 64B Fluid Storage Block")
+                .comment(tooltipTranslation("fluidStorageBlock.sixtyFourBEnergyUsage"))
+                .translation(translationKey("fluidStorageBlock.sixtyFourBEnergyUsage"))
                 .defineInRange(
                     "64bEnergyUsage",
                     DefaultEnergyUsage.SIXTY_FOUR_B_FLUID_STORAGE_BLOCK,
@@ -587,7 +609,8 @@ public class ConfigImpl implements Config {
                     Long.MAX_VALUE
                 );
             twoHundredFiftySixBEnergyUsage = builder
-                .comment("The energy used by the 256B Fluid Storage Block")
+                .comment(tooltipTranslation("fluidStorageBlock.twoHundredFiftySixBEnergyUsage"))
+                .translation(translationKey("fluidStorageBlock.twoHundredFiftySixBEnergyUsage"))
                 .defineInRange(
                     "256bEnergyUsage",
                     DefaultEnergyUsage.TWO_HUNDRED_FIFTY_SIX_B_FLUID_STORAGE_BLOCK,
@@ -595,7 +618,8 @@ public class ConfigImpl implements Config {
                     Long.MAX_VALUE
                 );
             thousandTwentyFourBEnergyUsage = builder
-                .comment("The energy used by the 1024B Fluid Storage Block")
+                .comment(tooltipTranslation("fluidStorageBlock.thousandTwentyFourBEnergyUsage"))
+                .translation(translationKey("fluidStorageBlock.thousandTwentyFourBEnergyUsage"))
                 .defineInRange(
                     "1024bEnergyUsage",
                     DefaultEnergyUsage.THOUSAND_TWENTY_FOUR_B_FLUID_STORAGE_BLOCK,
@@ -603,15 +627,17 @@ public class ConfigImpl implements Config {
                     Long.MAX_VALUE
                 );
             fourThousandNinetySixBEnergyUsage = builder
-                .comment("The energy used by the 4096B Fluid Storage Block")
+                .comment(tooltipTranslation("fluidStorageBlock.fourThousandNinetySixBEnergyUsage"))
+                .translation(translationKey("fluidStorageBlock.fourThousandNinetySixBEnergyUsage"))
                 .defineInRange(
                     "4096bEnergyUsage",
                     DefaultEnergyUsage.FOUR_THOUSAND_NINETY_SIX_B_FLUID_STORAGE_BLOCK,
                     0,
                     Long.MAX_VALUE
                 );
-            creativeUsage = builder
-                .comment("The energy used by the Creative Fluid Storage Block")
+            creativeEnergyUsage = builder
+                .comment(tooltipTranslation("fluidStorageBlock.creativeEnergyUsage"))
+                .translation(translationKey("fluidStorageBlock.creativeEnergyUsage"))
                 .defineInRange(
                     "creativeEnergyUsage",
                     DefaultEnergyUsage.CREATIVE_FLUID_STORAGE_BLOCK,
@@ -643,7 +669,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public long getCreativeEnergyUsage() {
-            return creativeUsage.get();
+            return creativeEnergyUsage.get();
         }
     }
 
@@ -660,33 +686,42 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.IntValue rangeUpgradeRange;
 
         UpgradeEntryImpl() {
-            builder.push("upgrade");
+            builder.translation(translationKey("upgrade")).push("upgrade");
             speedUpgradeEnergyUsage = builder
-                .comment("The additional energy used per Speed Upgrade")
+                .comment(tooltipTranslation("upgrade.speedUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.speedUpgradeEnergyUsage"))
                 .defineInRange("speedUpgradeEnergyUsage", DefaultEnergyUsage.SPEED_UPGRADE, 0, Long.MAX_VALUE);
             stackUpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Stack Upgrade")
+                .comment(tooltipTranslation("upgrade.stackUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.stackUpgradeEnergyUsage"))
                 .defineInRange("stackUpgradeEnergyUsage", DefaultEnergyUsage.STACK_UPGRADE, 0, Long.MAX_VALUE);
             fortune1UpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Fortune 1 Upgrade")
+                .comment(tooltipTranslation("upgrade.fortune1UpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.fortune1UpgradeEnergyUsage"))
                 .defineInRange("fortune1UpgradeEnergyUsage", DefaultEnergyUsage.FORTUNE_1_UPGRADE, 0, Long.MAX_VALUE);
             fortune2UpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Fortune 2 Upgrade")
+                .comment(tooltipTranslation("upgrade.fortune2UpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.fortune2UpgradeEnergyUsage"))
                 .defineInRange("fortune2UpgradeEnergyUsage", DefaultEnergyUsage.FORTUNE_2_UPGRADE, 0, Long.MAX_VALUE);
             fortune3UpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Fortune 3 Upgrade")
+                .comment(tooltipTranslation("upgrade.fortune3UpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.fortune3UpgradeEnergyUsage"))
                 .defineInRange("fortune3UpgradeEnergyUsage", DefaultEnergyUsage.FORTUNE_3_UPGRADE, 0, Long.MAX_VALUE);
             silkTouchUpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Silk Touch Upgrade")
+                .comment(tooltipTranslation("upgrade.silkTouchUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.silkTouchUpgradeEnergyUsage"))
                 .defineInRange("silkTouchUpgradeEnergyUsage", DefaultEnergyUsage.SILK_TOUCH_UPGRADE, 0, Long.MAX_VALUE);
             regulatorUpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Regulator Upgrade")
+                .comment(tooltipTranslation("upgrade.regulatorUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.regulatorUpgradeEnergyUsage"))
                 .defineInRange("regulatorUpgradeEnergyUsage", DefaultEnergyUsage.REGULATOR_UPGRADE, 0, Long.MAX_VALUE);
             rangeUpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Range Upgrade")
+                .comment(tooltipTranslation("upgrade.rangeUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.rangeUpgradeEnergyUsage"))
                 .defineInRange("rangeUpgradeEnergyUsage", DefaultEnergyUsage.RANGE_UPGRADE, 0, Long.MAX_VALUE);
             creativeRangeUpgradeEnergyUsage = builder
-                .comment("The additional energy used by the Creative Range Upgrade")
+                .comment(tooltipTranslation("upgrade.creativeRangeUpgradeEnergyUsage"))
+                .translation(translationKey("upgrade.creativeRangeUpgradeEnergyUsage"))
                 .defineInRange(
                     "creativeRangeUpgradeEnergyUsage",
                     DefaultEnergyUsage.CREATIVE_RANGE_UPGRADE,
@@ -694,7 +729,8 @@ public class ConfigImpl implements Config {
                     Long.MAX_VALUE
                 );
             rangeUpgradeRange = builder
-                .comment("The additional range by the Range Upgrade")
+                .comment(tooltipTranslation("upgrade.rangeUpgradeRange"))
+                .translation(translationKey("upgrade.rangeUpgradeRange"))
                 .defineInRange("rangeUpgradeRange", DefaultEnergyUsage.RANGE_UPGRADE_RANGE, 0, Integer.MAX_VALUE);
             builder.pop();
         }
@@ -757,14 +793,22 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue insertEnergyUsage;
 
         WirelessGridEntryImpl() {
-            builder.push("wirelessGrid");
-            energyCapacity = builder.comment("The energy capacity of the Wireless Grid")
+            builder.translation(translationKey("wirelessGrid")).push("wirelessGrid");
+            energyCapacity = builder
+                .comment(tooltipTranslation("wirelessGrid." + ENERGY_CAPACITY))
+                .translation(translationKey("wirelessGrid." + ENERGY_CAPACITY))
                 .defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.WIRELESS_GRID_CAPACITY, 0, Long.MAX_VALUE);
-            openEnergyUsage = builder.comment("The energy used by the Wireless Grid to open")
+            openEnergyUsage = builder
+                .comment(tooltipTranslation("wirelessGrid.openEnergyUsage"))
+                .translation(translationKey("wirelessGrid.openEnergyUsage"))
                 .defineInRange("openEnergyUsage", DefaultEnergyUsage.WIRELESS_GRID_OPEN, 0, Long.MAX_VALUE);
-            extractEnergyUsage = builder.comment("The energy used by the Wireless Grid to extract resources")
+            extractEnergyUsage = builder
+                .comment(tooltipTranslation("wirelessGrid.extractEnergyUsage"))
+                .translation(translationKey("wirelessGrid.extractEnergyUsage"))
                 .defineInRange("extractEnergyUsage", DefaultEnergyUsage.WIRELESS_GRID_EXTRACT, 0, Long.MAX_VALUE);
-            insertEnergyUsage = builder.comment("The energy used by the Wireless Grid to insert resources")
+            insertEnergyUsage = builder
+                .comment(tooltipTranslation("wirelessGrid.insertEnergyUsage"))
+                .translation(translationKey("wirelessGrid.insertEnergyUsage"))
                 .defineInRange("insertEnergyUsage", DefaultEnergyUsage.WIRELESS_GRID_INSERT, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -791,13 +835,15 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.IntValue baseRange;
 
         WirelessTransmitterEntryImpl() {
-            builder.push("wirelessTransmitter");
-
-            energyUsage = builder.comment("The energy used by the Wireless Transmitter")
+            builder.translation(translationKey("wirelessTransmitter")).push("wirelessTransmitter");
+            energyUsage = builder
+                .comment(tooltipTranslation("wirelessTransmitter." + ENERGY_USAGE))
+                .translation(translationKey("wirelessTransmitter." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.WIRELESS_TRANSMITTER, 0, Long.MAX_VALUE);
-            baseRange = builder.comment("The base range of the Wireless Transmitter")
+            baseRange = builder
+                .comment(tooltipTranslation("wirelessTransmitter.baseRange"))
+                .translation(translationKey("wirelessTransmitter.baseRange"))
                 .defineInRange("baseRange", DefaultEnergyUsage.WIRELESS_TRANSMITTER_BASE_RANGE, 0, Integer.MAX_VALUE);
-
             builder.pop();
         }
 
@@ -817,14 +863,22 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue insertEnergyUsage;
 
         PortableGridEntryImpl() {
-            builder.push("portableGrid");
-            energyCapacity = builder.comment("The energy capacity of the Portable Grid")
+            builder.translation(translationKey("portableGrid")).push("portableGrid");
+            energyCapacity = builder
+                .comment(tooltipTranslation("portableGrid." + ENERGY_CAPACITY))
+                .translation(translationKey("portableGrid." + ENERGY_CAPACITY))
                 .defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.PORTABLE_GRID_CAPACITY, 0, Long.MAX_VALUE);
-            openEnergyUsage = builder.comment("The energy used by the Portable Grid to open")
+            openEnergyUsage = builder
+                .comment(tooltipTranslation("portableGrid.openEnergyUsage"))
+                .translation(translationKey("portableGrid.openEnergyUsage"))
                 .defineInRange("openEnergyUsage", DefaultEnergyUsage.PORTABLE_GRID_OPEN, 0, Long.MAX_VALUE);
-            extractEnergyUsage = builder.comment("The energy used by the Portable Grid to extract resources")
+            extractEnergyUsage = builder
+                .comment(tooltipTranslation("portableGrid.extractEnergyUsage"))
+                .translation(translationKey("portableGrid.extractEnergyUsage"))
                 .defineInRange("extractEnergyUsage", DefaultEnergyUsage.PORTABLE_GRID_EXTRACT, 0, Long.MAX_VALUE);
-            insertEnergyUsage = builder.comment("The energy used by the Portable Grid to insert resources")
+            insertEnergyUsage = builder
+                .comment(tooltipTranslation("portableGrid.insertEnergyUsage"))
+                .translation(translationKey("portableGrid.insertEnergyUsage"))
                 .defineInRange("insertEnergyUsage", DefaultEnergyUsage.PORTABLE_GRID_INSERT, 0, Long.MAX_VALUE);
             builder.pop();
         }
@@ -851,12 +905,15 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.LongValue outputNetworkEnergyUsage;
 
         RelayEntryImpl() {
-            builder.push("relay");
-            inputNetworkEnergyUsage = builder.comment("The energy used by the Relay in the input network")
-                .defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.RELAY_INPUT_NETWORK, 8, Long.MAX_VALUE);
-            outputNetworkEnergyUsage = builder.comment(
-                "The energy used by the Relay in the output network (if not in pass through mode)"
-            ).defineInRange(ENERGY_CAPACITY, DefaultEnergyUsage.RELAY_OUTPUT_NETWORK, 8, Long.MAX_VALUE);
+            builder.translation(translationKey("relay")).push("relay");
+            inputNetworkEnergyUsage = builder
+                .comment(tooltipTranslation("relay.inputNetworkEnergyUsage"))
+                .translation(translationKey("relay.inputNetworkEnergyUsage"))
+                .defineInRange("inputNetworkEnergyUsage", DefaultEnergyUsage.RELAY_INPUT_NETWORK, 8, Long.MAX_VALUE);
+            outputNetworkEnergyUsage = builder
+                .comment(tooltipTranslation("relay.outputNetworkEnergyUsage"))
+                .translation(translationKey("relay.outputNetworkEnergyUsage"))
+                .defineInRange("outputNetworkEnergyUsage", DefaultEnergyUsage.RELAY_OUTPUT_NETWORK, 8, Long.MAX_VALUE);
             builder.pop();
         }
 

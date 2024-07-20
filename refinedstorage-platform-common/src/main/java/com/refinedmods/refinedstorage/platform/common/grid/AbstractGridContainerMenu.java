@@ -141,7 +141,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         return gridResource -> Platform.INSTANCE
             .getConfig()
             .getGrid()
-            .getResourceTypeId()
+            .getResourceType()
             .flatMap(resourceTypeId -> PlatformApi.INSTANCE
                 .getResourceTypeRegistry()
                 .get(resourceTypeId)
@@ -323,7 +323,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         return Platform.INSTANCE
             .getConfig()
             .getGrid()
-            .getResourceTypeId()
+            .getResourceType()
             .flatMap(id -> PlatformApi.INSTANCE.getResourceTypeRegistry().get(id))
             .orElse(null);
     }
@@ -358,7 +358,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         if (newResourceType == null) {
             config.clearResourceType();
         } else {
-            registry.getId(newResourceType).ifPresent(config::setResourceTypeId);
+            registry.getId(newResourceType).ifPresent(config::setResourceType);
         }
         this.resourceTypeFilter = newResourceType;
         this.view.sort();

@@ -101,9 +101,9 @@ public interface Config {
 
         void setSortingType(GridSortingTypes sortingType);
 
-        Optional<ResourceLocation> getResourceTypeId();
+        Optional<ResourceLocation> getResourceType();
 
-        void setResourceTypeId(ResourceLocation resourceTypeId);
+        void setResourceType(ResourceLocation resourceTypeId);
 
         void clearResourceType();
     }
