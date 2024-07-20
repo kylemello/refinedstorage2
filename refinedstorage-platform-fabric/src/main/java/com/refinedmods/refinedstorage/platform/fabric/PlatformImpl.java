@@ -22,9 +22,16 @@ import com.refinedmods.refinedstorage.platform.fabric.support.energy.EnergyStora
 import com.refinedmods.refinedstorage.platform.fabric.support.render.FluidVariantFluidRenderer;
 import com.refinedmods.refinedstorage.platform.fabric.util.SimpleSingleStackStorage;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -51,7 +58,11 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -82,14 +93,19 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage.platform.fabric.support.resource.VariantUtil.ofFluidVariant;
 import static com.refinedmods.refinedstorage.platform.fabric.support.resource.VariantUtil.toFluidVariant;
 import static com.refinedmods.refinedstorage.platform.fabric.support.resource.VariantUtil.toItemVariant;
 
 public final class PlatformImpl extends AbstractPlatform {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformImpl.class);
+
     public PlatformImpl() {
         super(new MenuOpenerImpl(), new FluidVariantFluidRenderer(), ItemGridInsertionStrategy::new);
     }
@@ -390,5 +406,37 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
         ServerPlayNetworking.send(player, packet);
+    }
+
+    @Override
+    public void saveSavedData(final SavedData savedData,
+                              final File file,
+                              final HolderLookup.Provider provider,
+                              final BiConsumer<File, HolderLookup.Provider> defaultSaveFunction) {
+        if (!savedData.isDirty()) {
+            return;
+        }
+        final var targetPath = file.toPath().toAbsolutePath();
+        final var tempFile = targetPath.getParent().resolve(file.getName() + ".temp");
+        final CompoundTag compoundTag = new CompoundTag();
+        compoundTag.put("data", savedData.save(new CompoundTag(), provider));
+        NbtUtils.addCurrentDataVersion(compoundTag);
+        try {
+            doSave(compoundTag, tempFile, targetPath);
+        } catch (final IOException e) {
+            LOGGER.error("Could not save data", e);
+        }
+        savedData.setDirty(false);
+    }
+
+    private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {
+        // Write to temp file first.
+        NbtIo.writeCompressed(compoundTag, tempFile);
+        // Try atomic move
+        try {
+            Files.move(tempFile, targetPath, StandardCopyOption.ATOMIC_MOVE);
+        } catch (final AtomicMoveNotSupportedException ignored) {
+            Files.move(tempFile, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 }

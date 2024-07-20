@@ -19,10 +19,12 @@ import com.refinedmods.refinedstorage.platform.neoforge.support.containermenu.Me
 import com.refinedmods.refinedstorage.platform.neoforge.support.energy.EnergyStorageAdapter;
 import com.refinedmods.refinedstorage.platform.neoforge.support.render.FluidStackFluidRenderer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -34,6 +36,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -57,6 +60,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModContainer;
@@ -336,5 +340,13 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
         PacketDistributor.sendToPlayer(player, packet);
+    }
+
+    @Override
+    public void saveSavedData(final SavedData savedData,
+                              final File file,
+                              final HolderLookup.Provider provider,
+                              final BiConsumer<File, HolderLookup.Provider> defaultSaveFunction) {
+        defaultSaveFunction.accept(file, provider);
     }
 }
