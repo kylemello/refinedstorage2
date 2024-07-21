@@ -228,7 +228,7 @@ class StorageChannelImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
+    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void shouldBeAbleToRetrieveTrackedResource() {
         // Arrange
         final Storage storage = new TrackedStorageImpl(

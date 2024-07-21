@@ -15,6 +15,9 @@ subprojects {
 
 project.extensions.getByType<SonarExtension>().apply {
     properties {
-        property("sonar.coverage.exclusions", "refinedstorage-platform-neoforge/**/*,refinedstorage-platform-fabric/**/*,refinedstorage-platform-common/**/*,refinedstorage-platform-api/**/*")
+        property(
+            "sonar.coverage.exclusions",
+            "refinedstorage-neoforge/**/*,refinedstorage-fabric/**/*,refinedstorage-common/**/*,refinedstorage-common-api/**/*"
+        )
     }
 }
