@@ -32,7 +32,7 @@ class ItemPickupDestructorStrategy implements DestructorStrategy {
     public boolean apply(final Filter filter,
                          final Actor actor,
                          final Supplier<Network> networkSupplier,
-                         final Player actingPlayer) {
+                         final Player player) {
         if (!level.isLoaded(pos)) {
             return false;
         }

@@ -22,9 +22,9 @@ class CompositeDestructorStrategy implements DestructorStrategy {
     public boolean apply(final Filter filter,
                          final Actor actor,
                          final Supplier<Network> networkSupplier,
-                         final Player actingPlayer) {
+                         final Player player) {
         for (final DestructorStrategy strategy : strategies) {
-            if (strategy.apply(filter, actor, networkSupplier, actingPlayer)) {
+            if (strategy.apply(filter, actor, networkSupplier, player)) {
                 return true;
             }
         }

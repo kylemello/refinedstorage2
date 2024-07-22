@@ -34,7 +34,7 @@ abstract class AbstractItemConstructorStrategy implements ConstructorStrategy {
     public final boolean apply(
         final ResourceKey resource,
         final Actor actor,
-        final Player actingPlayer,
+        final Player player,
         final Network network
     ) {
         if (!level.isLoaded(pos)) {
@@ -50,7 +50,7 @@ abstract class AbstractItemConstructorStrategy implements ConstructorStrategy {
             return false;
         }
         final ItemStack itemStack = itemResource.toItemStack(extractedAmount);
-        final boolean success = apply(itemStack, actor, actingPlayer);
+        final boolean success = apply(itemStack, actor, player);
         if (success) {
             storageChannel.extract(itemResource, extractedAmount, Action.EXECUTE, actor);
         }

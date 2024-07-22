@@ -30,7 +30,7 @@ public class PlaceFluidConstructorStrategy implements ConstructorStrategy {
     public boolean apply(
         final ResourceKey resource,
         final Actor actor,
-        final Player actingPlayer,
+        final Player player,
         final Network network
     ) {
         if (!level.isLoaded(pos)) {
@@ -50,7 +50,7 @@ public class PlaceFluidConstructorStrategy implements ConstructorStrategy {
         if (bucketAmount != extractedAmount) {
             return false;
         }
-        final boolean success = Platform.INSTANCE.placeFluid(level, pos, direction, actingPlayer, fluidResource);
+        final boolean success = Platform.INSTANCE.placeFluid(level, pos, direction, player, fluidResource);
         if (success) {
             storageChannel.extract(fluidResource, bucketAmount, Action.EXECUTE, actor);
         }

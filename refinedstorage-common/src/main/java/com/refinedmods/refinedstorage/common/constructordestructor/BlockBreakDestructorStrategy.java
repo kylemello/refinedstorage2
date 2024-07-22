@@ -45,7 +45,7 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
     public boolean apply(final Filter filter,
                          final Actor actor,
                          final Supplier<Network> networkSupplier,
-                         final Player actingPlayer) {
+                         final Player player) {
         if (!level.isLoaded(pos)) {
             return false;
         }
@@ -53,8 +53,8 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
         final Block block = blockState.getBlock();
         if (isFastExit(blockState)
             || blockState.getDestroySpeed(level, pos) == -1.0
-            || !isAllowed(actingPlayer, filter, blockState, block)
-            || !Platform.INSTANCE.canBreakBlock(level, pos, blockState, actingPlayer)) {
+            || !isAllowed(player, filter, blockState, block)
+            || !Platform.INSTANCE.canBreakBlock(level, pos, blockState, player)) {
             return false;
         }
         final List<ItemStack> drops = Block.getDrops(
@@ -62,13 +62,13 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
             level,
             pos,
             level.getBlockEntity(pos),
-            actingPlayer,
+            player,
             tool
         );
         if (!insertDrops(actor, drops, getStorageChannel(networkSupplier), Action.SIMULATE)) {
             return false;
         }
-        block.playerWillDestroy(level, pos, blockState, actingPlayer);
+        block.playerWillDestroy(level, pos, blockState, player);
         level.removeBlock(pos, false);
         insertDrops(actor, drops, getStorageChannel(networkSupplier), Action.EXECUTE);
         return true;
