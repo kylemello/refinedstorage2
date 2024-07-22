@@ -94,7 +94,7 @@ class GridViewImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
+    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void shouldLoadResourcesAndRetrieveTrackedResourcesProperly() {
         // Arrange
         final GridView view = viewBuilder
@@ -347,7 +347,7 @@ class GridViewImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug
+    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void shouldUpdateTrackedResourceAfterReceivingChange() {
         // Act
         final GridView view = viewBuilder.build();

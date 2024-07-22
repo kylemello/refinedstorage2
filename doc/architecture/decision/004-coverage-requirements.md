@@ -13,14 +13,10 @@ Since we are writing more unit tests with our API modules [[1]](#1) we need to e
 ## Decision
 
 We will differentiate between platform modules [[2]](#2) and API modules [[1]](#1). The reason for this is that it's
-difficult to test
-Minecraft code properly.
+difficult to test Minecraft code properly. The platform modules will be tested by Minecraft gametests.
 
 Luckily, since our most important (business-logic) code resides in the API modules [[1]](#1) we can put
 our testing focus there and establish coverage requirements.
-
-However, sometimes it is still advised to write a test for platform code, even if there are no coverage requirements for
-it. For that reason, the `refinedstorage-platform-test` module exists, to provide helpers to deal with Minecraft code.
 
 ## Consequences
 

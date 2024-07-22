@@ -40,4 +40,5 @@ Implementation provided in [[1]](#1).
 
 ## References
 
-- <a id="1">[1]</a> See [implementation](https://github.com/refinedmods/refinedstorage2/commit/1fd63d17417e387d427b2e018a93df89e31edc0f)
+- <a id="1">[1]</a>
+  See [implementation](https://github.com/refinedmods/refinedstorage2/commit/1fd63d17417e387d427b2e018a93df89e31edc0f)

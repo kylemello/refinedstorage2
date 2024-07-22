@@ -23,7 +23,8 @@ We choose [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### How do we store versioning information?
 
-The code doesn't contain version metadata: `build.gradle` specifies a version of `0.0.0` (via [Refined Architect](https://github.com/refinedmods/refinedarchitect)).
+The code doesn't contain version metadata: `build.gradle` specifies a version of `0.0.0` (
+via [Refined Architect](https://github.com/refinedmods/refinedarchitect)).
 The versioning information is entirely contained in Git by using tags.
 
 ### When do we determine the next version number?
