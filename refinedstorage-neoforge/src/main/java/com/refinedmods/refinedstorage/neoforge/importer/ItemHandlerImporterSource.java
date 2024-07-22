@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.neoforge.storage.CapabilityCache;
 import com.refinedmods.refinedstorage.neoforge.storage.ItemHandlerExtractableStorage;
 import com.refinedmods.refinedstorage.neoforge.storage.ItemHandlerInsertableStorage;

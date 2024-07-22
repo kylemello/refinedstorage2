@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import net.neoforged.neoforge.fluids.FluidStack;

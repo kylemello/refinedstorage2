@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.api.exporter;
+package com.refinedmods.refinedstorage.common.api.support.network;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
@@ -14,10 +14,10 @@ public interface AmountOverride {
     /**
      * Modifies the requested amount to a new amount.
      *
-     * @param resource      the resource
-     * @param amount        the original requested amount
-     * @param currentAmount the current amount present in the source
+     * @param resource              the resource
+     * @param desiredAmount         the original requested amount
+     * @param currentAmountSupplier the current amount present in the source
      * @return the new requested amount, may be 0
      */
-    long overrideAmount(ResourceKey resource, long amount, LongSupplier currentAmount);
+    long overrideAmount(ResourceKey resource, long desiredAmount, LongSupplier currentAmountSupplier);
 }

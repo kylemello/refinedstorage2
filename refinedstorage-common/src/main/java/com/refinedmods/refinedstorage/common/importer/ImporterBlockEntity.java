@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -150,13 +150,13 @@ public class ImporterBlockEntity
     @Override
     public long overrideAmount(final ResourceKey resource,
                                final long amount,
-                               final LongSupplier currentAmount) {
+                               final LongSupplier currentAmountSupplier) {
         if (!upgradeContainer.has(Items.INSTANCE.getRegulatorUpgrade())) {
             return amount;
         }
         return upgradeContainer.getRegulatedAmount(resource)
             .stream()
-            .map(desiredAmount -> getAmountStillAvailableForImport(amount, currentAmount.getAsLong(), desiredAmount))
+            .map(desiredAmount -> getAmountStillAvailableForImport(amount, currentAmountSupplier.getAsLong(), desiredAmount))
             .findFirst()
             .orElse(amount);
     }

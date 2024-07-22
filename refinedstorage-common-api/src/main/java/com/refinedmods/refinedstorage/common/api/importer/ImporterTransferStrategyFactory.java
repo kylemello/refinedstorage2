@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.api.importer;
 
 import com.refinedmods.refinedstorage.api.network.node.importer.ImporterTransferStrategy;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeState;
 
 import net.minecraft.core.BlockPos;

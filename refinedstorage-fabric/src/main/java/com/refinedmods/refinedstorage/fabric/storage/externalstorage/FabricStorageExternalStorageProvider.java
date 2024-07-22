@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.external.ExternalStorageProvider;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.fabric.storage.FabricStorageExtractableStorage;
 import com.refinedmods.refinedstorage.fabric.storage.FabricStorageInsertableStorage;
 

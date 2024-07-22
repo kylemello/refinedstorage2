@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import net.minecraft.world.item.ItemStack;
@@ -26,20 +26,17 @@ public class ItemHandlerInsertableStorage implements InsertableStorage {
         if (!(resource instanceof ItemResource itemResource)) {
             return 0L;
         }
-        return capabilityCache
-            .getItemHandler()
-            .map(itemHandler -> {
-                final long correctedAmount = amountOverride.overrideAmount(
-                    resource,
-                    amount,
-                    () -> ForgeHandlerUtil.getCurrentAmount(itemHandler, itemResource.toItemStack())
-                );
-                if (correctedAmount == 0) {
-                    return 0L;
-                }
-                return doInsert(itemResource, correctedAmount, action, itemHandler);
-            })
-            .orElse(0L);
+        return capabilityCache.getItemHandler().map(itemHandler -> {
+            final long correctedAmount = amountOverride.overrideAmount(
+                resource,
+                amount,
+                () -> ForgeHandlerUtil.getCurrentAmount(itemHandler, itemResource.toItemStack())
+            );
+            if (correctedAmount == 0) {
+                return 0L;
+            }
+            return doInsert(itemResource, correctedAmount, action, itemHandler);
+        }).orElse(0L);
     }
 
     private long doInsert(final ItemResource resource,
