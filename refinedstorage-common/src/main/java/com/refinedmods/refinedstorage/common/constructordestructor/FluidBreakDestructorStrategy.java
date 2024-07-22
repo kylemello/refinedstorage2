@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
@@ -59,7 +59,7 @@ class FluidBreakDestructorStrategy implements DestructorStrategy {
                               final LiquidBlock liquidBlock,
                               final FluidResource fluidResource) {
         final long amount = Platform.INSTANCE.getBucketAmount();
-        final long inserted = getStorageChannel(networkSupplier).insert(fluidResource, amount, Action.SIMULATE, actor);
+        final long inserted = getRootStorage(networkSupplier).insert(fluidResource, amount, Action.SIMULATE, actor);
         if (inserted != amount) {
             return false;
         }
@@ -68,11 +68,11 @@ class FluidBreakDestructorStrategy implements DestructorStrategy {
             sound -> level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F)
         );
         level.gameEvent(actingPlayer, GameEvent.FLUID_PICKUP, pos);
-        getStorageChannel(networkSupplier).insert(fluidResource, amount, Action.EXECUTE, actor);
+        getRootStorage(networkSupplier).insert(fluidResource, amount, Action.EXECUTE, actor);
         return true;
     }
 
-    private StorageChannel getStorageChannel(final Supplier<Network> networkSupplier) {
+    private RootStorage getRootStorage(final Supplier<Network> networkSupplier) {
         return networkSupplier.get().getComponent(StorageNetworkComponent.class);
     }
 }

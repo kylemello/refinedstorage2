@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.grid;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -27,29 +27,29 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     }
 
     private void addAvailableItems(final CraftingMatrix craftingMatrix) {
-        blockEntity.getStorageChannel().ifPresent(storageChannel -> {
+        blockEntity.getRootStorage().ifPresent(rootStorage -> {
             for (int i = 0; i < craftingMatrix.getContainerSize(); ++i) {
-                addAvailableItem(craftingMatrix, storageChannel, i);
+                addAvailableItem(craftingMatrix, rootStorage, i);
             }
         });
     }
 
     private void addAvailableItem(final CraftingMatrix craftingMatrix,
-                                  final StorageChannel storageChannel,
+                                  final RootStorage rootStorage,
                                   final int craftingMatrixSlotIndex) {
         final ItemStack craftingMatrixStack = craftingMatrix.getItem(craftingMatrixSlotIndex);
         if (craftingMatrixStack.isEmpty()) {
             return;
         }
-        addAvailableItem(storageChannel, craftingMatrixStack);
+        addAvailableItem(rootStorage, craftingMatrixStack);
     }
 
-    private void addAvailableItem(final StorageChannel storageChannel,
+    private void addAvailableItem(final RootStorage rootStorage,
                                   final ItemStack craftingMatrixStack) {
         final ItemResource craftingMatrixResource = ItemResource.ofItemStack(craftingMatrixStack);
         // a single resource can occur multiple times in a recipe, only add it once
         if (available.get(craftingMatrixResource).isEmpty()) {
-            storageChannel.get(craftingMatrixResource).ifPresent(available::add);
+            rootStorage.get(craftingMatrixResource).ifPresent(available::add);
         }
     }
 
@@ -67,10 +67,10 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
 
     @Override
     public void close() {
-        blockEntity.getStorageChannel().ifPresent(this::extractUsedItems);
+        blockEntity.getRootStorage().ifPresent(this::extractUsedItems);
     }
 
-    private void extractUsedItems(final StorageChannel storageChannel) {
-        used.getAll().forEach(u -> storageChannel.extract(u.getResource(), u.getAmount(), Action.EXECUTE, playerActor));
+    private void extractUsedItems(final RootStorage rootStorage) {
+        used.getAll().forEach(u -> rootStorage.extract(u.getResource(), u.getAmount(), Action.EXECUTE, playerActor));
     }
 }

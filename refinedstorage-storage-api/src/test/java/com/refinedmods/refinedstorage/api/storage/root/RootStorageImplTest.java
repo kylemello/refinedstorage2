@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.api.storage.channel;
+package com.refinedmods.refinedstorage.api.storage.root;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
@@ -28,12 +28,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-class StorageChannelImplTest {
-    private StorageChannel sut;
+class RootStorageImplTest {
+    private RootStorage sut;
 
     @BeforeEach
     void setUp() {
-        sut = new StorageChannelImpl();
+        sut = new RootStorageImpl();
     }
 
     @Test

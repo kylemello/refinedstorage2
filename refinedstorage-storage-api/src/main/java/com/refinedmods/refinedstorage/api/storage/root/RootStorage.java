@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.api.storage.channel;
+package com.refinedmods.refinedstorage.api.storage.root;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
@@ -12,21 +12,21 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 
 /**
- * A storage channel is the entry-point for various storage operations.
+ * The entry-point for various storage operations.
  * It acts as a storage, and is usually backed by a
  * {@link com.refinedmods.refinedstorage.api.storage.composite.CompositeStorage}.
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
-public interface StorageChannel extends Storage, TrackedStorage {
+public interface RootStorage extends Storage, TrackedStorage {
     /**
-     * Adds a listener to the storage channel.
+     * Adds a listener.
      *
      * @param listener the listener
      */
     void addListener(ResourceListListener listener);
 
     /**
-     * Removes a listener from the storage channel.
+     * Removes a listener.
      *
      * @param listener the listener
      */
@@ -44,14 +44,14 @@ public interface StorageChannel extends Storage, TrackedStorage {
     void sortSources();
 
     /**
-     * Adds a source to the channel and resorts all the sources.
+     * Adds a source and resorts all the sources.
      *
      * @param source the source
      */
     void addSource(Storage source);
 
     /**
-     * Removes a source from the channel.
+     * Removes a source .
      *
      * @param source the source
      */

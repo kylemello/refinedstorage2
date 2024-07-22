@@ -109,7 +109,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
         this.view.setSortingType(Platform.INSTANCE.getConfig().getGrid().getSortingType());
-        this.view.setFilterAndSort(filterStorageChannel());
+        this.view.setFilterAndSort(filterResourceType());
 
         this.synchronizer = loadSynchronizer();
         this.resourceTypeFilter = loadResourceType();
@@ -137,16 +137,13 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private Predicate<GridResource> filterStorageChannel() {
-        return gridResource -> Platform.INSTANCE
-            .getConfig()
-            .getGrid()
-            .getResourceType()
-            .flatMap(resourceTypeId -> PlatformApi.INSTANCE
+    private Predicate<GridResource> filterResourceType() {
+        return gridResource -> Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
+            PlatformApi.INSTANCE
                 .getResourceTypeRegistry()
                 .get(resourceTypeId)
                 .map(type -> type.isGridResourceBelonging(gridResource))
-            ).orElse(true);
+        ).orElse(true);
     }
 
     private static GridViewBuilder createViewBuilder() {
@@ -199,7 +196,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
 
     private boolean onSearchTextChanged(final String text) {
         try {
-            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterStorageChannel()));
+            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
             return true;
         } catch (GridQueryParserException e) {
             view.setFilterAndSort(resource -> false);

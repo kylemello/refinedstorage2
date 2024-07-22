@@ -51,10 +51,10 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
                              final boolean cursor) {
         if (resource instanceof FluidResource fluidResource) {
             final boolean bucketInInventory = hasBucketInInventory();
-            final boolean bucketInStorageChannel = hasBucketInStorage();
+            final boolean bucketInStorage = hasBucketInStorage();
             if (bucketInInventory) {
                 extract(fluidResource, extractMode, cursor, true);
-            } else if (bucketInStorageChannel) {
+            } else if (bucketInStorage) {
                 extract(fluidResource, extractMode, cursor, false);
             }
             return true;

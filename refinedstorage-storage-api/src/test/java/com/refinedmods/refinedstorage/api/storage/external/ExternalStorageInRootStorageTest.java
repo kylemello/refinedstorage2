@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannelImpl;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorageImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static com.refinedmods.refinedstorage.api.storage.external.ExternalTestRe
 import static com.refinedmods.refinedstorage.api.storage.external.ExternalTestResource.B_TRANSFORMED;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class StorageChannelExternalStorageTest {
+class ExternalStorageInRootStorageTest {
     SpyingExternalStorageListener listener;
 
     @BeforeEach
@@ -33,16 +33,16 @@ class StorageChannelExternalStorageTest {
         final Storage storage = new TransformingStorage();
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         final Storage sut = new ExternalStorage(new ExternalStorageProviderImpl(storage), listener);
-        final StorageChannel storageChannel = new StorageChannelImpl();
+        final RootStorage rootStorage = new RootStorageImpl();
 
         // Act
-        storageChannel.addSource(sut);
+        rootStorage.addSource(sut);
 
         // Assert
         assertThat(sut.getAll()).isEmpty();
         assertThat(sut.getStored()).isZero();
-        assertThat(storageChannel.getAll()).isEmpty();
-        assertThat(storageChannel.getStored()).isZero();
+        assertThat(rootStorage.getAll()).isEmpty();
+        assertThat(rootStorage.getStored()).isZero();
         assertThat(listener.resources).isEmpty();
         assertThat(listener.actors).isEmpty();
     }
@@ -53,43 +53,43 @@ class StorageChannelExternalStorageTest {
         final Storage storage = new TransformingStorage();
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         final ExternalStorage sut = new ExternalStorage(new ExternalStorageProviderImpl(storage), listener);
-        final StorageChannel storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(sut);
+        final RootStorage rootStorage = new RootStorageImpl();
+        rootStorage.addSource(sut);
 
         // Act
         sut.detectChanges();
 
         // Assert
-        assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+        assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A_TRANSFORMED, 10)
         );
-        assertThat(storageChannel.getStored()).isEqualTo(10);
+        assertThat(rootStorage.getStored()).isEqualTo(10);
         assertThat(listener.resources).isEmpty();
         assertThat(listener.actors).isEmpty();
     }
 
     @Test
-    void shouldNoLongerPropagateChangesToStorageChannelWhenRemoving() {
+    void shouldNoLongerPropagateChangesToRootStorageWhenRemoving() {
         // Arrange
         final Storage storage = new TransformingStorage();
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         final Storage sut = new ExternalStorage(new ExternalStorageProviderImpl(storage), listener);
-        final StorageChannel storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(sut);
+        final RootStorage rootStorage = new RootStorageImpl();
+        rootStorage.addSource(sut);
 
         // Act
-        storageChannel.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
-        storageChannel.removeSource(sut);
+        rootStorage.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
+        rootStorage.removeSource(sut);
         final long insertedStraightIntoExternalStorage = sut.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        final long insertedIntoStorageChannel = storageChannel.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+        final long insertedIntoRootStorage = rootStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(insertedStraightIntoExternalStorage).isEqualTo(10);
-        assertThat(insertedIntoStorageChannel).isZero();
+        assertThat(insertedIntoRootStorage).isZero();
         assertThat(sut.getAll()).isNotEmpty();
         assertThat(sut.getStored()).isEqualTo(25);
-        assertThat(storageChannel.getAll()).isEmpty();
-        assertThat(storageChannel.getStored()).isZero();
+        assertThat(rootStorage.getAll()).isEmpty();
+        assertThat(rootStorage.getStored()).isZero();
         assertThat(listener.resources).containsExactly(A, A);
         assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
     }
@@ -100,13 +100,13 @@ class StorageChannelExternalStorageTest {
         // Arrange
         final Storage storage = new TransformingStorage();
         final Storage sut = new ExternalStorage(new ExternalStorageProviderImpl(storage), listener);
-        final StorageChannel storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(sut);
+        final RootStorage rootStorage = new RootStorageImpl();
+        rootStorage.addSource(sut);
 
         // Act
-        final long insertedA1 = storageChannel.insert(A, 10, action, EmptyActor.INSTANCE);
-        final long insertedA2 = storageChannel.insert(A, 1, action, EmptyActor.INSTANCE);
-        final long insertedB = storageChannel.insert(B, 5, action, EmptyActor.INSTANCE);
+        final long insertedA1 = rootStorage.insert(A, 10, action, EmptyActor.INSTANCE);
+        final long insertedA2 = rootStorage.insert(A, 1, action, EmptyActor.INSTANCE);
+        final long insertedB = rootStorage.insert(B, 5, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(insertedA1).isEqualTo(10);
@@ -114,16 +114,16 @@ class StorageChannelExternalStorageTest {
         assertThat(insertedB).isEqualTo(5);
 
         if (action == Action.EXECUTE) {
-            assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
                 new ResourceAmount(A_TRANSFORMED, 11),
                 new ResourceAmount(B_TRANSFORMED, 5)
             );
-            assertThat(storageChannel.getStored()).isEqualTo(16);
+            assertThat(rootStorage.getStored()).isEqualTo(16);
             assertThat(listener.resources).containsExactly(A, A, B);
             assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
         } else {
-            assertThat(storageChannel.getAll()).isEmpty();
-            assertThat(storageChannel.getStored()).isZero();
+            assertThat(rootStorage.getAll()).isEmpty();
+            assertThat(rootStorage.getStored()).isZero();
             assertThat(listener.resources).isEmpty();
             assertThat(listener.actors).isEmpty();
         }
@@ -138,32 +138,32 @@ class StorageChannelExternalStorageTest {
         sut.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         sut.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         sut.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        final StorageChannel storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(sut);
+        final RootStorage rootStorage = new RootStorageImpl();
+        rootStorage.addSource(sut);
 
         // Act
         // this will try to extract A!(5) and A2!(5/2)
-        final long extracted = storageChannel.extract(A_TRANSFORMED, 5, action, EmptyActor.INSTANCE);
+        final long extracted = rootStorage.extract(A_TRANSFORMED, 5, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isEqualTo(5);
 
         if (action == Action.EXECUTE) {
-            assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
                 new ResourceAmount(A_TRANSFORMED, 5),
                 new ResourceAmount(A_ALTERNATIVE, 8),
                 new ResourceAmount(B_TRANSFORMED, 10)
             );
-            assertThat(storageChannel.getStored()).isEqualTo(23);
+            assertThat(rootStorage.getStored()).isEqualTo(23);
             assertThat(listener.resources).containsExactly(A, A_ALTERNATIVE, B, A_TRANSFORMED);
             assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
         } else {
-            assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
                 new ResourceAmount(A_TRANSFORMED, 10),
                 new ResourceAmount(A_ALTERNATIVE, 10),
                 new ResourceAmount(B_TRANSFORMED, 10)
             );
-            assertThat(storageChannel.getStored()).isEqualTo(30);
+            assertThat(rootStorage.getStored()).isEqualTo(30);
             assertThat(listener.resources).containsExactly(A, A_ALTERNATIVE, B);
             assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
         }
@@ -178,31 +178,31 @@ class StorageChannelExternalStorageTest {
         sut.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         sut.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         sut.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
-        final StorageChannel storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(sut);
+        final RootStorage rootStorage = new RootStorageImpl();
+        rootStorage.addSource(sut);
 
         // Act
         // this will try to extract A!(10) and A2!(10/2)
-        final long extracted = storageChannel.extract(A_TRANSFORMED, 10, action, EmptyActor.INSTANCE);
+        final long extracted = rootStorage.extract(A_TRANSFORMED, 10, action, EmptyActor.INSTANCE);
 
         // Assert
         assertThat(extracted).isEqualTo(10);
 
         if (action == Action.EXECUTE) {
-            assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
                 new ResourceAmount(A_ALTERNATIVE, 5),
                 new ResourceAmount(B_TRANSFORMED, 10)
             );
-            assertThat(storageChannel.getStored()).isEqualTo(15);
+            assertThat(rootStorage.getStored()).isEqualTo(15);
             assertThat(listener.resources).containsExactly(A, A_ALTERNATIVE, B, A_TRANSFORMED);
             assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
         } else {
-            assertThat(storageChannel.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            assertThat(rootStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
                 new ResourceAmount(A_TRANSFORMED, 10),
                 new ResourceAmount(A_ALTERNATIVE, 10),
                 new ResourceAmount(B_TRANSFORMED, 10)
             );
-            assertThat(storageChannel.getStored()).isEqualTo(30);
+            assertThat(rootStorage.getStored()).isEqualTo(30);
             assertThat(listener.resources).containsExactly(A, A_ALTERNATIVE, B);
             assertThat(listener.actors).containsOnly(EmptyActor.INSTANCE);
         }

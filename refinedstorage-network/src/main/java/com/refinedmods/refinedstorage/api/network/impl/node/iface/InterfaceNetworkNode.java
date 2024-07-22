@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import java.util.Collection;
 import java.util.function.ToLongFunction;
@@ -92,9 +92,9 @@ public class InterfaceNetworkNode extends AbstractNetworkNode {
     private void clearExportedResource(final InterfaceExportState state,
                                        final int slot,
                                        final ResourceKey got,
-                                       final StorageChannel storageChannel) {
+                                       final RootStorage rootStorage) {
         final long currentAmount = state.getExportedAmount(slot);
-        final long inserted = storageChannel.insert(
+        final long inserted = rootStorage.insert(
             got,
             Math.min(currentAmount, transferQuotaProvider.applyAsLong(got)),
             Action.EXECUTE,
@@ -109,11 +109,11 @@ public class InterfaceNetworkNode extends AbstractNetworkNode {
     private void doInitialExport(final InterfaceExportState state,
                                  final int slot,
                                  final ResourceKey want,
-                                 final StorageChannel storageChannel) {
+                                 final RootStorage rootStorage) {
         final long wantedAmount = state.getRequestedAmount(slot);
-        final Collection<ResourceKey> candidates = state.expandExportCandidates(storageChannel, want);
+        final Collection<ResourceKey> candidates = state.expandExportCandidates(rootStorage, want);
         for (final ResourceKey candidate : candidates) {
-            final long extracted = storageChannel.extract(
+            final long extracted = rootStorage.extract(
                 candidate,
                 Math.min(transferQuotaProvider.applyAsLong(want), wantedAmount),
                 Action.EXECUTE,
@@ -144,9 +144,9 @@ public class InterfaceNetworkNode extends AbstractNetworkNode {
                                            final int slot,
                                            final ResourceKey got,
                                            final long amount,
-                                           final StorageChannel storageChannel) {
+                                           final RootStorage rootStorage) {
         final long correctedAmount = Math.min(transferQuotaProvider.applyAsLong(got), amount);
-        final long extracted = storageChannel.extract(got, correctedAmount, Action.EXECUTE, actor);
+        final long extracted = rootStorage.extract(got, correctedAmount, Action.EXECUTE, actor);
         if (extracted == 0) {
             return;
         }
@@ -157,9 +157,9 @@ public class InterfaceNetworkNode extends AbstractNetworkNode {
                                         final int slot,
                                         final ResourceKey got,
                                         final long amount,
-                                        final StorageChannel storageChannel) {
+                                        final RootStorage rootStorage) {
         final long correctedAmount = Math.min(transferQuotaProvider.applyAsLong(got), Math.abs(amount));
-        final long inserted = storageChannel.insert(got, correctedAmount, Action.EXECUTE, actor);
+        final long inserted = rootStorage.insert(got, correctedAmount, Action.EXECUTE, actor);
         if (inserted == 0) {
             return;
         }

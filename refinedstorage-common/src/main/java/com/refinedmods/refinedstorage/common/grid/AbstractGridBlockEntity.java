@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.PlatformApi;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
@@ -73,9 +73,9 @@ public abstract class AbstractGridBlockEntity
     @Override
     public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         final Network network = requireNonNull(mainNode.getNetwork());
-        final StorageChannel storageChannel = network.getComponent(StorageNetworkComponent.class);
+        final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         final PlatformSecurityNetworkComponent security = network.getComponent(PlatformSecurityNetworkComponent.class);
-        final GridOperations operations = resourceType.createGridOperations(storageChannel, new PlayerActor(player));
+        final GridOperations operations = resourceType.createGridOperations(rootStorage, new PlayerActor(player));
         return new SecuredGridOperations(player, security, operations);
     }
 

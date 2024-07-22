@@ -5,11 +5,11 @@ import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.PlatformApi;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
-import com.refinedmods.refinedstorage.common.api.storage.channel.FuzzyStorageChannel;
+import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -100,11 +100,11 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     private long getAmount(final Network network, final ResourceKey configuredResource) {
-        final StorageChannel storageChannel = network.getComponent(StorageNetworkComponent.class);
-        if (!filter.isFuzzyMode() || !(storageChannel instanceof FuzzyStorageChannel fuzzyStorageChannel)) {
-            return storageChannel.get(configuredResource).map(ResourceAmount::getAmount).orElse(0L);
+        final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
+        if (!filter.isFuzzyMode() || !(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
+            return rootStorage.get(configuredResource).map(ResourceAmount::getAmount).orElse(0L);
         }
-        return fuzzyStorageChannel.getFuzzy(configuredResource).stream().mapToLong(ResourceAmount::getAmount).sum();
+        return fuzzyRootStorage.getFuzzy(configuredResource).stream().mapToLong(ResourceAmount::getAmount).sum();
     }
 
     public void extract(final Player player) {

@@ -7,14 +7,14 @@ import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannelImpl;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorageImpl;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StorageNetworkComponentImpl extends StorageChannelImpl implements StorageNetworkComponent {
+public class StorageNetworkComponentImpl extends RootStorageImpl implements StorageNetworkComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageNetworkComponentImpl.class);
 
     public StorageNetworkComponentImpl(final ResourceList list) {

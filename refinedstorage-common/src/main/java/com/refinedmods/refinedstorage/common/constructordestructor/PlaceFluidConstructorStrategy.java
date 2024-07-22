@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
@@ -39,9 +39,9 @@ public class PlaceFluidConstructorStrategy implements ConstructorStrategy {
         if (!(resource instanceof FluidResource fluidResource)) {
             return false;
         }
-        final StorageChannel storageChannel = network.getComponent(StorageNetworkComponent.class);
+        final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         final long bucketAmount = Platform.INSTANCE.getBucketAmount();
-        final long extractedAmount = storageChannel.extract(
+        final long extractedAmount = rootStorage.extract(
             fluidResource,
             bucketAmount,
             Action.SIMULATE,
@@ -52,7 +52,7 @@ public class PlaceFluidConstructorStrategy implements ConstructorStrategy {
         }
         final boolean success = Platform.INSTANCE.placeFluid(level, pos, direction, player, fluidResource);
         if (success) {
-            storageChannel.extract(fluidResource, bucketAmount, Action.EXECUTE, actor);
+            rootStorage.extract(fluidResource, bucketAmount, Action.EXECUTE, actor);
         }
         return success;
     }

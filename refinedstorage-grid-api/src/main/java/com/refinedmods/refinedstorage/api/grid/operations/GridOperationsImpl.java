@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
 import com.refinedmods.refinedstorage.api.storage.TransferHelper;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import java.util.function.ToLongFunction;
 
@@ -14,23 +14,23 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
 public class GridOperationsImpl implements GridOperations {
-    private final StorageChannel storageChannel;
+    private final RootStorage rootStorage;
     private final Actor actor;
     private final ToLongFunction<ResourceKey> maxAmountProvider;
     private final long singleAmount;
 
     /**
-     * @param storageChannel    the storage channel to act on
+     * @param rootStorage       the storage to act on
      * @param actor             the actor performing the grid operations
      * @param maxAmountProvider provider for the maximum amount of a given resource
      * @param singleAmount      amount that needs to be extracted when using
      *                          {@link GridInsertMode#SINGLE_RESOURCE} or {@link GridExtractMode#SINGLE_RESOURCE}
      */
-    public GridOperationsImpl(final StorageChannel storageChannel,
+    public GridOperationsImpl(final RootStorage rootStorage,
                               final Actor actor,
                               final ToLongFunction<ResourceKey> maxAmountProvider,
                               final long singleAmount) {
-        this.storageChannel = storageChannel;
+        this.rootStorage = rootStorage;
         this.actor = actor;
         this.maxAmountProvider = maxAmountProvider;
         this.singleAmount = singleAmount;
@@ -44,7 +44,7 @@ public class GridOperationsImpl implements GridOperations {
         if (amount == 0) {
             return false;
         }
-        return TransferHelper.transfer(resource, amount, actor, storageChannel, destination, storageChannel) > 0;
+        return TransferHelper.transfer(resource, amount, actor, rootStorage, destination, rootStorage) > 0;
     }
 
     private long getExtractableAmount(final ResourceKey resource, final GridExtractMode extractMode) {
@@ -53,7 +53,7 @@ public class GridOperationsImpl implements GridOperations {
     }
 
     private long getExtractableAmount(final ResourceKey resource) {
-        final long totalSize = storageChannel.get(resource).map(ResourceAmount::getAmount).orElse(0L);
+        final long totalSize = rootStorage.get(resource).map(ResourceAmount::getAmount).orElse(0L);
         final long maxAmount = maxAmountProvider.applyAsLong(resource);
         return Math.min(totalSize, maxAmount);
     }
@@ -75,6 +75,6 @@ public class GridOperationsImpl implements GridOperations {
             case ENTIRE_RESOURCE -> maxAmountProvider.applyAsLong(resource);
             case SINGLE_RESOURCE -> singleAmount;
         };
-        return TransferHelper.transfer(resource, amount, actor, source, storageChannel, null) > 0;
+        return TransferHelper.transfer(resource, amount, actor, source, rootStorage, null) > 0;
     }
 }

@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.grid;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -147,18 +147,18 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
         return Optional.ofNullable(mainNode.getNetwork());
     }
 
-    Optional<StorageChannel> getStorageChannel() {
+    Optional<RootStorage> getRootStorage() {
         return getNetwork().map(network -> network.getComponent(StorageNetworkComponent.class));
     }
 
     ItemStack insert(final ItemStack stack, final Player player) {
-        return getStorageChannel().map(storageChannel -> doInsert(stack, player, storageChannel)).orElse(stack);
+        return getRootStorage().map(rootStorage -> doInsert(stack, player, rootStorage)).orElse(stack);
     }
 
     private ItemStack doInsert(final ItemStack stack,
                                final Player player,
-                               final StorageChannel storageChannel) {
-        final long inserted = storageChannel.insert(
+                               final RootStorage rootStorage) {
+        final long inserted = rootStorage.insert(
             ItemResource.ofItemStack(stack),
             stack.getCount(),
             Action.EXECUTE,
@@ -172,7 +172,7 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     }
 
     long extract(final ItemResource resource, final Player player) {
-        return getStorageChannel().map(storageChannel -> storageChannel.extract(
+        return getRootStorage().map(rootStorage -> rootStorage.extract(
             resource,
             1,
             Action.EXECUTE,

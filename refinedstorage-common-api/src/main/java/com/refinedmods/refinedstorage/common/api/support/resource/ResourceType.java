@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import java.util.Optional;
 
@@ -39,5 +39,5 @@ public interface ResourceType {
 
     long getInterfaceExportLimit();
 
-    GridOperations createGridOperations(StorageChannel storageChannel, Actor actor);
+    GridOperations createGridOperations(RootStorage rootStorage, Actor actor);
 }

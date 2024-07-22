@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.api.grid.watcher;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannelImpl;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorageImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,24 +24,24 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class GridWatcherManagerImplTest {
     GridWatcherManager sut;
-    StorageChannel storageChannel;
+    RootStorage rootStorage;
 
     @BeforeEach
     void setUp() {
         sut = new GridWatcherManagerImpl();
-        storageChannel = new StorageChannelImpl();
-        storageChannel.addSource(new InMemoryStorageImpl());
+        rootStorage = new RootStorageImpl();
+        rootStorage.addSource(new InMemoryStorageImpl());
     }
 
     @Test
     void shouldAddWatcherAndNotifyOfChanges() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        storageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        rootStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Act
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
-        storageChannel.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
+        rootStorage.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Assert
         verify(watcher, times(1)).onChanged(B, 5, null);
@@ -52,12 +52,12 @@ class GridWatcherManagerImplTest {
     void shouldNotAddDuplicateWatcher() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
 
         // Act & assert
         assertThrows(
             IllegalArgumentException.class,
-            () -> sut.addWatcher(watcher, FakeActor.class, storageChannel),
+            () -> sut.addWatcher(watcher, FakeActor.class, rootStorage),
             "Watcher is already registered"
         );
     }
@@ -66,12 +66,12 @@ class GridWatcherManagerImplTest {
     void shouldRemoveWatcher() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        storageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
+        rootStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
 
         // Act
-        sut.removeWatcher(watcher, storageChannel);
-        storageChannel.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.removeWatcher(watcher, rootStorage);
+        rootStorage.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Assert
         verifyNoInteractions(watcher);
@@ -85,7 +85,7 @@ class GridWatcherManagerImplTest {
         // Act & assert
         assertThrows(
             IllegalArgumentException.class,
-            () -> sut.removeWatcher(watcher, storageChannel),
+            () -> sut.removeWatcher(watcher, rootStorage),
             "Watcher is not registered"
         );
     }
@@ -94,15 +94,15 @@ class GridWatcherManagerImplTest {
     void shouldAddAndRemoveAndAddWatcherAgain() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        storageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        rootStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Act
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
-        storageChannel.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
-        sut.removeWatcher(watcher, storageChannel);
-        storageChannel.insert(C, 4, Action.EXECUTE, FakeActor.INSTANCE);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
-        storageChannel.insert(D, 3, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
+        rootStorage.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.removeWatcher(watcher, rootStorage);
+        rootStorage.insert(C, 4, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
+        rootStorage.insert(D, 3, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Assert
         verify(watcher, times(1)).onChanged(B, 5, null);
@@ -114,16 +114,16 @@ class GridWatcherManagerImplTest {
     void shouldDetachAll() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        storageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
+        rootStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
 
         // Act
-        sut.detachAll(storageChannel);
-        storageChannel.insert(B, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.detachAll(rootStorage);
+        rootStorage.insert(B, 10, Action.EXECUTE, FakeActor.INSTANCE);
         assertThrows(IllegalArgumentException.class, () -> sut.addWatcher(
             watcher,
             FakeActor.class,
-            storageChannel
+            rootStorage
         ), "Watcher is already registered");
 
         // Assert
@@ -134,14 +134,14 @@ class GridWatcherManagerImplTest {
     void shouldAttachAll() {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
-        storageChannel.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
-        sut.detachAll(storageChannel);
-        storageChannel.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
+        rootStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
+        sut.detachAll(rootStorage);
+        rootStorage.insert(B, 5, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Act
-        sut.attachAll(storageChannel);
-        storageChannel.insert(C, 4, Action.EXECUTE, FakeActor.INSTANCE);
+        sut.attachAll(rootStorage);
+        rootStorage.insert(C, 4, Action.EXECUTE, FakeActor.INSTANCE);
 
         // Assert
         final InOrder inOrder = inOrder(watcher);
@@ -157,7 +157,7 @@ class GridWatcherManagerImplTest {
         // Arrange
         final GridWatcher watcher = mock(GridWatcher.class);
         sut.activeChanged(true);
-        sut.addWatcher(watcher, FakeActor.class, storageChannel);
+        sut.addWatcher(watcher, FakeActor.class, rootStorage);
 
         // Act
         sut.activeChanged(false);

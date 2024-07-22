@@ -79,18 +79,18 @@ class WirelessGrid implements Grid {
     @Override
     public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         return getStorage()
-            .flatMap(storageChannel ->
-                getSecurity().map(security -> createGridOperations(resourceType, player, storageChannel, security)))
+            .flatMap(rootStorage ->
+                getSecurity().map(security -> createGridOperations(resourceType, player, rootStorage, security)))
             .map(gridOperations -> (GridOperations) new WirelessGridOperations(gridOperations, session, watchers))
             .orElseGet(NoopGridOperations::new);
     }
 
     private GridOperations createGridOperations(final ResourceType resourceType,
                                                 final ServerPlayer player,
-                                                final StorageNetworkComponent storageChannel,
+                                                final StorageNetworkComponent rootStorage,
                                                 final PlatformSecurityNetworkComponent securityNetworkComponent) {
         final PlayerActor playerActor = new PlayerActor(player);
-        final GridOperations operations = resourceType.createGridOperations(storageChannel, playerActor);
+        final GridOperations operations = resourceType.createGridOperations(rootStorage, playerActor);
         return new SecuredGridOperations(player, securityNetworkComponent, operations);
     }
 }

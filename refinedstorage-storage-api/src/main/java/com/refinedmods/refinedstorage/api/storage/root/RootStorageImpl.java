@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.api.storage.channel;
+package com.refinedmods.refinedstorage.api.storage.root;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
@@ -19,15 +19,15 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
-public class StorageChannelImpl implements StorageChannel {
+public class RootStorageImpl implements RootStorage {
     protected final CompositeStorageImpl storage;
     private final ListenableResourceList list;
 
-    public StorageChannelImpl() {
+    public RootStorageImpl() {
         this(new ResourceListImpl());
     }
 
-    public StorageChannelImpl(final ResourceList list) {
+    public RootStorageImpl(final ResourceList list) {
         this.list = new ListenableResourceList(list);
         this.storage = new CompositeStorageImpl(this.list);
     }

@@ -13,7 +13,7 @@ import com.refinedmods.refinedstorage.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.StorageState;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
@@ -44,7 +44,7 @@ class PortableGrid implements Grid {
 
     void updateStorage() {
         if (storage != null) {
-            watchers.detachAll(storage.getStorageChannel());
+            watchers.detachAll(storage.getRootStorage());
         }
 
         this.storage = diskInventory.resolve(0)
@@ -52,7 +52,7 @@ class PortableGrid implements Grid {
             .map(PortableGridStorage::new)
             .orElse(null);
 
-        watchers.attachAll(getStorageChannel());
+        watchers.attachAll(getRootStorage());
     }
 
     void activeChanged(final boolean active) {
@@ -72,17 +72,17 @@ class PortableGrid implements Grid {
     @Override
     public void addWatcher(final GridWatcher watcher, final Class<? extends Actor> actorType) {
         energyStorage.extract(Platform.INSTANCE.getConfig().getPortableGrid().getOpenEnergyUsage(), Action.EXECUTE);
-        watchers.addWatcher(watcher, actorType, getStorageChannel());
+        watchers.addWatcher(watcher, actorType, getRootStorage());
     }
 
     @Override
     public void removeWatcher(final GridWatcher watcher) {
-        watchers.removeWatcher(watcher, getStorageChannel());
+        watchers.removeWatcher(watcher, getRootStorage());
     }
 
     @Nullable
-    private StorageChannel getStorageChannel() {
-        return storage != null ? storage.getStorageChannel() : null;
+    private RootStorage getRootStorage() {
+        return storage != null ? storage.getRootStorage() : null;
     }
 
     @Override
@@ -90,7 +90,7 @@ class PortableGrid implements Grid {
         if (storage == null) {
             return new NoopStorage();
         }
-        return storage.getStorageChannel();
+        return storage.getRootStorage();
     }
 
     @Override
@@ -103,10 +103,10 @@ class PortableGrid implements Grid {
         if (storage == null) {
             return Collections.emptyList();
         }
-        final StorageChannel storageChannel = storage.getStorageChannel();
-        return storageChannel.getAll().stream().map(resource -> new TrackedResourceAmount(
+        final RootStorage rootStorage = storage.getRootStorage();
+        return rootStorage.getAll().stream().map(resource -> new TrackedResourceAmount(
             resource,
-            storageChannel.findTrackedResourceByActorType(resource.getResource(), actorType).orElse(null)
+            rootStorage.findTrackedResourceByActorType(resource.getResource(), actorType).orElse(null)
         )).toList();
     }
 
@@ -115,8 +115,8 @@ class PortableGrid implements Grid {
         if (storage == null) {
             return new NoopGridOperations();
         }
-        final StorageChannel storageChannel = this.storage.getStorageChannel();
-        final GridOperations operations = resourceType.createGridOperations(storageChannel, new PlayerActor(player));
+        final RootStorage rootStorage = this.storage.getRootStorage();
+        final GridOperations operations = resourceType.createGridOperations(rootStorage, new PlayerActor(player));
         return new PortableGridOperations(operations, energyStorage);
     }
 }
