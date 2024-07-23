@@ -21,7 +21,6 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStra
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage.common.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -30,8 +29,8 @@ import com.refinedmods.refinedstorage.common.api.storage.externalstorage.Platfor
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
@@ -48,7 +47,6 @@ import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTra
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -64,13 +62,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class PlatformApiProxy implements PlatformApi {
+public class RefinedStorageApiProxy implements RefinedStorageApi {
     @Nullable
-    private PlatformApi delegate;
+    private RefinedStorageApi delegate;
 
-    public void setDelegate(final PlatformApi delegate) {
+    public void setDelegate(final RefinedStorageApi delegate) {
         if (this.delegate != null) {
-            throw new IllegalStateException("Platform API already injected");
+            throw new IllegalStateException("API already injected");
         }
         this.delegate = delegate;
     }
@@ -176,41 +174,33 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(
-        final BlockEntity blockEntity,
-        final NetworkNode node,
-        final String name,
-        final int priority,
-        final ConnectionLogic connectionLogic,
-        @Nullable final Supplier<Object> keyProvider
-    ) {
-        return ensureLoaded().createInWorldNetworkNodeContainer(
-            blockEntity,
-            node,
-            name,
-            priority,
-            connectionLogic,
-            keyProvider
-        );
+    public NetworkNodeContainerProvider createNetworkNodeContainerProvider() {
+        return ensureLoaded().createNetworkNodeContainerProvider();
     }
 
     @Override
-    public void onNetworkNodeContainerInitialized(final InWorldNetworkNodeContainer container,
-                                                  @Nullable final Level level,
-                                                  @Nullable final Runnable callback) {
-        ensureLoaded().onNetworkNodeContainerInitialized(container, level, callback);
+    public InWorldNetworkNodeContainer.Builder createNetworkNodeContainer(final BlockEntity blockEntity,
+                                                                          final NetworkNode networkNode) {
+        return ensureLoaded().createNetworkNodeContainer(blockEntity, networkNode);
     }
 
     @Override
-    public void onNetworkNodeContainerRemoved(final InWorldNetworkNodeContainer container,
-                                              @Nullable final Level level) {
-        ensureLoaded().onNetworkNodeContainerRemoved(container, level);
+    public void initializeNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                               @Nullable final Level level,
+                                               @Nullable final Runnable callback) {
+        ensureLoaded().initializeNetworkNodeContainer(container, level, callback);
     }
 
     @Override
-    public void onNetworkNodeContainerUpdated(final InWorldNetworkNodeContainer container,
-                                              @Nullable final Level level) {
-        ensureLoaded().onNetworkNodeContainerUpdated(container, level);
+    public void removeNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                           @Nullable final Level level) {
+        ensureLoaded().removeNetworkNodeContainer(container, level);
+    }
+
+    @Override
+    public void updateNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                           @Nullable final Level level) {
+        ensureLoaded().updateNetworkNodeContainer(container, level);
     }
 
     @Override
@@ -378,11 +368,6 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public BuiltinPermissions getBuiltinPermissions() {
-        return ensureLoaded().getBuiltinPermissions();
-    }
-
-    @Override
     public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
         return ensureLoaded().getPermissionRegistry();
     }
@@ -410,9 +395,9 @@ public class PlatformApiProxy implements PlatformApi {
         return ensureLoaded().canPlaceNetworkNode(player, level, pos, state);
     }
 
-    private PlatformApi ensureLoaded() {
+    private RefinedStorageApi ensureLoaded() {
         if (delegate == null) {
-            throw new IllegalStateException("Platform API not loaded yet");
+            throw new IllegalStateException("API not loaded yet");
         }
         return delegate;
     }

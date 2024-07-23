@@ -10,7 +10,7 @@ import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
 
@@ -42,15 +43,11 @@ public abstract class AbstractGridBlockEntity
     }
 
     @Override
-    protected InWorldNetworkNodeContainer createMainContainer(final GridNetworkNode node) {
-        return PlatformApi.INSTANCE.createInWorldNetworkNodeContainer(
-            this,
-            node,
-            MAIN_CONTAINER_NAME,
-            NetworkNodeContainerPriorities.GRID,
-            this,
-            null
-        );
+    protected InWorldNetworkNodeContainer createMainContainer(final GridNetworkNode networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .priority(NetworkNodeContainerPriorities.GRID)
+            .connectionStrategy(new ColoredConnectionStrategy(this::getBlockState, getBlockPos()))
+            .build();
     }
 
     @Override
@@ -65,14 +62,14 @@ public abstract class AbstractGridBlockEntity
 
     @Override
     public List<TrackedResourceAmount> getResources(final Class<? extends Actor> actorType) {
-        return requireNonNull(mainNode.getNetwork())
+        return requireNonNull(mainNetworkNode.getNetwork())
             .getComponent(StorageNetworkComponent.class)
             .getResources(actorType);
     }
 
     @Override
     public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
-        final Network network = requireNonNull(mainNode.getNetwork());
+        final Network network = requireNonNull(mainNetworkNode.getNetwork());
         final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         final PlatformSecurityNetworkComponent security = network.getComponent(PlatformSecurityNetworkComponent.class);
         final GridOperations operations = resourceType.createGridOperations(rootStorage, new PlayerActor(player));
@@ -81,22 +78,22 @@ public abstract class AbstractGridBlockEntity
 
     @Override
     public boolean isGridActive() {
-        return mainNode.isActive();
+        return mainNetworkNode.isActive();
     }
 
     @Override
     public Storage getItemStorage() {
-        return requireNonNull(mainNode.getNetwork()).getComponent(StorageNetworkComponent.class);
+        return requireNonNull(mainNetworkNode.getNetwork()).getComponent(StorageNetworkComponent.class);
     }
 
     @Override
     public void addWatcher(final GridWatcher watcher, final Class<? extends Actor> actorType) {
-        mainNode.addWatcher(watcher, actorType);
+        mainNetworkNode.addWatcher(watcher, actorType);
     }
 
     @Override
     public void removeWatcher(final GridWatcher watcher) {
-        mainNode.removeWatcher(watcher);
+        mainNetworkNode.removeWatcher(watcher);
     }
 
     @Override

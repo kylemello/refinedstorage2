@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.api.storage.StorageBlockEntity;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItemHelper;
@@ -81,7 +81,7 @@ public class StorageContainerItemHelperImpl implements StorageContainerItemHelpe
         }
 
         return storageId
-            .flatMap(id -> PlatformApi.INSTANCE.getStorageRepository(level).removeIfEmpty(id))
+            .flatMap(id -> RefinedStorageApi.INSTANCE.getStorageRepository(level).removeIfEmpty(id))
             .map(disk -> returnByproducts(level, player, primaryByproduct, secondaryByproduct))
             .orElseGet(() -> InteractionResultHolder.fail(stack));
     }

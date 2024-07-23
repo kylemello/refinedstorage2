@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.energy;
 
 import com.refinedmods.refinedstorage.api.core.Action;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.energy.TransferableBlockEntityEnergy;
 import com.refinedmods.refinedstorage.common.content.LootFunctions;
 
@@ -23,7 +23,7 @@ public class EnergyLootItemFunction implements LootItemFunction {
         final BlockEntity blockEntity = lootContext.getParam(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof TransferableBlockEntityEnergy transferableBlockEntityEnergy) {
             final long stored = transferableBlockEntityEnergy.getEnergyStorage().getStored();
-            PlatformApi.INSTANCE.getEnergyStorage(stack).ifPresent(
+            RefinedStorageApi.INSTANCE.getEnergyStorage(stack).ifPresent(
                 energyStorage -> energyStorage.receive(stored, Action.EXECUTE)
             );
         }

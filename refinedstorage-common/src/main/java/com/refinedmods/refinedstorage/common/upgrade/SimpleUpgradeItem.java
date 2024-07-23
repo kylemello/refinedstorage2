@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.upgrade;
 
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
@@ -48,7 +48,7 @@ public final class SimpleUpgradeItem extends AbstractUpgradeItem {
 
     public static SimpleUpgradeItem speedUpgrade() {
         return new SimpleUpgradeItem(
-            PlatformApi.INSTANCE.getUpgradeRegistry(),
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
             Platform.INSTANCE.getConfig().getUpgrade()::getSpeedUpgradeEnergyUsage,
             false,
             createTranslation("item", "speed_upgrade.help")
@@ -57,7 +57,7 @@ public final class SimpleUpgradeItem extends AbstractUpgradeItem {
 
     public static SimpleUpgradeItem stackUpgrade() {
         return new SimpleUpgradeItem(
-            PlatformApi.INSTANCE.getUpgradeRegistry(),
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
             Platform.INSTANCE.getConfig().getUpgrade()::getStackUpgradeEnergyUsage,
             false,
             createTranslation("item", "stack_upgrade.help")
@@ -66,7 +66,7 @@ public final class SimpleUpgradeItem extends AbstractUpgradeItem {
 
     public static SimpleUpgradeItem silkTouchUpgrade() {
         return new SimpleUpgradeItem(
-            PlatformApi.INSTANCE.getUpgradeRegistry(),
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
             Platform.INSTANCE.getConfig().getUpgrade()::getSilkTouchUpgradeEnergyUsage,
             true,
             createTranslation("item", "silk_touch_upgrade.help")

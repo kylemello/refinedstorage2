@@ -9,6 +9,7 @@ refinedarchitect {
     dataGeneration(project(":refinedstorage-common"))
     compileWithProject(project(":refinedstorage-common"))
     compileWithProject(project(":refinedstorage-common-api"))
+    compileWithProject(project(":refinedstorage-neoforge-api"))
     compileWithProject(project(":refinedstorage-core-api"))
     compileWithProject(project(":refinedstorage-resource-api"))
     compileWithProject(project(":refinedstorage-storage-api"))

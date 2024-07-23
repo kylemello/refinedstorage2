@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -35,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 import static java.util.Objects.requireNonNull;
 
 public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
@@ -62,14 +64,19 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         this.outputNode = new RelayOutputNetworkNode(
             Platform.INSTANCE.getConfig().getRelay().getOutputNetworkEnergyUsage()
         );
-        this.mainNode.setOutputNode(outputNode);
+        this.mainNetworkNode.setOutputNode(outputNode);
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
             this::filterContainerChanged
         );
-        this.mainNode.setFilterNormalizer(filter.createNormalizer());
-        this.addContainer(new RelayOutputNetworkNodeContainer(this, outputNode));
+        this.mainNetworkNode.setFilterNormalizer(filter.createNormalizer());
+        this.containers.addContainer(
+            RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, outputNode)
+                .name("output")
+                .connectionStrategy(new RelayOutputConnectionStrategy(this))
+                .build()
+        );
         setRedstoneMode(RedstoneMode.LOW);
     }
 
@@ -78,18 +85,18 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
     }
 
     void setFuzzyMode(final boolean fuzzyMode) {
-        final boolean wasActive = mainNode.isActive();
+        final boolean wasActive = mainNetworkNode.isActive();
         // Updating fuzzy mode will call the filter's listener as the normalizer will yield different outputs.
         // However, when updating a filter the storage resets and "self-removes". If the normalizer yields different
         // outputs too early, the self-remove operation will partially fail as the expected resources will be different.
         // Therefore, we need to deactivate the node, update the fuzzy mode, and then reinitialize the node (ugly hack).
-        mainNode.setActive(false);
+        mainNetworkNode.setActive(false);
         filter.setFuzzyMode(fuzzyMode);
-        mainNode.setActive(wasActive);
+        mainNetworkNode.setActive(wasActive);
     }
 
     private void filterContainerChanged(final Set<ResourceKey> filters) {
-        mainNode.setFilters(filters);
+        mainNetworkNode.setFilters(filters);
         setChanged();
     }
 
@@ -99,7 +106,7 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
 
     void setPriority(final int priority) {
         this.priority = priority;
-        this.mainNode.setPriority(priority);
+        this.mainNetworkNode.setPriority(priority);
         setChanged();
     }
 
@@ -109,7 +116,7 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
 
     void setAccessMode(final AccessMode accessMode) {
         this.accessMode = accessMode;
-        mainNode.setAccessMode(accessMode);
+        mainNetworkNode.setAccessMode(accessMode);
         setChanged();
     }
 
@@ -119,34 +126,34 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
 
     void setFilterMode(final FilterMode filterMode) {
         this.filterMode = filterMode;
-        mainNode.setFilterMode(filterMode);
+        mainNetworkNode.setFilterMode(filterMode);
         setChanged();
     }
 
     boolean isPassEnergy() {
-        return mainNode.hasComponentType(RelayComponentType.ENERGY);
+        return mainNetworkNode.hasComponentType(RelayComponentType.ENERGY);
     }
 
     void setPassEnergy(final boolean passEnergy) {
-        mainNode.updateComponentType(RelayComponentType.ENERGY, passEnergy);
+        mainNetworkNode.updateComponentType(RelayComponentType.ENERGY, passEnergy);
         setChanged();
     }
 
     boolean isPassStorage() {
-        return mainNode.hasComponentType(RelayComponentType.STORAGE);
+        return mainNetworkNode.hasComponentType(RelayComponentType.STORAGE);
     }
 
     void setPassStorage(final boolean passStorage) {
-        mainNode.updateComponentType(RelayComponentType.STORAGE, passStorage);
+        mainNetworkNode.updateComponentType(RelayComponentType.STORAGE, passStorage);
         setChanged();
     }
 
     boolean isPassSecurity() {
-        return mainNode.hasComponentType(RelayComponentType.SECURITY);
+        return mainNetworkNode.hasComponentType(RelayComponentType.SECURITY);
     }
 
     void setPassSecurity(final boolean passSecurity) {
-        mainNode.updateComponentType(RelayComponentType.SECURITY, passSecurity);
+        mainNetworkNode.updateComponentType(RelayComponentType.SECURITY, passSecurity);
         setChanged();
     }
 
@@ -156,29 +163,32 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
 
     void setPassThrough(final boolean passThrough) {
         this.passThrough = passThrough;
-        this.mainNode.setComponentTypes(Set.of());
+        this.mainNetworkNode.setComponentTypes(Set.of());
         setChanged();
-        updateContainers();
+        containers.update(level);
     }
 
     boolean isActiveInternal() {
-        return mainNode.isActive();
+        return mainNetworkNode.isActive();
     }
 
     Direction getDirectionInternal() {
-        return requireNonNull(getDirection());
+        return requireNonNull(tryExtractDirection(getBlockState()));
     }
 
     @Override
     protected void activenessChanged(final boolean newActive) {
         super.activenessChanged(newActive);
         outputNode.setActive(newActive);
-        updateContainers();
+        containers.update(level);
     }
 
     @Override
-    protected InWorldNetworkNodeContainer createMainContainer(final RelayInputNetworkNode node) {
-        return new RelayInputNetworkNodeContainer(this, node);
+    protected InWorldNetworkNodeContainer createMainContainer(final RelayInputNetworkNode networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .name("input")
+            .connectionStrategy(new RelayInputConnectionStrategy(this))
+            .build();
     }
 
     @Override
@@ -208,9 +218,9 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         filter.save(tag, provider);
         tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(filterMode));
         tag.putBoolean(TAG_PASS_THROUGH, passThrough);
-        tag.putBoolean(TAG_PASS_ENERGY, mainNode.hasComponentType(RelayComponentType.ENERGY));
-        tag.putBoolean(TAG_PASS_STORAGE, mainNode.hasComponentType(RelayComponentType.STORAGE));
-        tag.putBoolean(TAG_PASS_SECURITY, mainNode.hasComponentType(RelayComponentType.SECURITY));
+        tag.putBoolean(TAG_PASS_ENERGY, mainNetworkNode.hasComponentType(RelayComponentType.ENERGY));
+        tag.putBoolean(TAG_PASS_STORAGE, mainNetworkNode.hasComponentType(RelayComponentType.STORAGE));
+        tag.putBoolean(TAG_PASS_SECURITY, mainNetworkNode.hasComponentType(RelayComponentType.SECURITY));
         tag.putInt(TAG_ACCESS_MODE, AccessModeSettings.getAccessMode(accessMode));
         tag.putInt(TAG_PRIORITY, priority);
     }
@@ -222,19 +232,19 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         if (tag.contains(TAG_FILTER_MODE)) {
             filterMode = FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE));
         }
-        mainNode.setFilterMode(filterMode);
+        mainNetworkNode.setFilterMode(filterMode);
         if (tag.contains(TAG_PASS_THROUGH)) {
             passThrough = tag.getBoolean(TAG_PASS_THROUGH);
         }
-        mainNode.setComponentTypes(getComponentTypes(tag));
+        mainNetworkNode.setComponentTypes(getComponentTypes(tag));
         if (tag.contains(TAG_ACCESS_MODE)) {
             accessMode = AccessModeSettings.getAccessMode(tag.getInt(TAG_ACCESS_MODE));
         }
-        mainNode.setAccessMode(accessMode);
+        mainNetworkNode.setAccessMode(accessMode);
         if (tag.contains(TAG_PRIORITY)) {
             priority = tag.getInt(TAG_PRIORITY);
         }
-        mainNode.setPriority(priority);
+        mainNetworkNode.setPriority(priority);
     }
 
     private Set<RelayComponentType> getComponentTypes(final CompoundTag tag) {

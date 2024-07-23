@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.security;
 
-import com.refinedmods.refinedstorage.common.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 
@@ -35,15 +34,6 @@ public enum BuiltinPermission implements PlatformPermission {
      * Whether the player can manage the security options for a network.
      */
     SECURITY("security");
-
-    public static final BuiltinPermissions VIEW = new BuiltinPermissions(
-        INSERT,
-        EXTRACT,
-        AUTOCRAFTING,
-        OPEN,
-        BUILD,
-        SECURITY
-    );
 
     private final ResourceLocation id;
     private final Component name;

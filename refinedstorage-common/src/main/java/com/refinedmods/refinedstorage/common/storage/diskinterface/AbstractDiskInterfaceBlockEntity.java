@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storagetransfer.Stor
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -54,11 +54,11 @@ public abstract class AbstractDiskInterfaceBlockEntity
         ));
         this.upgradeContainer = new UpgradeContainer(
             UpgradeDestinations.DISK_INTERFACE,
-            PlatformApi.INSTANCE.getUpgradeRegistry(),
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
             this::upgradeContainerChanged
         );
-        this.mainNode.setListener(this);
-        this.mainNode.setTransferQuotaProvider(storage -> {
+        this.mainNetworkNode.setListener(this);
+        this.mainNetworkNode.setTransferQuotaProvider(storage -> {
             if (storage instanceof SerializableStorage serializableStorage) {
                 return serializableStorage.getType().getDiskInterfaceTransferQuota(
                     upgradeContainer.has(Items.INSTANCE.getStackUpgrade())
@@ -72,7 +72,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
         final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
         this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
-        mainNode.setEnergyUsage(baseEnergyUsage + upgradeContainer.getEnergyUsage());
+        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeContainer.getEnergyUsage());
         setChanged();
     }
 
@@ -85,12 +85,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
 
     @Override
     protected void setFilters(final Set<ResourceKey> filters) {
-        mainNode.setFilters(filters);
+        mainNetworkNode.setFilters(filters);
     }
 
     @Override
     protected void setNormalizer(final UnaryOperator<ResourceKey> normalizer) {
-        mainNode.setNormalizer(normalizer);
+        mainNetworkNode.setNormalizer(normalizer);
     }
 
     @Override
@@ -105,24 +105,24 @@ public abstract class AbstractDiskInterfaceBlockEntity
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
         tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
-        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
+        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNetworkNode.getFilterMode()));
     }
 
     @Override
     public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.readConfiguration(tag, provider);
         if (tag.contains(TAG_TRANSFER_MODE)) {
-            mainNode.setMode(TransferModeSettings.getTransferMode(tag.getInt(TAG_TRANSFER_MODE)));
+            mainNetworkNode.setMode(TransferModeSettings.getTransferMode(tag.getInt(TAG_TRANSFER_MODE)));
         }
         if (tag.contains(TAG_FILTER_MODE)) {
-            mainNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
+            mainNetworkNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
         }
     }
 
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.writeConfiguration(tag, provider);
-        tag.putInt(TAG_TRANSFER_MODE, TransferModeSettings.getTransferMode(mainNode.getMode()));
+        tag.putInt(TAG_TRANSFER_MODE, TransferModeSettings.getTransferMode(mainNetworkNode.getMode()));
     }
 
     @Override
@@ -171,20 +171,20 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     FilterMode getFilterMode() {
-        return mainNode.getFilterMode();
+        return mainNetworkNode.getFilterMode();
     }
 
     void setFilterMode(final FilterMode mode) {
-        mainNode.setFilterMode(mode);
+        mainNetworkNode.setFilterMode(mode);
         setChanged();
     }
 
     public StorageTransferMode getTransferMode() {
-        return mainNode.getMode();
+        return mainNetworkNode.getMode();
     }
 
     public void setTransferMode(final StorageTransferMode mode) {
-        mainNode.setMode(mode);
+        mainNetworkNode.setMode(mode);
         setChanged();
     }
 

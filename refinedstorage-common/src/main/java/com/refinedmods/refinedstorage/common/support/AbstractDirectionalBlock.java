@@ -87,4 +87,12 @@ public abstract class AbstractDirectionalBlock<T extends Enum<T> & StringReprese
             newDirectionalBlock.getDirection(newBlockState)
         );
     }
+
+    @Nullable
+    public static Direction tryExtractDirection(final BlockState blockState) {
+        if (!(blockState.getBlock() instanceof AbstractDirectionalBlock<?> directionalBlock)) {
+            return null;
+        }
+        return directionalBlock.extractDirection(blockState);
+    }
 }

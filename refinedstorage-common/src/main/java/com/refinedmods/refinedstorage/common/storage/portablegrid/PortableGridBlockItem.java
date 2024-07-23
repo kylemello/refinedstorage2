@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage.api.storage.StorageState;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
@@ -45,7 +45,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
     private final PortableGridType type;
 
     public PortableGridBlockItem(final Block block, final PortableGridType type) {
-        super(block, new Item.Properties().stacksTo(1), PlatformApi.INSTANCE.getEnergyItemHelper());
+        super(block, new Item.Properties().stacksTo(1), RefinedStorageApi.INSTANCE.getEnergyItemHelper());
         this.type = type;
     }
 
@@ -73,7 +73,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
         if (!active) {
             return StorageState.INACTIVE;
         }
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getClientStorageRepository();
+        final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getClientStorageRepository();
         return storageContainerItem.getInfo(storageRepository, diskStack)
             .map(storageInfo -> StateTrackedStorage.computeState(storageInfo.capacity(), storageInfo.stored()))
             .orElse(StorageState.INACTIVE);
@@ -105,7 +105,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
         final EnergyStorage energyStorage = new EnergyStorageImpl(
             Platform.INSTANCE.getConfig().getPortableGrid().getEnergyCapacity()
         );
-        return PlatformApi.INSTANCE.asBlockItemEnergyStorage(
+        return RefinedStorageApi.INSTANCE.asBlockItemEnergyStorage(
             energyStorage,
             stack,
             BlockEntities.INSTANCE.getPortableGrid()
@@ -116,7 +116,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer && level.getServer() != null) {
-            final SlotReference slotReference = PlatformApi.INSTANCE.createInventorySlotReference(player, hand);
+            final SlotReference slotReference = RefinedStorageApi.INSTANCE.createInventorySlotReference(player, hand);
             slotReference.resolve(player).ifPresent(s -> use(serverPlayer, s, slotReference));
         }
         return InteractionResultHolder.consume(stack);
@@ -128,7 +128,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
         final Level level = player.serverLevel();
         final DiskInventoryListenerImpl listener = new DiskInventoryListenerImpl(stack, level.registryAccess());
         final DiskInventory diskInventory = createDiskInventory(stack, listener, level.registryAccess());
-        diskInventory.setStorageRepository(PlatformApi.INSTANCE.getStorageRepository(level));
+        diskInventory.setStorageRepository(RefinedStorageApi.INSTANCE.getStorageRepository(level));
         final PortableGrid portableGrid = new PortableGrid(
             energyStorage,
             diskInventory,

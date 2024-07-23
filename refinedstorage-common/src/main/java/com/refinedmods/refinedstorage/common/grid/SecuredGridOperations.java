@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.security.BuiltinPermission;
 
@@ -36,7 +36,7 @@ public class SecuredGridOperations implements GridOperations {
                            final GridExtractMode extractMode,
                            final InsertableStorage destination) {
         if (!securityNetworkComponent.isAllowed(BuiltinPermission.EXTRACT, player)) {
-            PlatformApi.INSTANCE.sendNoPermissionMessage(player, CANNOT_EXTRACT_MESSAGE);
+            RefinedStorageApi.INSTANCE.sendNoPermissionMessage(player, CANNOT_EXTRACT_MESSAGE);
             return false;
         }
         return delegate.extract(resource, extractMode, destination);
@@ -46,7 +46,7 @@ public class SecuredGridOperations implements GridOperations {
     public boolean insert(final ResourceKey resource, final GridInsertMode insertMode,
                           final ExtractableStorage source) {
         if (!securityNetworkComponent.isAllowed(BuiltinPermission.INSERT, player)) {
-            PlatformApi.INSTANCE.sendNoPermissionMessage(player, CANNOT_INSERT_MESSAGE);
+            RefinedStorageApi.INSTANCE.sendNoPermissionMessage(player, CANNOT_INSERT_MESSAGE);
             return false;
         }
         return delegate.insert(resource, insertMode, source);

@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.common.support.containermenu.TransferManager;
@@ -235,6 +236,22 @@ public class PlatformProxy implements Platform {
                               final HolderLookup.Provider provider,
                               final BiConsumer<File, HolderLookup.Provider> defaultSaveFunction) {
         ensureLoaded().saveSavedData(savedData, file, provider, defaultSaveFunction);
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProvider(final Level level,
+                                                             final BlockPos pos,
+                                                             final Direction direction) {
+        return ensureLoaded().getContainerProvider(level, pos, direction);
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProviderSafely(final Level level,
+                                                                   final BlockPos pos,
+                                                                   final Direction direction) {
+        return ensureLoaded().getContainerProviderSafely(level, pos, direction);
     }
 
     private Platform ensureLoaded() {

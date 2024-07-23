@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.fabric;
 
 import com.refinedmods.refinedstorage.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.RefinedStoragePlugin;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
@@ -156,26 +156,26 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         final List<RefinedStoragePlugin> pluginEntrypoints = FabricLoader.getInstance()
             .getEntrypoints(PLUGIN_ENTRYPOINT_KEY, RefinedStoragePlugin.class);
         LOGGER.debug("Loading {} Refined Storage plugin entrypoints.", pluginEntrypoints.size());
-        pluginEntrypoints.forEach(plugin -> plugin.onPlatformApiAvailable(PlatformApi.INSTANCE));
+        pluginEntrypoints.forEach(plugin -> plugin.onApiAvailable(RefinedStorageApi.INSTANCE));
 
         LOGGER.debug("Refined Storage has loaded.");
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {
-        PlatformApi.INSTANCE.addGridInsertionStrategyFactory(FluidGridInsertionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridInsertionStrategyFactory(FluidGridInsertionStrategy::new);
     }
 
     private void registerGridExtractionStrategyFactories() {
-        PlatformApi.INSTANCE.addGridExtractionStrategyFactory(ItemGridExtractionStrategy::new);
-        PlatformApi.INSTANCE.addGridExtractionStrategyFactory(FluidGridExtractionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridExtractionStrategyFactory(ItemGridExtractionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridExtractionStrategyFactory(FluidGridExtractionStrategy::new);
     }
 
     private void registerGridScrollingStrategyFactories() {
-        PlatformApi.INSTANCE.addGridScrollingStrategyFactory(ItemGridScrollingStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridScrollingStrategyFactory(ItemGridScrollingStrategy::new);
     }
 
     private void registerImporterTransferStrategyFactories() {
-        PlatformApi.INSTANCE.getImporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getImporterTransferStrategyRegistry().register(
             createIdentifier("item"),
             new FabricStorageImporterTransferStrategyFactory<>(
                 ItemStorage.SIDED,
@@ -185,7 +185,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 1
             )
         );
-        PlatformApi.INSTANCE.getImporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getImporterTransferStrategyRegistry().register(
             createIdentifier("fluid"),
             new FabricStorageImporterTransferStrategyFactory<>(
                 FluidStorage.SIDED,
@@ -198,7 +198,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     }
 
     private void registerExporterTransferStrategyFactories() {
-        PlatformApi.INSTANCE.getExporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().register(
             createIdentifier("item"),
             new FabricStorageExporterTransferStrategyFactory<>(
                 ItemStorage.SIDED,
@@ -207,7 +207,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 1
             )
         );
-        PlatformApi.INSTANCE.getExporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().register(
             createIdentifier("fluid"),
             new FabricStorageExporterTransferStrategyFactory<>(
                 FluidStorage.SIDED,
@@ -219,21 +219,25 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     }
 
     private void registerExternalStorageProviderFactories() {
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(new InterfacePlatformExternalStorageProviderFactory());
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
+            new InterfacePlatformExternalStorageProviderFactory()
+        );
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
             new FabricStoragePlatformExternalStorageProviderFactory<>(
                 ItemStorage.SIDED,
                 VariantUtil::ofItemVariant,
                 resource -> resource instanceof ItemResource itemResource
                     ? toItemVariant(itemResource) : null
-            ));
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(
+            )
+        );
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
             new FabricStoragePlatformExternalStorageProviderFactory<>(
                 FluidStorage.SIDED,
                 VariantUtil::ofFluidVariant,
                 resource -> resource instanceof FluidResource fluidResource
                     ? toFluidVariant(fluidResource) : null
-            ));
+            )
+        );
     }
 
     private void registerContent() {
@@ -283,7 +287,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
 
     private void registerCustomItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setRegulatorUpgrade(callback.register(REGULATOR_UPGRADE, () -> new RegulatorUpgradeItem(
-            PlatformApi.INSTANCE.getUpgradeRegistry()
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry()
         ) {
             @Override
             public boolean allowComponentsUpdateAnimation(final Player player,

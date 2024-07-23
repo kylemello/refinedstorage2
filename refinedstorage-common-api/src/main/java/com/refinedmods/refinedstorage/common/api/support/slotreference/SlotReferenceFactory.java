@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.support.slotreference;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,7 +12,7 @@ import org.apiguardian.api.API;
 public interface SlotReferenceFactory {
     StreamCodec<RegistryFriendlyByteBuf, SlotReference> STREAM_CODEC = StreamCodec.of(
         (buf, slotReference) -> {
-            final ResourceLocation factoryId = PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry()
+            final ResourceLocation factoryId = RefinedStorageApi.INSTANCE.getSlotReferenceFactoryRegistry()
                 .getId(slotReference.getFactory())
                 .orElseThrow();
             buf.writeResourceLocation(factoryId);
@@ -20,7 +20,7 @@ public interface SlotReferenceFactory {
         },
         buf -> {
             final ResourceLocation factoryId = buf.readResourceLocation();
-            final SlotReferenceFactory factory = PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry()
+            final SlotReferenceFactory factory = RefinedStorageApi.INSTANCE.getSlotReferenceFactoryRegistry()
                 .get(factoryId)
                 .orElseThrow();
             return factory.getStreamCodec().decode(buf);

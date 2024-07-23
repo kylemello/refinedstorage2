@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
@@ -81,7 +81,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
 
     private void trySendDisplayUpdate(final Level level) {
         final long amount = getAmount();
-        final boolean active = mainNode.isActive();
+        final boolean active = mainNetworkNode.isActive();
         if ((amount != currentAmount || active != currentlyActive) && displayUpdateRateLimiter.tryAcquire()) {
             sendDisplayUpdate(level, amount, active);
         }
@@ -92,7 +92,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (configuredResource == null) {
             return 0;
         }
-        final Network network = mainNode.getNetwork();
+        final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return 0;
         }
@@ -111,7 +111,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (level == null) {
             return;
         }
-        final Network network = mainNode.getNetwork();
+        final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return;
         }
@@ -128,7 +128,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         final ResourceKey configuredResource,
         final Network network
     ) {
-        final boolean success = PlatformApi.INSTANCE.getStorageMonitorExtractionStrategy().extract(
+        final boolean success = RefinedStorageApi.INSTANCE.getStorageMonitorExtractionStrategy().extract(
             configuredResource,
             !player.isShiftKeyDown(),
             player,
@@ -156,7 +156,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     private boolean doInsert(final Player player, final InteractionHand hand) {
-        final Network network = mainNode.getNetwork();
+        final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return false;
         }
@@ -178,7 +178,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         final ResourceKey configuredResource,
         final Network network
     ) {
-        return PlatformApi.INSTANCE.getStorageMonitorInsertionStrategy().insert(
+        return RefinedStorageApi.INSTANCE.getStorageMonitorInsertionStrategy().insert(
             configuredResource,
             heldStack,
             new PlayerActor(player),
@@ -197,7 +197,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     }
 
     private boolean doInsertAll(final Player player, final ItemResource lastInsertedItem) {
-        final Network network = mainNode.getNetwork();
+        final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return false;
         }
@@ -227,7 +227,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (!itemInSlot.equals(lastInsertedItem)) {
             return false;
         }
-        return PlatformApi.INSTANCE.getStorageMonitorInsertionStrategy().insert(
+        return RefinedStorageApi.INSTANCE.getStorageMonitorInsertionStrategy().insert(
             configuredResource,
             slot,
             new PlayerActor(player),
@@ -320,7 +320,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (level == null) {
             return;
         }
-        sendDisplayUpdate(level, getAmount(), mainNode.isActive());
+        sendDisplayUpdate(level, getAmount(), mainNetworkNode.isActive());
     }
 
     private void sendDisplayUpdate(final Level level, final long amount, final boolean active) {

@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
@@ -29,7 +29,7 @@ public class ItemStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity
             pos,
             state,
             new StorageNetworkNode(getEnergyUsage(variant), 0, 1),
-            PlatformApi.INSTANCE.getItemResourceFactory()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory()
         );
         this.variant = variant;
         this.displayName = createTranslation("block", String.format("%s_storage_block", variant.getName()));

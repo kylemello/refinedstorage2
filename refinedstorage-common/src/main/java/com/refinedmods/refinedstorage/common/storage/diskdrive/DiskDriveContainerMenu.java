@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.diskdrive;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
@@ -42,7 +42,9 @@ public class DiskDriveContainerMenu extends AbstractStorageContainerMenu impleme
                                   final Inventory playerInventory,
                                   final ResourceContainerData resourceContainerData) {
         super(Menus.INSTANCE.getDiskDrive(), syncId);
-        this.storageInfoAccessor = new StorageDiskInfoAccessorImpl(PlatformApi.INSTANCE.getClientStorageRepository());
+        this.storageInfoAccessor = new StorageDiskInfoAccessorImpl(
+            RefinedStorageApi.INSTANCE.getClientStorageRepository()
+        );
         addSlots(
             playerInventory.player,
             new FilteredContainer(

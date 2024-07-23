@@ -1,17 +1,15 @@
 package com.refinedmods.refinedstorage.common.networking;
 
-import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
-import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerImpl;
+import com.refinedmods.refinedstorage.common.api.support.network.ConnectionStrategy;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
-class RelayInputNetworkNodeContainer extends InWorldNetworkNodeContainerImpl {
+class RelayInputConnectionStrategy implements ConnectionStrategy {
     private final RelayBlockEntity blockEntity;
 
-    RelayInputNetworkNodeContainer(final RelayBlockEntity blockEntity, final NetworkNode node) {
-        super(blockEntity, node, "input", 0, blockEntity, null);
+    RelayInputConnectionStrategy(final RelayBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
     }
 

@@ -141,10 +141,10 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     }
 
     Optional<Network> getNetwork() {
-        if (!mainNode.isActive()) {
+        if (!mainNetworkNode.isActive()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(mainNode.getNetwork());
+        return Optional.ofNullable(mainNetworkNode.getNetwork());
     }
 
     Optional<RootStorage> getRootStorage() {

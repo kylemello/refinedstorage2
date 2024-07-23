@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.storageblock;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.storage.StorageConfigurationContainer;
@@ -17,7 +17,7 @@ public class ItemStorageBlockContainerMenu extends AbstractStorageBlockContainer
             syncId,
             playerInventory.player,
             storageBlockData,
-            PlatformApi.INSTANCE.getItemResourceFactory()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory()
         );
     }
 

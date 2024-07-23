@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorScreen;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -80,12 +80,12 @@ public abstract class AbstractClientModInitializer {
     }
 
     protected static void registerAlternativeGridHints() {
-        PlatformApi.INSTANCE.addAlternativeGridInsertionHint(new FluidGridInsertionHint());
+        RefinedStorageApi.INSTANCE.addAlternativeGridInsertionHint(new FluidGridInsertionHint());
     }
 
     protected static void registerResourceRendering() {
-        PlatformApi.INSTANCE.registerResourceRendering(ItemResource.class, new ItemResourceRendering());
-        PlatformApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering());
+        RefinedStorageApi.INSTANCE.registerResourceRendering(ItemResource.class, new ItemResourceRendering());
+        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering());
     }
 
     protected static void handleInputEvents() {
@@ -95,7 +95,7 @@ public abstract class AbstractClientModInitializer {
         }
         final KeyMapping openWirelessGrid = KeyMappings.INSTANCE.getOpenWirelessGrid();
         while (openWirelessGrid != null && openWirelessGrid.consumeClick()) {
-            PlatformApi.INSTANCE.useSlotReferencedItem(
+            RefinedStorageApi.INSTANCE.useSlotReferencedItem(
                 player,
                 Items.INSTANCE.getWirelessGrid(),
                 Items.INSTANCE.getCreativeWirelessGrid()
@@ -103,7 +103,7 @@ public abstract class AbstractClientModInitializer {
         }
         final KeyMapping openPortableGrid = KeyMappings.INSTANCE.getOpenPortableGrid();
         while (openPortableGrid != null && openPortableGrid.consumeClick()) {
-            PlatformApi.INSTANCE.useSlotReferencedItem(
+            RefinedStorageApi.INSTANCE.useSlotReferencedItem(
                 player,
                 Items.INSTANCE.getPortableGrid(),
                 Items.INSTANCE.getCreativePortableGrid()
@@ -114,7 +114,7 @@ public abstract class AbstractClientModInitializer {
     protected static void registerDiskModels() {
         final ResourceLocation diskModel = createIdentifier("block/disk/disk");
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
-            PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
+            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getItemStorageDisk(variant),
                 diskModel
             );
@@ -122,7 +122,7 @@ public abstract class AbstractClientModInitializer {
 
         final ResourceLocation fluidDiskModel = createIdentifier("block/disk/fluid_disk");
         for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
-            PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
+            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getFluidStorageDisk(variant),
                 fluidDiskModel
             );

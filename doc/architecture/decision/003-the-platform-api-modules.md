@@ -1,4 +1,4 @@
-# 3. The platform API module
+# 3. The platform API modules
 
 Date: 2021-12-29
 
@@ -17,18 +17,13 @@ Refined Storage 1).
 ## Decision
 
 Refined Storage will have a modloader-neutral (just like the common module) platform API module which addon mods can use
-to integrate with Refined Storage.
+to integrate with Refined Storage: `refinedstorage-common-api`.
 
-Moreover, Refined Storage itself will use this platform API module. The module is named `refinedstorage-common-api`.
+For modloader specific integrations, we'll have a `refinedstorage-{modloader-name}-api` module.
 
 ## Consequences
 
-By offering a dedicated platform API module we can much more tightly control API surface.
-
-The platform API module is platform-neutral so addons can decide what modloader they target. Moreover, it saves us time
-because we don't have to maintain different platform APIs per modloader.
-
-However, if addon mods want to support multiple modloaders, they'll have to create their own abstractions.
+By offering dedicated platform API modules we can much more tightly control API surface.
 
 ## References
 

@@ -3,18 +3,15 @@ package com.refinedmods.refinedstorage.common.support.network;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
-import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage.common.support.ColorableBlock;
 
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -22,8 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
-    extends AbstractNetworkNodeContainerBlockEntity<T>
-    implements ConnectionLogic, NetworkItemTargetBlockEntity {
+    extends AbstractNetworkNodeContainerBlockEntity<T> implements NetworkItemTargetBlockEntity {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
@@ -35,17 +31,24 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         super(type, pos, state, networkNode);
     }
 
+    @Override
+    protected InWorldNetworkNodeContainer createMainContainer(final T networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .connectionStrategy(new ColoredConnectionStrategy(this::getBlockState, getBlockPos()))
+            .build();
+    }
+
     protected boolean calculateActive() {
-        final long energyUsage = mainNode.getEnergyUsage();
+        final long energyUsage = mainNetworkNode.getEnergyUsage();
         final boolean hasLevel = level != null && level.isLoaded(worldPosition);
         return hasLevel
-            && mainNode.getNetwork() != null
-            && mainNode.getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
+            && mainNetworkNode.getNetwork() != null
+            && mainNetworkNode.getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
     }
 
     public void updateActiveness(final BlockState state, @Nullable final BooleanProperty activenessProperty) {
         final boolean newActive = calculateActive();
-        final boolean nodeActivenessNeedsUpdate = newActive != mainNode.isActive();
+        final boolean nodeActivenessNeedsUpdate = newActive != mainNetworkNode.isActive();
         final boolean blockStateActivenessNeedsUpdate = activenessProperty != null
             && state.getValue(activenessProperty) != newActive;
         final boolean activenessNeedsUpdate = nodeActivenessNeedsUpdate || blockStateActivenessNeedsUpdate;
@@ -60,8 +63,8 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     }
 
     protected void activenessChanged(final boolean newActive) {
-        LOGGER.debug("Activeness change for node at {}: {} -> {}", getBlockPos(), mainNode.isActive(), newActive);
-        mainNode.setActive(newActive);
+        LOGGER.debug("Activeness change for node at {}: {} -> {}", getBlockPos(), mainNetworkNode.isActive(), newActive);
+        mainNetworkNode.setActive(newActive);
     }
 
     private void updateActivenessBlockState(final BlockState state,
@@ -79,64 +82,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     }
 
     public void doWork() {
-        mainNode.doWork();
-    }
-
-    @Override
-    public void addOutgoingConnections(final ConnectionSink sink) {
-        final Direction myDirection = getDirection();
-        if (myDirection == null) {
-            super.addOutgoingConnections(sink);
-            return;
-        }
-        for (final Direction direction : Direction.values()) {
-            if (direction == myDirection) {
-                continue;
-            }
-            sink.tryConnectInSameDimension(worldPosition.relative(direction), direction.getOpposite());
-        }
-    }
-
-    @Override
-    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
-        if (!colorsAllowConnecting(connectingState)) {
-            return false;
-        }
-        final Direction myDirection = getDirection();
-        if (myDirection != null) {
-            return myDirection != incomingDirection;
-        }
-        return true;
-    }
-
-    protected final boolean colorsAllowConnecting(final BlockState connectingState) {
-        if (!(connectingState.getBlock() instanceof ColorableBlock<?, ?> otherColorableBlock)) {
-            return true;
-        }
-        final ColorableBlock<?, ?> colorableBlock = getColor();
-        if (colorableBlock == null) {
-            return true;
-        }
-        return otherColorableBlock.getColor() == colorableBlock.getColor()
-            || colorableBlock.canAlwaysConnect()
-            || otherColorableBlock.canAlwaysConnect();
-    }
-
-    @Nullable
-    private ColorableBlock<?, ?> getColor() {
-        if (!(getBlockState().getBlock() instanceof ColorableBlock<?, ?> colorableBlock)) {
-            return null;
-        }
-        return colorableBlock;
-    }
-
-    @Nullable
-    protected final Direction getDirection() {
-        final BlockState blockState = getBlockState();
-        if (!(blockState.getBlock() instanceof AbstractDirectionalBlock<?> directionalBlock)) {
-            return null;
-        }
-        return directionalBlock.extractDirection(blockState);
+        mainNetworkNode.doWork();
     }
 
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(
@@ -154,12 +100,12 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
             return;
         }
-        updateContainers();
+        containers.update(level);
     }
 
     @Nullable
     @Override
     public Network getNetworkForItem() {
-        return mainNode.getNetwork();
+        return mainNetworkNode.getNetwork();
     }
 }

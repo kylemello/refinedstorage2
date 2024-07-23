@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.fabric.storage.portablegrid;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.fabric.support.render.QuadRotators;
 
 import java.util.Collection;
@@ -48,7 +48,7 @@ public class PortableGridUnbakedModel implements UnbakedModel {
         modelGetter.apply(NORMAL_LED_MODEL).resolveParents(modelGetter);
         modelGetter.apply(NEAR_CAPACITY_LED_MODEL).resolveParents(modelGetter);
         modelGetter.apply(FULL_LED_MODEL).resolveParents(modelGetter);
-        PlatformApi.INSTANCE.getStorageContainerItemHelper().getDiskModels().forEach(
+        RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().getDiskModels().forEach(
             diskModel -> modelGetter.apply(diskModel).resolveParents(modelGetter)
         );
     }
@@ -57,7 +57,7 @@ public class PortableGridUnbakedModel implements UnbakedModel {
     public BakedModel bake(final ModelBaker baker,
                            final Function<Material, TextureAtlasSprite> spriteGetter,
                            final ModelState state) {
-        final Map<Item, BakedModel> diskModels = PlatformApi.INSTANCE.getStorageContainerItemHelper()
+        final Map<Item, BakedModel> diskModels = RefinedStorageApi.INSTANCE.getStorageContainerItemHelper()
             .getDiskModelsByItem()
             .entrySet()
             .stream()

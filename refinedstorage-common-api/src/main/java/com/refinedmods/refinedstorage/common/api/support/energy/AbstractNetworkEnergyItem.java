@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.support.energy;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
@@ -56,7 +56,7 @@ public abstract class AbstractNetworkEnergyItem extends AbstractEnergyItem imple
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer && level.getServer() != null) {
-            final SlotReference slotReference = PlatformApi.INSTANCE.createInventorySlotReference(player, hand);
+            final SlotReference slotReference = RefinedStorageApi.INSTANCE.createInventorySlotReference(player, hand);
             slotReference.resolve(player).ifPresent(s -> use(serverPlayer, s, slotReference));
         }
         return InteractionResultHolder.consume(stack);
@@ -64,7 +64,7 @@ public abstract class AbstractNetworkEnergyItem extends AbstractEnergyItem imple
 
     @Override
     public void use(final ServerPlayer player, final ItemStack stack, final SlotReference slotReference) {
-        final NetworkItemContext context = PlatformApi.INSTANCE.getNetworkItemHelper().createContext(
+        final NetworkItemContext context = RefinedStorageApi.INSTANCE.getNetworkItemHelper().createContext(
             stack,
             player,
             slotReference

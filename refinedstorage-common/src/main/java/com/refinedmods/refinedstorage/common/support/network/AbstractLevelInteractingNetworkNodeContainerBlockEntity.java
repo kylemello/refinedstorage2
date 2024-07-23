@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
+
 public abstract class AbstractLevelInteractingNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(
@@ -46,7 +48,7 @@ public abstract class AbstractLevelInteractingNetworkNodeContainerBlockEntity<T 
     }
 
     protected final void initialize(final ServerLevel level) {
-        final Direction direction = getDirection();
+        final Direction direction = tryExtractDirection(getBlockState());
         if (direction == null) {
             LOGGER.warn(
                 "Failed to initialize: could not extract direction from block at {}, state is {}",

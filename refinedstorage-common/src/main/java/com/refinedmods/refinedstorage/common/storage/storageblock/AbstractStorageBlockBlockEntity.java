@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractStorageContainerNetworkNode;
 import com.refinedmods.refinedstorage.api.network.impl.node.storage.StorageNetworkNode;
 import com.refinedmods.refinedstorage.api.storage.Storage;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.api.storage.StorageBlockEntity;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -54,16 +54,16 @@ abstract class AbstractStorageBlockBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(resourceFactory),
             this::setChanged,
-            mainNode.getStorageConfiguration()::setFilters
+            mainNetworkNode.getStorageConfiguration()::setFilters
         );
         this.configContainer = new StorageConfigurationContainerImpl(
-            mainNode.getStorageConfiguration(),
+            mainNetworkNode.getStorageConfiguration(),
             filter,
             this::setChanged,
             this::getRedstoneMode,
             this::setRedstoneMode
         );
-        mainNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
+        mainNetworkNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
     }
 
     protected abstract SerializableStorage createStorage(Runnable listener);
@@ -82,11 +82,11 @@ abstract class AbstractStorageBlockBlockEntity
             //   (#setLevel(Level) -> #modifyStorageAfterAlreadyInitialized(UUID)).
             // In both cases listed above we need to clean up the storage we create here.
             storageId = UUID.randomUUID();
-            final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
+            final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getStorageRepository(level);
             final SerializableStorage storage = createStorage(storageRepository::markAsChanged);
             storageRepository.set(storageId, storage);
         }
-        mainNode.setProvider(this);
+        mainNetworkNode.setProvider(this);
     }
 
     @Override
@@ -123,7 +123,7 @@ abstract class AbstractStorageBlockBlockEntity
     public void setStorageId(final UUID storageId) {
         tryRemoveCurrentStorage(storageId);
         this.storageId = storageId;
-        mainNode.onStorageChanged(0);
+        mainNetworkNode.onStorageChanged(0);
     }
 
     private void tryRemoveCurrentStorage(final UUID newStorageId) {
@@ -134,7 +134,7 @@ abstract class AbstractStorageBlockBlockEntity
         // we got placed with an existing storage ID (#setLevel(Level) -> #setStorageId(UUID)).
         // Clean up the storage created earlier in #setLevel(Level).
         LOGGER.info("Updating storage ID from {} to {}. Removing old storage", storageId, newStorageId);
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
+        final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getStorageRepository(level);
         storageRepository.removeIfEmpty(storageId).ifPresentOrElse(
             storage -> LOGGER.info("Storage {} successfully removed", storageId),
             () -> LOGGER.warn("Storage {} could not be removed", storageId)
@@ -154,8 +154,8 @@ abstract class AbstractStorageBlockBlockEntity
     @Override
     public StorageBlockData getMenuData() {
         return new StorageBlockData(
-            mainNode.getStored(),
-            mainNode.getCapacity(),
+            mainNetworkNode.getStored(),
+            mainNetworkNode.getCapacity(),
             ResourceContainerData.of(filter.getFilterContainer())
         );
     }
@@ -170,7 +170,7 @@ abstract class AbstractStorageBlockBlockEntity
         if (level == null || storageId == null) {
             return Optional.empty();
         }
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getStorageRepository(level);
+        final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getStorageRepository(level);
         return storageRepository.get(storageId).map(Storage.class::cast);
     }
 }

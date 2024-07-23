@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.storage.diskinterface;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.storagetransfer.StorageTransferMode;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
@@ -77,7 +77,7 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
                 StorageContainerItem.stackValidator()
             ),
             ResourceContainerImpl.createForFilter(resourceContainerData),
-            new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, PlatformApi.INSTANCE.getUpgradeRegistry())
+            new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, RefinedStorageApi.INSTANCE.getUpgradeRegistry())
         );
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));

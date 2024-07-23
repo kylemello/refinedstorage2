@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -54,7 +54,7 @@ public class ConstructorBlockEntity
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage()),
             UpgradeDestinations.CONSTRUCTOR
         );
-        this.actor = new NetworkNodeActor(mainNode);
+        this.actor = new NetworkNodeActor(mainNetworkNode);
     }
 
     @Override
@@ -71,7 +71,8 @@ public class ConstructorBlockEntity
     private ConstructorStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
         final Direction incomingDirection = direction.getOpposite();
         final BlockPos sourcePosition = worldPosition.relative(direction);
-        final Collection<ConstructorStrategyFactory> factories = PlatformApi.INSTANCE.getConstructorStrategyFactories();
+        final Collection<ConstructorStrategyFactory> factories = RefinedStorageApi.INSTANCE
+            .getConstructorStrategyFactories();
         final List<ConstructorStrategy> strategies = factories
             .stream()
             .flatMap(factory -> factory.create(
@@ -88,14 +89,14 @@ public class ConstructorBlockEntity
     @Override
     public void postDoWork() {
         if (taskExecutor == null
-            || mainNode.getNetwork() == null
-            || !mainNode.isActive()
+            || mainNetworkNode.getNetwork() == null
+            || !mainNetworkNode.isActive()
             || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
         final Player fakePlayer = getFakePlayer(serverLevel);
         taskExecutor.execute(tasks, new TaskContext(
-            mainNode.getNetwork(),
+            mainNetworkNode.getNetwork(),
             fakePlayer
         ));
     }
@@ -140,7 +141,7 @@ public class ConstructorBlockEntity
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
-        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override

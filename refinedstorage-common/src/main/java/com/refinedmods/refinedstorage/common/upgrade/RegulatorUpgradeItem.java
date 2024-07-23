@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.upgrade;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
@@ -56,7 +56,7 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
                 createResourceFilterContainer(stack, initialState),
                 initialState.amount(),
                 newAmount -> setAmount(stack, newAmount),
-                PlatformApi.INSTANCE.createInventorySlotReference(player, hand)
+                RefinedStorageApi.INSTANCE.createInventorySlotReference(player, hand)
             ));
         }
         return InteractionResultHolder.success(stack);

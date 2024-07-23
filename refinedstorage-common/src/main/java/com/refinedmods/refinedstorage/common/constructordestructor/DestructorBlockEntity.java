@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -57,7 +57,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage()),
             UpgradeDestinations.DESTRUCTOR
         );
-        this.actor = new NetworkNodeActor(mainNode);
+        this.actor = new NetworkNodeActor(mainNetworkNode);
         this.filterWithFuzzyMode = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
@@ -113,7 +113,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage();
-        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
     protected void initialize(final ServerLevel level, final Direction direction) {
         final BlockPos pos = getBlockPos().relative(direction);
         final Direction incomingDirection = direction.getOpposite();
-        final List<DestructorStrategy> strategies = PlatformApi.INSTANCE.getDestructorStrategyFactories()
+        final List<DestructorStrategy> strategies = RefinedStorageApi.INSTANCE.getDestructorStrategyFactories()
             .stream()
             .flatMap(factory -> factory.create(level, pos, incomingDirection, upgradeContainer, pickupItems).stream())
             .toList();
@@ -157,13 +157,13 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
     @Override
     public void postDoWork() {
         if (strategy == null
-            || mainNode.getNetwork() == null
-            || !mainNode.isActive()
+            || mainNetworkNode.getNetwork() == null
+            || !mainNetworkNode.isActive()
             || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
         final Player fakePlayer = getFakePlayer(serverLevel);
-        strategy.apply(filter, actor, mainNode::getNetwork, fakePlayer);
+        strategy.apply(filter, actor, mainNetworkNode::getNetwork, fakePlayer);
     }
 
     @Override

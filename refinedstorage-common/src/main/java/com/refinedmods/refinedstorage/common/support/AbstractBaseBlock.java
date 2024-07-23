@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.support;
 
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.Sounds;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeMenuProvider;
@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -97,7 +98,7 @@ public abstract class AbstractBaseBlock extends Block {
     private void tryOpenScreen(final ServerPlayer player, final MenuProvider menuProvider) {
         if (menuProvider instanceof NetworkNodeMenuProvider networkNodeMenuProvider
             && !networkNodeMenuProvider.canOpen(player)) {
-            PlatformApi.INSTANCE.sendNoPermissionToOpenMessage(player, getName());
+            RefinedStorageApi.INSTANCE.sendNoPermissionToOpenMessage(player, getName());
             return;
         }
         Platform.INSTANCE.getMenuOpener().openMenu(player, menuProvider);
@@ -179,18 +180,19 @@ public abstract class AbstractBaseBlock extends Block {
         if (player.isCrouching()) {
             return dismantle(state, level, hitResult, player);
         } else {
-            return rotate(state, level, hitResult.getBlockPos(), player);
+            // TODO: validate dir.
+            return rotate(state, level, hitResult.getBlockPos(), hitResult.getDirection(), player);
         }
     }
 
     private boolean rotate(final BlockState state,
                            final Level level,
                            final BlockPos pos,
+                           final Direction direction,
                            final ServerPlayer player) {
-        final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
-            && !networkNodeContainerBlockEntity.canBuild(player)) {
-            PlatformApi.INSTANCE.sendNoPermissionMessage(
+        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(level, pos, direction);
+        if (provider != null && !provider.canBuild(player)) {
+            RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
                 player,
                 createTranslation("misc", "no_permission.build.rotate", getName())
             );
@@ -213,15 +215,19 @@ public abstract class AbstractBaseBlock extends Block {
                               final Level level,
                               final BlockHitResult hitResult,
                               final ServerPlayer player) {
-        final BlockEntity blockEntity = level.getBlockEntity(hitResult.getBlockPos());
-        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
-            && !networkNodeContainerBlockEntity.canBuild(player)) {
-            PlatformApi.INSTANCE.sendNoPermissionMessage(
+        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(
+            level,
+            hitResult.getBlockPos(),
+            hitResult.getDirection().getOpposite() // todo verify
+        );
+        if (provider != null && !provider.canBuild(player)) {
+            RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
                 player,
                 createTranslation("misc", "no_permission.build.dismantle", getName())
             );
             return false;
         }
+        final BlockEntity blockEntity = level.getBlockEntity(hitResult.getBlockPos());
         final ItemStack stack = Platform.INSTANCE.getCloneItemStack(state, level, hitResult, player);
         if (blockEntity != null) {
             blockEntity.saveToItem(stack, level.registryAccess());

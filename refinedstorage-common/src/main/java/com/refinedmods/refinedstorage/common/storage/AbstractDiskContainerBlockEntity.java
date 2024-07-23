@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.storage;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractStorageContainerNetworkNode;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
@@ -51,17 +51,22 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
                                                final BlockState state,
                                                final T node) {
         super(type, pos, state, node);
-        this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(slot), mainNode.getSize());
+        this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(slot), mainNetworkNode.getSize());
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
             this::setFilters
         );
-        this.mainNode.setListener(diskStateListener);
+        this.mainNetworkNode.setListener(diskStateListener);
         setNormalizer(filter.createNormalizer());
+    }
+
+    @Override
+    protected void containerInitialized() {
+        super.containerInitialized();
         // It's important to sync here as the initial update packet might have failed as the network
         // could possibly be not initialized yet.
-        this.initializationCallback = diskStateListener::immediateUpdate;
+        diskStateListener.immediateUpdate();
     }
 
     protected abstract void setFilters(Set<ResourceKey> filters);
@@ -113,8 +118,8 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     }
 
     private void initialize(final Level level) {
-        diskInventory.setStorageRepository(PlatformApi.INSTANCE.getStorageRepository(level));
-        mainNode.setProvider(diskInventory);
+        diskInventory.setStorageRepository(RefinedStorageApi.INSTANCE.getStorageRepository(level));
+        mainNetworkNode.setProvider(diskInventory);
     }
 
     @Override
@@ -158,11 +163,11 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
         // Level will not yet be present
         final boolean isJustPlacedIntoLevelOrLoading = level == null || level.isClientSide();
         // Level will be present, but network not yet
-        final boolean isPlacedThroughDismantlingMode = mainNode.getNetwork() == null;
+        final boolean isPlacedThroughDismantlingMode = mainNetworkNode.getNetwork() == null;
         if (isJustPlacedIntoLevelOrLoading || isPlacedThroughDismantlingMode) {
             return;
         }
-        mainNode.onStorageChanged(slot);
+        mainNetworkNode.onStorageChanged(slot);
         diskStateListener.immediateUpdate();
         setChanged();
     }
@@ -188,10 +193,10 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     public CompoundTag getUpdateTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         // This null check is important. #getUpdateTag() can be called before the node's network is initialized!
-        if (mainNode.getNetwork() == null) {
+        if (mainNetworkNode.getNetwork() == null) {
             return tag;
         }
-        tag.put(TAG_DISKS, diskInventory.toSyncTag(mainNode::getState));
+        tag.put(TAG_DISKS, diskInventory.toSyncTag(mainNetworkNode::getState));
         return tag;
     }
 

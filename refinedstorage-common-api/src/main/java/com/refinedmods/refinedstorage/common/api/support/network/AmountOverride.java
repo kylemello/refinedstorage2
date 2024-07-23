@@ -15,9 +15,9 @@ public interface AmountOverride {
      * Modifies the requested amount to a new amount.
      *
      * @param resource              the resource
-     * @param desiredAmount         the original requested amount
+     * @param amount                the original requested amount
      * @param currentAmountSupplier the current amount present in the source
      * @return the new requested amount, may be 0
      */
-    long overrideAmount(ResourceKey resource, long desiredAmount, LongSupplier currentAmountSupplier);
+    long overrideAmount(ResourceKey resource, long amount, LongSupplier currentAmountSupplier);
 }

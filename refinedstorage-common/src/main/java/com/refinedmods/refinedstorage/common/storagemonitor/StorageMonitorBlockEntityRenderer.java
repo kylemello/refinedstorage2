@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.storagemonitor;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.direction.BiDirection;
 import com.refinedmods.refinedstorage.common.support.direction.BiDirectionType;
@@ -61,7 +61,7 @@ public class StorageMonitorBlockEntityRenderer implements BlockEntityRenderer<St
                           final BiDirection direction,
                           final ResourceKey resource,
                           final long amount) {
-        final ResourceRendering resourceRendering = PlatformApi.INSTANCE.getResourceRendering(resource);
+        final ResourceRendering resourceRendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
         doRender(
             poseStack,
             vertexConsumers,

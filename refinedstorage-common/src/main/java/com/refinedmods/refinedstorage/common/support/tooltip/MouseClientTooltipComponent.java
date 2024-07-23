@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.support.tooltip;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
@@ -97,7 +97,8 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                                                   @Nullable final String amount) {
         return new MouseClientTooltipComponent(
             type,
-            (graphics, x, y) -> PlatformApi.INSTANCE.getResourceRendering(resource).render(resource, graphics, x, y),
+            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource)
+                .render(resource, graphics, x, y),
             amount
         );
     }

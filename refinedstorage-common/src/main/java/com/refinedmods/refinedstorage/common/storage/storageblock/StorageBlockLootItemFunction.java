@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.storageblock;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.StorageBlockEntity;
 import com.refinedmods.refinedstorage.common.content.LootFunctions;
 
@@ -21,7 +21,7 @@ public class StorageBlockLootItemFunction implements LootItemFunction {
     public ItemStack apply(final ItemStack stack, final LootContext lootContext) {
         final BlockEntity blockEntity = lootContext.getParam(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof StorageBlockEntity transferable) {
-            PlatformApi.INSTANCE.getStorageContainerItemHelper().transferFromBlockEntity(stack, transferable);
+            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().transferFromBlockEntity(stack, transferable);
         }
         return stack;
     }

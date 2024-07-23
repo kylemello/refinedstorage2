@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.storage.externalstorage;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.externalstorage.ExternalStorageNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.storage.StorageConfigurationContainerImpl;
@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 import static java.util.Objects.requireNonNull;
 
 public class ExternalStorageBlockEntity
@@ -53,12 +54,12 @@ public class ExternalStorageBlockEntity
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            mainNode.getStorageConfiguration()::setFilters
+            mainNetworkNode.getStorageConfiguration()::setFilters
         );
-        mainNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
-        mainNode.setTrackingRepository(trackedStorageRepository);
+        mainNetworkNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
+        mainNetworkNode.setTrackingRepository(trackedStorageRepository);
         this.configContainer = new StorageConfigurationContainerImpl(
-            mainNode.getStorageConfiguration(),
+            mainNetworkNode.getStorageConfiguration(),
             filter,
             this::setChanged,
             this::getRedstoneMode,
@@ -86,15 +87,15 @@ public class ExternalStorageBlockEntity
     }
 
     void loadStorage(final ServerLevel serverLevel) {
-        final Direction direction = getDirection();
+        final Direction direction = tryExtractDirection(getBlockState());
         LOGGER.debug("Loading storage for external storage with direction {} @ {}", direction, worldPosition);
         if (direction == null) {
             return;
         }
-        mainNode.initialize(() -> {
+        mainNetworkNode.initialize(() -> {
             final Direction incomingDirection = direction.getOpposite();
             final BlockPos sourcePosition = worldPosition.relative(direction);
-            return PlatformApi.INSTANCE
+            return RefinedStorageApi.INSTANCE
                 .getExternalStorageProviderFactories()
                 .stream()
                 .flatMap(factory -> factory.create(serverLevel, sourcePosition, incomingDirection).stream())
@@ -106,7 +107,7 @@ public class ExternalStorageBlockEntity
     public void doWork() {
         super.doWork();
         if (workRate.canDoWork()) {
-            final boolean hasChanges = mainNode.detectChanges();
+            final boolean hasChanges = mainNetworkNode.detectChanges();
             if (hasChanges) {
                 LOGGER.debug("External storage @ {} has changed!", worldPosition);
                 workRate.faster();

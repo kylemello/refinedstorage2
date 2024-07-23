@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.tooltip;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 
 import java.util.Objects;
@@ -33,7 +33,7 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        PlatformApi.INSTANCE.getResourceRendering(resourceAmount.getResource()).render(
+        RefinedStorageApi.INSTANCE.getResourceRendering(resourceAmount.getResource()).render(
             resourceAmount.getResource(),
             graphics,
             x,
@@ -49,7 +49,7 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
     }
 
     private static Component getNameWithAmount(final ResourceAmount resourceAmount) {
-        final ResourceRendering rendering = PlatformApi.INSTANCE.getResourceRendering(
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
             resourceAmount.getResource()
         );
         final String amount = rendering.getDisplayedAmount(resourceAmount.getAmount(), true);

@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.wirelesstransmitter;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemPlayerValidator;
 import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerImpl;
 
@@ -17,8 +16,8 @@ class WirelessTransmitterNetworkNodeContainer extends InWorldNetworkNodeContaine
     WirelessTransmitterNetworkNodeContainer(final WirelessTransmitterBlockEntity blockEntity,
                                             final AbstractNetworkNode node,
                                             final String name,
-                                            final ConnectionLogic connectionLogic) {
-        super(blockEntity, node, name, 0, connectionLogic, null);
+                                            final WirelessTransmitterConnectionStrategy connectionStrategy) {
+        super(blockEntity, node, name, 0, connectionStrategy, null);
         this.blockEntity = blockEntity;
         this.node = node;
     }

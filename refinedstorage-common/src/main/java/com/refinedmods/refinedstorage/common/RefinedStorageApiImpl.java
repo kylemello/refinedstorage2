@@ -10,7 +10,7 @@ import com.refinedmods.refinedstorage.api.network.impl.NetworkFactory;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
@@ -25,7 +25,6 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStra
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage.common.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -34,9 +33,8 @@ import com.refinedmods.refinedstorage.common.api.storage.externalstorage.Platfor
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
-import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
@@ -56,7 +54,6 @@ import com.refinedmods.refinedstorage.common.grid.screen.hint.SingleItemGridInse
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridScrollingStrategy;
-import com.refinedmods.refinedstorage.common.security.BuiltinPermission;
 import com.refinedmods.refinedstorage.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage.common.storage.StorageRepositoryImpl;
@@ -67,7 +64,8 @@ import com.refinedmods.refinedstorage.common.support.energy.EnergyItemHelperImpl
 import com.refinedmods.refinedstorage.common.support.energy.ItemBlockEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.ItemEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.network.ConnectionProviderImpl;
-import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerImpl;
+import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerBuilder;
+import com.refinedmods.refinedstorage.common.support.network.NetworkNodeContainerProviderImpl;
 import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemHelperImpl;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
@@ -95,7 +93,6 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -118,7 +115,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static java.util.Objects.requireNonNull;
 
-public class PlatformApiImpl implements PlatformApi {
+public class RefinedStorageApiImpl implements RefinedStorageApi {
     private final StorageRepository clientStorageRepository = new ClientStorageRepository(
         C2SPackets::sendStorageInfoRequest
     );
@@ -170,7 +167,7 @@ public class PlatformApiImpl implements PlatformApi {
     private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
     private final List<ResourceContainerInsertStrategy> resourceExtractStrategies = new ArrayList<>();
 
-    public PlatformApiImpl() {
+    public RefinedStorageApiImpl() {
         gridSynchronizerRegistry.register(createIdentifier("off"), NoopGridSynchronizer.INSTANCE);
     }
 
@@ -281,21 +278,20 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(
-        final BlockEntity blockEntity,
-        final NetworkNode node,
-        final String name,
-        final int priority,
-        final ConnectionLogic connectionLogic,
-        @Nullable final Supplier<Object> keyProvider
-    ) {
-        return new InWorldNetworkNodeContainerImpl(blockEntity, node, name, priority, connectionLogic, keyProvider);
+    public NetworkNodeContainerProvider createNetworkNodeContainerProvider() {
+        return new NetworkNodeContainerProviderImpl();
     }
 
     @Override
-    public void onNetworkNodeContainerInitialized(final InWorldNetworkNodeContainer container,
-                                                  @Nullable final Level level,
-                                                  @Nullable final Runnable callback) {
+    public InWorldNetworkNodeContainer.Builder createNetworkNodeContainer(final BlockEntity blockEntity,
+                                                                          final NetworkNode networkNode) {
+        return new InWorldNetworkNodeContainerBuilder(blockEntity, networkNode);
+    }
+
+    @Override
+    public void initializeNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                               @Nullable final Level level,
+                                               @Nullable final Runnable callback) {
         if (level == null || level.isClientSide()) {
             return;
         }
@@ -317,8 +313,8 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void onNetworkNodeContainerRemoved(final InWorldNetworkNodeContainer container,
-                                              @Nullable final Level level) {
+    public void removeNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                           @Nullable final Level level) {
         if (level == null || level.isClientSide()) {
             return;
         }
@@ -335,8 +331,8 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public void onNetworkNodeContainerUpdated(final InWorldNetworkNodeContainer container,
-                                              @Nullable final Level level) {
+    public void updateNetworkNodeContainer(final InWorldNetworkNodeContainer container,
+                                           @Nullable final Level level) {
         if (level == null || level.isClientSide() || container.getNode().getNetwork() == null) {
             return;
         }
@@ -530,11 +526,6 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public BuiltinPermissions getBuiltinPermissions() {
-        return BuiltinPermission.VIEW;
-    }
-
-    @Override
     public PlatformRegistry<PlatformPermission> getPermissionRegistry() {
         return permissionRegistry;
     }
@@ -564,12 +555,16 @@ public class PlatformApiImpl implements PlatformApi {
                                        final BlockState state) {
         for (final Direction direction : Direction.values()) {
             final BlockPos adjacentPos = pos.relative(direction);
-            final BlockEntity adjacentBlockEntity = level.getBlockEntity(adjacentPos);
-            if (!(adjacentBlockEntity instanceof NetworkNodeContainerBlockEntity adjacentContainerBlockEntity)) {
+            final NetworkNodeContainerProvider adjacentProvider = Platform.INSTANCE.getContainerProvider(
+                level,
+                adjacentPos,
+                direction.getOpposite()
+            );
+            if (adjacentProvider == null) {
                 continue;
             }
-            if (!adjacentContainerBlockEntity.canBuild(player)) {
-                PlatformApi.INSTANCE.sendNoPermissionMessage(
+            if (!adjacentProvider.canBuild(player)) {
+                RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
                     player,
                     IdentifierUtil.createTranslation("misc", "no_permission.build.place", state.getBlock().getName())
                 );

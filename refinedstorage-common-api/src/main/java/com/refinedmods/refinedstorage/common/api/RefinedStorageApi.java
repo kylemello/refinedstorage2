@@ -21,7 +21,6 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStra
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
-import com.refinedmods.refinedstorage.common.api.security.BuiltinPermissions;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -30,8 +29,8 @@ import com.refinedmods.refinedstorage.common.api.storage.externalstorage.Platfor
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
@@ -48,7 +47,6 @@ import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTra
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -66,8 +64,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
-public interface PlatformApi {
-    PlatformApi INSTANCE = new PlatformApiProxy();
+public interface RefinedStorageApi {
+    RefinedStorageApi INSTANCE = new RefinedStorageApiProxy();
 
     PlatformRegistry<StorageType> getStorageTypeRegistry();
 
@@ -109,20 +107,17 @@ public interface PlatformApi {
 
     UpgradeRegistry getUpgradeRegistry();
 
-    InWorldNetworkNodeContainer createInWorldNetworkNodeContainer(BlockEntity blockEntity,
-                                                                  NetworkNode node,
-                                                                  String name,
-                                                                  int priority,
-                                                                  ConnectionLogic connectionLogic,
-                                                                  @Nullable Supplier<Object> keyProvider);
+    NetworkNodeContainerProvider createNetworkNodeContainerProvider();
 
-    void onNetworkNodeContainerInitialized(InWorldNetworkNodeContainer container,
-                                           @Nullable Level level,
-                                           @Nullable Runnable callback);
+    InWorldNetworkNodeContainer.Builder createNetworkNodeContainer(BlockEntity blockEntity, NetworkNode networkNode);
 
-    void onNetworkNodeContainerRemoved(InWorldNetworkNodeContainer container, @Nullable Level level);
+    void initializeNetworkNodeContainer(InWorldNetworkNodeContainer container,
+                                        @Nullable Level level,
+                                        @Nullable Runnable callback);
 
-    void onNetworkNodeContainerUpdated(InWorldNetworkNodeContainer container, @Nullable Level level);
+    void removeNetworkNodeContainer(InWorldNetworkNodeContainer container, @Nullable Level level);
+
+    void updateNetworkNodeContainer(InWorldNetworkNodeContainer container, @Nullable Level level);
 
     GridInsertionStrategy createGridInsertionStrategy(AbstractContainerMenu containerMenu,
                                                       ServerPlayer player,
@@ -195,8 +190,6 @@ public interface PlatformApi {
     SlotReference createInventorySlotReference(Player player, InteractionHand hand);
 
     void useSlotReferencedItem(Player player, Item... items);
-
-    BuiltinPermissions getBuiltinPermissions();
 
     PlatformRegistry<PlatformPermission> getPermissionRegistry();
 

@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.common.support.containermenu.TransferManager;
@@ -124,4 +125,10 @@ public interface Platform {
                        File file,
                        HolderLookup.Provider provider,
                        BiConsumer<File, HolderLookup.Provider> defaultSaveFunction);
+
+    @Nullable
+    NetworkNodeContainerProvider getContainerProvider(Level level, BlockPos pos, @Nullable Direction direction);
+
+    @Nullable
+    NetworkNodeContainerProvider getContainerProviderSafely(Level level, BlockPos pos, @Nullable Direction direction);
 }

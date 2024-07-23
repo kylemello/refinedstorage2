@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.support.network;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -8,13 +8,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.6")
-public interface ConnectionLogic {
+public interface ConnectionStrategy {
     /**
      * Add outgoing connections here.
      * Called when a node is about to be added into the network graph.
      * If the outgoing connections ever change, call {@link
-     * PlatformApi#onNetworkNodeContainerUpdated(
-     *InWorldNetworkNodeContainer, Level)}.
+     * RefinedStorageApi#updateNetworkNodeContainer(InWorldNetworkNodeContainer, Level)}.
      *
      * @param sink the sink that accepts outgoing connections
      */
@@ -24,8 +23,7 @@ public interface ConnectionLogic {
      * Returns whether the (not yet discovered) node can accept an incoming connection.
      * Changes to this return value won't cause a rebuild of the network state.
      * If the return value ever changes, call {@link
-     * PlatformApi#onNetworkNodeContainerUpdated(
-     *InWorldNetworkNodeContainer, Level)}.
+     * RefinedStorageApi#updateNetworkNodeContainer(InWorldNetworkNodeContainer, Level)}.
      *
      * @param incomingDirection the incoming direction
      * @param connectingState   the state wanting to connect

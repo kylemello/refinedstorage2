@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
@@ -28,7 +28,7 @@ public record StorageInfoRequestPacket(UUID storageId) implements CustomPacketPa
 
     public static void handle(final StorageInfoRequestPacket packet, final PacketContext ctx) {
         final Player player = ctx.getPlayer();
-        final StorageInfo info = PlatformApi.INSTANCE
+        final StorageInfo info = RefinedStorageApi.INSTANCE
             .getStorageRepository(player.getCommandSenderWorld())
             .getInfo(packet.storageId());
         S2CPackets.sendStorageInfoResponse((ServerPlayer) player, packet.storageId, info);

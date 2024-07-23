@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.iface.InterfaceExpor
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.resource.FuzzyModeNormalizer;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
@@ -22,8 +22,8 @@ public class ExportedResourcesContainer extends ResourceContainerImpl implements
         super(
             size,
             InterfaceBlockEntity::getTransferQuota,
-            PlatformApi.INSTANCE.getItemResourceFactory(),
-            PlatformApi.INSTANCE.getAlternativeResourceFactories()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
         );
         this.filter = filter;
     }
