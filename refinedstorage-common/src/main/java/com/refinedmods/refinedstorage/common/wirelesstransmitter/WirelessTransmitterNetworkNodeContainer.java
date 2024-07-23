@@ -2,16 +2,15 @@ package com.refinedmods.refinedstorage.common.wirelesstransmitter;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
-import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitter;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemPlayerValidator;
 import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerImpl;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 class WirelessTransmitterNetworkNodeContainer extends InWorldNetworkNodeContainerImpl
-    implements WirelessTransmitter {
+    implements NetworkItemPlayerValidator {
     private final WirelessTransmitterBlockEntity blockEntity;
     private final AbstractNetworkNode node;
 
@@ -25,19 +24,20 @@ class WirelessTransmitterNetworkNodeContainer extends InWorldNetworkNodeContaine
     }
 
     @Override
-    public boolean isInRange(final ResourceKey<Level> dimension, final Vec3 position) {
+    public boolean isValid(final PlayerCoordinates coordinates) {
         final Level level = blockEntity.getLevel();
-        if (level == null || level.dimension() != dimension) {
+        if (level == null || level.dimension() != coordinates.dimension()) {
             return false;
         }
         if (!node.isActive()) {
             return false;
         }
         final BlockPos pos = blockEntity.getBlockPos();
+        final Vec3 playerPos = coordinates.position();
         final double distance = Math.sqrt(
-            Math.pow(pos.getX() - position.x(), 2)
-                + Math.pow(pos.getY() - position.y(), 2)
-                + Math.pow(pos.getZ() - position.z(), 2)
+            Math.pow(pos.getX() - playerPos.x(), 2)
+                + Math.pow(pos.getY() - playerPos.y(), 2)
+                + Math.pow(pos.getZ() - playerPos.z(), 2)
         );
         return distance <= blockEntity.getRange();
     }

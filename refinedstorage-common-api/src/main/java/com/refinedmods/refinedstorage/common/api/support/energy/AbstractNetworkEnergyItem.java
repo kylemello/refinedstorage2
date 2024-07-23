@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.api.support.energy;
 
 import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceHandlerItem;
 
