@@ -32,7 +32,7 @@ import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorIn
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainerInsertStrategy;
@@ -186,7 +186,7 @@ public interface PlatformApi {
         BlockEntityType<?> blockEntityType
     );
 
-    NetworkBoundItemHelper getNetworkBoundItemHelper();
+    NetworkItemHelper getNetworkItemHelper();
 
     PlatformRegistry<SlotReferenceFactory> getSlotReferenceFactoryRegistry();
 

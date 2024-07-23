@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.api.support.network.bounditem;
+package com.refinedmods.refinedstorage.common.api.support.network.item;
 
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 
@@ -14,14 +14,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.1")
-public interface NetworkBoundItemHelper {
+public interface NetworkItemHelper {
     void addTooltip(ItemStack stack, List<Component> lines);
 
     InteractionResult bind(UseOnContext ctx);
 
     Optional<TooltipComponent> getTooltipImage(ItemStack stack);
 
-    NetworkBoundItemSession openSession(ItemStack stack, ServerPlayer player, SlotReference slotReference);
+    NetworkItemContext createContext(ItemStack stack, ServerPlayer player, SlotReference slotReference);
 
     boolean isBound(ItemStack stack);
 }

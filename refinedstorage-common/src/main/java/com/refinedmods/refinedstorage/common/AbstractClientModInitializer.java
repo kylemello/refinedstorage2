@@ -35,7 +35,6 @@ import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRende
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResourceRendering;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeScreen;
-import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterScreen;
 
 import net.minecraft.client.KeyMapping;
@@ -48,6 +47,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractClientModInitializer {
     protected static void registerScreens(final ScreenRegistration registration) {
@@ -111,7 +112,7 @@ public abstract class AbstractClientModInitializer {
     }
 
     protected static void registerDiskModels() {
-        final ResourceLocation diskModel = IdentifierUtil.createIdentifier("block/disk/disk");
+        final ResourceLocation diskModel = createIdentifier("block/disk/disk");
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getItemStorageDisk(variant),
@@ -119,7 +120,7 @@ public abstract class AbstractClientModInitializer {
             );
         }
 
-        final ResourceLocation fluidDiskModel = IdentifierUtil.createIdentifier("block/disk/fluid_disk");
+        final ResourceLocation fluidDiskModel = createIdentifier("block/disk/fluid_disk");
         for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             PlatformApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
                 Items.INSTANCE.getFluidStorageDisk(variant),

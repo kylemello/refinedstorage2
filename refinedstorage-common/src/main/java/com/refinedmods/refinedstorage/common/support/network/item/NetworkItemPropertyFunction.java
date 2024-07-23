@@ -1,6 +1,6 @@
-package com.refinedmods.refinedstorage.common.support.network.bounditem;
+package com.refinedmods.refinedstorage.common.support.network.item;
 
-import com.refinedmods.refinedstorage.common.api.support.energy.AbstractNetworkBoundEnergyItem;
+import com.refinedmods.refinedstorage.common.api.support.energy.AbstractNetworkEnergyItem;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class NetworkBoundItemItemPropertyFunction implements ClampedItemPropertyFunction {
+public class NetworkItemPropertyFunction implements ClampedItemPropertyFunction {
     public static final ResourceLocation NAME = createIdentifier("network_bound_active");
 
     @Override
@@ -20,8 +20,8 @@ public class NetworkBoundItemItemPropertyFunction implements ClampedItemProperty
                                @Nullable final ClientLevel clientLevel,
                                @Nullable final LivingEntity livingEntity,
                                final int i) {
-        if (itemStack.getItem() instanceof AbstractNetworkBoundEnergyItem boundItem) {
-            return boundItem.isBound(itemStack) ? 1 : 0;
+        if (itemStack.getItem() instanceof AbstractNetworkEnergyItem item) {
+            return item.isBound(itemStack) ? 1 : 0;
         }
         return 0;
     }

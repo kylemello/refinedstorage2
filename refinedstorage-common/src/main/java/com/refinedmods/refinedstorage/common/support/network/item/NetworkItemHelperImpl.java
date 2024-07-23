@@ -1,9 +1,9 @@
-package com.refinedmods.refinedstorage.common.support.network.bounditem;
+package com.refinedmods.refinedstorage.common.support.network.item;
 
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemHelper;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemSession;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
 
@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
+public class NetworkItemHelperImpl implements NetworkItemHelper {
     private static final MutableComponent UNBOUND = createTranslation("item", "network_item.unbound")
         .withStyle(ChatFormatting.RED);
     private static final Component UNBOUND_HELP = createTranslation("item", "network_item.unbound.help");
@@ -35,16 +35,13 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
 
     @Override
     public void addTooltip(final ItemStack stack, final List<Component> lines) {
-        getNetworkLocation(stack).ifPresentOrElse(
-            network -> lines.add(createTranslation(
-                "item",
-                "network_item.bound_to",
-                network.pos().getX(),
-                network.pos().getY(),
-                network.pos().getZ()
-            ).withStyle(ChatFormatting.GRAY)),
-            () -> lines.add(UNBOUND)
-        );
+        getNetworkLocation(stack).ifPresentOrElse(network -> lines.add(createTranslation(
+            "item",
+            "network_item.bound_to",
+            network.pos().getX(),
+            network.pos().getY(),
+            network.pos().getZ()
+        ).withStyle(ChatFormatting.GRAY)), () -> lines.add(UNBOUND));
     }
 
     @Override
@@ -54,7 +51,7 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
         }
         final ItemStack stack = ctx.getPlayer().getItemInHand(ctx.getHand());
         final BlockEntity blockEntity = ctx.getLevel().getBlockEntity(ctx.getClickedPos());
-        if (!(blockEntity instanceof NetworkBoundItemTargetBlockEntity)) {
+        if (!(blockEntity instanceof NetworkItemTargetBlockEntity)) {
             return InteractionResult.PASS;
         }
         final GlobalPos pos = GlobalPos.of(ctx.getLevel().dimension(), blockEntity.getBlockPos());
@@ -71,11 +68,11 @@ public class NetworkBoundItemHelperImpl implements NetworkBoundItemHelper {
     }
 
     @Override
-    public NetworkBoundItemSession openSession(final ItemStack stack,
-                                               final ServerPlayer player,
-                                               final SlotReference slotReference) {
+    public NetworkItemContext createContext(final ItemStack stack,
+                                            final ServerPlayer player,
+                                            final SlotReference slotReference) {
         final Optional<GlobalPos> location = getNetworkLocation(stack);
-        return new NetworkBoundItemSessionImpl(
+        return new NetworkItemContextImpl(
             player,
             slotReference,
             location.orElse(null)

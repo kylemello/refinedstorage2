@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemTargetBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.ColorableBlock;
 
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
-    implements ConnectionLogic, NetworkBoundItemTargetBlockEntity {
+    implements ConnectionLogic, NetworkItemTargetBlockEntity {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
@@ -159,7 +159,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
 
     @Nullable
     @Override
-    public Network getNetworkForBoundItem() {
+    public Network getNetworkForItem() {
         return mainNode.getNetwork();
     }
 }

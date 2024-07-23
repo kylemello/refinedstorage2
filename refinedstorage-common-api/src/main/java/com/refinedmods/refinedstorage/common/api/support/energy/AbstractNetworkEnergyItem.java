@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.api.support.energy;
 
 import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemHelper;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemSession;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceHandlerItem;
 
@@ -23,24 +23,24 @@ import net.minecraft.world.level.Level;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.1")
-public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem implements SlotReferenceHandlerItem {
-    protected final NetworkBoundItemHelper networkBoundItemHelper;
+public abstract class AbstractNetworkEnergyItem extends AbstractEnergyItem implements SlotReferenceHandlerItem {
+    protected final NetworkItemHelper networkItemHelper;
 
-    protected AbstractNetworkBoundEnergyItem(final Properties properties,
-                                             final EnergyItemHelper energyItemHelper,
-                                             final NetworkBoundItemHelper networkBoundItemHelper) {
+    protected AbstractNetworkEnergyItem(final Properties properties,
+                                        final EnergyItemHelper energyItemHelper,
+                                        final NetworkItemHelper networkItemHelper) {
         super(properties, energyItemHelper);
-        this.networkBoundItemHelper = networkBoundItemHelper;
+        this.networkItemHelper = networkItemHelper;
     }
 
     @Override
     public InteractionResult useOn(final UseOnContext ctx) {
-        return networkBoundItemHelper.bind(ctx);
+        return networkItemHelper.bind(ctx);
     }
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
-        return networkBoundItemHelper.getTooltipImage(stack);
+        return networkItemHelper.getTooltipImage(stack);
     }
 
     @Override
@@ -49,7 +49,7 @@ public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem 
                                 final List<Component> tooltip,
                                 final TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        networkBoundItemHelper.addTooltip(stack, tooltip);
+        networkItemHelper.addTooltip(stack, tooltip);
     }
 
     @Override
@@ -64,17 +64,17 @@ public abstract class AbstractNetworkBoundEnergyItem extends AbstractEnergyItem 
 
     @Override
     public void use(final ServerPlayer player, final ItemStack stack, final SlotReference slotReference) {
-        final NetworkBoundItemSession session = PlatformApi.INSTANCE.getNetworkBoundItemHelper().openSession(
+        final NetworkItemContext context = PlatformApi.INSTANCE.getNetworkItemHelper().createContext(
             stack,
             player,
             slotReference
         );
-        use(player, slotReference, session);
+        use(player, slotReference, context);
     }
 
-    protected abstract void use(ServerPlayer player, SlotReference slotReference, NetworkBoundItemSession session);
+    protected abstract void use(ServerPlayer player, SlotReference slotReference, NetworkItemContext context);
 
     public boolean isBound(final ItemStack stack) {
-        return networkBoundItemHelper.isBound(stack);
+        return networkItemHelper.isBound(stack);
     }
 }

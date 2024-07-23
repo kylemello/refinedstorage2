@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package com.refinedmods.refinedstorage.common.api.support.network.bounditem;
+package com.refinedmods.refinedstorage.common.support.network.item;
 
 import com.refinedmods.refinedstorage.api.core.FieldsAndMethodsAreNonnullByDefault;
 

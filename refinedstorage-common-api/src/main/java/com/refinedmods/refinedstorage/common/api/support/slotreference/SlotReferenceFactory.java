@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.1")
+@FunctionalInterface
 public interface SlotReferenceFactory {
     StreamCodec<RegistryFriendlyByteBuf, SlotReference> STREAM_CODEC = StreamCodec.of(
         (buf, slotReference) -> {

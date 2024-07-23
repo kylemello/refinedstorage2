@@ -15,7 +15,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemSession;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
 import java.util.Collections;
@@ -25,25 +25,25 @@ import java.util.Optional;
 import net.minecraft.server.level.ServerPlayer;
 
 class WirelessGrid implements Grid {
-    private final NetworkBoundItemSession session;
+    private final NetworkItemContext context;
     private final GridWatcherManager watchers = new GridWatcherManagerImpl();
 
-    WirelessGrid(final NetworkBoundItemSession session) {
-        this.session = session;
+    WirelessGrid(final NetworkItemContext context) {
+        this.context = context;
     }
 
     private Optional<StorageNetworkComponent> getStorage() {
-        return session.resolveNetwork().map(network -> network.getComponent(StorageNetworkComponent.class));
+        return context.resolveNetwork().map(network -> network.getComponent(StorageNetworkComponent.class));
     }
 
     private Optional<PlatformSecurityNetworkComponent> getSecurity() {
-        return session.resolveNetwork().map(network -> network.getComponent(PlatformSecurityNetworkComponent.class));
+        return context.resolveNetwork().map(network -> network.getComponent(PlatformSecurityNetworkComponent.class));
     }
 
     @Override
     public void addWatcher(final GridWatcher watcher, final Class<? extends Actor> actorType) {
-        session.drainEnergy(Platform.INSTANCE.getConfig().getWirelessGrid().getOpenEnergyUsage());
-        session.resolveNetwork().ifPresent(network -> watchers.addWatcher(
+        context.drainEnergy(Platform.INSTANCE.getConfig().getWirelessGrid().getOpenEnergyUsage());
+        context.resolveNetwork().ifPresent(network -> watchers.addWatcher(
             watcher,
             actorType,
             network.getComponent(StorageNetworkComponent.class)
@@ -52,7 +52,7 @@ class WirelessGrid implements Grid {
 
     @Override
     public void removeWatcher(final GridWatcher watcher) {
-        session.resolveNetwork().ifPresent(network -> watchers.removeWatcher(
+        context.resolveNetwork().ifPresent(network -> watchers.removeWatcher(
             watcher,
             network.getComponent(StorageNetworkComponent.class)
         ));
@@ -65,10 +65,10 @@ class WirelessGrid implements Grid {
 
     @Override
     public boolean isGridActive() {
-        final boolean networkActive = session.resolveNetwork().map(
+        final boolean networkActive = context.resolveNetwork().map(
             network -> network.getComponent(EnergyNetworkComponent.class).getStored() > 0
         ).orElse(false);
-        return networkActive && session.isActive();
+        return networkActive && context.isActive();
     }
 
     @Override
@@ -81,7 +81,7 @@ class WirelessGrid implements Grid {
         return getStorage()
             .flatMap(rootStorage ->
                 getSecurity().map(security -> createGridOperations(resourceType, player, rootStorage, security)))
-            .map(gridOperations -> (GridOperations) new WirelessGridOperations(gridOperations, session, watchers))
+            .map(gridOperations -> (GridOperations) new WirelessGridOperations(gridOperations, context, watchers))
             .orElseGet(NoopGridOperations::new);
     }
 

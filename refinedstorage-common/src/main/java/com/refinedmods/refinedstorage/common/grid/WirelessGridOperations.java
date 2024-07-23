@@ -8,18 +8,18 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemSession;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
 
 class WirelessGridOperations implements GridOperations {
     private final GridOperations delegate;
-    private final NetworkBoundItemSession session;
+    private final NetworkItemContext context;
     private final GridWatcherManager watchers;
 
     WirelessGridOperations(final GridOperations delegate,
-                           final NetworkBoundItemSession session,
+                           final NetworkItemContext context,
                            final GridWatcherManager watchers) {
         this.delegate = delegate;
-        this.session = session;
+        this.context = context;
         this.watchers = watchers;
     }
 
@@ -46,9 +46,9 @@ class WirelessGridOperations implements GridOperations {
     }
 
     private void drain(final long amount) {
-        final boolean wasActive = session.isActive();
-        session.drainEnergy(amount);
-        final boolean isActive = session.isActive();
+        final boolean wasActive = context.isActive();
+        context.drainEnergy(amount);
+        final boolean isActive = context.isActive();
         if (wasActive != isActive) {
             watchers.activeChanged(isActive);
         }

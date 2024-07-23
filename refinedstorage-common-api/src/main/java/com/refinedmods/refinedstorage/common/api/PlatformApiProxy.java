@@ -32,7 +32,7 @@ import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorIn
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainerInsertStrategy;
@@ -353,8 +353,8 @@ public class PlatformApiProxy implements PlatformApi {
     }
 
     @Override
-    public NetworkBoundItemHelper getNetworkBoundItemHelper() {
-        return ensureLoaded().getNetworkBoundItemHelper();
+    public NetworkItemHelper getNetworkItemHelper() {
+        return ensureLoaded().getNetworkItemHelper();
     }
 
     @Override

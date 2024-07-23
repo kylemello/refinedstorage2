@@ -37,7 +37,7 @@ import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
-import com.refinedmods.refinedstorage.common.api.support.network.bounditem.NetworkBoundItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainerInsertStrategy;
@@ -68,7 +68,7 @@ import com.refinedmods.refinedstorage.common.support.energy.ItemBlockEnergyStora
 import com.refinedmods.refinedstorage.common.support.energy.ItemEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.network.ConnectionProviderImpl;
 import com.refinedmods.refinedstorage.common.support.network.InWorldNetworkNodeContainerImpl;
-import com.refinedmods.refinedstorage.common.support.network.bounditem.NetworkBoundItemHelperImpl;
+import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemHelperImpl;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.registry.PlatformRegistryImpl;
@@ -164,7 +164,7 @@ public class PlatformApiImpl implements PlatformApi {
     private final CompositeWirelessTransmitterRangeModifier wirelessTransmitterRangeModifier =
         new CompositeWirelessTransmitterRangeModifier();
     private final EnergyItemHelper energyItemHelper = new EnergyItemHelperImpl();
-    private final NetworkBoundItemHelper networkBoundItemHelper = new NetworkBoundItemHelperImpl();
+    private final NetworkItemHelper networkItemHelper = new NetworkItemHelperImpl();
     private final PlatformRegistry<SlotReferenceFactory> slotReferenceFactoryRegistry = new PlatformRegistryImpl<>();
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
     private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
@@ -504,8 +504,8 @@ public class PlatformApiImpl implements PlatformApi {
     }
 
     @Override
-    public NetworkBoundItemHelper getNetworkBoundItemHelper() {
-        return networkBoundItemHelper;
+    public NetworkItemHelper getNetworkItemHelper() {
+        return networkItemHelper;
     }
 
     @Override
