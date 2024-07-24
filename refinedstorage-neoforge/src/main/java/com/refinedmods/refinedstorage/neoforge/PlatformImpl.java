@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.TransferManag
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.util.CustomBlockPlaceContext;
+import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApi;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.ItemGridInsertionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.view.ForgeFluidGridResourceFactory;
 import com.refinedmods.refinedstorage.neoforge.grid.view.ForgeItemGridResourceFactory;
@@ -358,7 +359,7 @@ public final class PlatformImpl extends AbstractPlatform {
                                                              final BlockPos pos,
                                                              @Nullable final Direction direction) {
         return level.getCapability(
-            RefinedStorageNeoForgeApiImpl.INSTANCE.getNetworkNodeContainerProviderCapability(),
+            RefinedStorageNeoForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
             pos,
             direction
         );
@@ -390,7 +391,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return null;
         }
         return level.getCapability(
-            RefinedStorageNeoForgeApiImpl.INSTANCE.getNetworkNodeContainerProviderCapability(),
+            RefinedStorageNeoForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
             pos,
             null,
             safeBlockEntity,

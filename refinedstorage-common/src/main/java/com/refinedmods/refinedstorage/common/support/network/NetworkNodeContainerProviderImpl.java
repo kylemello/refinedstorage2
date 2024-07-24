@@ -12,7 +12,7 @@ import java.util.Set;
 import net.minecraft.server.level.ServerPlayer;
 
 public class NetworkNodeContainerProviderImpl implements NetworkNodeContainerProvider {
-    private final Set<InWorldNetworkNodeContainer> containers = new HashSet<>(1);
+    private final Set<InWorldNetworkNodeContainer> containers = HashSet.newHashSet(1);
     private final Set<InWorldNetworkNodeContainer> containersView = Collections.unmodifiableSet(containers);
 
     @Override

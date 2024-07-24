@@ -242,7 +242,7 @@ public class PlatformProxy implements Platform {
     @Override
     public NetworkNodeContainerProvider getContainerProvider(final Level level,
                                                              final BlockPos pos,
-                                                             final Direction direction) {
+                                                             @Nullable final Direction direction) {
         return ensureLoaded().getContainerProvider(level, pos, direction);
     }
 
@@ -250,7 +250,7 @@ public class PlatformProxy implements Platform {
     @Override
     public NetworkNodeContainerProvider getContainerProviderSafely(final Level level,
                                                                    final BlockPos pos,
-                                                                   final Direction direction) {
+                                                                   @Nullable final Direction direction) {
         return ensureLoaded().getContainerProviderSafely(level, pos, direction);
     }
 

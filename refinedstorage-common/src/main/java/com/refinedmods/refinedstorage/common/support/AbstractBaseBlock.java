@@ -180,7 +180,6 @@ public abstract class AbstractBaseBlock extends Block {
         if (player.isCrouching()) {
             return dismantle(state, level, hitResult, player);
         } else {
-            // TODO: validate dir.
             return rotate(state, level, hitResult.getBlockPos(), hitResult.getDirection(), player);
         }
     }
@@ -218,7 +217,7 @@ public abstract class AbstractBaseBlock extends Block {
         final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(
             level,
             hitResult.getBlockPos(),
-            hitResult.getDirection().getOpposite() // todo verify
+            hitResult.getDirection()
         );
         if (provider != null && !provider.canBuild(player)) {
             RefinedStorageApi.INSTANCE.sendNoPermissionMessage(

@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.TransferManag
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.util.CustomBlockPlaceContext;
+import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApi;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.ItemGridInsertionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.view.FabricFluidGridResourceFactory;
 import com.refinedmods.refinedstorage.fabric.grid.view.FabricItemGridResourceFactory;
@@ -436,11 +437,7 @@ public final class PlatformImpl extends AbstractPlatform {
     public NetworkNodeContainerProvider getContainerProvider(final Level level,
                                                              final BlockPos pos,
                                                              @Nullable final Direction direction) {
-        final var blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof NetworkNodeContainerProvider provider) {
-            return provider;
-        }
-        return null;
+        return RefinedStorageFabricApi.INSTANCE.getNetworkNodeContainerProviderLookup().find(level, pos, direction);
     }
 
     @Nullable
@@ -465,10 +462,16 @@ public final class PlatformImpl extends AbstractPlatform {
             pos,
             LevelChunk.EntityCreationType.CHECK
         );
-        if (!(safeBlockEntity instanceof NetworkNodeContainerProvider provider)) {
+        if (safeBlockEntity == null) {
             return null;
         }
-        return provider;
+        return RefinedStorageFabricApi.INSTANCE.getNetworkNodeContainerProviderLookup().find(
+            level,
+            pos,
+            level.getBlockState(pos),
+            safeBlockEntity,
+            direction
+        );
     }
 
     private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {

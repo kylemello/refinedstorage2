@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 
-public class ProxyRefinedStorageNeoForgeApi implements RefinedStorageNeoForgeApi {
+public class RefinedStorageNeoForgeApiProxy implements RefinedStorageNeoForgeApi {
     @Nullable
     private RefinedStorageNeoForgeApi delegate;
 

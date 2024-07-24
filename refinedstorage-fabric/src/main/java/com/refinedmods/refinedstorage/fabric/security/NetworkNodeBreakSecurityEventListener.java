@@ -23,11 +23,7 @@ public class NetworkNodeBreakSecurityEventListener implements PlayerBlockBreakEv
                                     final BlockPos pos,
                                     final BlockState state,
                                     @Nullable final BlockEntity blockEntity) {
-        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(
-            world,
-            pos,
-            player.getDirection().getOpposite() // TODO check
-        );
+        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(world, pos, null);
         if (provider != null && player instanceof ServerPlayer serverPlayer && !provider.canBuild(serverPlayer)) {
             RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,

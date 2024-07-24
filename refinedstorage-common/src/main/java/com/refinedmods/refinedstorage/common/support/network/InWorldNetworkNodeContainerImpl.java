@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.support.network;
 
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.support.network.ConnectionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 
 import java.util.function.Supplier;

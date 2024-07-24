@@ -277,6 +277,7 @@ Minecraft.
 | `refinedstorage-storage-api`  | ✔️            | Contains storage related functionality.                                                                  |
 | `refinedstorage-common-api`   | ✔️            | Implements the various Refined Storage API modules for use in Minecraft.                                 |
 | `refinedstorage-common`       | ❌             | Common mod code. Most gameplay code is in here.                                                          |
+| `refinedstorage-fabric-api`   | ✔️            | Additional API for the Fabric platform.                                                                  |
 | `refinedstorage-fabric`       | ❌             | The platform module for Fabric. This module contains Fabric specific code.                               |
 | `refinedstorage-neoforge-api` | ✔️            | Additional API for the NeoForge platform.                                                                |
 | `refinedstorage-neoforge`     | ❌             | The platform module for NeoForge. This module contains NeoForge specific code and the integration tests. |

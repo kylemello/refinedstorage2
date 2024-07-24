@@ -85,18 +85,20 @@ public final class CableBlockSupport {
 
     public static BlockState getState(
         final BlockState currentState,
-        final LevelAccessor level,
+        final LevelAccessor levelAccessor,
         final BlockPos pos,
         @Nullable final Direction blacklistedDirection
     ) {
-        // TODO: change.
-        final Level level1 = (Level) level;
-        final boolean north = hasVisualConnection(currentState, level1, pos, Direction.NORTH, blacklistedDirection);
-        final boolean east = hasVisualConnection(currentState, level1, pos, Direction.EAST, blacklistedDirection);
-        final boolean south = hasVisualConnection(currentState, level1, pos, Direction.SOUTH, blacklistedDirection);
-        final boolean west = hasVisualConnection(currentState, level1, pos, Direction.WEST, blacklistedDirection);
-        final boolean up = hasVisualConnection(currentState, level1, pos, Direction.UP, blacklistedDirection);
-        final boolean down = hasVisualConnection(currentState, level1, pos, Direction.DOWN, blacklistedDirection);
+        if (!(levelAccessor instanceof Level level)) {
+            return currentState;
+        }
+
+        final boolean north = hasVisualConnection(currentState, level, pos, Direction.NORTH, blacklistedDirection);
+        final boolean east = hasVisualConnection(currentState, level, pos, Direction.EAST, blacklistedDirection);
+        final boolean south = hasVisualConnection(currentState, level, pos, Direction.SOUTH, blacklistedDirection);
+        final boolean west = hasVisualConnection(currentState, level, pos, Direction.WEST, blacklistedDirection);
+        final boolean up = hasVisualConnection(currentState, level, pos, Direction.UP, blacklistedDirection);
+        final boolean down = hasVisualConnection(currentState, level, pos, Direction.DOWN, blacklistedDirection);
 
         return currentState
             .setValue(NORTH, north)

@@ -54,8 +54,8 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmit
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
-import com.refinedmods.refinedstorage.neoforge.api.ProxyRefinedStorageNeoForgeApi;
 import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApi;
+import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApiProxy;
 import com.refinedmods.refinedstorage.neoforge.exporter.FluidHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.exporter.ItemHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridExtractionStrategy;
@@ -86,6 +86,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -153,7 +154,7 @@ public class ModInitializer extends AbstractModInitializer {
     public ModInitializer(final IEventBus eventBus, final ModContainer modContainer) {
         PlatformProxy.loadPlatform(new PlatformImpl(modContainer));
         initializePlatformApi();
-        ((ProxyRefinedStorageNeoForgeApi) RefinedStorageNeoForgeApi.INSTANCE).setDelegate(
+        ((RefinedStorageNeoForgeApiProxy) RefinedStorageNeoForgeApi.INSTANCE).setDelegate(
             new RefinedStorageNeoForgeApiImpl()
         );
         registerAdditionalGridInsertionStrategyFactories();
@@ -526,14 +527,14 @@ public class ModInitializer extends AbstractModInitializer {
 
     @SubscribeEvent
     public void registerSecurityBlockBreakEvent(final BlockEvent.BreakEvent e) {
-        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(
-            (Level) e.getLevel(), // TODO: change.
-            e.getPos(),
-            e.getPlayer().getDirection().getOpposite() // TODO check
-        );
-        if (provider != null && e.getPlayer() instanceof ServerPlayer srvrPlayer && !provider.canBuild(srvrPlayer)) {
+        if (!(e.getLevel() instanceof Level level)) {
+            return;
+        }
+        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(level, e.getPos(), null);
+        final Player player = e.getPlayer();
+        if (provider != null && player instanceof ServerPlayer serverPlayer && !provider.canBuild(serverPlayer)) {
             RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
-                srvrPlayer,
+                serverPlayer,
                 createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())
             );
             e.setCanceled(true);

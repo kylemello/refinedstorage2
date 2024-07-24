@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.fabric;
 import com.refinedmods.refinedstorage.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.RefinedStoragePlugin;
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
@@ -19,6 +19,8 @@ import com.refinedmods.refinedstorage.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.iface.InterfacePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage.common.security.SecurityCardItem;
+import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockItem;
@@ -53,6 +55,9 @@ import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
+import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApi;
+import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApiProxy;
+import com.refinedmods.refinedstorage.fabric.api.RefinedStoragePlugin;
 import com.refinedmods.refinedstorage.fabric.exporter.FabricStorageExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.FluidGridExtractionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.FluidGridInsertionStrategy;
@@ -134,9 +139,11 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     @Override
     public void onInitialize() {
         AutoConfig.register(ConfigImpl.class, Toml4jConfigSerializer::new);
-
         PlatformProxy.loadPlatform(new PlatformImpl());
         initializePlatformApi();
+        ((RefinedStorageFabricApiProxy) RefinedStorageFabricApi.INSTANCE).setDelegate(
+            new RefinedStorageFabricApiImpl()
+        );
         registerAdditionalGridInsertionStrategyFactories();
         registerGridExtractionStrategyFactories();
         registerGridScrollingStrategyFactories();
@@ -148,7 +155,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerPacketHandlers();
         registerSounds(new DirectRegistryCallback<>(BuiltInRegistries.SOUND_EVENT));
         registerRecipeSerializers(new DirectRegistryCallback<>(BuiltInRegistries.RECIPE_SERIALIZER));
-        registerSidedHandlers();
+        registerCapabilities();
         registerTickHandler();
         registerWrenchingEvent();
         registerSecurityBlockBreakEvent();
@@ -528,7 +535,31 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         return (packet, ctx) -> handler.handle(packet, ctx::player);
     }
 
-    private void registerSidedHandlers() {
+    private void registerCapabilities() {
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCable());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getConstructor());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getController());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCraftingGrid());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCreativeController());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDestructor());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDetector());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDiskDrive());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDiskInterface());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getExporter());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getExternalStorage());
+        Arrays.stream(FluidStorageVariant.values()).forEach(type ->
+            registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getFluidStorageBlock(type)));
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getGrid());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getImporter());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getInterface());
+        Arrays.stream(ItemStorageVariant.values()).forEach(type ->
+            registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getItemStorageBlock(type)));
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getNetworkReceiver());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getNetworkTransmitter());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getRelay());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getSecurityManager());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getStorageMonitor());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getWirelessTransmitter());
         registerItemStorage(
             AbstractDiskDriveBlockEntity.class::isInstance,
             AbstractDiskDriveBlockEntity.class::cast,
@@ -556,6 +587,15 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         );
         registerEnergyBlockEntityProviders();
         registerEnergyItemProviders();
+    }
+
+    private void registerNetworkNodeContainerProvider(
+        final BlockEntityType<? extends AbstractNetworkNodeContainerBlockEntity<?>> type
+    ) {
+        RefinedStorageFabricApi.INSTANCE.getNetworkNodeContainerProviderLookup().registerForBlockEntity(
+            (be, dir) -> be.getContainerProvider(),
+            type
+        );
     }
 
     private <T extends BlockEntity> void registerItemStorage(final Predicate<BlockEntity> test,

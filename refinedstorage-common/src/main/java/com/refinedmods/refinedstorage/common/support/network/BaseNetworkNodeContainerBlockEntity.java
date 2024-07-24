@@ -63,7 +63,12 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     }
 
     protected void activenessChanged(final boolean newActive) {
-        LOGGER.debug("Activeness change for node at {}: {} -> {}", getBlockPos(), mainNetworkNode.isActive(), newActive);
+        LOGGER.debug(
+            "Activeness change for node at {}: {} -> {}",
+            getBlockPos(),
+            mainNetworkNode.isActive(),
+            newActive
+        );
         mainNetworkNode.setActive(newActive);
     }
 
