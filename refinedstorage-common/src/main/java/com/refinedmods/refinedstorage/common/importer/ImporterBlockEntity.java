@@ -5,9 +5,9 @@ import com.refinedmods.refinedstorage.api.network.node.importer.ImporterTransfer
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -62,21 +62,21 @@ public class ImporterBlockEntity
             this::setChanged,
             this::setFilters
         );
-        this.mainNode.setNormalizer(filter.createNormalizer());
+        this.mainNetworkNode.setNormalizer(filter.createNormalizer());
     }
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         final List<ImporterTransferStrategy> strategies = createStrategies(level, direction);
         LOGGER.debug("Initialized importer at {} with strategies {}", worldPosition, strategies);
-        mainNode.setTransferStrategies(strategies);
+        mainNetworkNode.setTransferStrategies(strategies);
     }
 
     private List<ImporterTransferStrategy> createStrategies(final ServerLevel serverLevel, final Direction direction) {
         final Direction incomingDirection = direction.getOpposite();
         final BlockPos sourcePosition = worldPosition.relative(direction);
         final List<ImporterTransferStrategyFactory> factories =
-            PlatformApi.INSTANCE.getImporterTransferStrategyRegistry().getAll();
+            RefinedStorageApi.INSTANCE.getImporterTransferStrategyRegistry().getAll();
         return factories
             .stream()
             .map(factory -> factory.create(serverLevel, sourcePosition, incomingDirection, upgradeContainer, this))
@@ -86,7 +86,7 @@ public class ImporterBlockEntity
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.writeConfiguration(tag, provider);
-        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNode.getFilterMode()));
+        tag.putInt(TAG_FILTER_MODE, FilterModeSettings.getFilterMode(mainNetworkNode.getFilterMode()));
         filter.save(tag, provider);
     }
 
@@ -94,13 +94,13 @@ public class ImporterBlockEntity
     public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.readConfiguration(tag, provider);
         if (tag.contains(TAG_FILTER_MODE)) {
-            mainNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
+            mainNetworkNode.setFilterMode(FilterModeSettings.getFilterMode(tag.getInt(TAG_FILTER_MODE)));
         }
         filter.load(tag, provider);
     }
 
     void setFilters(final Set<ResourceKey> filters) {
-        mainNode.setFilters(filters);
+        mainNetworkNode.setFilters(filters);
     }
 
     boolean isFuzzyMode() {
@@ -112,18 +112,18 @@ public class ImporterBlockEntity
     }
 
     FilterMode getFilterMode() {
-        return mainNode.getFilterMode();
+        return mainNetworkNode.getFilterMode();
     }
 
     void setFilterMode(final FilterMode mode) {
-        mainNode.setFilterMode(mode);
+        mainNetworkNode.setFilterMode(mode);
         setChanged();
     }
 
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getImporter().getEnergyUsage();
-        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -150,13 +150,17 @@ public class ImporterBlockEntity
     @Override
     public long overrideAmount(final ResourceKey resource,
                                final long amount,
-                               final LongSupplier currentAmount) {
+                               final LongSupplier currentAmountSupplier) {
         if (!upgradeContainer.has(Items.INSTANCE.getRegulatorUpgrade())) {
             return amount;
         }
         return upgradeContainer.getRegulatedAmount(resource)
             .stream()
-            .map(desiredAmount -> getAmountStillAvailableForImport(amount, currentAmount.getAsLong(), desiredAmount))
+            .map(desiredAmount -> getAmountStillAvailableForImport(
+                amount,
+                currentAmountSupplier.getAsLong(),
+                desiredAmount
+            ))
             .findFirst()
             .orElse(amount);
     }

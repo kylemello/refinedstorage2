@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.TransferHelper;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.storage.BucketPlayerInventoryInsertableStorage;
@@ -28,7 +28,7 @@ public class FluidStorageMonitorExtractionStrategy implements StorageMonitorExtr
             network.getComponent(StorageNetworkComponent.class),
             true
         );
-        final StorageChannel source = network.getComponent(StorageNetworkComponent.class);
+        final RootStorage source = network.getComponent(StorageNetworkComponent.class);
         return TransferHelper.transfer(
             fluidResource,
             Platform.INSTANCE.getBucketAmount(),

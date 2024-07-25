@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.wirelesstransmitter;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
@@ -33,7 +33,7 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
         super(Menus.INSTANCE.getWirelessTransmitter(), syncId);
         addSlots(playerInventory, new UpgradeContainer(
             UpgradeDestinations.WIRELESS_TRANSMITTER,
-            PlatformApi.INSTANCE.getUpgradeRegistry()
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry()
         ));
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         this.range = data.range();

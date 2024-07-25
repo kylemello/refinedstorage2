@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.support.resource;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
@@ -33,7 +33,7 @@ public final class ResourceCodecs {
     ).apply(ins, FluidResource::new));
     public static final Codec<FluidResource> FLUID_CODEC = FLUID_MAP_CODEC.codec();
 
-    public static final Codec<PlatformResourceKey> CODEC = PlatformApi.INSTANCE.getResourceTypeRegistry()
+    public static final Codec<PlatformResourceKey> CODEC = RefinedStorageApi.INSTANCE.getResourceTypeRegistry()
         .codec()
         .dispatch(PlatformResourceKey::getResourceType, ResourceType::getMapCodec);
     public static final Codec<ResourceAmount> AMOUNT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -45,14 +45,16 @@ public final class ResourceCodecs {
         @Override
         public PlatformResourceKey decode(final RegistryFriendlyByteBuf buf) {
             final ResourceLocation id = buf.readResourceLocation();
-            final ResourceType resourceType = PlatformApi.INSTANCE.getResourceTypeRegistry().get(id).orElseThrow();
+            final ResourceType resourceType = RefinedStorageApi.INSTANCE.getResourceTypeRegistry()
+                .get(id)
+                .orElseThrow();
             return resourceType.getStreamCodec().decode(buf);
         }
 
         @Override
         public void encode(final RegistryFriendlyByteBuf buf, final PlatformResourceKey resourceKey) {
             final ResourceType resourceType = resourceKey.getResourceType();
-            final ResourceLocation id = PlatformApi.INSTANCE.getResourceTypeRegistry().getId(resourceType)
+            final ResourceLocation id = RefinedStorageApi.INSTANCE.getResourceTypeRegistry().getId(resourceType)
                 .orElseThrow();
             buf.writeResourceLocation(id);
             resourceType.getStreamCodec().encode(buf, resourceKey);

@@ -6,9 +6,9 @@ import com.refinedmods.refinedstorage.api.network.node.exporter.ExporterTransfer
 import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -50,14 +50,14 @@ public class ExporterBlockEntity
     protected void initialize(final ServerLevel level, final Direction direction) {
         final ExporterTransferStrategy strategy = createStrategy(level, direction);
         LOGGER.debug("Initialized exporter at {} with strategy {}", worldPosition, strategy);
-        mainNode.setTransferStrategy(strategy);
+        mainNetworkNode.setTransferStrategy(strategy);
     }
 
     private ExporterTransferStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
         final Direction incomingDirection = direction.getOpposite();
         final BlockPos sourcePosition = worldPosition.relative(direction);
         final List<ExporterTransferStrategyFactory> factories =
-            PlatformApi.INSTANCE.getExporterTransferStrategyRegistry().getAll();
+            RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().getAll();
         final List<ExporterTransferStrategy> strategies = factories
             .stream()
             .map(factory -> factory.create(
@@ -75,7 +75,7 @@ public class ExporterBlockEntity
     @Override
     protected void setEnergyUsage(final long upgradeEnergyUsage) {
         final long baseEnergyUsage = Platform.INSTANCE.getConfig().getExporter().getEnergyUsage();
-        mainNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -91,22 +91,24 @@ public class ExporterBlockEntity
 
     @Override
     protected void setTaskExecutor(final TaskExecutor<ExporterNetworkNode.TaskContext> taskExecutor) {
-        mainNode.setTaskExecutor(taskExecutor);
+        mainNetworkNode.setTaskExecutor(taskExecutor);
     }
 
     @Override
     protected void setFilters(final List<ResourceKey> filters) {
-        mainNode.setFilters(filters);
+        mainNetworkNode.setFilters(filters);
     }
 
     @Override
-    public long overrideAmount(final ResourceKey resource, final long amount, final LongSupplier currentAmount) {
+    public long overrideAmount(final ResourceKey resource,
+                               final long amount,
+                               final LongSupplier currentAmountSupplier) {
         if (!upgradeContainer.has(Items.INSTANCE.getRegulatorUpgrade())) {
             return amount;
         }
         return upgradeContainer.getRegulatedAmount(resource)
             .stream()
-            .map(desiredAmount -> getAmountStillNeeded(amount, currentAmount.getAsLong(), desiredAmount))
+            .map(desiredAmount -> getAmountStillNeeded(amount, currentAmountSupplier.getAsLong(), desiredAmount))
             .findFirst()
             .orElse(amount);
     }

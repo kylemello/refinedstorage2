@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.api.network.impl.node.iface;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,22 +40,22 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
     }
 
     @Override
-    public Collection<ResourceKey> expandExportCandidates(final StorageChannel storageChannel,
+    public Collection<ResourceKey> expandExportCandidates(final RootStorage rootStorage,
                                                           final ResourceKey resource) {
         if (A.equals(resource)) {
-            return expandExportCandidates(storageChannel);
+            return expandExportCandidates(rootStorage);
         }
         return Collections.singletonList(resource);
     }
 
-    private Collection<ResourceKey> expandExportCandidates(final StorageChannel storageChannel) {
+    private Collection<ResourceKey> expandExportCandidates(final RootStorage rootStorage) {
         final List<ResourceKey> candidates = new ArrayList<>();
         candidates.add(A);
-        // Simulate the behavior from FuzzyStorageChannel
-        if (storageChannel.get(A_ALTERNATIVE).isPresent()) {
+        // Simulate the behavior from FuzzyRootStorage
+        if (rootStorage.get(A_ALTERNATIVE).isPresent()) {
             candidates.add(A_ALTERNATIVE);
         }
-        if (storageChannel.get(A_ALTERNATIVE2).isPresent()) {
+        if (rootStorage.get(A_ALTERNATIVE2).isPresent()) {
             candidates.add(A_ALTERNATIVE2);
         }
         return candidates;

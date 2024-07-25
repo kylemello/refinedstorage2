@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.storage.portablegrid;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.support.energy.TransferableBlockEntityEnergy;
@@ -151,7 +151,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
     }
 
     private void initialize(final Level level) {
-        diskInventory.setStorageRepository(PlatformApi.INSTANCE.getStorageRepository(level));
+        diskInventory.setStorageRepository(RefinedStorageApi.INSTANCE.getStorageRepository(level));
         grid.updateStorage();
     }
 

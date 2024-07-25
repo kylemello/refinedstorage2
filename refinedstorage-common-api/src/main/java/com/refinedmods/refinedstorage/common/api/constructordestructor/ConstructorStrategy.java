@@ -10,5 +10,5 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.11")
 @FunctionalInterface
 public interface ConstructorStrategy {
-    boolean apply(ResourceKey resource, Actor actor, Player actingPlayer, Network network);
+    boolean apply(ResourceKey resource, Actor actor, Player player, Network network);
 }

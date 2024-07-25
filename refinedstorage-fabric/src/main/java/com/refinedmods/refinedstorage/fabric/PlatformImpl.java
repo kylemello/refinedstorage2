@@ -6,11 +6,13 @@ import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractPlatform;
 import com.refinedmods.refinedstorage.common.Config;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.util.CustomBlockPlaceContext;
+import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApi;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.ItemGridInsertionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.view.FabricFluidGridResourceFactory;
 import com.refinedmods.refinedstorage.fabric.grid.view.FabricItemGridResourceFactory;
@@ -89,7 +91,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
@@ -232,7 +236,6 @@ public final class PlatformImpl extends AbstractPlatform {
                                        final Player player) {
         return state.getBlock().getCloneItemStack(level, hitResult.getBlockPos(), state);
     }
-
 
     @Override
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player,
@@ -427,6 +430,48 @@ public final class PlatformImpl extends AbstractPlatform {
             LOGGER.error("Could not save data", e);
         }
         savedData.setDirty(false);
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProvider(final Level level,
+                                                             final BlockPos pos,
+                                                             @Nullable final Direction direction) {
+        return RefinedStorageFabricApi.INSTANCE.getNetworkNodeContainerProviderLookup().find(level, pos, direction);
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProviderSafely(final Level level,
+                                                                   final BlockPos pos,
+                                                                   @Nullable final Direction direction) {
+        if (!level.isLoaded(pos)) {
+            return null;
+        }
+        // Avoid using EntityCreationType.IMMEDIATE.
+        // By default, the block is removed first and then the block entity (see BaseBlock#onRemove).
+        // But, when using mods like "Carrier", "Carpet" or "Carry On" that allow for moving block entities,
+        // they remove the block entity first and then the block.
+        // When removing a block with Carrier for example,
+        // this causes a problematic situation that the block entity IS gone,
+        // but that the #getBlockEntity() call here with type IMMEDIATE would recreate the block entity because
+        // the block is still there.
+        // If the block entity is returned here again even if it is removed, the preconditions in NetworkBuilder will
+        // fail as the "removed" block entity/connection would still be present.
+        final BlockEntity safeBlockEntity = level.getChunkAt(pos).getBlockEntity(
+            pos,
+            LevelChunk.EntityCreationType.CHECK
+        );
+        if (safeBlockEntity == null) {
+            return null;
+        }
+        return RefinedStorageFabricApi.INSTANCE.getNetworkNodeContainerProviderLookup().find(
+            level,
+            pos,
+            level.getBlockState(pos),
+            safeBlockEntity,
+            direction
+        );
     }
 
     private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {

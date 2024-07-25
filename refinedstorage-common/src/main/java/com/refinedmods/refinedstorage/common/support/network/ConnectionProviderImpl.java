@@ -3,8 +3,9 @@ package com.refinedmods.refinedstorage.common.support.network;
 import com.refinedmods.refinedstorage.api.network.ConnectionProvider;
 import com.refinedmods.refinedstorage.api.network.Connections;
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
-import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -18,12 +19,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,14 +99,17 @@ public class ConnectionProviderImpl implements ConnectionProvider {
 
     private Set<InWorldNetworkNodeContainer> getConnections(final InWorldNetworkNodeContainer from,
                                                             final ConnectionSinkImpl.Connection connection) {
-        final BlockEntity connectionBlockEntity = getBlockEntitySafely(connection.pos());
-        if (!(connectionBlockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity)) {
+        final NetworkNodeContainerProvider provider = getContainerProviderSafely(
+            connection.pos(),
+            connection.incomingDirection()
+        );
+        if (provider == null) {
             return Collections.emptySet();
         }
         if (connection.incomingDirection() == null) {
-            return networkNodeContainerBlockEntity.getContainers();
+            return provider.getContainers();
         }
-        return networkNodeContainerBlockEntity.getContainers()
+        return provider.getContainers()
             .stream()
             .filter(container -> container.canAcceptIncomingConnection(
                 connection.incomingDirection(),
@@ -125,7 +127,8 @@ public class ConnectionProviderImpl implements ConnectionProvider {
     }
 
     @Nullable
-    private BlockEntity getBlockEntitySafely(final GlobalPos pos) {
+    private NetworkNodeContainerProvider getContainerProviderSafely(final GlobalPos pos,
+                                                                    @Nullable final Direction direction) {
         final MinecraftServer server = originLevel.getServer();
         if (server == null) {
             return null;
@@ -134,25 +137,7 @@ public class ConnectionProviderImpl implements ConnectionProvider {
         if (level == null) {
             return null;
         }
-        return getBlockEntitySafely(level, pos.pos());
-    }
-
-    @Nullable
-    private BlockEntity getBlockEntitySafely(final Level level, final BlockPos pos) {
-        if (!level.isLoaded(pos)) {
-            return null;
-        }
-        // Avoid using EntityCreationType.IMMEDIATE.
-        // By default, the block is removed first and then the block entity (see BaseBlock#onRemove).
-        // But, when using mods like "Carrier", "Carpet" or "Carry On" that allow for moving block entities,
-        // they remove the block entity first and then the block.
-        // When removing a block with Carrier for example,
-        // this causes a problematic situation that the block entity IS gone,
-        // but that the #getBlockEntity() call here with type IMMEDIATE would recreate the block entity because
-        // the block is still there.
-        // If the block entity is returned here again even if it is removed, the preconditions in NetworkBuilder will
-        // fail as the "removed" block entity/connection would still be present.
-        return level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
+        return Platform.INSTANCE.getContainerProviderSafely(level, pos.pos(), direction);
     }
 
     private static class ScanState {

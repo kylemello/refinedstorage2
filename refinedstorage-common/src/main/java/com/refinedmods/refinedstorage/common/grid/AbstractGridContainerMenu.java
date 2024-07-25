@@ -14,7 +14,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
@@ -109,7 +109,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
         this.view.setSortingType(Platform.INSTANCE.getConfig().getGrid().getSortingType());
-        this.view.setFilterAndSort(filterStorageChannel());
+        this.view.setFilterAndSort(filterResourceType());
 
         this.synchronizer = loadSynchronizer();
         this.resourceTypeFilter = loadResourceType();
@@ -137,21 +137,18 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private Predicate<GridResource> filterStorageChannel() {
-        return gridResource -> Platform.INSTANCE
-            .getConfig()
-            .getGrid()
-            .getResourceType()
-            .flatMap(resourceTypeId -> PlatformApi.INSTANCE
+    private Predicate<GridResource> filterResourceType() {
+        return gridResource -> Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
+            RefinedStorageApi.INSTANCE
                 .getResourceTypeRegistry()
                 .get(resourceTypeId)
                 .map(type -> type.isGridResourceBelonging(gridResource))
-            ).orElse(true);
+        ).orElse(true);
     }
 
     private static GridViewBuilder createViewBuilder() {
         return new GridViewBuilderImpl(
-            new CompositeGridResourceFactory(PlatformApi.INSTANCE.getResourceTypeRegistry()),
+            new CompositeGridResourceFactory(RefinedStorageApi.INSTANCE.getResourceTypeRegistry()),
             GridSortingTypes.NAME,
             GridSortingTypes.QUANTITY
         );
@@ -199,7 +196,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
 
     private boolean onSearchTextChanged(final String text) {
         try {
-            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterStorageChannel()));
+            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
             return true;
         } catch (GridQueryParserException e) {
             view.setFilterAndSort(resource -> false);
@@ -272,17 +269,17 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     }
 
     private void initStrategies(final ServerPlayer player) {
-        this.insertionStrategy = PlatformApi.INSTANCE.createGridInsertionStrategy(
+        this.insertionStrategy = RefinedStorageApi.INSTANCE.createGridInsertionStrategy(
             this,
             player,
             requireNonNull(grid)
         );
-        this.extractionStrategy = PlatformApi.INSTANCE.createGridExtractionStrategy(
+        this.extractionStrategy = RefinedStorageApi.INSTANCE.createGridExtractionStrategy(
             this,
             player,
             requireNonNull(grid)
         );
-        this.scrollingStrategy = PlatformApi.INSTANCE.createGridScrollingStrategy(
+        this.scrollingStrategy = RefinedStorageApi.INSTANCE.createGridScrollingStrategy(
             this,
             player,
             requireNonNull(grid)
@@ -314,7 +311,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             .getConfig()
             .getGrid()
             .getSynchronizer()
-            .flatMap(id -> PlatformApi.INSTANCE.getGridSynchronizerRegistry().get(id))
+            .flatMap(id -> RefinedStorageApi.INSTANCE.getGridSynchronizerRegistry().get(id))
             .orElse(NoopGridSynchronizer.INSTANCE);
     }
 
@@ -324,7 +321,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             .getConfig()
             .getGrid()
             .getResourceType()
-            .flatMap(id -> PlatformApi.INSTANCE.getResourceTypeRegistry().get(id))
+            .flatMap(id -> RefinedStorageApi.INSTANCE.getResourceTypeRegistry().get(id))
             .orElse(null);
     }
 
@@ -338,7 +335,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     }
 
     public void toggleSynchronizer() {
-        final PlatformRegistry<GridSynchronizer> registry = PlatformApi.INSTANCE.getGridSynchronizerRegistry();
+        final PlatformRegistry<GridSynchronizer> registry = RefinedStorageApi.INSTANCE.getGridSynchronizerRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
         final GridSynchronizer newSynchronizer = registry.nextOrNullIfLast(getSynchronizer());
         if (newSynchronizer == null) {
@@ -350,7 +347,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     }
 
     public void toggleResourceType() {
-        final PlatformRegistry<ResourceType> registry = PlatformApi.INSTANCE.getResourceTypeRegistry();
+        final PlatformRegistry<ResourceType> registry = RefinedStorageApi.INSTANCE.getResourceTypeRegistry();
         final Config.GridEntry config = Platform.INSTANCE.getConfig().getGrid();
         final ResourceType newResourceType = resourceTypeFilter == null
             ? ResourceTypes.ITEM

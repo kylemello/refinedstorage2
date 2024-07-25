@@ -3,21 +3,23 @@ package com.refinedmods.refinedstorage.common.security;
 import com.refinedmods.refinedstorage.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode;
 import com.refinedmods.refinedstorage.api.network.impl.security.SecurityDecisionProviderImpl;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage.common.api.security.SecurityPolicyContainerItem;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.NetworkNodeContainerProviderImpl;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -57,9 +59,27 @@ public class SecurityManagerBlockEntity
                 Platform.INSTANCE.getConfig().getSecurityManager().getEnergyUsage()
             )
         );
-        securityCards.addListener(c -> invalidate());
-        fallbackSecurityCard.addListener(c -> invalidate());
-        mainNode.setDelegate(securityDecisionProvider);
+        securityCards.addListener(card -> invalidate());
+        fallbackSecurityCard.addListener(card -> invalidate());
+        mainNetworkNode.setDelegate(securityDecisionProvider);
+    }
+
+    @Override
+    protected NetworkNodeContainerProvider createContainerProvider() {
+        return new NetworkNodeContainerProviderImpl() {
+            @Override
+            public boolean canBuild(final ServerPlayer player) {
+                return super.canBuild(player) || isPlacedBy(player.getGameProfile().getId());
+            }
+        };
+    }
+
+    @Override
+    protected InWorldNetworkNodeContainer createMainContainer(
+        final SecurityDecisionProviderProxyNetworkNode networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .connectionStrategy(new SecurityManagerConnectionStrategy(this::getBlockState, getBlockPos()))
+            .build();
     }
 
     private void invalidate() {
@@ -79,7 +99,7 @@ public class SecurityManagerBlockEntity
                     actor -> securityDecisionProvider.setPolicy(actor, policy)));
         }
         energyUsage += updateDefaultPolicyAndGetEnergyUsage();
-        mainNode.setEnergyUsage(energyUsage);
+        mainNetworkNode.setEnergyUsage(energyUsage);
     }
 
     private long updateDefaultPolicyAndGetEnergyUsage() {
@@ -155,30 +175,7 @@ public class SecurityManagerBlockEntity
     @Override
     public boolean canOpen(final ServerPlayer player) {
         final boolean isAllowedViaSecuritySystem = NetworkNodeMenuProvider.super.canOpen(player)
-            && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, getContainers());
+            && SecurityHelper.isAllowed(player, BuiltinPermission.SECURITY, containers.getContainers());
         return isAllowedViaSecuritySystem || isPlacedBy(player.getGameProfile().getId());
-    }
-
-    @Override
-    public boolean canBuild(final ServerPlayer player) {
-        return super.canBuild(player) || isPlacedBy(player.getGameProfile().getId());
-    }
-
-    @Override
-    public void addOutgoingConnections(final ConnectionSink sink) {
-        for (final Direction direction : Direction.values()) {
-            if (direction == Direction.UP) {
-                continue;
-            }
-            sink.tryConnectInSameDimension(worldPosition.relative(direction), direction.getOpposite());
-        }
-    }
-
-    @Override
-    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
-        if (!colorsAllowConnecting(connectingState)) {
-            return false;
-        }
-        return incomingDirection != Direction.UP;
     }
 }

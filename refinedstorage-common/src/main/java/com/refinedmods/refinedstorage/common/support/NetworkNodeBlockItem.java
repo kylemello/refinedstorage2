@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +21,12 @@ public class NetworkNodeBlockItem extends BaseBlockItem {
 
     @Override
     protected boolean placeBlock(final BlockPlaceContext ctx, final BlockState state) {
-        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer
-            && !(PlatformApi.INSTANCE.canPlaceNetworkNode(serverPlayer, ctx.getLevel(), ctx.getClickedPos(), state))) {
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer && !(RefinedStorageApi.INSTANCE.canPlaceNetworkNode(
+            serverPlayer,
+            ctx.getLevel(),
+            ctx.getClickedPos(),
+            state
+        ))) {
             return false;
         }
         return super.placeBlock(ctx, state);

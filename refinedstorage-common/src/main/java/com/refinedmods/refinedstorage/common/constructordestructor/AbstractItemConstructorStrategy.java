@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -34,7 +34,7 @@ abstract class AbstractItemConstructorStrategy implements ConstructorStrategy {
     public final boolean apply(
         final ResourceKey resource,
         final Actor actor,
-        final Player actingPlayer,
+        final Player player,
         final Network network
     ) {
         if (!level.isLoaded(pos)) {
@@ -43,16 +43,16 @@ abstract class AbstractItemConstructorStrategy implements ConstructorStrategy {
         if (!(resource instanceof ItemResource itemResource)) {
             return false;
         }
-        final StorageChannel storageChannel = network.getComponent(StorageNetworkComponent.class);
+        final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         final long amount = getTransferAmount();
-        final long extractedAmount = storageChannel.extract(itemResource, amount, Action.SIMULATE, actor);
+        final long extractedAmount = rootStorage.extract(itemResource, amount, Action.SIMULATE, actor);
         if (extractedAmount == 0) {
             return false;
         }
         final ItemStack itemStack = itemResource.toItemStack(extractedAmount);
-        final boolean success = apply(itemStack, actor, actingPlayer);
+        final boolean success = apply(itemStack, actor, player);
         if (success) {
-            storageChannel.extract(itemResource, extractedAmount, Action.EXECUTE, actor);
+            rootStorage.extract(itemResource, extractedAmount, Action.EXECUTE, actor);
         }
         return success;
     }

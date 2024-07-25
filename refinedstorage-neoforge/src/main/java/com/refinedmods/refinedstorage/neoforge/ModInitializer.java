@@ -1,9 +1,11 @@
 package com.refinedmods.refinedstorage.neoforge;
 
 import com.refinedmods.refinedstorage.common.AbstractModInitializer;
+import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
@@ -18,6 +20,8 @@ import com.refinedmods.refinedstorage.common.grid.WirelessGridItem;
 import com.refinedmods.refinedstorage.common.iface.InterfacePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage.common.security.FallbackSecurityCardItem;
 import com.refinedmods.refinedstorage.common.security.SecurityCardItem;
+import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
@@ -50,6 +54,8 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmit
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
+import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApi;
+import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApiProxy;
 import com.refinedmods.refinedstorage.neoforge.exporter.FluidHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.exporter.ItemHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridExtractionStrategy;
@@ -80,6 +86,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -147,6 +154,9 @@ public class ModInitializer extends AbstractModInitializer {
     public ModInitializer(final IEventBus eventBus, final ModContainer modContainer) {
         PlatformProxy.loadPlatform(new PlatformImpl(modContainer));
         initializePlatformApi();
+        ((RefinedStorageNeoForgeApiProxy) RefinedStorageNeoForgeApi.INSTANCE).setDelegate(
+            new RefinedStorageNeoForgeApiImpl()
+        );
         registerAdditionalGridInsertionStrategyFactories();
         registerGridExtractionStrategyFactories();
         registerGridScrollingStrategyFactories();
@@ -177,44 +187,46 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerAdditionalGridInsertionStrategyFactories() {
-        PlatformApi.INSTANCE.addGridInsertionStrategyFactory(FluidGridInsertionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridInsertionStrategyFactory(FluidGridInsertionStrategy::new);
     }
 
     private void registerGridExtractionStrategyFactories() {
-        PlatformApi.INSTANCE.addGridExtractionStrategyFactory(ItemGridExtractionStrategy::new);
-        PlatformApi.INSTANCE.addGridExtractionStrategyFactory(FluidGridExtractionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridExtractionStrategyFactory(ItemGridExtractionStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridExtractionStrategyFactory(FluidGridExtractionStrategy::new);
     }
 
     private void registerGridScrollingStrategyFactories() {
-        PlatformApi.INSTANCE.addGridScrollingStrategyFactory(ItemGridScrollingStrategy::new);
+        RefinedStorageApi.INSTANCE.addGridScrollingStrategyFactory(ItemGridScrollingStrategy::new);
     }
 
     private void registerImporterTransferStrategyFactories() {
-        PlatformApi.INSTANCE.getImporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getImporterTransferStrategyRegistry().register(
             createIdentifier("item"),
             new ItemHandlerImporterTransferStrategyFactory()
         );
-        PlatformApi.INSTANCE.getImporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getImporterTransferStrategyRegistry().register(
             createIdentifier("fluid"),
             new FluidHandlerImporterTransferStrategyFactory()
         );
     }
 
     private void registerExporterTransferStrategyFactories() {
-        PlatformApi.INSTANCE.getExporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().register(
             createIdentifier("item"),
             new ItemHandlerExporterTransferStrategyFactory()
         );
-        PlatformApi.INSTANCE.getExporterTransferStrategyRegistry().register(
+        RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().register(
             createIdentifier("fluid"),
             new FluidHandlerExporterTransferStrategyFactory()
         );
     }
 
     private void registerExternalStorageProviderFactories() {
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(new InterfacePlatformExternalStorageProviderFactory());
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(new ItemHandlerPlatformExternalStorageProviderFactory());
-        PlatformApi.INSTANCE.addExternalStorageProviderFactory(
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
+            new InterfacePlatformExternalStorageProviderFactory());
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
+            new ItemHandlerPlatformExternalStorageProviderFactory());
+        RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
             new FluidHandlerPlatformExternalStorageProviderFactory()
         );
     }
@@ -247,7 +259,7 @@ public class ModInitializer extends AbstractModInitializer {
 
     private void registerCustomItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setRegulatorUpgrade(callback.register(REGULATOR_UPGRADE, () -> new RegulatorUpgradeItem(
-            PlatformApi.INSTANCE.getUpgradeRegistry()
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry()
         ) {
             @Override
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
@@ -363,6 +375,30 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerCapabilities(final RegisterCapabilitiesEvent event) {
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCable());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getConstructor());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getController());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCraftingGrid());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCreativeController());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDestructor());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDetector());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDiskDrive());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDiskInterface());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getExporter());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getExternalStorage());
+        Arrays.stream(FluidStorageVariant.values()).forEach(type ->
+            registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getFluidStorageBlock(type)));
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getGrid());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getImporter());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getInterface());
+        Arrays.stream(ItemStorageVariant.values()).forEach(type ->
+            registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getItemStorageBlock(type)));
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getNetworkReceiver());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getNetworkTransmitter());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getRelay());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getSecurityManager());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getStorageMonitor());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getWirelessTransmitter());
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK,
             BlockEntities.INSTANCE.getDiskDrive(),
@@ -424,6 +460,17 @@ public class ModInitializer extends AbstractModInitializer {
         );
     }
 
+    private void registerNetworkNodeContainerProvider(
+        final RegisterCapabilitiesEvent event,
+        final BlockEntityType<? extends AbstractNetworkNodeContainerBlockEntity<?>> type
+    ) {
+        event.registerBlockEntity(
+            RefinedStorageNeoForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
+            type,
+            (be, side) -> be.getContainerProvider()
+        );
+    }
+
     private void registerSounds(final IEventBus eventBus) {
         registerSounds(new ForgeRegistryCallback<>(soundEventRegistry));
         soundEventRegistry.register(eventBus);
@@ -480,11 +527,13 @@ public class ModInitializer extends AbstractModInitializer {
 
     @SubscribeEvent
     public void registerSecurityBlockBreakEvent(final BlockEvent.BreakEvent e) {
-        final BlockEntity blockEntity = e.getLevel().getBlockEntity(e.getPos());
-        if (blockEntity instanceof NetworkNodeContainerBlockEntity networkNodeContainerBlockEntity
-            && e.getPlayer() instanceof ServerPlayer serverPlayer
-            && !networkNodeContainerBlockEntity.canBuild(serverPlayer)) {
-            PlatformApi.INSTANCE.sendNoPermissionMessage(
+        if (!(e.getLevel() instanceof Level level)) {
+            return;
+        }
+        final NetworkNodeContainerProvider provider = Platform.INSTANCE.getContainerProvider(level, e.getPos(), null);
+        final Player player = e.getPlayer();
+        if (provider != null && player instanceof ServerPlayer serverPlayer && !provider.canBuild(serverPlayer)) {
+            RefinedStorageApi.INSTANCE.sendNoPermissionMessage(
                 serverPlayer,
                 createTranslation("misc", "no_permission.build.break", e.getState().getBlock().getName())
             );

@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.support;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
@@ -125,7 +125,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
                                     final ResourceKey resource,
                                     final long amount,
                                     final boolean renderAmount) {
-        final ResourceRendering rendering = PlatformApi.INSTANCE.getResourceRendering(resource);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
         rendering.render(resource, graphics, x, y);
         if (renderAmount) {
             renderResourceSlotAmount(graphics, x, y, amount, rendering);
@@ -264,7 +264,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
 
     private List<ClientTooltipComponent> getTooltipForResource(final ResourceKey resource,
                                                                final ResourceSlot resourceSlot) {
-        final List<ClientTooltipComponent> tooltip = PlatformApi.INSTANCE
+        final List<ClientTooltipComponent> tooltip = RefinedStorageApi.INSTANCE
             .getResourceRendering(resource)
             .getTooltip(resource)
             .stream()
@@ -275,7 +275,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             tooltip.add(CLICK_TO_CLEAR);
         }
         if (resourceSlot.supportsItemSlotInteractions()) {
-            PlatformApi.INSTANCE.getResourceContainerInsertStrategies()
+            RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies()
                 .stream()
                 .flatMap(strategy -> strategy.getConversionInfo(resource).stream())
                 .map(conversionInfo -> MouseClientTooltipComponent.itemConversion(

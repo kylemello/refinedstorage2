@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.core.CoreValidations;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
@@ -374,8 +374,8 @@ public class ResourceContainerImpl implements ResourceContainer {
         return new ResourceContainerImpl(
             size,
             resource -> Long.MAX_VALUE,
-            PlatformApi.INSTANCE.getItemResourceFactory(),
-            PlatformApi.INSTANCE.getAlternativeResourceFactories()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
         );
     }
 

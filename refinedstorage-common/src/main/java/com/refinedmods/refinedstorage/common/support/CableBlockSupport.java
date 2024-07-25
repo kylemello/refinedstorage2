@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.support;
 
-import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -83,10 +85,14 @@ public final class CableBlockSupport {
 
     public static BlockState getState(
         final BlockState currentState,
-        final LevelAccessor level,
+        final LevelAccessor levelAccessor,
         final BlockPos pos,
         @Nullable final Direction blacklistedDirection
     ) {
+        if (!(levelAccessor instanceof Level level)) {
+            return currentState;
+        }
+
         final boolean north = hasVisualConnection(currentState, level, pos, Direction.NORTH, blacklistedDirection);
         final boolean east = hasVisualConnection(currentState, level, pos, Direction.EAST, blacklistedDirection);
         final boolean south = hasVisualConnection(currentState, level, pos, Direction.SOUTH, blacklistedDirection);
@@ -105,7 +111,7 @@ public final class CableBlockSupport {
 
     private static boolean hasVisualConnection(
         final BlockState blockState,
-        final LevelAccessor level,
+        final Level level,
         final BlockPos pos,
         final Direction direction,
         @Nullable final Direction blacklistedDirection
@@ -114,7 +120,12 @@ public final class CableBlockSupport {
             return false;
         }
         final BlockPos offsetPos = pos.relative(direction);
-        if (!(level.getBlockEntity(offsetPos) instanceof NetworkNodeContainerBlockEntity neighbor)) {
+        final NetworkNodeContainerProvider neighbor = Platform.INSTANCE.getContainerProvider(
+            level,
+            offsetPos,
+            direction.getOpposite()
+        );
+        if (neighbor == null) {
             return false;
         }
         return neighbor.getContainers()

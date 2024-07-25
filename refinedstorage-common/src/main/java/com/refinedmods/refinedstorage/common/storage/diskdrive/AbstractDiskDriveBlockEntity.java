@@ -32,7 +32,7 @@ public abstract class AbstractDiskDriveBlockEntity extends AbstractDiskContainer
             AMOUNT_OF_DISKS
         ));
         this.configContainer = new StorageConfigurationContainerImpl(
-            mainNode.getStorageConfiguration(),
+            mainNetworkNode.getStorageConfiguration(),
             filter,
             this::setChanged,
             this::getRedstoneMode,
@@ -42,12 +42,12 @@ public abstract class AbstractDiskDriveBlockEntity extends AbstractDiskContainer
 
     @Override
     protected void setFilters(final Set<ResourceKey> filters) {
-        mainNode.getStorageConfiguration().setFilters(filters);
+        mainNetworkNode.getStorageConfiguration().setFilters(filters);
     }
 
     @Override
     protected void setNormalizer(final UnaryOperator<ResourceKey> normalizer) {
-        mainNode.getStorageConfiguration().setNormalizer(normalizer);
+        mainNetworkNode.getStorageConfiguration().setNormalizer(normalizer);
     }
 
     @Override

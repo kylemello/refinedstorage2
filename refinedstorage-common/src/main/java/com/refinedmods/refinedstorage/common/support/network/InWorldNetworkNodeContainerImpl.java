@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.support.network;
 
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionLogic;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.support.network.ConnectionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ public class InWorldNetworkNodeContainerImpl implements InWorldNetworkNodeContai
     private final NetworkNode node;
     private final String name;
     private final int priority;
-    private final ConnectionLogic connectionLogic;
+    private final ConnectionStrategy connectionStrategy;
     @Nullable
     private final Supplier<Object> keyProvider;
 
@@ -29,13 +29,13 @@ public class InWorldNetworkNodeContainerImpl implements InWorldNetworkNodeContai
                                            final NetworkNode node,
                                            final String name,
                                            final int priority,
-                                           final ConnectionLogic connectionLogic,
+                                           final ConnectionStrategy connectionStrategy,
                                            @Nullable final Supplier<Object> keyProvider) {
         this.blockEntity = blockEntity;
         this.node = node;
         this.name = name;
         this.priority = priority;
-        this.connectionLogic = connectionLogic;
+        this.connectionStrategy = connectionStrategy;
         this.keyProvider = keyProvider;
     }
 
@@ -46,12 +46,12 @@ public class InWorldNetworkNodeContainerImpl implements InWorldNetworkNodeContai
 
     @Override
     public void addOutgoingConnections(final ConnectionSink sink) {
-        connectionLogic.addOutgoingConnections(sink);
+        connectionStrategy.addOutgoingConnections(sink);
     }
 
     @Override
     public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
-        return connectionLogic.canAcceptIncomingConnection(incomingDirection, connectingState);
+        return connectionStrategy.canAcceptIncomingConnection(incomingDirection, connectingState);
     }
 
     @Override

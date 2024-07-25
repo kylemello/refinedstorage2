@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage.api.network.impl.node.importer.ImporterSou
 import com.refinedmods.refinedstorage.api.network.impl.node.importer.ImporterTransferStrategyImpl;
 import com.refinedmods.refinedstorage.api.network.node.importer.ImporterTransferStrategy;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.exporter.AmountOverride;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeState;
 import com.refinedmods.refinedstorage.common.content.Items;
 

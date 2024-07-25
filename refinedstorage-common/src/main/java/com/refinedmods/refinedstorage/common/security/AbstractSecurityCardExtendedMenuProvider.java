@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.security;
 
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 
@@ -19,7 +19,11 @@ abstract class AbstractSecurityCardExtendedMenuProvider<T> implements ExtendedMe
     }
 
     protected final List<SecurityCardData.Permission> getDataPermissions() {
-        return PlatformApi.INSTANCE.getPermissionRegistry().getAll().stream().map(this::toDataPermission).toList();
+        return RefinedStorageApi.INSTANCE.getPermissionRegistry()
+            .getAll()
+            .stream()
+            .map(this::toDataPermission)
+            .toList();
     }
 
     private SecurityCardData.Permission toDataPermission(final PlatformPermission permission) {

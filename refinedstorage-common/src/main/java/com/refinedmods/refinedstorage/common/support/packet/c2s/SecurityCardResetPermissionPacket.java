@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.security.AbstractSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
@@ -17,7 +17,8 @@ public record SecurityCardResetPermissionPacket(PlatformPermission permission) i
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, SecurityCardResetPermissionPacket> STREAM_CODEC =
         StreamCodec.composite(
-            PlatformApi.INSTANCE.getPermissionRegistry().streamCodec(), SecurityCardResetPermissionPacket::permission,
+            RefinedStorageApi.INSTANCE.getPermissionRegistry().streamCodec(),
+            SecurityCardResetPermissionPacket::permission,
             SecurityCardResetPermissionPacket::new
         );
 

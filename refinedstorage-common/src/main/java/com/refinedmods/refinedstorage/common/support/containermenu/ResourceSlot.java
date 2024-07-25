@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.support.containermenu;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
@@ -224,7 +224,7 @@ public class ResourceSlot extends Slot {
         if (currentResourceAmount == null) {
             return null;
         }
-        return PlatformApi.INSTANCE.getResourceContainerInsertStrategies().stream()
+        return RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies().stream()
             .flatMap(strategy -> strategy.insert(carried, currentResourceAmount).stream())
             .findFirst()
             .map(result -> {

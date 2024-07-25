@@ -15,7 +15,7 @@ import com.refinedmods.refinedstorage.common.controller.ControllerItemPropertyFu
 import com.refinedmods.refinedstorage.common.networking.NetworkCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.security.SecurityCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntityRenderer;
-import com.refinedmods.refinedstorage.common.support.network.bounditem.NetworkBoundItemItemPropertyFunction;
+import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
@@ -423,13 +423,13 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     private void registerItemProperties() {
         ItemProperties.register(
             Items.INSTANCE.getWirelessGrid(),
-            NetworkBoundItemItemPropertyFunction.NAME,
-            new NetworkBoundItemItemPropertyFunction()
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
         );
         ItemProperties.register(
             Items.INSTANCE.getCreativeWirelessGrid(),
-            NetworkBoundItemItemPropertyFunction.NAME,
-            new NetworkBoundItemItemPropertyFunction()
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
         );
         ItemProperties.register(
             Items.INSTANCE.getConfigurationCard(),

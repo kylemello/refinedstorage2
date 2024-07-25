@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage.api.network.impl.node.exporter.ExporterTra
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.InsertableStorage;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage.common.api.storage.channel.FuzzyStorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
+import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -16,14 +16,14 @@ public class FuzzyExporterTransferStrategy extends ExporterTransferStrategyImpl 
     }
 
     @Override
-    protected Collection<ResourceKey> expand(final ResourceKey resource, final StorageChannel storageChannel) {
-        if (storageChannel instanceof FuzzyStorageChannel fuzzyStorageChannel) {
-            return fuzzyStorageChannel
+    protected Collection<ResourceKey> expand(final ResourceKey resource, final RootStorage rootStorage) {
+        if (rootStorage instanceof FuzzyRootStorage fuzzyRootStorage) {
+            return fuzzyRootStorage
                 .getFuzzy(resource)
                 .stream()
                 .map(ResourceAmount::getResource)
                 .collect(Collectors.toSet());
         }
-        return super.expand(resource, storageChannel);
+        return super.expand(resource, rootStorage);
     }
 }

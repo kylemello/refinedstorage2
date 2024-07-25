@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.security;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceFactory;
@@ -18,7 +18,7 @@ public record SecurityCardData(SlotReference slotReference, List<Permission> per
         ByteBufCodecs.collection(
             ArrayList::new,
             StreamCodec.composite(
-                PlatformApi.INSTANCE.getPermissionRegistry().streamCodec(), Permission::permission,
+                RefinedStorageApi.INSTANCE.getPermissionRegistry().streamCodec(), Permission::permission,
                 ByteBufCodecs.BOOL, Permission::allowed,
                 ByteBufCodecs.BOOL, Permission::dirty,
                 Permission::new

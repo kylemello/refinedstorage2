@@ -1,13 +1,14 @@
 package com.refinedmods.refinedstorage.api.network.storage;
 
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import org.apiguardian.api.API;
 
 /**
  * Implement this on {@link com.refinedmods.refinedstorage.api.network.node.NetworkNode}s that can provide a storage
  * to the network.
- * Never modify a {@link com.refinedmods.refinedstorage.api.storage.channel.StorageChannel}
+ * Never modify a {@link RootStorage}
  * from a {@link com.refinedmods.refinedstorage.api.network.node.NetworkNode} directly.
  * Use this interface to help you manage the lifecycle of your storage, to ensure that your storage is added or removed
  * in the right cases.

@@ -12,14 +12,5 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.10")
 @FunctionalInterface
 public interface DestructorStrategy {
-    /**
-     * Tries to perform the destructor operation.
-     *
-     * @param filter          the filter
-     * @param actor           the actor
-     * @param networkSupplier the network, this network can change due to a destruction operation hence the supplier
-     * @param actingPlayer    the fake player
-     * @return true if the operation was successful and lower prioritized strategies should be ignored, false otherwise
-     */
-    boolean apply(Filter filter, Actor actor, Supplier<Network> networkSupplier, Player actingPlayer);
+    boolean apply(Filter filter, Actor actor, Supplier<Network> networkSupplier, Player player);
 }

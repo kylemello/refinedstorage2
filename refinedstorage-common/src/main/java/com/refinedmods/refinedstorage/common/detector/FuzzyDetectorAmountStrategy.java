@@ -5,8 +5,8 @@ import com.refinedmods.refinedstorage.api.network.impl.node.detector.AbstractDet
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorAmountStrategy;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage.common.api.storage.channel.FuzzyStorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
+import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 
 class FuzzyDetectorAmountStrategy extends AbstractDetectorAmountStrategy {
     private final DetectorAmountStrategy fallback;
@@ -17,11 +17,11 @@ class FuzzyDetectorAmountStrategy extends AbstractDetectorAmountStrategy {
 
     @Override
     public long getAmount(final Network network, final ResourceKey configuredResource) {
-        final StorageChannel storageChannel = getStorageChannel(network);
-        if (!(storageChannel instanceof FuzzyStorageChannel fuzzyStorageChannel)) {
+        final RootStorage rootStorage = getRootStorage(network);
+        if (!(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
             return fallback.getAmount(network, configuredResource);
         }
-        return fuzzyStorageChannel.getFuzzy(configuredResource)
+        return fuzzyRootStorage.getFuzzy(configuredResource)
             .stream()
             .mapToLong(ResourceAmount::getAmount)
             .sum();

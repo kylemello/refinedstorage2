@@ -47,7 +47,7 @@ public final class GameTestUtil {
     private static Network getNetwork(final GameTestHelper helper, final BlockPos pos) {
         try {
             final var be = requireBlockEntity(helper, pos, AbstractNetworkNodeContainerBlockEntity.class);
-            final var field = AbstractNetworkNodeContainerBlockEntity.class.getDeclaredField("mainNode");
+            final var field = AbstractNetworkNodeContainerBlockEntity.class.getDeclaredField("mainNetworkNode");
             field.setAccessible(true);
             final NetworkNode mainNode = (NetworkNode) field.get(be);
             return mainNode.getNetwork();

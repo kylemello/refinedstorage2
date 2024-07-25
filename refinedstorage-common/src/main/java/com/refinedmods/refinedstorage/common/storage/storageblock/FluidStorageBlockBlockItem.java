@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.storageblock;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerBlockItem;
 import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
@@ -33,7 +33,7 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
         super(
             block,
             new Item.Properties().stacksTo(1).fireResistant(),
-            PlatformApi.INSTANCE.getStorageContainerItemHelper()
+            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper()
         );
         this.variant = variant;
         this.helpText = getHelpText(variant);
@@ -76,8 +76,11 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
 
     @Override
     protected boolean placeBlock(final BlockPlaceContext ctx, final BlockState state) {
-        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer
-            && !(PlatformApi.INSTANCE.canPlaceNetworkNode(serverPlayer, ctx.getLevel(), ctx.getClickedPos(), state))) {
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer && !(RefinedStorageApi.INSTANCE.canPlaceNetworkNode(
+            serverPlayer,
+            ctx.getLevel(),
+            ctx.getClickedPos(),
+            state))) {
             return false;
         }
         return super.placeBlock(ctx, state);

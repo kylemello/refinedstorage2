@@ -5,7 +5,8 @@ import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorAmo
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorMode;
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -23,7 +24,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -60,9 +60,16 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
                 propagateAmount();
                 setChanged();
             },
-            filters -> mainNode.setConfiguredResource(filters.isEmpty() ? null : filters.getFirst())
+            filters -> mainNetworkNode.setConfiguredResource(filters.isEmpty() ? null : filters.getFirst())
         );
         initialize();
+    }
+
+    @Override
+    protected InWorldNetworkNodeContainer createMainContainer(final DetectorNetworkNode networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .connectionStrategy(new DetectorConnectionStrategy(this::getBlockState, getBlockPos()))
+            .build();
     }
 
     @Override
@@ -70,7 +77,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
         super.writeConfiguration(tag, provider);
         filter.save(tag, provider);
         tag.putDouble(TAG_AMOUNT, amount);
-        tag.putInt(TAG_MODE, DetectorModeSettings.getDetectorMode(mainNode.getMode()));
+        tag.putInt(TAG_MODE, DetectorModeSettings.getDetectorMode(mainNetworkNode.getMode()));
     }
 
     @Override
@@ -81,7 +88,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
             this.amount = tag.getDouble(TAG_AMOUNT);
         }
         if (tag.contains(TAG_MODE)) {
-            mainNode.setMode(DetectorModeSettings.getDetectorMode(tag.getInt(TAG_MODE)));
+            mainNetworkNode.setMode(DetectorModeSettings.getDetectorMode(tag.getInt(TAG_MODE)));
         }
         initialize();
         propagateAmount();
@@ -99,7 +106,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
             ? (long) amount
             : configuredResource.getResourceType().normalizeAmount(amount);
         LOGGER.debug("Updating detector amount of {} normalized as {}", amount, normalizedAmount);
-        mainNode.setAmount(normalizedAmount);
+        mainNetworkNode.setAmount(normalizedAmount);
     }
 
     boolean isFuzzyMode() {
@@ -112,12 +119,12 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     }
 
     void setMode(final DetectorMode mode) {
-        mainNode.setMode(mode);
+        mainNetworkNode.setMode(mode);
         setChanged();
     }
 
     DetectorMode getMode() {
-        return mainNode.getMode();
+        return mainNetworkNode.getMode();
     }
 
     private void initialize() {
@@ -125,7 +132,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
         final DetectorAmountStrategy strategy = isFuzzyMode()
             ? new FuzzyDetectorAmountStrategy(defaultStrategy)
             : defaultStrategy;
-        mainNode.setAmountStrategy(strategy);
+        mainNetworkNode.setAmountStrategy(strategy);
     }
 
     @Override
@@ -156,37 +163,11 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
     @Override
     public void updateActiveness(final BlockState state, @Nullable final BooleanProperty activenessProperty) {
         super.updateActiveness(state, activenessProperty);
-        final boolean powered = mainNode.isActive() && mainNode.isActivated();
+        final boolean powered = mainNetworkNode.isActive() && mainNetworkNode.isActivated();
         final boolean needToUpdatePowered = state.getValue(DetectorBlock.POWERED) != powered;
         if (level != null && needToUpdatePowered && poweredChangeRateLimiter.tryAcquire()) {
             level.setBlockAndUpdate(getBlockPos(), state.setValue(DetectorBlock.POWERED, powered));
         }
-    }
-
-    @Override
-    public void addOutgoingConnections(final ConnectionSink sink) {
-        final Direction myDirection = getDirection();
-        if (myDirection == null) {
-            return;
-        }
-        for (final Direction direction : Direction.values()) {
-            if (direction == myDirection.getOpposite()) {
-                continue;
-            }
-            sink.tryConnectInSameDimension(worldPosition.relative(direction), direction.getOpposite());
-        }
-    }
-
-    @Override
-    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
-        if (!colorsAllowConnecting(connectingState)) {
-            return false;
-        }
-        final Direction myDirection = getDirection();
-        if (myDirection != null) {
-            return myDirection != incomingDirection.getOpposite();
-        }
-        return true;
     }
 
     @Override

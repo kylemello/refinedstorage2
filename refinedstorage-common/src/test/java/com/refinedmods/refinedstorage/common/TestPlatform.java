@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.containermenu.MenuOpener;
 import com.refinedmods.refinedstorage.common.support.containermenu.TransferManager;
@@ -210,6 +211,20 @@ public class TestPlatform implements Platform {
     @Override
     public void saveSavedData(final SavedData savedData, final File file, final HolderLookup.Provider provider,
                               final BiConsumer<File, HolderLookup.Provider> defaultSaveFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProvider(final Level level, final BlockPos pos,
+                                                             @Nullable final Direction direction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public NetworkNodeContainerProvider getContainerProviderSafely(final Level level, final BlockPos pos,
+                                                                   @Nullable final Direction direction) {
         throw new UnsupportedOperationException();
     }
 }

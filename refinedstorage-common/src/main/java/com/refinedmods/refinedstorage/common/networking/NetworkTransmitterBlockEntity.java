@@ -4,12 +4,15 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import javax.annotation.Nullable;
@@ -68,15 +71,30 @@ public class NetworkTransmitterBlockEntity
             if (level != null) {
                 LOGGER.debug("Network card was changed at {}, sending network update", worldPosition);
                 setChanged();
-                updateContainers();
+                containers.update(level);
             }
         });
     }
 
     @Override
+    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode networkNode) {
+        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
+            .connectionStrategy(new ColoredConnectionStrategy(this::getBlockState, getBlockPos()) {
+                @Override
+                public void addOutgoingConnections(final ConnectionSink sink) {
+                    super.addOutgoingConnections(sink);
+                    if (receiverKey != null && NetworkTransmitterBlockEntity.this.mainNetworkNode.isActive()) {
+                        sink.tryConnect(receiverKey.pos());
+                    }
+                }
+            })
+            .build();
+    }
+
+    @Override
     protected void activenessChanged(final boolean newActive) {
         super.activenessChanged(newActive);
-        updateContainers();
+        containers.update(level);
     }
 
     public void updateStateInLevel(final BlockState state) {
@@ -89,13 +107,13 @@ public class NetworkTransmitterBlockEntity
     }
 
     private NetworkTransmitterState calculateState() {
-        if (!mainNode.isActive()) {
+        if (!mainNetworkNode.isActive()) {
             return NetworkTransmitterState.INACTIVE;
         }
         if (receiverKey == null) {
             return NetworkTransmitterState.ERROR;
         }
-        final Network network = mainNode.getNetwork();
+        final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return NetworkTransmitterState.ERROR;
         }
@@ -104,8 +122,8 @@ public class NetworkTransmitterBlockEntity
     }
 
     NetworkTransmitterData getStatus() {
-        final Network network = mainNode.getNetwork();
-        if (!mainNode.isActive() || network == null || level == null) {
+        final Network network = mainNetworkNode.getNetwork();
+        if (!mainNetworkNode.isActive() || network == null || level == null) {
             return INACTIVE;
         }
         if (receiverKey == null) {
@@ -126,10 +144,10 @@ public class NetworkTransmitterBlockEntity
     @Override
     public void doWork() {
         super.doWork();
-        if (!mainNode.isActive() || mainNode.getNetwork() == null || receiverKey == null) {
+        if (!mainNetworkNode.isActive() || mainNetworkNode.getNetwork() == null || receiverKey == null) {
             return;
         }
-        final boolean receiverFound = isReceiverFoundInNetwork(mainNode.getNetwork(), receiverKey);
+        final boolean receiverFound = isReceiverFoundInNetwork(mainNetworkNode.getNetwork(), receiverKey);
         if (!receiverFound && networkRebuildRetryRateLimiter.tryAcquire()) {
             tryReconnectingWithReceiver();
         }
@@ -141,7 +159,7 @@ public class NetworkTransmitterBlockEntity
             receiverKey,
             worldPosition
         );
-        updateContainers();
+        containers.update(level);
     }
 
     private static boolean isReceiverFoundInNetwork(final Network network, final NetworkReceiverKey key) {
@@ -195,13 +213,5 @@ public class NetworkTransmitterBlockEntity
     @Override
     public NonNullList<ItemStack> getDrops() {
         return NonNullList.of(ItemStack.EMPTY, networkCardInventory.getNetworkCard());
-    }
-
-    @Override
-    public void addOutgoingConnections(final ConnectionSink sink) {
-        super.addOutgoingConnections(sink);
-        if (receiverKey != null && mainNode.isActive()) {
-            sink.tryConnect(receiverKey.pos());
-        }
     }
 }

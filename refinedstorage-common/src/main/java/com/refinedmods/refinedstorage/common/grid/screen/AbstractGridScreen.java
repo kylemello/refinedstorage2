@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
@@ -99,7 +99,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         addSideButton(new AutoSelectedSideButtonWidget(getMenu()));
         addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
 
-        final boolean onlyHasNoopSynchronizer = PlatformApi.INSTANCE.getGridSynchronizerRegistry()
+        final boolean onlyHasNoopSynchronizer = RefinedStorageApi.INSTANCE.getGridSynchronizerRegistry()
             .getAll()
             .stream()
             .allMatch(synchronizer -> synchronizer == NoopGridSynchronizer.INSTANCE);
@@ -290,7 +290,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (carried.isEmpty()) {
             return;
         }
-        final List<ClientTooltipComponent> hints = PlatformApi.INSTANCE.getGridInsertionHints().getHints(carried);
+        final List<ClientTooltipComponent> hints = RefinedStorageApi.INSTANCE.getGridInsertionHints().getHints(carried);
         Platform.INSTANCE.renderTooltip(graphics, hints, x, y);
     }
 

@@ -8,8 +8,8 @@ import com.refinedmods.refinedstorage.api.network.impl.security.SecurityNetworkC
 import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.PlatformApiProxy;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApiProxy;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
@@ -168,7 +168,7 @@ public abstract class AbstractModInitializer {
     private static final String FLUID_REGISTRY_KEY = "fluid";
 
     protected final void initializePlatformApi() {
-        ((PlatformApiProxy) PlatformApi.INSTANCE).setDelegate(new PlatformApiImpl());
+        ((RefinedStorageApiProxy) RefinedStorageApi.INSTANCE).setDelegate(new RefinedStorageApiImpl());
         registerStorageTypes();
         registerResourceTypes();
         registerAdditionalResourceFactories();
@@ -184,95 +184,99 @@ public abstract class AbstractModInitializer {
     }
 
     private void registerStorageTypes() {
-        PlatformApi.INSTANCE.getStorageTypeRegistry().register(
+        RefinedStorageApi.INSTANCE.getStorageTypeRegistry().register(
             createIdentifier(ITEM_REGISTRY_KEY),
             StorageTypes.ITEM
         );
-        PlatformApi.INSTANCE.getStorageTypeRegistry().register(
+        RefinedStorageApi.INSTANCE.getStorageTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             StorageTypes.FLUID
         );
     }
 
     private void registerResourceTypes() {
-        PlatformApi.INSTANCE.getResourceTypeRegistry().register(
+        RefinedStorageApi.INSTANCE.getResourceTypeRegistry().register(
             createIdentifier(ITEM_REGISTRY_KEY),
             ResourceTypes.ITEM
         );
-        PlatformApi.INSTANCE.getResourceTypeRegistry().register(
+        RefinedStorageApi.INSTANCE.getResourceTypeRegistry().register(
             createIdentifier(FLUID_REGISTRY_KEY),
             ResourceTypes.FLUID
         );
     }
 
     private void registerAdditionalResourceFactories() {
-        PlatformApi.INSTANCE.addResourceFactory(new FluidResourceFactory());
+        RefinedStorageApi.INSTANCE.addResourceFactory(new FluidResourceFactory());
     }
 
     private void registerResourceContainerInsertStrategies() {
-        PlatformApi.INSTANCE.addResourceContainerInsertStrategy(new FluidResourceContainerInsertStrategy());
+        RefinedStorageApi.INSTANCE.addResourceContainerInsertStrategy(new FluidResourceContainerInsertStrategy());
     }
 
     private void registerDestructorStrategyFactories() {
-        PlatformApi.INSTANCE.addDestructorStrategyFactory(new BlockBreakDestructorStrategyFactory());
-        PlatformApi.INSTANCE.addDestructorStrategyFactory(new FluidBreakDestructorStrategyFactory());
-        PlatformApi.INSTANCE.addDestructorStrategyFactory(new ItemPickupDestructorStrategyFactory());
+        RefinedStorageApi.INSTANCE.addDestructorStrategyFactory(new BlockBreakDestructorStrategyFactory());
+        RefinedStorageApi.INSTANCE.addDestructorStrategyFactory(new FluidBreakDestructorStrategyFactory());
+        RefinedStorageApi.INSTANCE.addDestructorStrategyFactory(new ItemPickupDestructorStrategyFactory());
     }
 
     private void registerConstructorStrategyFactories() {
-        PlatformApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
+        RefinedStorageApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
             Optional.of(new PlaceBlockConstructorStrategy(level, pos, direction)));
-        PlatformApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
+        RefinedStorageApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
             Optional.of(new PlaceFireworksConstructorStrategy(level, pos, direction)));
-        PlatformApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
+        RefinedStorageApi.INSTANCE.addConstructorStrategyFactory((level, pos, direction, upgradeState, dropItems) ->
             Optional.of(new PlaceFluidConstructorStrategy(level, pos, direction)));
-        PlatformApi.INSTANCE.addConstructorStrategyFactory(new ItemDropConstructorStrategyFactory());
+        RefinedStorageApi.INSTANCE.addConstructorStrategyFactory(new ItemDropConstructorStrategyFactory());
     }
 
     private void registerStorageMonitorInsertionStrategies() {
-        PlatformApi.INSTANCE.addStorageMonitorInsertionStrategy(new ItemStorageMonitorInsertionStrategy());
-        PlatformApi.INSTANCE.addStorageMonitorInsertionStrategy(new FluidStorageMonitorInsertionStrategy());
+        RefinedStorageApi.INSTANCE.addStorageMonitorInsertionStrategy(new ItemStorageMonitorInsertionStrategy());
+        RefinedStorageApi.INSTANCE.addStorageMonitorInsertionStrategy(new FluidStorageMonitorInsertionStrategy());
     }
 
     private void registerStorageMonitorExtractionStrategies() {
-        PlatformApi.INSTANCE.addStorageMonitorExtractionStrategy(new ItemStorageMonitorExtractionStrategy());
-        PlatformApi.INSTANCE.addStorageMonitorExtractionStrategy(new FluidStorageMonitorExtractionStrategy());
+        RefinedStorageApi.INSTANCE.addStorageMonitorExtractionStrategy(new ItemStorageMonitorExtractionStrategy());
+        RefinedStorageApi.INSTANCE.addStorageMonitorExtractionStrategy(new FluidStorageMonitorExtractionStrategy());
     }
 
     private void registerNetworkComponents() {
-        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             EnergyNetworkComponent.class,
             network -> new EnergyNetworkComponentImpl()
         );
-        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             GraphNetworkComponent.class,
             GraphNetworkComponentImpl::new
         );
-        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             StorageNetworkComponent.class,
             network -> new PlatformStorageNetworkComponent()
         );
-        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             PlatformSecurityNetworkComponent.class,
-            network -> new PlatformSecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
+            network -> new PlatformSecurityNetworkComponentImpl(
+                RefinedStorageApi.INSTANCE.createDefaultSecurityPolicy()
+            )
         );
-        PlatformApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             SecurityNetworkComponent.class,
-            network -> new SecurityNetworkComponentImpl(PlatformApi.INSTANCE.createDefaultSecurityPolicy())
+            network -> new SecurityNetworkComponentImpl(RefinedStorageApi.INSTANCE.createDefaultSecurityPolicy())
         );
     }
 
     private void registerWirelessTransmitterRangeModifiers() {
-        PlatformApi.INSTANCE.addWirelessTransmitterRangeModifier(new BaseWirelessTransmitterRangeModifier());
-        PlatformApi.INSTANCE.addWirelessTransmitterRangeModifier(new RangeUpgradeWirelessTransmitterRangeModifier());
-        PlatformApi.INSTANCE.addWirelessTransmitterRangeModifier(
+        RefinedStorageApi.INSTANCE.addWirelessTransmitterRangeModifier(new BaseWirelessTransmitterRangeModifier());
+        RefinedStorageApi.INSTANCE.addWirelessTransmitterRangeModifier(
+            new RangeUpgradeWirelessTransmitterRangeModifier()
+        );
+        RefinedStorageApi.INSTANCE.addWirelessTransmitterRangeModifier(
             new CreativeRangeUpgradeWirelessTransmitterRangeModifier()
         );
     }
 
     private void registerPermissions() {
         for (final BuiltinPermission permission : BuiltinPermission.values()) {
-            PlatformApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
+            RefinedStorageApi.INSTANCE.getPermissionRegistry().register(permission.getId(), permission);
         }
     }
 
@@ -453,17 +457,17 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setStackUpgrade(stackUpgrade);
         final Supplier<AbstractUpgradeItem> fortune1Upgrade = callback.register(
             ContentIds.FORTUNE_1_UPGRADE,
-            () -> new FortuneUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), 1)
+            () -> new FortuneUpgradeItem(RefinedStorageApi.INSTANCE.getUpgradeRegistry(), 1)
         );
         Items.INSTANCE.setFortune1Upgrade(fortune1Upgrade);
         final Supplier<AbstractUpgradeItem> fortune2Upgrade = callback.register(
             ContentIds.FORTUNE_2_UPGRADE,
-            () -> new FortuneUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), 2)
+            () -> new FortuneUpgradeItem(RefinedStorageApi.INSTANCE.getUpgradeRegistry(), 2)
         );
         Items.INSTANCE.setFortune2Upgrade(fortune2Upgrade);
         final Supplier<AbstractUpgradeItem> fortune3Upgrade = callback.register(
             ContentIds.FORTUNE_3_UPGRADE,
-            () -> new FortuneUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), 3)
+            () -> new FortuneUpgradeItem(RefinedStorageApi.INSTANCE.getUpgradeRegistry(), 3)
         );
         Items.INSTANCE.setFortune3Upgrade(fortune3Upgrade);
         final Supplier<AbstractUpgradeItem> silkTouchUpgrade = callback.register(
@@ -473,41 +477,41 @@ public abstract class AbstractModInitializer {
         Items.INSTANCE.setSilkTouchUpgrade(silkTouchUpgrade);
         Items.INSTANCE.setRangeUpgrade(callback.register(
             ContentIds.RANGE_UPGRADE,
-            () -> new RangeUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), false)
+            () -> new RangeUpgradeItem(RefinedStorageApi.INSTANCE.getUpgradeRegistry(), false)
         ));
         Items.INSTANCE.setCreativeRangeUpgrade(callback.register(
             ContentIds.CREATIVE_RANGE_UPGRADE,
-            () -> new RangeUpgradeItem(PlatformApi.INSTANCE.getUpgradeRegistry(), true)
+            () -> new RangeUpgradeItem(RefinedStorageApi.INSTANCE.getUpgradeRegistry(), true)
         ));
     }
 
     protected final void registerUpgradeMappings() {
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.IMPORTER)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.IMPORTER)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getStackUpgrade())
             .add(Items.INSTANCE.getRegulatorUpgrade());
 
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.EXPORTER)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.EXPORTER)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getStackUpgrade())
             .add(Items.INSTANCE.getRegulatorUpgrade());
 
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.DESTRUCTOR)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.DESTRUCTOR)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getFortune1Upgrade())
             .add(Items.INSTANCE.getFortune2Upgrade())
             .add(Items.INSTANCE.getFortune3Upgrade())
             .add(Items.INSTANCE.getSilkTouchUpgrade());
 
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.CONSTRUCTOR)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.CONSTRUCTOR)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getStackUpgrade());
 
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.WIRELESS_TRANSMITTER)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.WIRELESS_TRANSMITTER)
             .add(Items.INSTANCE.getRangeUpgrade(), 4)
             .add(Items.INSTANCE.getCreativeRangeUpgrade());
 
-        PlatformApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.DISK_INTERFACE)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.DISK_INTERFACE)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getStackUpgrade());
     }
@@ -836,7 +840,7 @@ public abstract class AbstractModInitializer {
     }
 
     protected final void registerInventorySlotReference() {
-        PlatformApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
+        RefinedStorageApi.INSTANCE.getSlotReferenceFactoryRegistry().register(
             createIdentifier("inventory"),
             InventorySlotReferenceFactory.INSTANCE
         );

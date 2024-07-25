@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.controller;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.energy.AbstractEnergyBlockItem;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -25,7 +25,7 @@ public class ControllerBlockItem extends AbstractEnergyBlockItem {
     private final Block block;
 
     ControllerBlockItem(final Block block) {
-        super(block, new Item.Properties().stacksTo(1), PlatformApi.INSTANCE.getEnergyItemHelper());
+        super(block, new Item.Properties().stacksTo(1), RefinedStorageApi.INSTANCE.getEnergyItemHelper());
         this.block = block;
     }
 
@@ -48,7 +48,7 @@ public class ControllerBlockItem extends AbstractEnergyBlockItem {
         final EnergyStorage energyStorage = new EnergyStorageImpl(
             Platform.INSTANCE.getConfig().getController().getEnergyCapacity()
         );
-        return PlatformApi.INSTANCE.asBlockItemEnergyStorage(
+        return RefinedStorageApi.INSTANCE.asBlockItemEnergyStorage(
             energyStorage,
             stack,
             BlockEntities.INSTANCE.getController()
@@ -57,8 +57,12 @@ public class ControllerBlockItem extends AbstractEnergyBlockItem {
 
     @Override
     protected boolean placeBlock(final BlockPlaceContext ctx, final BlockState state) {
-        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer
-            && !(PlatformApi.INSTANCE.canPlaceNetworkNode(serverPlayer, ctx.getLevel(), ctx.getClickedPos(), state))) {
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer && !(RefinedStorageApi.INSTANCE.canPlaceNetworkNode(
+            serverPlayer,
+            ctx.getLevel(),
+            ctx.getClickedPos(),
+            state))
+        ) {
             return false;
         }
         return super.placeBlock(ctx, state);

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.storage.ClientStorageRepository;
 
 import java.util.UUID;
@@ -27,7 +27,7 @@ public record StorageInfoResponsePacket(UUID storageId, long stored, long capaci
 
     public static void handle(final StorageInfoResponsePacket packet) {
         final ClientStorageRepository storageRepository =
-            (ClientStorageRepository) PlatformApi.INSTANCE.getClientStorageRepository();
+            (ClientStorageRepository) RefinedStorageApi.INSTANCE.getClientStorageRepository();
         storageRepository.setInfo(packet.storageId, packet.stored, packet.capacity);
     }
 

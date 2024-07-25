@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -45,7 +45,7 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
     public boolean apply(final Filter filter,
                          final Actor actor,
                          final Supplier<Network> networkSupplier,
-                         final Player actingPlayer) {
+                         final Player player) {
         if (!level.isLoaded(pos)) {
             return false;
         }
@@ -53,8 +53,8 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
         final Block block = blockState.getBlock();
         if (isFastExit(blockState)
             || blockState.getDestroySpeed(level, pos) == -1.0
-            || !isAllowed(actingPlayer, filter, blockState, block)
-            || !Platform.INSTANCE.canBreakBlock(level, pos, blockState, actingPlayer)) {
+            || !isAllowed(player, filter, blockState, block)
+            || !Platform.INSTANCE.canBreakBlock(level, pos, blockState, player)) {
             return false;
         }
         final List<ItemStack> drops = Block.getDrops(
@@ -62,19 +62,19 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
             level,
             pos,
             level.getBlockEntity(pos),
-            actingPlayer,
+            player,
             tool
         );
-        if (!insertDrops(actor, drops, getStorageChannel(networkSupplier), Action.SIMULATE)) {
+        if (!insertDrops(actor, drops, getRootStorage(networkSupplier), Action.SIMULATE)) {
             return false;
         }
-        block.playerWillDestroy(level, pos, blockState, actingPlayer);
+        block.playerWillDestroy(level, pos, blockState, player);
         level.removeBlock(pos, false);
-        insertDrops(actor, drops, getStorageChannel(networkSupplier), Action.EXECUTE);
+        insertDrops(actor, drops, getRootStorage(networkSupplier), Action.EXECUTE);
         return true;
     }
 
-    private static StorageChannel getStorageChannel(final Supplier<Network> network) {
+    private static RootStorage getRootStorage(final Supplier<Network> network) {
         return network.get().getComponent(StorageNetworkComponent.class);
     }
 
@@ -106,7 +106,7 @@ class BlockBreakDestructorStrategy implements DestructorStrategy {
     private boolean insertDrops(
         final Actor actor,
         final List<ItemStack> drops,
-        final StorageChannel storage,
+        final RootStorage storage,
         final Action action
     ) {
         for (final ItemStack drop : drops) {

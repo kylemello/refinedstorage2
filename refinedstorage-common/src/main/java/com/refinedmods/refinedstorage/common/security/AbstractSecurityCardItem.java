@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.security;
 import com.refinedmods.refinedstorage.api.network.security.Permission;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 import com.refinedmods.refinedstorage.common.api.security.SecurityPolicyContainerItem;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
@@ -46,7 +46,7 @@ abstract class AbstractSecurityCardItem<T> extends Item implements SecurityPolic
     private void appendHoverText(final List<Component> lines,
                                  final SecurityPolicy policy,
                                  final Set<PlatformPermission> dirtyPermissions) {
-        final List<PlatformPermission> allPermissions = PlatformApi.INSTANCE.getPermissionRegistry().getAll();
+        final List<PlatformPermission> allPermissions = RefinedStorageApi.INSTANCE.getPermissionRegistry().getAll();
         allPermissions.forEach(permission -> {
             final boolean allowed = policy.isAllowed(permission);
             final boolean dirty = dirtyPermissions.contains(permission);
@@ -79,7 +79,7 @@ abstract class AbstractSecurityCardItem<T> extends Item implements SecurityPolic
             final Set<PlatformPermission> dirtyPermissions = getDirtyPermissions(stack);
             Platform.INSTANCE.getMenuOpener().openMenu(player, createMenuProvider(
                 player.server,
-                PlatformApi.INSTANCE.createInventorySlotReference(player, hand),
+                RefinedStorageApi.INSTANCE.createInventorySlotReference(player, hand),
                 policy,
                 dirtyPermissions,
                 stack
@@ -107,14 +107,14 @@ abstract class AbstractSecurityCardItem<T> extends Item implements SecurityPolic
         }
         final SecurityCardPermissions permissions = stack.get(DataComponents.INSTANCE.getSecurityCardPermissions());
         if (permissions == null) {
-            return Optional.of(PlatformApi.INSTANCE.createDefaultSecurityPolicy());
+            return Optional.of(RefinedStorageApi.INSTANCE.createDefaultSecurityPolicy());
         }
         return Optional.of(createPolicy(permissions));
     }
 
     private SecurityPolicy createPolicy(final SecurityCardPermissions permissions) {
         final Set<Permission> allowedPermissions = new HashSet<>();
-        for (final PlatformPermission permission : PlatformApi.INSTANCE.getPermissionRegistry().getAll()) {
+        for (final PlatformPermission permission : RefinedStorageApi.INSTANCE.getPermissionRegistry().getAll()) {
             final boolean dirty = permissions.isDirty(permission);
             final boolean didExplicitlyAllow = dirty && permissions.isAllowed(permission);
             final boolean isAllowedByDefault = !dirty && permission.isAllowedByDefault();

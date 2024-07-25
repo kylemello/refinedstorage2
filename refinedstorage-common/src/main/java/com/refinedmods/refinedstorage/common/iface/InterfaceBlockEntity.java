@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.iface.externalstorag
 import com.refinedmods.refinedstorage.api.network.impl.node.iface.externalstorage.InterfaceExternalStorageProviderImpl;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -51,21 +51,21 @@ public class InterfaceBlockEntity
             state,
             new InterfaceNetworkNode(Platform.INSTANCE.getConfig().getInterface().getEnergyUsage())
         );
-        this.mainNode.setTransferQuotaProvider(InterfaceBlockEntity::getTransferQuota);
+        this.mainNetworkNode.setTransferQuotaProvider(InterfaceBlockEntity::getTransferQuota);
         this.filter = FilterWithFuzzyMode.create(createFilterContainer(), this::setChanged);
         this.exportedResources = createExportedResourcesContainer(filter);
         this.exportedResources.setListener(this::setChanged);
-        this.mainNode.setExportState(exportedResources);
+        this.mainNetworkNode.setExportState(exportedResources);
         this.exportedResourcesAsContainer = exportedResources.toItemContainer();
-        this.externalStorageProvider = new InterfaceExternalStorageProviderImpl(mainNode);
+        this.externalStorageProvider = new InterfaceExternalStorageProviderImpl(mainNetworkNode);
     }
 
     static ResourceContainer createFilterContainer() {
         return new ResourceContainerImpl(
             EXPORT_SLOTS,
             InterfaceBlockEntity::getTransferQuota,
-            PlatformApi.INSTANCE.getItemResourceFactory(),
-            PlatformApi.INSTANCE.getAlternativeResourceFactories()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
         );
     }
 
@@ -190,6 +190,6 @@ public class InterfaceBlockEntity
     }
 
     InterfaceNetworkNode getInterface() {
-        return mainNode;
+        return mainNetworkNode;
     }
 }

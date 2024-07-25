@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.controller;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import javax.annotation.Nullable;
 
@@ -15,7 +15,7 @@ public class ControllerItemPropertyFunction implements ClampedItemPropertyFuncti
                                @Nullable final ClientLevel level,
                                @Nullable final LivingEntity entity,
                                final int seed) {
-        return PlatformApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> {
+        return RefinedStorageApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> {
             if (energyStorage.getStored() == 0) {
                 return 1F;
             }

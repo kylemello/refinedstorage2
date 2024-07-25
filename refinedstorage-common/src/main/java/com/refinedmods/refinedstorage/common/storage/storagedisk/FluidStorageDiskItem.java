@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.storagedisk;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -30,7 +30,7 @@ public class FluidStorageDiskItem extends AbstractStorageContainerItem {
     public FluidStorageDiskItem(final FluidStorageVariant variant) {
         super(
             new Item.Properties().stacksTo(1).fireResistant(),
-            PlatformApi.INSTANCE.getStorageContainerItemHelper()
+            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper()
         );
         this.variant = variant;
         this.helpText = getHelpText(variant);

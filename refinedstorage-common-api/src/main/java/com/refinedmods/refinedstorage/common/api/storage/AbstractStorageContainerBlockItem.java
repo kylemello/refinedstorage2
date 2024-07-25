@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.storage;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public abstract class AbstractStorageContainerBlockItem extends BlockItem {
                                 final List<Component> tooltip,
                                 final TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        final StorageRepository storageRepository = PlatformApi.INSTANCE.getClientStorageRepository();
+        final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getClientStorageRepository();
         helper.appendToTooltip(stack, storageRepository, tooltip, flag, this::formatAmount, hasCapacity());
     }
 

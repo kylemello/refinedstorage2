@@ -2,8 +2,7 @@ package com.refinedmods.refinedstorage.common.wirelesstransmitter;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -19,7 +18,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -40,7 +38,7 @@ public class WirelessTransmitterBlockEntity
 
     private final UpgradeContainer upgradeContainer = new UpgradeContainer(
         UpgradeDestinations.WIRELESS_TRANSMITTER,
-        PlatformApi.INSTANCE.getUpgradeRegistry(),
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
         this::upgradeContainerChanged
     );
 
@@ -51,8 +49,13 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode node) {
-        return new WirelessTransmitterNetworkNodeContainer(this, node, MAIN_CONTAINER_NAME, this);
+    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode networkNode) {
+        return new WirelessTransmitterNetworkNodeContainer(
+            this,
+            networkNode,
+            "main",
+            new WirelessTransmitterConnectionStrategy(this::getBlockState, getBlockPos())
+        );
     }
 
     @Override
@@ -80,24 +83,6 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    public void addOutgoingConnections(final ConnectionSink sink) {
-        final Direction myDirection = getDirection();
-        if (myDirection == null) {
-            return;
-        }
-        sink.tryConnectInSameDimension(worldPosition.relative(myDirection), myDirection.getOpposite());
-    }
-
-    @Override
-    public boolean canAcceptIncomingConnection(final Direction incomingDirection, final BlockState connectingState) {
-        if (!colorsAllowConnecting(connectingState)) {
-            return false;
-        }
-        final Direction myDirection = getDirection();
-        return incomingDirection == myDirection;
-    }
-
-    @Override
     public Component getDisplayName() {
         return ContentNames.WIRELESS_TRANSMITTER;
     }
@@ -119,12 +104,12 @@ public class WirelessTransmitterBlockEntity
     }
 
     int getRange() {
-        return PlatformApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
+        return RefinedStorageApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
     }
 
     private void upgradeContainerChanged() {
         final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
-        mainNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
+        mainNetworkNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
         setChanged();
     }
 

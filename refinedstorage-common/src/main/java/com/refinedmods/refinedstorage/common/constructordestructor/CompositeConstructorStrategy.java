@@ -20,10 +20,10 @@ class CompositeConstructorStrategy implements ConstructorStrategy {
     @Override
     public boolean apply(final ResourceKey resource,
                          final Actor actor,
-                         final Player actingPlayer,
+                         final Player player,
                          final Network network) {
         for (final ConstructorStrategy strategy : strategies) {
-            if (strategy.apply(resource, actor, actingPlayer, network)) {
+            if (strategy.apply(resource, actor, player, network)) {
                 return true;
             }
         }

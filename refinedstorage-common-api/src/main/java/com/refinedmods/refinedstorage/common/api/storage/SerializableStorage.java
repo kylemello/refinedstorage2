@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.api.storage;
 
 import com.refinedmods.refinedstorage.api.storage.Storage;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 
 import com.mojang.serialization.Codec;
 import org.apiguardian.api.API;
@@ -11,7 +11,7 @@ public interface SerializableStorage extends Storage {
     StorageType getType();
 
     static Codec<SerializableStorage> getCodec(final Runnable listener) {
-        return PlatformApi.INSTANCE.getStorageTypeRegistry()
+        return RefinedStorageApi.INSTANCE.getStorageTypeRegistry()
             .codec()
             .dispatch(SerializableStorage::getType, storage -> storage.getMapCodec(listener));
     }

@@ -3,9 +3,9 @@ package com.refinedmods.refinedstorage.common.iface;
 import com.refinedmods.refinedstorage.api.network.impl.node.iface.InterfaceExportState;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
-import com.refinedmods.refinedstorage.common.api.storage.channel.FuzzyStorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.resource.FuzzyModeNormalizer;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
@@ -22,8 +22,8 @@ public class ExportedResourcesContainer extends ResourceContainerImpl implements
         super(
             size,
             InterfaceBlockEntity::getTransferQuota,
-            PlatformApi.INSTANCE.getItemResourceFactory(),
-            PlatformApi.INSTANCE.getAlternativeResourceFactories()
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
         );
         this.filter = filter;
     }
@@ -34,15 +34,15 @@ public class ExportedResourcesContainer extends ResourceContainerImpl implements
     }
 
     @Override
-    public Collection<ResourceKey> expandExportCandidates(final StorageChannel storageChannel,
+    public Collection<ResourceKey> expandExportCandidates(final RootStorage rootStorage,
                                                           final ResourceKey resource) {
         if (!filter.isFuzzyMode()) {
             return Collections.singletonList(resource);
         }
-        if (!(storageChannel instanceof FuzzyStorageChannel fuzzyStorageChannel)) {
+        if (!(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
             return Collections.singletonList(resource);
         }
-        return fuzzyStorageChannel
+        return fuzzyRootStorage
             .getFuzzy(resource)
             .stream()
             .map(ResourceAmount::getResource)

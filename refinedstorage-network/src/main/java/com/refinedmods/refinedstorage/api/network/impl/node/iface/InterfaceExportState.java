@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.network.impl.node.iface;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 public interface InterfaceExportState {
     int getSlots();
 
-    Collection<ResourceKey> expandExportCandidates(StorageChannel storageChannel, ResourceKey resource);
+    Collection<ResourceKey> expandExportCandidates(RootStorage rootStorage, ResourceKey resource);
 
     boolean isExportedResourceValid(ResourceKey want, ResourceKey got);
 

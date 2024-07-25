@@ -97,11 +97,6 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     }
 
     @Override
-    public boolean has(final UpgradeItem upgradeItem) {
-        return index.containsKey(upgradeItem);
-    }
-
-    @Override
     public int getAmount(final UpgradeItem upgradeItem) {
         return index.getInt(upgradeItem);
     }

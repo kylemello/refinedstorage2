@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.network;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
@@ -45,7 +45,7 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
         super(type, pos, state, node);
         this.upgradeContainer = new UpgradeContainer(
             destination,
-            PlatformApi.INSTANCE.getUpgradeRegistry(),
+            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
             this::upgradeContainerChanged
         );
     }

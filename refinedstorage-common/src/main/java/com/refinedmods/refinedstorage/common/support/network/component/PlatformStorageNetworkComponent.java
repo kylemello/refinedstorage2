@@ -4,13 +4,13 @@ import com.refinedmods.refinedstorage.api.network.impl.storage.StorageNetworkCom
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
-import com.refinedmods.refinedstorage.common.api.storage.channel.FuzzyStorageChannel;
+import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.support.resource.list.FuzzyResourceList;
 import com.refinedmods.refinedstorage.common.support.resource.list.FuzzyResourceListImpl;
 
 import java.util.Collection;
 
-public class PlatformStorageNetworkComponent extends StorageNetworkComponentImpl implements FuzzyStorageChannel {
+public class PlatformStorageNetworkComponent extends StorageNetworkComponentImpl implements FuzzyRootStorage {
     private final FuzzyResourceList fuzzyResourceList;
 
     public PlatformStorageNetworkComponent() {

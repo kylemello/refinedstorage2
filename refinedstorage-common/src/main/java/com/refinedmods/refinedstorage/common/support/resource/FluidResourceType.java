@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridOperationsImpl;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.support.resource.AbstractResourceType;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -57,9 +57,9 @@ class FluidResourceType extends AbstractResourceType {
     }
 
     @Override
-    public GridOperations createGridOperations(final StorageChannel storageChannel, final Actor actor) {
+    public GridOperations createGridOperations(final RootStorage rootStorage, final Actor actor) {
         return new GridOperationsImpl(
-            storageChannel,
+            rootStorage,
             actor,
             fluidResource -> Long.MAX_VALUE,
             Platform.INSTANCE.getBucketAmount()

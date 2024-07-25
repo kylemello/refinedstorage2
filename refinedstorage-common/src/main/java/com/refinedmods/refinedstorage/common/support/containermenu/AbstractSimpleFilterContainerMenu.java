@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.containermenu;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
@@ -50,7 +50,7 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity>
             ResourceContainerImpl.createForFilter(resourceContainerData),
             upgradeDestination == null
                 ? null
-                : new UpgradeContainer(upgradeDestination, PlatformApi.INSTANCE.getUpgradeRegistry())
+                : new UpgradeContainer(upgradeDestination, RefinedStorageApi.INSTANCE.getUpgradeRegistry())
         );
     }
 

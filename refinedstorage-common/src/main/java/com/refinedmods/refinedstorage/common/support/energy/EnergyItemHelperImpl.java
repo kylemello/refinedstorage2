@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.energy;
 
 import com.refinedmods.refinedstorage.api.core.Action;
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
 import com.refinedmods.refinedstorage.common.api.support.energy.TransferableBlockEntityEnergy;
 
@@ -20,7 +20,7 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createSt
 public class EnergyItemHelperImpl implements EnergyItemHelper {
     @Override
     public void addTooltip(final ItemStack stack, final List<Component> lines) {
-        PlatformApi.INSTANCE.getEnergyStorage(stack).ifPresent(energyStorage -> {
+        RefinedStorageApi.INSTANCE.getEnergyStorage(stack).ifPresent(energyStorage -> {
             final long stored = energyStorage.getStored();
             final long capacity = energyStorage.getCapacity();
             final double pct = stored / (double) capacity;
@@ -30,19 +30,19 @@ public class EnergyItemHelperImpl implements EnergyItemHelper {
 
     @Override
     public boolean isBarVisible(final ItemStack stack) {
-        return PlatformApi.INSTANCE.getEnergyStorage(stack).isPresent();
+        return RefinedStorageApi.INSTANCE.getEnergyStorage(stack).isPresent();
     }
 
     @Override
     public int getBarWidth(final ItemStack stack) {
-        return PlatformApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> (int) Math.round(
+        return RefinedStorageApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> (int) Math.round(
             (energyStorage.getStored() / (double) energyStorage.getCapacity()) * 13D
         )).orElse(0);
     }
 
     @Override
     public int getBarColor(final ItemStack stack) {
-        return PlatformApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> Mth.hsvToRgb(
+        return RefinedStorageApi.INSTANCE.getEnergyStorage(stack).map(energyStorage -> Mth.hsvToRgb(
             Math.max(0.0F, (float) energyStorage.getStored() / (float) energyStorage.getCapacity()) / 3.0F,
             1.0F,
             1.0F
@@ -52,7 +52,7 @@ public class EnergyItemHelperImpl implements EnergyItemHelper {
     @Override
     public ItemStack createAtEnergyCapacity(final Item item) {
         final ItemStack stack = item.getDefaultInstance();
-        PlatformApi.INSTANCE.getEnergyStorage(stack).ifPresent(energyStorage -> energyStorage.receive(
+        RefinedStorageApi.INSTANCE.getEnergyStorage(stack).ifPresent(energyStorage -> energyStorage.receive(
             energyStorage.getCapacity(),
             Action.EXECUTE
         ));
@@ -65,7 +65,7 @@ public class EnergyItemHelperImpl implements EnergyItemHelper {
             || !(level.getBlockEntity(pos) instanceof TransferableBlockEntityEnergy transferableBlockEntityEnergy)) {
             return;
         }
-        PlatformApi.INSTANCE.getEnergyStorage(stack).ifPresent(
+        RefinedStorageApi.INSTANCE.getEnergyStorage(stack).ifPresent(
             energyStorage -> transferableBlockEntityEnergy.getEnergyStorage()
                 .receive(energyStorage.getStored(), Action.EXECUTE)
         );

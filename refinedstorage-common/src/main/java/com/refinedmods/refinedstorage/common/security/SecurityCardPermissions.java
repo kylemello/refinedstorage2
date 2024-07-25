@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.security;
 
-import com.refinedmods.refinedstorage.common.api.PlatformApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ public record SecurityCardPermissions(Map<PlatformPermission, Boolean> permissio
     public static final SecurityCardPermissions EMPTY = new SecurityCardPermissions(Collections.emptyMap());
 
     public static final Codec<SecurityCardPermissions> CODEC = Codec.unboundedMap(
-        PlatformApi.INSTANCE.getPermissionRegistry().codec(),
+        RefinedStorageApi.INSTANCE.getPermissionRegistry().codec(),
         Codec.BOOL
     ).xmap(SecurityCardPermissions::new, SecurityCardPermissions::permissions);
 
@@ -24,7 +24,7 @@ public record SecurityCardPermissions(Map<PlatformPermission, Boolean> permissio
         .composite(
             ByteBufCodecs.map(
                 HashMap::new,
-                PlatformApi.INSTANCE.getPermissionRegistry().streamCodec(),
+                RefinedStorageApi.INSTANCE.getPermissionRegistry().streamCodec(),
                 ByteBufCodecs.BOOL
             ), SecurityCardPermissions::permissions,
             SecurityCardPermissions::new

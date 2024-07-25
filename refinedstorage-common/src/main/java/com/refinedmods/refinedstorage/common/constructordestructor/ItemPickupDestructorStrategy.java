@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -32,21 +32,21 @@ class ItemPickupDestructorStrategy implements DestructorStrategy {
     public boolean apply(final Filter filter,
                          final Actor actor,
                          final Supplier<Network> networkSupplier,
-                         final Player actingPlayer) {
+                         final Player player) {
         if (!level.isLoaded(pos)) {
             return false;
         }
-        final StorageChannel storageChannel = networkSupplier.get().getComponent(StorageNetworkComponent.class);
+        final RootStorage rootStorage = networkSupplier.get().getComponent(StorageNetworkComponent.class);
         final List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
         for (final ItemEntity itemEntity : items) {
-            tryInsert(filter, actor, storageChannel, itemEntity);
+            tryInsert(filter, actor, rootStorage, itemEntity);
         }
         return true;
     }
 
     private void tryInsert(final Filter filter,
                            final Actor actor,
-                           final StorageChannel storageChannel,
+                           final RootStorage rootStorage,
                            final ItemEntity itemEntity) {
         if (itemEntity.isRemoved()) {
             return;
@@ -57,7 +57,7 @@ class ItemPickupDestructorStrategy implements DestructorStrategy {
             return;
         }
         final int amount = itemStack.getCount();
-        final long inserted = storageChannel.insert(itemResource, amount, Action.EXECUTE, actor);
+        final long inserted = rootStorage.insert(itemResource, amount, Action.EXECUTE, actor);
         itemStack.shrink((int) inserted);
         if (itemStack.isEmpty()) {
             itemEntity.discard();

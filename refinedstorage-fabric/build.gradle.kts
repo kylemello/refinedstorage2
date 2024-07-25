@@ -18,6 +18,7 @@ refinedarchitect {
     fabric()
     compileWithProject(project(":refinedstorage-common"))
     compileWithProject(project(":refinedstorage-common-api"))
+    compileWithProject(project(":refinedstorage-fabric-api"))
     addProject(project(":refinedstorage-core-api"))
     addProject(project(":refinedstorage-resource-api"))
     addProject(project(":refinedstorage-storage-api"))
