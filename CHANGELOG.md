@@ -17,6 +17,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Fixed crash when trying to export fluids into an Interface on Fabric.
 - Fixed Relay configuration not being correct on NeoForge.
 - Fixed crash in logs when trying to quick craft an empty result slot in the Crafting Grid.
+- Fixed recipes not using silicon tag and Refined Storage silicon not being tagged properly.
 
 ## [2.0.0-milestone.4.4] - 2024-07-10
 
