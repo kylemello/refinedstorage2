@@ -7,7 +7,7 @@
   ],
   "key": {
     "S": {
-      "item": "refinedstorage:silicon"
+      "tag": "c:silicon"
     },
     "E": {
       "item": "refinedstorage:quartz_enriched_iron"
