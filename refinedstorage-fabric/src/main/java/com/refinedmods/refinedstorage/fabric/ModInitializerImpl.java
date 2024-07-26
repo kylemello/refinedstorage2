@@ -32,6 +32,8 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridReci
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceSlotAmountChangePacket;
@@ -421,6 +423,14 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             CraftingGridClearPacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playC2S().register(
+            PatternGridClearPacket.PACKET_TYPE,
+            PatternGridClearPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridCreatePatternPacket.PACKET_TYPE,
+            PatternGridCreatePatternPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
             CraftingGridRecipeTransferPacket.PACKET_TYPE,
             CraftingGridRecipeTransferPacket.STREAM_CODEC
         );
@@ -488,6 +498,14 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             wrapHandler(CraftingGridClearPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridClearPacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> PatternGridClearPacket.handle(ctx))
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridCreatePatternPacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> PatternGridCreatePatternPacket.handle(ctx))
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
             CraftingGridRecipeTransferPacket.PACKET_TYPE,
             wrapHandler(CraftingGridRecipeTransferPacket::handle)
         );
@@ -540,6 +558,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getConstructor());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getController());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCraftingGrid());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getPatternGrid());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCreativeController());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDestructor());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getDetector());

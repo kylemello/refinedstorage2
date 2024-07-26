@@ -404,13 +404,15 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     @SuppressWarnings("resource")
     @Override
     public ItemStack quickMoveStack(final Player playerEntity, final int slotIndex) {
-        if (!playerEntity.level().isClientSide() && grid != null && grid.isGridActive()) {
+        if (transferManager.transfer(slotIndex)) {
+            return ItemStack.EMPTY;
+        } else if (!playerEntity.level().isClientSide() && grid != null && grid.isGridActive()) {
             final Slot slot = getSlot(slotIndex);
             if (slot.hasItem() && insertionStrategy != null && canTransferSlot(slot)) {
                 insertionStrategy.onTransfer(slot.index);
             }
         }
-        return super.quickMoveStack(playerEntity, slotIndex);
+        return ItemStack.EMPTY;
     }
 
     protected boolean canTransferSlot(final Slot slot) {

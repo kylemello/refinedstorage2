@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -16,7 +17,7 @@ class ClientCraftingGridSource implements CraftingGridSource {
     private final ResultContainer craftingResult;
 
     ClientCraftingGridSource() {
-        this.craftingMatrix = new CraftingMatrix(null);
+        this.craftingMatrix = new CraftingMatrix(null, 3, 3);
         this.craftingResult = new ResultContainer();
     }
 

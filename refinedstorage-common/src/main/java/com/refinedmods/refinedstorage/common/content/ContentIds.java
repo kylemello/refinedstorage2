@@ -24,6 +24,7 @@ public final class ContentIds {
     public static final ResourceLocation STORAGE_HOUSING = createIdentifier("storage_housing");
     public static final ResourceLocation GRID = createIdentifier("grid");
     public static final ResourceLocation CRAFTING_GRID = createIdentifier("crafting_grid");
+    public static final ResourceLocation PATTERN_GRID = createIdentifier("pattern_grid");
     public static final ResourceLocation CONTROLLER = createIdentifier("controller");
     public static final ResourceLocation CREATIVE_CONTROLLER = createIdentifier("creative_controller");
     public static final ResourceLocation CONSTRUCTION_CORE = createIdentifier("construction_core");
@@ -63,6 +64,7 @@ public final class ContentIds {
     public static final ResourceLocation SECURITY_MANAGER = createIdentifier("security_manager");
     public static final ResourceLocation RELAY = createIdentifier("relay");
     public static final ResourceLocation DISK_INTERFACE = createIdentifier("disk_interface");
+    public static final ResourceLocation PATTERN = createIdentifier("pattern");
 
     private ContentIds() {
     }

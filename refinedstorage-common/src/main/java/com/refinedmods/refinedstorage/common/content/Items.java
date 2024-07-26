@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockItem;
 import com.refinedmods.refinedstorage.common.controller.CreativeControllerBlockItem;
 import com.refinedmods.refinedstorage.common.grid.WirelessGridItem;
@@ -103,6 +104,8 @@ public final class Items {
     private Supplier<SecurityCardItem> securityCard;
     @Nullable
     private Supplier<FallbackSecurityCardItem> fallbackSecurityCard;
+    @Nullable
+    private Supplier<PatternItem> pattern;
 
     private Items() {
     }
@@ -473,5 +476,13 @@ public final class Items {
 
     public void setFallbackSecurityCard(final Supplier<FallbackSecurityCardItem> fallbackSecurityCard) {
         this.fallbackSecurityCard = fallbackSecurityCard;
+    }
+
+    public PatternItem getPattern() {
+        return requireNonNull(pattern).get();
+    }
+
+    public void setPattern(final Supplier<PatternItem> supplier) {
+        this.pattern = supplier;
     }
 }

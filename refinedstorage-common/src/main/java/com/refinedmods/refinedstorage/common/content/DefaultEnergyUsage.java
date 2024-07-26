@@ -8,6 +8,7 @@ public final class DefaultEnergyUsage {
     public static final long EXTERNAL_STORAGE = 6;
     public static final long DETECTOR = 2;
     public static final long GRID = 10;
+    public static final long PATTERN_GRID = 14;
     public static final long CRAFTING_GRID = 14;
     public static final long DISK_DRIVE = 10;
     public static final long DISK_DRIVE_PER_DISK = 4;

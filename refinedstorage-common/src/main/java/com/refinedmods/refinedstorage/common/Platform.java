@@ -131,4 +131,6 @@ public interface Platform {
 
     @Nullable
     NetworkNodeContainerProvider getContainerProviderSafely(Level level, BlockPos pos, @Nullable Direction direction);
+
+    int getItemColor(ItemStack stack, int tintIndex);
 }

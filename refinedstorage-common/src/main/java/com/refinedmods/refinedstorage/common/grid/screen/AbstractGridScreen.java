@@ -34,6 +34,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -41,12 +42,16 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static java.util.Objects.requireNonNullElse;
 
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
+    protected static final int CLEAR_BUTTON_SIZE = 7;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
+    private static final ResourceLocation ROW_TEXTURE = createIdentifier("grid_row");
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
     private static final int COLUMNS = 9;
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
@@ -193,7 +198,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                            final int rowX,
                            final int rowY,
                            final int row) {
-        graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, ROW_SIZE);
+        graphics.blitSprite(ROW_TEXTURE, rowX, rowY, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);
         }

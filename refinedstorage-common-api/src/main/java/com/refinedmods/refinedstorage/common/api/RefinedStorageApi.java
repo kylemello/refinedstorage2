@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
@@ -200,4 +201,6 @@ public interface RefinedStorageApi {
     void sendNoPermissionMessage(ServerPlayer player, Component message);
 
     boolean canPlaceNetworkNode(ServerPlayer player, Level level, BlockPos pos, BlockState state);
+
+    Optional<Pattern> getPattern(ItemStack stack, Level level);
 }

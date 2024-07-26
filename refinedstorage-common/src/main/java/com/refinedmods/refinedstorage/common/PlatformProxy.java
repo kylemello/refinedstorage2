@@ -254,6 +254,11 @@ public class PlatformProxy implements Platform {
         return ensureLoaded().getContainerProviderSafely(level, pos, direction);
     }
 
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        return ensureLoaded().getItemColor(stack, tintIndex);
+    }
+
     private Platform ensureLoaded() {
         if (platform == null) {
             throw new IllegalStateException("Platform not loaded yet");

@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Pattern Grid
+-   Pattern
+
 ## [2.0.0-milestone.4.5] - 2024-07-26
 
 ### Added

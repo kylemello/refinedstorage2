@@ -75,7 +75,10 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
 
     @Override
     public boolean canTakeItemForPickAll(final ItemStack stack, final Slot slot) {
-        return !(slot instanceof CraftingGridResultSlot);
+        if (slot instanceof CraftingGridResultSlot) {
+            return false;
+        }
+        return super.canTakeItemForPickAll(stack, slot);
     }
 
     @Override

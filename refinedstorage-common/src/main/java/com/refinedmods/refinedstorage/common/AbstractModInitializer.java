@@ -12,6 +12,12 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApiProxy;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
+import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridData;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -312,6 +318,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getCable().registerBlocks(callback);
         Blocks.INSTANCE.getGrid().registerBlocks(callback);
         Blocks.INSTANCE.getCraftingGrid().registerBlocks(callback);
+        Blocks.INSTANCE.getPatternGrid().registerBlocks(callback);
         Blocks.INSTANCE.getDetector().registerBlocks(callback);
         Blocks.INSTANCE.getImporter().registerBlocks(callback);
         Blocks.INSTANCE.getExporter().registerBlocks(callback);
@@ -341,6 +348,7 @@ public abstract class AbstractModInitializer {
         registerSimpleItems(callback);
         Blocks.INSTANCE.getGrid().registerItems(callback);
         Blocks.INSTANCE.getCraftingGrid().registerItems(callback);
+        Blocks.INSTANCE.getPatternGrid().registerItems(callback);
         Blocks.INSTANCE.getCable().registerItems(callback, Items.INSTANCE::addCable);
         Blocks.INSTANCE.getController().registerItems(callback, Items.INSTANCE::addController);
         Blocks.INSTANCE.getCreativeController().registerItems(callback, Items.INSTANCE::addCreativeController);
@@ -389,6 +397,7 @@ public abstract class AbstractModInitializer {
             ConfigurationCardItem::new
         ));
         Items.INSTANCE.setNetworkCard(callback.register(ContentIds.NETWORK_CARD, NetworkCardItem::new));
+        Items.INSTANCE.setPattern(callback.register(ContentIds.PATTERN, PatternItem::new));
     }
 
     private void registerProcessor(final RegistryCallback<Item> callback, final ProcessorItem.Type type) {
@@ -562,6 +571,10 @@ public abstract class AbstractModInitializer {
             ContentIds.CRAFTING_GRID,
             () -> typeFactory.create(CraftingGridBlockEntity::new, Blocks.INSTANCE.getCraftingGrid().toArray())
         ));
+        BlockEntities.INSTANCE.setPatternGrid(callback.register(
+            ContentIds.PATTERN_GRID,
+            () -> typeFactory.create(PatternGridBlockEntity::new, Blocks.INSTANCE.getPatternGrid().toArray())
+        ));
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             BlockEntities.INSTANCE.setItemStorageBlock(variant, callback.register(
                 ContentIds.forItemStorageBlock(variant),
@@ -678,6 +691,10 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setCraftingGrid(callback.register(
             ContentIds.CRAFTING_GRID,
             () -> extendedMenuTypeFactory.create(CraftingGridContainerMenu::new, GridData.STREAM_CODEC)
+        ));
+        Menus.INSTANCE.setPatternGrid(callback.register(
+            ContentIds.PATTERN_GRID,
+            () -> extendedMenuTypeFactory.create(PatternGridContainerMenu::new, PatternGridData.STREAM_CODEC)
         ));
         Menus.INSTANCE.setWirelessGrid(callback.register(
             ContentIds.WIRELESS_GRID,
@@ -836,6 +853,18 @@ public abstract class AbstractModInitializer {
                 () -> DataComponentType.<ConfigurationCardState>builder()
                     .persistent(ConfigurationCardState.CODEC)
                     .networkSynchronized(ConfigurationCardState.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setPatternState(
+            callback.register(createIdentifier("pattern_state"),
+                () -> DataComponentType.<PatternState>builder()
+                    .persistent(PatternState.CODEC)
+                    .networkSynchronized(PatternState.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setCraftingPatternState(
+            callback.register(createIdentifier("crafting_pattern_state"),
+                () -> DataComponentType.<CraftingPatternState>builder()
+                    .persistent(CraftingPatternState.CODEC)
+                    .networkSynchronized(CraftingPatternState.STREAM_CODEC)
                     .build()));
     }
 

@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.grid;
+package com.refinedmods.refinedstorage.common.support;
 
 import javax.annotation.Nullable;
 
@@ -8,12 +8,12 @@ public class CraftingMatrix extends TransientCraftingContainer {
     @Nullable
     private final Runnable listener;
 
-    public CraftingMatrix(@Nullable final Runnable listener) {
-        super(new CraftingMatrixContainerMenu(listener), 3, 3);
+    public CraftingMatrix(@Nullable final Runnable listener, final int width, final int height) {
+        super(new CraftingMatrixContainerMenu(listener), width, height);
         this.listener = listener;
     }
 
-    void changed() {
+    public void changed() {
         if (listener != null) {
             listener.run();
         }

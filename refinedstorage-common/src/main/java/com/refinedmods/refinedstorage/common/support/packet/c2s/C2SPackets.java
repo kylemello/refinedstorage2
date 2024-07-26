@@ -39,6 +39,14 @@ public final class C2SPackets {
         Platform.INSTANCE.sendPacketToServer(new CraftingGridClearPacket(toPlayerInventory));
     }
 
+    public static void sendPatternGridClear() {
+        Platform.INSTANCE.sendPacketToServer(PatternGridClearPacket.INSTANCE);
+    }
+
+    public static void sendPatternGridCreatePattern() {
+        Platform.INSTANCE.sendPacketToServer(PatternGridCreatePatternPacket.INSTANCE);
+    }
+
     public static void sendCraftingGridRecipeTransfer(final List<List<ItemResource>> recipe) {
         Platform.INSTANCE.sendPacketToServer(new CraftingGridRecipeTransferPacket(recipe));
     }

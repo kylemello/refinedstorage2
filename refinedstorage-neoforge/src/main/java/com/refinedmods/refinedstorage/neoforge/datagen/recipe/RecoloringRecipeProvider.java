@@ -47,6 +47,9 @@ public class RecoloringRecipeProvider extends RecipeProvider {
         Blocks.INSTANCE.getCraftingGrid().forEach((color, id, block) ->
             recipe(Tags.CRAFTING_GRIDS, block.get().asItem(), color)
                 .save(output, recipeId(color, "crafting_grid")));
+        Blocks.INSTANCE.getPatternGrid().forEach((color, id, block) ->
+            recipe(Tags.PATTERN_GRIDS, block.get().asItem(), color)
+                .save(output, recipeId(color, "pattern_grid")));
         Blocks.INSTANCE.getDetector().forEach((color, id, block) ->
             recipe(Tags.DETECTORS, block.get().asItem(), color)
                 .save(output, recipeId(color, "detector")));

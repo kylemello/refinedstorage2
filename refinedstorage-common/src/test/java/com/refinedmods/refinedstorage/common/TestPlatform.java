@@ -227,4 +227,9 @@ public class TestPlatform implements Platform {
                                                                    @Nullable final Direction direction) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        throw new UnsupportedOperationException();
+    }
 }

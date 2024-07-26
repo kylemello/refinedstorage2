@@ -35,6 +35,7 @@ import static com.refinedmods.refinedstorage.common.content.Tags.GRIDS;
 import static com.refinedmods.refinedstorage.common.content.Tags.IMPORTERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.NETWORK_RECEIVERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.NETWORK_TRANSMITTERS;
+import static com.refinedmods.refinedstorage.common.content.Tags.PATTERN_GRIDS;
 import static com.refinedmods.refinedstorage.common.content.Tags.RELAYS;
 import static com.refinedmods.refinedstorage.common.content.Tags.SECURITY_MANAGERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.STORAGE_DISKS;
@@ -69,6 +70,10 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
                 .toList());
         addAllToTag(CRAFTING_GRIDS,
             Blocks.INSTANCE.getCraftingGrid().values().stream()
+                .map(block -> (Supplier<Item>) block::asItem)
+                .toList());
+        addAllToTag(PATTERN_GRIDS,
+            Blocks.INSTANCE.getPatternGrid().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
         addAllToTag(STORAGE_DISKS,

@@ -37,6 +37,7 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Blocks.INSTANCE.getDiskDrive());
         appendBlockColors(consumer, Blocks.INSTANCE.getGrid());
         appendBlockColors(consumer, Blocks.INSTANCE.getCraftingGrid());
+        appendBlockColors(consumer, Blocks.INSTANCE.getPatternGrid());
         itemConsumer.accept(Items.INSTANCE.getPortableGrid());
         consumer.accept(Items.INSTANCE.getPortableGrid().createAtEnergyCapacity());
         itemConsumer.accept(Items.INSTANCE.getCreativePortableGrid());
@@ -110,5 +111,6 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getNetworkCard());
         itemConsumer.accept(Items.INSTANCE.getSecurityCard());
         itemConsumer.accept(Items.INSTANCE.getFallbackSecurityCard());
+        itemConsumer.accept(Items.INSTANCE.getPattern());
     }
 }

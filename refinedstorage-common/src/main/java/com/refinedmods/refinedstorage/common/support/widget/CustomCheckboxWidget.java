@@ -25,8 +25,7 @@ public class CustomCheckboxWidget extends AbstractButton {
     );
     private static final ResourceLocation CHECKBOX_SPRITE = ResourceLocation.withDefaultNamespace("widget/checkbox");
 
-    private static final int BOX_SIZE = 9 + 8;
-
+    private final Size size;
     @Nullable
     private OnPressed onPressed;
     private boolean selected;
@@ -35,9 +34,11 @@ public class CustomCheckboxWidget extends AbstractButton {
                                 final int y,
                                 final Component text,
                                 final Font font,
-                                final boolean selected) {
-        super(x, y, BOX_SIZE + 4 + font.width(text), BOX_SIZE, text);
+                                final boolean selected,
+                                final Size size) {
+        super(x, y, size.size + 4 + font.width(text), size.size, text);
         this.selected = selected;
+        this.size = size;
     }
 
     public void setOnPressed(@Nullable final OnPressed onPressed) {
@@ -79,15 +80,26 @@ public class CustomCheckboxWidget extends AbstractButton {
         } else {
             sprite = isFocused() ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
         }
-        final int x = getX() + BOX_SIZE + 4;
-        final int y = (getY() + (height >> 1)) - (9 >> 1);
-        graphics.blitSprite(sprite, getX(), getY(), BOX_SIZE, BOX_SIZE);
+        graphics.blitSprite(sprite, getX(), getY(), size.size, size.size);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        graphics.drawString(font, getMessage(), x, y, 4210752, false);
+        final int textX = getX() + size.size + 4;
+        final int textY = (getY() + (height >> 1)) - (9 >> 1);
+        graphics.drawString(font, getMessage(), textX, textY, 4210752, false);
     }
 
     @FunctionalInterface
     public interface OnPressed {
         void onPressed(CustomCheckboxWidget checkbox, boolean selected);
+    }
+
+    public enum Size {
+        REGULAR(9 + 8),
+        SMALL(9);
+
+        private final int size;
+
+        Size(final int size) {
+            this.size = size;
+        }
     }
 }
