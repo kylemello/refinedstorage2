@@ -215,7 +215,7 @@ public class GridViewImpl implements GridView {
         if (wouldBePosition < 0) {
             viewList.add(-wouldBePosition - 1, resource);
         } else {
-            // If the "would be" position is positive, this means that the resource is already contained in the list,
+            // If the "would-be" position is positive, this means that the resource is already contained in the list,
             // comparing with sorting rules.
             // This doesn't mean that the *exact* resource is already in the list, but that is purely "contained"
             // in the list when comparing with sorting rules.

@@ -42,6 +42,7 @@ class RelayNetworkNodeTest {
     private static final long INPUT_ENERGY_USAGE = 5;
     private static final long OUTPUT_ENERGY_USAGE = 5;
 
+    @SuppressWarnings("DefaultAnnotationParam")
     @AddNetworkNode(properties = {
         @AddNetworkNode.Property(key = PROPERTY_ENERGY_USAGE, longValue = INPUT_ENERGY_USAGE),
         @AddNetworkNode.Property(key = PROPERTY_ACTIVE, boolValue = false)

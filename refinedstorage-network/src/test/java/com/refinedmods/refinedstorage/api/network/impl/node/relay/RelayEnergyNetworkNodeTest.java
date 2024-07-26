@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SetupNetwork(id = "input")
 @SetupNetwork(id = "output", setupEnergy = false)
 class RelayEnergyNetworkNodeTest {
+    @SuppressWarnings("DefaultAnnotationParam")
     @AddNetworkNode(properties = {
         @AddNetworkNode.Property(key = PROPERTY_ACTIVE, boolValue = false)
     }, networkId = "input")

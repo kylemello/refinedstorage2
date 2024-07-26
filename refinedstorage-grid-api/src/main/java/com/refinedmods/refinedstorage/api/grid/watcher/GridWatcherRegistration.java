@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.grid.watcher;
 
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.channel.StorageChannel;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 
 import javax.annotation.Nullable;
 
@@ -17,21 +17,21 @@ class GridWatcherRegistration {
         this.actorType = actorType;
     }
 
-    void attach(final StorageChannel storageChannel, final boolean replay) {
+    void attach(final RootStorage rootStorage, final boolean replay) {
         this.listener = change -> watcher.onChanged(
             change.resourceAmount().getResource(),
             change.change(),
-            storageChannel.findTrackedResourceByActorType(
+            rootStorage.findTrackedResourceByActorType(
                 change.resourceAmount().getResource(),
                 actorType
             ).orElse(null)
         );
-        storageChannel.addListener(listener);
+        rootStorage.addListener(listener);
         if (replay) {
-            storageChannel.getAll().forEach(resourceAmount -> watcher.onChanged(
+            rootStorage.getAll().forEach(resourceAmount -> watcher.onChanged(
                 resourceAmount.getResource(),
                 resourceAmount.getAmount(),
-                storageChannel.findTrackedResourceByActorType(
+                rootStorage.findTrackedResourceByActorType(
                     resourceAmount.getResource(),
                     actorType
                 ).orElse(null)
@@ -39,11 +39,11 @@ class GridWatcherRegistration {
         }
     }
 
-    void detach(final StorageChannel storageChannel) {
+    void detach(final RootStorage rootStorage) {
         if (listener == null) {
             return;
         }
-        storageChannel.removeListener(listener);
+        rootStorage.removeListener(listener);
         listener = null;
     }
 }

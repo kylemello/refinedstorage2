@@ -136,6 +136,7 @@ class TrackedStorageImplTest {
 
         @ParameterizedTest
         @EnumSource(Action.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldTrackResourceByExtracting(final Action action) {
             // Arrange
             backed.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -172,6 +173,7 @@ class TrackedStorageImplTest {
         }
 
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldTrackMultipleResources() {
             // Act
             sut.insert(A, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
@@ -193,6 +195,7 @@ class TrackedStorageImplTest {
     class UpdateTrackedResourceTest {
         @ParameterizedTest
         @EnumSource(Action.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldUpdateTrackedResourceByInserting(final Action action) {
             // Act
             sut.insert(A, 50, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
@@ -214,6 +217,7 @@ class TrackedStorageImplTest {
 
         @ParameterizedTest
         @EnumSource(Action.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldNotUpdateTrackedResourceByInsertingToAnAlreadyFullStorage(final Action action) {
             // Act
             sut.insert(A, 100, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
@@ -228,6 +232,7 @@ class TrackedStorageImplTest {
 
         @ParameterizedTest
         @EnumSource(Action.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldUpdateTrackedResourceByExtracting(final Action action) {
             // Arrange
             backed.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -252,6 +257,7 @@ class TrackedStorageImplTest {
 
         @ParameterizedTest
         @EnumSource(Action.class)
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldNotUpdateTrackedResourceByExtractingNothing(final Action action) {
             // Arrange
             backed.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -268,6 +274,7 @@ class TrackedStorageImplTest {
         }
 
         @Test
+        @SuppressWarnings("AssertBetweenInconvertibleTypes")
         void shouldBeAbleToUpdateMultipleTrackedResources() {
             // Act
             sut.insert(A, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);

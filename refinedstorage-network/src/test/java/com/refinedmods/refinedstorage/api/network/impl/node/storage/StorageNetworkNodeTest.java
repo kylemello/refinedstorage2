@@ -270,14 +270,14 @@ class StorageNetworkNodeTest {
         initializeAndActivate();
 
         // Act
-        final Collection<ResourceAmount> preInactiveness = new HashSet<>(networkStorage.getAll());
+        final Collection<ResourceAmount> preInactive = new HashSet<>(networkStorage.getAll());
         sut.setActive(false);
         sut.onStorageChanged(1);
-        final Collection<ResourceAmount> postInactiveness = networkStorage.getAll();
+        final Collection<ResourceAmount> postInactive = networkStorage.getAll();
 
         // Assert
-        assertThat(preInactiveness).isNotEmpty();
-        assertThat(postInactiveness).isEmpty();
+        assertThat(preInactive).isNotEmpty();
+        assertThat(postInactive).isEmpty();
         assertThat(networkStorage.getStored()).isZero();
     }
 

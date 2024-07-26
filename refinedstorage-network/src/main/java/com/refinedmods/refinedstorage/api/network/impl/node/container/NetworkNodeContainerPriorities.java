@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.api.network.impl.node.container;
 public final class NetworkNodeContainerPriorities {
     /**
      * It is important that the grid has the highest priority when a network split or merge occurs.
-     * This priority will affect the grids that are part of the a) newly created network for a split and
-     * b) removed network in case of a merge.
+     * This priority will affect the grids that are part of the 1) newly created network for a split and
+     * 2) removed network in case of a merge.
      * For a network split, this will ensure that the grid will be able to invalidate all its watchers first and attach
      * to the newly created network.
      * After that, all the storages will be re-added into the newly created network.

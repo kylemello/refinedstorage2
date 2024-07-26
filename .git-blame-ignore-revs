@@ -2,3 +2,5 @@
 
 # Rename "refinedstorage2" to "refinedstorage"
 03d02f1e07e1e6e9726404c236c3af227126ade0
+# Remove "platform" prefix from modules
+328e1bfeb40342a81c375da4a5f75c9a36fe8ef8

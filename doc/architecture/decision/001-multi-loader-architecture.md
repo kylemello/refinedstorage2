@@ -19,7 +19,7 @@ There will be a common module, and most code should reside in there. The modload
 reserved
 for platform specific functionality, like registration, networking, etc.
 
-The module naming follows the standard of `refinedstorage-platform-{name}`.
+The module naming follows the standard of `refinedstorage-{modloader-name}`.
 
 ## Consequences
 

@@ -7,6 +7,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.5] - 2024-07-26
+
+### Added
+
+-   Ability to extract fluids from the Interface using an empty bucket or other empty fluid container.
+-   Support for the NeoForge config screen.
+
+### Fixed
+
+-   Fixed crash when trying to export fluids into an Interface on Fabric.
+-   Fixed Relay configuration not being correct on NeoForge.
+-   Fixed crash in logs when trying to quick craft an empty result slot in the Crafting Grid.
+-   Fixed recipes not using silicon tag and Refined Storage silicon not being tagged properly.
+
 ## [2.0.0-milestone.4.4] - 2024-07-10
 
 ## [2.0.0-milestone.4.3] - 2024-07-06
@@ -21,7 +35,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Fixed not being able to ghost drag resources from recipe viewers into filter slots on NeoForge.
 -   Fixed extra dark backgrounds due to drawing background on GUIs twice.
 -   Fixed Configuration Card not being able to transfer upgrades for the Wireless Transmitter.
--   Fixed upgrade inventories not maintaining order after reloading. Upgrade inventories from the milestone 4.2 are incompatible and will be empty.
+-   Fixed upgrade inventories not maintaining order after reloading. Upgrade inventories from the milestone 4.2 are
+    incompatible and will be empty.
 -   Fixed Wireless Transmitter not dropping upgrades when breaking block.
 
 ## [2.0.0-milestone.4.2] - 2024-07-06
@@ -43,7 +58,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
--   The mod ID has been changed from "refinedstorage2" to "refinedstorage". Worlds that used milestone 3 on Minecraft 1.20.4 are no longer compatible.
+-   The mod ID has been changed from "refinedstorage2" to "refinedstorage". Worlds that used milestone 3 on Minecraft
+    1.20.4 are no longer compatible.
 -   Recipes now use common tag conventions from NeoForge and Fabric.
 
 ### Fixed
@@ -108,9 +124,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 -   The Detector, Network Receiver, Network Transmitter and Security Manager will now always connect regardless of color.
--   The Relay now has a "pass-through" mode. By default, pass-through is on, which means that when the Relay is active, the network signal from the input network will be passed through as-is to the output side.
--   When the "pass-through" mode on the Relay is off, the network signal from the input network will no longer be passed through as-is to the output side, but you can choose to pass the energy buffer, security settings or (specific) storage resources of the input network to the output network.
--   When using the Relay when "pass-through" mode is off, and when passing all storage resources or specific storage resources, you can choose the filter mode, whether fuzzy mode is enabled, the access mode and the priority of the storage exposed to the output network.
+-   The Relay now has a "pass-through" mode. By default, pass-through is on, which means that when the Relay is active,
+    the network signal from the input network will be passed through as-is to the output side.
+-   When the "pass-through" mode on the Relay is off, the network signal from the input network will no longer be passed
+    through as-is to the output side, but you can choose to pass the energy buffer, security settings or (specific)
+    storage resources of the input network to the output network.
+-   When using the Relay when "pass-through" mode is off, and when passing all storage resources or specific storage
+    resources, you can choose the filter mode, whether fuzzy mode is enabled, the access mode and the priority of the
+    storage exposed to the output network.
 
 ### Fixed
 
@@ -131,8 +152,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Security Card can be bound to other (currently online) players via its GUI.
 -   The binding of a Security Card can now be cleared.
 -   The Security Card tooltip and GUI now show whether the permission has been touched/changed in any way.
--   As soon as a Security Manager is placed, the storage network will be locked down by default. Start adding Security Cards to allow or deny specific access to players.
--   To not lock the entire network by default for players who do not have a matching Security Card, a Fallback Security Card can be used to configure this behavior.
+-   As soon as a Security Manager is placed, the storage network will be locked down by default. Start adding Security
+    Cards to allow or deny specific access to players.
+-   To not lock the entire network by default for players who do not have a matching Security Card, a Fallback Security
+    Card can be used to configure this behavior.
 -   Smooth scrolling, screen size and max row stretch are no longer Grid-specific settings, but are now global settings.
 
 ### Fixed
@@ -185,7 +208,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
--   The Network Transmitter now goes into an "errored" state if there is no connection (anymore) with the Network Receiver (due to chunk unloading for example).
+-   The Network Transmitter now goes into an "errored" state if there is no connection (anymore) with the Network
+    Receiver (due to chunk unloading for example).
 -   The Network Transmitter will actively try to reconnect with the Network Receiver if connection is lost.
 
 ### Fixed
@@ -266,7 +290,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Constructor
 -   Regulator Upgrade
--   Filter slot hints that show which resource will be put in a filter slot and what the effect of the filter is on the device.
+-   Filter slot hints that show which resource will be put in a filter slot and what the effect of the filter is on the
+    device.
 -   Grid slot hints that show which resource will be inserted or extracted in a Grid.
 -   Help information to the side buttons by pressing SHIFT.
 -   Help information on items.
@@ -278,8 +303,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Constructor crafting recipe now takes 2 diamonds instead of 2 redstone.
 -   You can now select a "Scheduling mode" in the Constructor: first available, round robin, random.
 -   The "applicable upgrades" tooltip on the upgrade slot tooltip now shows the upgrade items in item form.
--   The Regulator Upgrade now works in an Importer as well. It will only keep importing until the configured amount is reached.
--   The Regulator Upgrade now needs to be configured separately, by using the upgrade. It can no longer be configured in the device GUI itself.
+-   The Regulator Upgrade now works in an Importer as well. It will only keep importing until the configured amount is
+    reached.
+-   The Regulator Upgrade now needs to be configured separately, by using the upgrade. It can no longer be configured in
+    the device GUI itself.
 
 ### Fixed
 
@@ -664,7 +691,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.4...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.5...HEAD
+
+[2.0.0-milestone.4.5]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.4...v2.0.0-milestone.4.5
 
 [2.0.0-milestone.4.4]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.3...v2.0.0-milestone.4.4
 
