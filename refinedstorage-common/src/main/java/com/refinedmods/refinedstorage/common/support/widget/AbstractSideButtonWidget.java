@@ -21,6 +21,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractSideButtonWidget extends Button {
@@ -30,7 +32,6 @@ public abstract class AbstractSideButtonWidget extends Button {
 
     private static final int WIDTH = 18;
     private static final int HEIGHT = 18;
-    private static final int WARNING_SIZE = 10;
 
     @Nullable
     private ClientTooltipComponent warning;
@@ -87,12 +88,10 @@ public abstract class AbstractSideButtonWidget extends Button {
     private void renderWarning(final GuiGraphics graphics) {
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 200);
-        graphics.blit(
-            TextureIds.ICONS,
+        graphics.blitSprite(
+            WARNING,
             getX() + WIDTH - WARNING_SIZE + 2,
             getY() + HEIGHT - WARNING_SIZE + 2,
-            246,
-            148,
             WARNING_SIZE,
             WARNING_SIZE
         );
