@@ -45,7 +45,7 @@ public abstract class AbstractSideButtonWidget extends Button {
     protected abstract int getYTexture();
 
     protected ResourceLocation getTextureIdentifier() {
-        return TextureIds.ICONS;
+        return TextureIds.SIDE_BUTTON_ICONS;
     }
 
     public void setWarning(@Nullable final Component text) {

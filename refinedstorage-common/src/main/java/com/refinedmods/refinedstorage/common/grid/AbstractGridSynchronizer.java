@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 public abstract class AbstractGridSynchronizer implements GridSynchronizer {
     @Override
     public ResourceLocation getTextureIdentifier() {
-        return TextureIds.ICONS;
+        return TextureIds.SIDE_BUTTON_ICONS;
     }
 
     @Override
