@@ -15,6 +15,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
+
 public class MouseClientTooltipComponent implements ClientTooltipComponent {
     private static final int PADDING = 4;
 
@@ -79,7 +83,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                 @Override
                 public void render(final GuiGraphics graphics, final int x, final int y) {
                     graphics.renderItem(from, x, y);
-                    graphics.blit(TextureIds.ICONS, x + 16 + 2, y, 234, 133, 22, 15);
+                    graphics.blitSprite(LIGHT_ARROW, x + 16 + 2, y, LIGHT_ARROW_WIDTH, LIGHT_ARROW_HEIGHT);
                     graphics.renderItem(to, x + 16 + 2 + 22 + 2, y);
                 }
 

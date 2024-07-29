@@ -17,6 +17,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
@@ -28,9 +31,6 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
 
     private static final ResourceLocation SLOT = createIdentifier("slot");
     private static final ResourceLocation LARGE_SLOT = createIdentifier("large_slot");
-    private static final ResourceLocation ARROW = createIdentifier("light_arrow");
-    private static final int ARROW_WIDTH = 22;
-    private static final int ARROW_HEIGHT = 15;
     private static final int LARGE_SLOT_WIDTH = 26;
     private static final int LARGE_SLOT_HEIGHT = 26;
 
@@ -53,7 +53,7 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
 
     @Override
     public int getWidth(final Font font) {
-        return (width * 18) + ARROW_SPACING + ARROW_WIDTH + ARROW_SPACING + LARGE_SLOT_WIDTH;
+        return (width * 18) + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING + LARGE_SLOT_WIDTH;
     }
 
     @Override
@@ -108,16 +108,16 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
 
     private void renderArrow(final int x, final int y, final GuiGraphics graphics) {
         graphics.blitSprite(
-            ARROW,
+            LIGHT_ARROW,
             x + width * 18 + ARROW_SPACING,
-            y + ((height * 18) / 2) - (ARROW_HEIGHT / 2),
-            ARROW_WIDTH,
-            ARROW_HEIGHT
+            y + ((height * 18) / 2) - (LIGHT_ARROW_HEIGHT / 2),
+            LIGHT_ARROW_WIDTH,
+            LIGHT_ARROW_HEIGHT
         );
     }
 
     private void renderResultSlot(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        final int slotX = x + width * 18 + ARROW_SPACING + ARROW_WIDTH + ARROW_SPACING;
+        final int slotX = x + width * 18 + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING;
         final int slotY = y + ((height * 18) / 2) - (LARGE_SLOT_HEIGHT / 2);
         graphics.blitSprite(LARGE_SLOT, slotX, slotY, LARGE_SLOT_WIDTH, LARGE_SLOT_HEIGHT);
         final ResourceAmount output = craftingPattern.output();
