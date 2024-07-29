@@ -12,7 +12,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-// A custom checkbox so that we can change the font color.
+// A custom checkbox so that we can change the font color and size.
 public class CustomCheckboxWidget extends AbstractButton {
     private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace(
         "widget/checkbox_selected_highlighted"
@@ -36,7 +36,7 @@ public class CustomCheckboxWidget extends AbstractButton {
                                 final Font font,
                                 final boolean selected,
                                 final Size size) {
-        super(x, y, size.size + 4 + font.width(text), size.size, text);
+        super(x, y, size.widthHeight + 4 + font.width(text), size.widthHeight, text);
         this.selected = selected;
         this.size = size;
     }
@@ -80,9 +80,9 @@ public class CustomCheckboxWidget extends AbstractButton {
         } else {
             sprite = isFocused() ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
         }
-        graphics.blitSprite(sprite, getX(), getY(), size.size, size.size);
+        graphics.blitSprite(sprite, getX(), getY(), size.widthHeight, size.widthHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        final int textX = getX() + size.size + 4;
+        final int textX = getX() + size.widthHeight + 4;
         final int textY = (getY() + (height >> 1)) - (9 >> 1);
         graphics.drawString(font, getMessage(), textX, textY, 4210752, false);
     }
@@ -96,10 +96,10 @@ public class CustomCheckboxWidget extends AbstractButton {
         REGULAR(9 + 8),
         SMALL(9);
 
-        private final int size;
+        private final int widthHeight;
 
-        Size(final int size) {
-            this.size = size;
+        Size(final int widthHeight) {
+            this.widthHeight = widthHeight;
         }
     }
 }

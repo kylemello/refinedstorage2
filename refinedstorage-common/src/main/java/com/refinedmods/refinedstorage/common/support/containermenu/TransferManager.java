@@ -53,13 +53,7 @@ public class TransferManager {
         }
         final TransferDestination key = destinationFactory.apply(slot.container);
         final List<TransferDestination> destinations = destinationMap.get(key);
-        boolean success = false;
-        if (destinations != null) {
-            if (transfer(slot, destinations)) {
-                success = true;
-            }
-        }
-        return success;
+        return destinations != null && transfer(slot, destinations);
     }
 
     private boolean transfer(final Slot slot, final List<TransferDestination> destinations) {

@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.widget.CustomCheckboxWidget;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -49,7 +49,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     @Nullable
     private Button createPatternButton;
 
-    private final Map<PatternType, PatternTypeButton> patternTypeButtons = new HashMap<>();
+    private final Map<PatternType, PatternTypeButton> patternTypeButtons = new EnumMap<>(PatternType.class);
 
     public PatternGridScreen(final PatternGridContainerMenu menu, final Inventory inventory, final Component title) {
         super(menu, inventory, title, 177);

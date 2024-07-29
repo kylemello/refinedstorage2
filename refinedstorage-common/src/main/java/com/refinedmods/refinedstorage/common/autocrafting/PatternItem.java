@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
@@ -23,7 +22,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
