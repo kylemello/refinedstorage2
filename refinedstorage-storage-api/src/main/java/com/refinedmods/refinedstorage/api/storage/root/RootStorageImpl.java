@@ -24,7 +24,7 @@ public class RootStorageImpl implements RootStorage {
     private final ListenableResourceList list;
 
     public RootStorageImpl() {
-        this(new ResourceListImpl());
+        this(ResourceListImpl.create());
     }
 
     public RootStorageImpl(final ResourceList list) {

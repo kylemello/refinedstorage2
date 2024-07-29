@@ -4,9 +4,9 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
-import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItemColor;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternTooltipCache;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -405,15 +405,13 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof PatternItem.CraftingPatternTooltipComponent component) {
-                final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
-                return new CompositeClientTooltipComponent(List.of(
-                    new CraftingPatternClientTooltipComponent(
-                        component.width(),
-                        component.height(),
-                        component.craftingPattern()
-                    ),
-                    help
-                ));
+                return PatternTooltipCache.getComponent(component);
+            }
+            return null;
+        });
+        TooltipComponentCallback.EVENT.register(data -> {
+            if (data instanceof PatternItem.ProcessingPatternTooltipComponent component) {
+                return PatternTooltipCache.getComponent(component);
             }
             return null;
         });

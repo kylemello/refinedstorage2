@@ -1,13 +1,12 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -20,7 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+import static java.util.Objects.requireNonNullElse;
 
 public class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
@@ -29,7 +30,6 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
 
     private static final int ARROW_SPACING = 8;
 
-    private static final ResourceLocation SLOT = createIdentifier("slot");
     private static final ResourceLocation LARGE_SLOT = createIdentifier("large_slot");
     private static final int LARGE_SLOT_WIDTH = 26;
     private static final int LARGE_SLOT_HEIGHT = 26;
@@ -38,12 +38,27 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
     private final int height;
     private final CraftingPattern craftingPattern;
 
+    @Nullable
+    private final ItemStack outputStack;
+    @Nullable
+    private final Component outputText;
+
     public CraftingPatternClientTooltipComponent(final int width,
                                                  final int height,
                                                  final CraftingPattern craftingPattern) {
         this.width = width;
         this.height = height;
         this.craftingPattern = craftingPattern;
+        final ItemResource outputResource = craftingPattern.output().getResource() instanceof ItemResource itemResource
+            ? itemResource
+            : null;
+        this.outputStack = outputResource != null
+            ? outputResource.toItemStack(craftingPattern.output().getAmount())
+            : null;
+        this.outputText = outputResource != null
+            ? Component.literal(String.format("%dx ", craftingPattern.output().getAmount()))
+            .append(outputResource.toItemStack().getHoverName())
+            .withStyle(ChatFormatting.GRAY) : null;
     }
 
     @Override
@@ -66,16 +81,8 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
             currentCycle++;
             cycleStart = now;
         }
-        if (craftingPattern.output().getResource() instanceof ItemResource itemResource) {
-            graphics.drawString(
-                font,
-                Component.literal(String.format("%dx ", craftingPattern.output().getAmount()))
-                    .append(itemResource.toItemStack().getHoverName())
-                    .withStyle(ChatFormatting.GRAY),
-                x,
-                y,
-                Objects.requireNonNullElse(ChatFormatting.GRAY.getColor(), 15)
-            );
+        if (outputText != null) {
+            graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
         }
         renderInputSlots(x, y + 9 + 2, graphics);
         renderArrow(x, y + 9 + 2, graphics);
@@ -120,13 +127,11 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
         final int slotX = x + width * 18 + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING;
         final int slotY = y + ((height * 18) / 2) - (LARGE_SLOT_HEIGHT / 2);
         graphics.blitSprite(LARGE_SLOT, slotX, slotY, LARGE_SLOT_WIDTH, LARGE_SLOT_HEIGHT);
-        final ResourceAmount output = craftingPattern.output();
-        if (output.getResource() instanceof ItemResource itemResource) {
-            final ItemStack resultItemStack = itemResource.toItemStack(output.getAmount());
+        if (outputStack != null) {
             final int stackX = slotX + 5;
             final int stackY = slotY + 5;
-            graphics.renderItem(resultItemStack, stackX, stackY);
-            graphics.renderItemDecorations(font, resultItemStack, stackX, stackY);
+            graphics.renderItem(outputStack, stackX, stackY);
+            graphics.renderItemDecorations(font, outputStack, stackX, stackY);
         }
     }
 }

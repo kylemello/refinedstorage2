@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,12 +18,16 @@ import org.apiguardian.api.API;
 public class ResourceListImpl implements ResourceList {
     private final Map<ResourceKey, ResourceAmount> entries;
 
-    public ResourceListImpl(final Map<ResourceKey, ResourceAmount> entries) {
+    private ResourceListImpl(final Map<ResourceKey, ResourceAmount> entries) {
         this.entries = entries;
     }
 
-    public ResourceListImpl() {
-        this(new HashMap<>());
+    public static ResourceListImpl create() {
+        return new ResourceListImpl(new HashMap<>());
+    }
+
+    public static ResourceListImpl orderPreserving() {
+        return new ResourceListImpl(new LinkedHashMap<>());
     }
 
     @Override

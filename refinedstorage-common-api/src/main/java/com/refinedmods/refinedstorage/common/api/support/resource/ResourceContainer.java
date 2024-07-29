@@ -39,7 +39,18 @@ public interface ResourceContainer {
 
     void remove(int index);
 
+    void clear();
+
     int size();
+
+    default boolean isEmpty() {
+        for (int i = 0; i < size(); i++) {
+            if (!isEmpty(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     default boolean isEmpty(int index) {
         return get(index) == null;

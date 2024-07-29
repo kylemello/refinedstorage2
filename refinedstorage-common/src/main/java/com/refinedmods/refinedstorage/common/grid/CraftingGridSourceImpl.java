@@ -128,7 +128,7 @@ class CraftingGridSourceImpl implements CraftingGridSource {
     }
 
     private ResourceList createCombinedPlayerInventoryAndNetworkList(final Player player) {
-        final ResourceList list = new ResourceListImpl();
+        final ResourceList list = ResourceListImpl.create();
         addNetworkItemsIntoList(list);
         addPlayerInventoryItemsIntoList(player, list);
         return list;

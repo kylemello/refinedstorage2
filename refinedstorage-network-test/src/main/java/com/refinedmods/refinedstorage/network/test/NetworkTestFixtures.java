@@ -15,8 +15,6 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.network.test.fake.FakePermissions;
 
-import java.util.LinkedHashMap;
-
 public final class NetworkTestFixtures {
     public static final ComponentMapFactory<NetworkComponent, Network> NETWORK_COMPONENT_MAP_FACTORY =
         new ComponentMapFactory<>();
@@ -32,7 +30,7 @@ public final class NetworkTestFixtures {
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             StorageNetworkComponent.class,
-            network -> new StorageNetworkComponentImpl(new ResourceListImpl(new LinkedHashMap<>()))
+            network -> new StorageNetworkComponentImpl(ResourceListImpl.orderPreserving())
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             SecurityNetworkComponent.class,

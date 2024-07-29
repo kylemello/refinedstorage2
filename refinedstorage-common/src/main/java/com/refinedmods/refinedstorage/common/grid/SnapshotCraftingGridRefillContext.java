@@ -14,8 +14,8 @@ import net.minecraft.world.item.ItemStack;
 class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     private final PlayerActor playerActor;
     private final CraftingGridBlockEntity blockEntity;
-    private final ResourceList available = new ResourceListImpl();
-    private final ResourceList used = new ResourceListImpl();
+    private final ResourceList available = ResourceListImpl.create();
+    private final ResourceList used = ResourceListImpl.create();
 
     SnapshotCraftingGridRefillContext(
         final Player player,

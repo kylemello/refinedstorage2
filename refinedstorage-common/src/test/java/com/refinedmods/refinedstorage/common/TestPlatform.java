@@ -37,6 +37,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -230,6 +231,11 @@ public class TestPlatform implements Platform {
 
     @Override
     public int getItemColor(final ItemStack stack, final int tintIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSlotY(final Slot slot, final int y) {
         throw new UnsupportedOperationException();
     }
 }

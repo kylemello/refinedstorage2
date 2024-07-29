@@ -14,7 +14,7 @@ public class PlatformStorageNetworkComponent extends StorageNetworkComponentImpl
     private final FuzzyResourceList fuzzyResourceList;
 
     public PlatformStorageNetworkComponent() {
-        this(new FuzzyResourceListImpl(new ResourceListImpl()));
+        this(new FuzzyResourceListImpl(ResourceListImpl.create()));
     }
 
     private PlatformStorageNetworkComponent(final FuzzyResourceList fuzzyResourceList) {

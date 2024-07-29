@@ -20,7 +20,7 @@ import org.apiguardian.api.API;
 public class ExternalStorage implements CompositeAwareChild {
     private final ExternalStorageProvider provider;
     private final Set<ParentComposite> parents = new HashSet<>();
-    private final ResourceList cache = new ResourceListImpl();
+    private final ResourceList cache = ResourceListImpl.create();
     private final ExternalStorageListener listener;
 
     public ExternalStorage(final ExternalStorageProvider provider, final ExternalStorageListener listener) {
@@ -111,7 +111,7 @@ public class ExternalStorage implements CompositeAwareChild {
     }
 
     private ResourceList buildCache() {
-        final ResourceList list = new ResourceListImpl();
+        final ResourceList list = ResourceListImpl.create();
         provider.iterator().forEachRemaining(list::add);
         return list;
     }

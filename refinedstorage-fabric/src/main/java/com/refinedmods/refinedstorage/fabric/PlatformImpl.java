@@ -82,6 +82,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -483,6 +484,11 @@ public final class PlatformImpl extends AbstractPlatform {
             return -1;
         }
         return itemColor.getColor(stack, tintIndex);
+    }
+
+    @Override
+    public void setSlotY(final Slot slot, final int y) {
+        slot.y = y;
     }
 
     private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {

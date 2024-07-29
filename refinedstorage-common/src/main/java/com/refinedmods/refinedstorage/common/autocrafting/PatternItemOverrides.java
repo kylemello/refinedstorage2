@@ -17,14 +17,17 @@ import net.minecraft.world.item.ItemStack;
 public class PatternItemOverrides extends ItemOverrides {
     private final BakedModel emptyModel;
     private final BakedModel craftingModel;
+    private final BakedModel processingModel;
 
     @SuppressWarnings({"DataFlowIssue"}) // null is allowed as long as we don't pass overrides
     public PatternItemOverrides(final ModelBaker modelBaker,
                                 final BakedModel emptyModel,
-                                final BakedModel craftingModel) {
+                                final BakedModel craftingModel,
+                                final BakedModel processingModel) {
         super(modelBaker, null, List.of());
         this.emptyModel = emptyModel;
         this.craftingModel = craftingModel;
+        this.processingModel = processingModel;
     }
 
     @Override
@@ -38,15 +41,18 @@ public class PatternItemOverrides extends ItemOverrides {
             return emptyModel;
         }
         if (state.type() == PatternType.CRAFTING) {
-            return getCraftingOutputModel(stack, level, entity, seed).orElse(craftingModel);
+            return getOutputModel(stack, level, entity, seed).orElse(craftingModel);
+        }
+        if (state.type() == PatternType.PROCESSING) {
+            return getOutputModel(stack, level, entity, seed).orElse(processingModel);
         }
         return emptyModel;
     }
 
-    private Optional<BakedModel> getCraftingOutputModel(final ItemStack stack,
-                                                        @Nullable final ClientLevel level,
-                                                        @Nullable final LivingEntity entity,
-                                                        final int seed) {
+    private Optional<BakedModel> getOutputModel(final ItemStack stack,
+                                                @Nullable final ClientLevel level,
+                                                @Nullable final LivingEntity entity,
+                                                final int seed) {
         if (PatternRendering.canDisplayOutput(stack)) {
             return PatternRendering.getOutput(stack).map(
                 output -> Minecraft.getInstance().getItemRenderer().getModel(output, level, entity, seed)

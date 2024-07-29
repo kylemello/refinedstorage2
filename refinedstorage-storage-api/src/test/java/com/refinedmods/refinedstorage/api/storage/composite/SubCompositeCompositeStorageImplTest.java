@@ -19,13 +19,13 @@ class SubCompositeCompositeStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CompositeStorageImpl(new ResourceListImpl());
+        sut = new CompositeStorageImpl(ResourceListImpl.create());
     }
 
     @Test
     void testAddingSubCompositeShouldAddAllResourcesToParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(new ResourceListImpl());
+        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
         subComposite.addSource(new InMemoryStorageImpl());
         subComposite.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -41,7 +41,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testRemovingSubCompositeShouldRemoveAllResourcesFromParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(new ResourceListImpl());
+        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
         subComposite.addSource(new InMemoryStorageImpl());
         subComposite.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -62,7 +62,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testAddingSourceToSubCompositeShouldNotifyParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(new ResourceListImpl());
+        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
         final Storage subStorage = new InMemoryStorageImpl();
         subStorage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -89,7 +89,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testRemovingSourceFromSubCompositeShouldNotifyParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(new ResourceListImpl());
+        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
         final Storage subStorage = new InMemoryStorageImpl();
         subStorage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
