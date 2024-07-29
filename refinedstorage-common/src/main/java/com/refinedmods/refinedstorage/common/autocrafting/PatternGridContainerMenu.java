@@ -179,7 +179,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 });
             }
         }
-        // TODO: other fuzzy mode tooltips are wrong?
         addSlot(new DisabledSlot(
             craftingResult,
             0,

@@ -33,9 +33,6 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-// TODO: servertest
-// TODO: update changelog
-// TODO: change "nbt" tooltips (en_us.json)
 public class PatternGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops,
     NetworkNodeExtendedMenuProvider<PatternGridData> {
     private static final String TAG_PATTERN_INPUT = "pattern_input";

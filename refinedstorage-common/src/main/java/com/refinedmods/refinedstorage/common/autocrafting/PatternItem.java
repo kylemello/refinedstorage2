@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
@@ -11,6 +12,7 @@ import com.refinedmods.refinedstorage.common.content.DataComponents;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +90,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         return switch (state.type()) {
             case CRAFTING -> {
                 final CraftingPatternState craftingState = stack.get(DataComponents.INSTANCE.getCraftingPatternState());
-                final Level level = Minecraft.getInstance().level;
+                final Level level = PlatformUtil.getClientLevel();
                 if (craftingState == null || level == null) {
                     yield Optional.empty();
                 }

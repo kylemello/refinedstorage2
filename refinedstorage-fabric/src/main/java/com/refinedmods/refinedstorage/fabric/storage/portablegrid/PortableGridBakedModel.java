@@ -6,6 +6,7 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockItem;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockItemRenderInfo;
 import com.refinedmods.refinedstorage.common.support.direction.BiDirection;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 import com.refinedmods.refinedstorage.fabric.support.render.QuadRotators;
 import com.refinedmods.refinedstorage.fabric.support.render.QuadTranslator;
 
@@ -14,14 +15,13 @@ import java.util.function.Supplier;
 
 import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class PortableGridBakedModel extends ForwardingBakedModel {
@@ -56,7 +56,7 @@ public class PortableGridBakedModel extends ForwardingBakedModel {
     public void emitItemQuads(final ItemStack stack,
                               final Supplier<RandomSource> randomSupplier,
                               final RenderContext context) {
-        final ClientLevel level = Minecraft.getInstance().level;
+        final Level level = PlatformUtil.getClientLevel();
         if (level == null) {
             return;
         }

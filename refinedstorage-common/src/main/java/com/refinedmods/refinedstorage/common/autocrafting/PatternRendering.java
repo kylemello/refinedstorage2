@@ -5,10 +5,10 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.Optional;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,7 +22,7 @@ public final class PatternRendering {
     }
 
     public static Optional<ItemStack> getOutput(final ItemStack stack) {
-        final Level level = Minecraft.getInstance().level;
+        final Level level = PlatformUtil.getClientLevel();
         if (level == null) {
             return Optional.empty();
         }
