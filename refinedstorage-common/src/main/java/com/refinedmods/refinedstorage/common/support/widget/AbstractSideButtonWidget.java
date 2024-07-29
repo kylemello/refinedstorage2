@@ -51,7 +51,7 @@ public abstract class AbstractSideButtonWidget extends Button {
 
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        graphics.blit(getTextureIdentifier(), getX(), getY(), 238, isHovered ? 35 : 16, WIDTH, HEIGHT);
+        graphics.blit(TextureIds.ICONS, getX(), getY(), 238, isHovered ? 35 : 16, WIDTH, HEIGHT);
         graphics.blit(
             getTextureIdentifier(),
             getX() + 1,
@@ -65,7 +65,7 @@ public abstract class AbstractSideButtonWidget extends Button {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
-            graphics.blit(getTextureIdentifier(), getX(), getY(), 238, 54, WIDTH, HEIGHT);
+            graphics.blit(TextureIds.ICONS, getX(), getY(), 238, 54, WIDTH, HEIGHT);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             final Screen screen = Minecraft.getInstance().screen;

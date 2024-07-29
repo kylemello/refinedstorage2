@@ -14,7 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class ScrollbarWidget extends AbstractWidget {
-    private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/widgets.png");
+    private static final ResourceLocation TEXTURE = createIdentifier("widget/scrollbar");
+    private static final ResourceLocation CLICKED_TEXTURE = createIdentifier("widget/scrollbar_clicked");
+    private static final ResourceLocation DISABLED_TEXTURE = createIdentifier("widget/scrollbar_disabled");
+
+    private static final int SCROLLER_WIDTH = 12;
     private static final int SCROLLER_HEIGHT = 15;
 
     private static final int ANIMATION_SCROLL_DURATION_IN_TICKS = 10;
@@ -51,23 +55,24 @@ public class ScrollbarWidget extends AbstractWidget {
         this.enabled = enabled;
     }
 
+    private ResourceLocation getTexture() {
+        if (!enabled) {
+            return DISABLED_TEXTURE;
+        }
+        return clicked ? CLICKED_TEXTURE : TEXTURE;
+    }
+
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         if (isAnimatingScroll()) {
             updateScrollingAnimation(partialTicks);
         }
-
-        final int enabledU = clicked ? 220 : 232;
-        final int u = enabled ? enabledU : 244;
-
-        graphics.blit(
-            TEXTURE,
+        graphics.blitSprite(
+            getTexture(),
             getX(),
             getY() + (int) ((float) offset / (float) maxOffset * (height - SCROLLER_HEIGHT)),
-            u,
-            0,
-            12,
-            15
+            SCROLLER_WIDTH,
+            SCROLLER_HEIGHT
         );
     }
 
