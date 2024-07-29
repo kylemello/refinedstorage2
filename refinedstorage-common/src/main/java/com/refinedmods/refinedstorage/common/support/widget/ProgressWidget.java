@@ -8,13 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class ProgressWidget extends AbstractWidget {
-    private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/widgets.png");
+    private static final ResourceLocation TEXTURE = createIdentifier("widget/progress_bar");
 
     private final DoubleSupplier progressSupplier;
     private final Supplier<List<Component>> tooltipSupplier;
@@ -31,10 +32,17 @@ public class ProgressWidget extends AbstractWidget {
     }
 
     @Override
+    public void playDownSound(final SoundManager handler) {
+        // intentionally empty
+    }
+
+    @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         final int correctedHeight = (int) (progressSupplier.getAsDouble() * height);
-        graphics.blit(TEXTURE, getX(), getY() + height - correctedHeight, 179, height - correctedHeight, width,
-            correctedHeight);
+        final int correctedY = getY() + height - correctedHeight;
+        final int u = 0;
+        final int v = height - correctedHeight;
+        graphics.blitSprite(TEXTURE, 16, 70, u, v, getX(), correctedY, width, correctedHeight);
         if (isHovered) {
             graphics.renderComponentTooltip(Minecraft.getInstance().font, tooltipSupplier.get(), mouseX, mouseY);
         }

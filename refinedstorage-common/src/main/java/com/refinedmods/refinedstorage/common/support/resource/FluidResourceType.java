@@ -25,7 +25,7 @@ class FluidResourceType extends AbstractResourceType {
         super(
             "FLUID",
             createTranslation("misc", "resource_type.fluid"),
-            TextureIds.ICONS,
+            TextureIds.SIDE_BUTTON_ICONS,
             16,
             128
         );

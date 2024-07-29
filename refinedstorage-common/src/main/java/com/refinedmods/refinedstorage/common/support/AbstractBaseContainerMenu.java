@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
+import com.refinedmods.refinedstorage.common.support.containermenu.FilterSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.Property;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyType;
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
@@ -98,10 +99,27 @@ public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
         if (isSwappingDisabledSlotWithNumberKeys(dragType, clickType)) {
             return;
         }
+        if (slot instanceof FilterSlot) {
+            final ItemStack carried = player.containerMenu.getCarried();
+            if (carried.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else if (slot.mayPlace(carried)) {
+                slot.set(carried.copy());
+            }
+            return;
+        }
         if (slot instanceof DisabledSlot) {
             return;
         }
         super.clicked(id, dragType, clickType, player);
+    }
+
+    @Override
+    public boolean canTakeItemForPickAll(final ItemStack stack, final Slot slot) {
+        if (slot instanceof FilterSlot || slot instanceof DisabledSlot) {
+            return false;
+        }
+        return super.canTakeItemForPickAll(stack, slot);
     }
 
     private boolean isSwappingDisabledSlotWithNumberKeys(final int dragType, final ClickType clickType) {

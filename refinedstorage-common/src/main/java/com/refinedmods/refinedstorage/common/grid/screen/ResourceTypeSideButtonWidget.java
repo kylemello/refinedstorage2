@@ -31,7 +31,7 @@ class ResourceTypeSideButtonWidget extends AbstractSideButtonWidget {
     protected ResourceLocation getTextureIdentifier() {
         final ResourceType resourceType = menu.getResourceType();
         if (resourceType == null) {
-            return TextureIds.ICONS;
+            return TextureIds.SIDE_BUTTON_ICONS;
         }
         return resourceType.getTextureIdentifier();
     }

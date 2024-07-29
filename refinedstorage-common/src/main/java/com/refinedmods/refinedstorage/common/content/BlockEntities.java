@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlockEntity;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockEntity;
@@ -46,6 +47,8 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<GridBlockEntity>> grid;
     @Nullable
     private Supplier<BlockEntityType<CraftingGridBlockEntity>> craftingGrid;
+    @Nullable
+    private Supplier<BlockEntityType<PatternGridBlockEntity>> patternGrid;
     @Nullable
     private Supplier<BlockEntityType<ControllerBlockEntity>> controller;
     @Nullable
@@ -122,6 +125,14 @@ public final class BlockEntities {
 
     public void setCraftingGrid(final Supplier<BlockEntityType<CraftingGridBlockEntity>> supplier) {
         this.craftingGrid = supplier;
+    }
+
+    public BlockEntityType<PatternGridBlockEntity> getPatternGrid() {
+        return requireNonNull(patternGrid).get();
+    }
+
+    public void setPatternGrid(final Supplier<BlockEntityType<PatternGridBlockEntity>> supplier) {
+        this.patternGrid = supplier;
     }
 
     public BlockEntityType<ControllerBlockEntity> getController() {

@@ -168,6 +168,7 @@ public final class GameTestUtil {
                                                              final ResourceContainer container,
                                                              final ResourceAmount... expected) {
         return () -> {
+            // todo: investigate issue with EnderIO integration
             // TODO: This does not take duplicate ResourceAmount into account
             for (final ResourceAmount expectedStack : expected) {
                 final boolean contains = IntStream.range(0, container.size())

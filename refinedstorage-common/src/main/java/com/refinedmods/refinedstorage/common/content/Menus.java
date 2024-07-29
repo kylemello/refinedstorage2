@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
 import com.refinedmods.refinedstorage.common.controller.ControllerContainerMenu;
@@ -42,6 +43,8 @@ public final class Menus {
     private Supplier<MenuType<GridContainerMenu>> grid;
     @Nullable
     private Supplier<MenuType<CraftingGridContainerMenu>> craftingGrid;
+    @Nullable
+    private Supplier<MenuType<PatternGridContainerMenu>> patternGrid;
     @Nullable
     private Supplier<MenuType<WirelessGridContainerMenu>> wirelessGrid;
     @Nullable
@@ -104,6 +107,14 @@ public final class Menus {
 
     public void setCraftingGrid(final Supplier<MenuType<CraftingGridContainerMenu>> supplier) {
         this.craftingGrid = supplier;
+    }
+
+    public MenuType<PatternGridContainerMenu> getPatternGrid() {
+        return requireNonNull(patternGrid).get();
+    }
+
+    public void setPatternGrid(final Supplier<MenuType<PatternGridContainerMenu>> supplier) {
+        this.patternGrid = supplier;
     }
 
     public MenuType<WirelessGridContainerMenu> getWirelessGrid() {

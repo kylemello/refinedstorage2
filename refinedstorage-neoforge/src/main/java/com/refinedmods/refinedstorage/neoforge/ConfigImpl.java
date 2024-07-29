@@ -30,6 +30,7 @@ public class ConfigImpl implements Config {
     private final DiskInterfaceEntry diskInterface;
     private final GridEntry grid;
     private final CraftingGridEntry craftingGrid;
+    private final SimpleEnergyUsageEntry patternGrid;
     private final StorageBlockEntry storageBlock;
     private final FluidStorageBlockEntry fluidStorageBlock;
     private final SimpleEnergyUsageEntry importer;
@@ -67,6 +68,7 @@ public class ConfigImpl implements Config {
         diskInterface = new DiskInterfaceEntryImpl();
         grid = new GridEntryImpl();
         craftingGrid = new CraftingGridEntryImpl();
+        patternGrid = new SimpleEnergyUsageEntryImpl("patternGrid", DefaultEnergyUsage.PATTERN_GRID);
         storageBlock = new StorageBlockEntryImpl();
         fluidStorageBlock = new FluidStorageBlockEntryImpl();
         importer = new SimpleEnergyUsageEntryImpl("importer", DefaultEnergyUsage.IMPORTER);
@@ -123,6 +125,11 @@ public class ConfigImpl implements Config {
     @Override
     public GridEntry getGrid() {
         return grid;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getPatternGrid() {
+        return patternGrid;
     }
 
     @Override

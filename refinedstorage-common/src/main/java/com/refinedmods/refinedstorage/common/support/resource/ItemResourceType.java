@@ -25,7 +25,7 @@ class ItemResourceType extends AbstractResourceType {
         super(
             "ITEM",
             createTranslation("misc", "resource_type.item"),
-            TextureIds.ICONS,
+            TextureIds.SIDE_BUTTON_ICONS,
             0,
             128
         );

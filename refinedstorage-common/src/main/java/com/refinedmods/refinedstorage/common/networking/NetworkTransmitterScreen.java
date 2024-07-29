@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
 
@@ -10,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class NetworkTransmitterScreen extends AbstractBaseScreen<NetworkTransmitterContainerMenu> {
@@ -36,7 +37,7 @@ public class NetworkTransmitterScreen extends AbstractBaseScreen<NetworkTransmit
         final NetworkTransmitterData status = getMenu().getStatus();
         final int displayTextX = 51;
         if (status.error()) {
-            graphics.blit(TextureIds.ICONS, displayTextX, 23, 246, 148, 10, 10);
+            graphics.blitSprite(WARNING, displayTextX, 23, WARNING_SIZE, WARNING_SIZE);
         }
         graphics.drawString(font, status.message(), displayTextX + (status.error() ? (10 + 4) : 0), 25, 4210752, false);
     }

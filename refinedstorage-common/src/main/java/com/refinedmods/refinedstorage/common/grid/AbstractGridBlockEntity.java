@@ -17,15 +17,12 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,7 +31,7 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridBlockEntity
     extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<GridNetworkNode>
-    implements Grid, NetworkNodeExtendedMenuProvider<GridData> {
+    implements Grid {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,
                                       final BlockState state,
@@ -48,16 +45,6 @@ public abstract class AbstractGridBlockEntity
             .priority(NetworkNodeContainerPriorities.GRID)
             .connectionStrategy(new ColoredConnectionStrategy(this::getBlockState, getBlockPos()))
             .build();
-    }
-
-    @Override
-    public GridData getMenuData() {
-        return GridData.of(this);
-    }
-
-    @Override
-    public StreamEncoder<RegistryFriendlyByteBuf, GridData> getMenuCodec() {
-        return GridData.STREAM_CODEC;
     }
 
     @Override

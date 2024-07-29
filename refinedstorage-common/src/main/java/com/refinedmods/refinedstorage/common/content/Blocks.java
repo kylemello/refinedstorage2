@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlock;
 import com.refinedmods.refinedstorage.common.controller.AbstractControllerBlock;
@@ -66,6 +67,12 @@ public final class Blocks {
         CraftingGridBlock::new,
         ContentIds.CRAFTING_GRID,
         ContentNames.CRAFTING_GRID,
+        COLOR
+    );
+    private final BlockColorMap<PatternGridBlock, BaseBlockItem> patternGrid = new BlockColorMap<>(
+        PatternGridBlock::new,
+        ContentIds.PATTERN_GRID,
+        ContentNames.PATTERN_GRID,
         COLOR
     );
     private final BlockColorMap<DetectorBlock, BaseBlockItem> detector = new BlockColorMap<>(
@@ -209,6 +216,10 @@ public final class Blocks {
 
     public BlockColorMap<CraftingGridBlock, BaseBlockItem> getCraftingGrid() {
         return craftingGrid;
+    }
+
+    public BlockColorMap<PatternGridBlock, BaseBlockItem> getPatternGrid() {
+        return patternGrid;
     }
 
     public BlockColorMap<AbstractControllerBlock<ControllerBlockItem>, ControllerBlockItem> getController() {

@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorScreen;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -55,6 +56,7 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getDiskDrive(), DiskDriveScreen::new);
         registration.register(Menus.INSTANCE.getGrid(), GridScreen<GridContainerMenu>::new);
         registration.register(Menus.INSTANCE.getCraftingGrid(), CraftingGridScreen::new);
+        registration.register(Menus.INSTANCE.getPatternGrid(), PatternGridScreen::new);
         registration.register(Menus.INSTANCE.getWirelessGrid(), GridScreen<WirelessGridContainerMenu>::new);
         registration.register(Menus.INSTANCE.getController(), ControllerScreen::new);
         registration.register(Menus.INSTANCE.getItemStorage(), ItemStorageBlockScreen::new);

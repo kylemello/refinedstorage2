@@ -7,6 +7,22 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Pattern Grid
+-   Pattern
+
+### Changed
+
+-   The Pattern now shows the crafting recipe in the tooltip.
+-   When a Pattern is created for a crafting recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
+-   The Pattern Grid now has support for more pattern types.
+
+### Fixed
+
+-   Clicking on a scrollbar no longer makes a clicking sound.
+-   Incorrect and outdated (mentioning NBT tags) help explanations for fuzzy mode.
+
 ## [2.0.0-milestone.4.5] - 2024-07-26
 
 ### Added

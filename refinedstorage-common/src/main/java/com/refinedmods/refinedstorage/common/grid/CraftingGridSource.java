@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;

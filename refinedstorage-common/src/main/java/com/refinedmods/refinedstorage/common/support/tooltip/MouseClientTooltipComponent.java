@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage.common.support.tooltip;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import javax.annotation.Nullable;
@@ -13,7 +12,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class MouseClientTooltipComponent implements ClientTooltipComponent {
     private static final int PADDING = 4;
@@ -79,7 +84,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                 @Override
                 public void render(final GuiGraphics graphics, final int x, final int y) {
                     graphics.renderItem(from, x, y);
-                    graphics.blit(TextureIds.ICONS, x + 16 + 2, y, 234, 133, 22, 15);
+                    graphics.blitSprite(LIGHT_ARROW, x + 16 + 2, y, LIGHT_ARROW_WIDTH, LIGHT_ARROW_HEIGHT);
                     graphics.renderItem(to, x + 16 + 2 + 22 + 2, y);
                 }
 
@@ -115,7 +120,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.blit(TextureIds.ICONS, x + type.leftPad, y, type.x, type.y, type.width, type.height);
+        graphics.blitSprite(type.texture, x + type.leftPad, y, type.width, type.height);
         iconRenderer.render(graphics, x + 9 + PADDING, y);
         if (amount != null) {
             final PoseStack poseStack = graphics.pose();
@@ -135,19 +140,17 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
     }
 
     public enum Type {
-        LEFT(247, 0, 180, 9, 13),
-        RIGHT(238, 2, 180, 9, 13);
+        LEFT(createIdentifier("left_mouse_button"), 0, 9, 13),
+        RIGHT(createIdentifier("right_mouse_button"), 2, 9, 13);
 
-        private final int x;
+        private final ResourceLocation texture;
         private final int leftPad;
-        private final int y;
         private final int width;
         private final int height;
 
-        Type(final int x, final int leftPad, final int y, final int width, final int height) {
-            this.x = x;
+        Type(final ResourceLocation texture, final int leftPad, final int width, final int height) {
+            this.texture = texture;
             this.leftPad = leftPad;
-            this.y = y;
             this.width = width;
             this.height = height;
         }

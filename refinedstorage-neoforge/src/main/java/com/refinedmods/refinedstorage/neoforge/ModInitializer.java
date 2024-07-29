@@ -32,6 +32,8 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridReci
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceSlotAmountChangePacket;
@@ -173,6 +175,8 @@ public class ModInitializer extends AbstractModInitializer {
             eventBus.addListener(ClientModInitializer::onRegisterModelGeometry);
             eventBus.addListener(ClientModInitializer::onRegisterMenuScreens);
             eventBus.addListener(ClientModInitializer::onRegisterKeyMappings);
+            eventBus.addListener(ClientModInitializer::onRegisterItemColors);
+            eventBus.addListener(ClientModInitializer::onRegisterClientExtensions);
             eventBus.addListener(ClientModInitializer::onRegisterTooltipFactories);
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
@@ -379,6 +383,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getConstructor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getController());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCraftingGrid());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getPatternGrid());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCreativeController());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDestructor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDetector());
@@ -601,6 +606,16 @@ public class ModInitializer extends AbstractModInitializer {
             CraftingGridClearPacket.PACKET_TYPE,
             CraftingGridClearPacket.STREAM_CODEC,
             wrapHandler(CraftingGridClearPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridClearPacket.PACKET_TYPE,
+            PatternGridClearPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> PatternGridClearPacket.handle(ctx))
+        );
+        registrar.playToServer(
+            PatternGridCreatePatternPacket.PACKET_TYPE,
+            PatternGridCreatePatternPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> PatternGridCreatePatternPacket.handle(ctx))
         );
         registrar.playToServer(
             CraftingGridRecipeTransferPacket.PACKET_TYPE,

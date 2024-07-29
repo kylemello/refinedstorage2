@@ -1,7 +1,5 @@
 package com.refinedmods.refinedstorage.common.support.tooltip;
 
-import com.refinedmods.refinedstorage.common.support.TextureIds;
-
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -12,13 +10,16 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 import static net.minecraft.client.gui.screens.Screen.hasShiftDown;
 
 public class HelpClientTooltipComponent implements ClientTooltipComponent {
+    private static final ResourceLocation TEXTURE = createIdentifier("help");
     private static final ClientTooltipComponent PRESS_SHIFT_FOR_HELP = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("misc", "press_shift_for_help")
     );
@@ -76,7 +77,7 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.blit(TextureIds.ICONS, x, y + 2, 236, 158, 20, 20);
+        graphics.blitSprite(TEXTURE, x, y + 2, 20, 20);
     }
 
     public static ClientTooltipComponent create(final Component text) {

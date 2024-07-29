@@ -22,6 +22,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         Blocks.INSTANCE.getCable().forEach((color, id, block) -> dropSelf(block.get()));
         Blocks.INSTANCE.getGrid().forEach((color, id, block) -> dropSelf(block.get()));
         Blocks.INSTANCE.getCraftingGrid().forEach((color, id, block) -> dropSelf(block.get()));
+        Blocks.INSTANCE.getPatternGrid().forEach((color, id, block) -> dropSelf(block.get()));
         Blocks.INSTANCE.getController().forEach((color, id, block) -> add(
             block.get(),
             createSingleItemTable(block.get()).apply(EnergyLootItemFunction::new)
@@ -44,6 +45,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         blocks.addAll(Blocks.INSTANCE.getCable().values());
         blocks.addAll(Blocks.INSTANCE.getGrid().values());
         blocks.addAll(Blocks.INSTANCE.getCraftingGrid().values());
+        blocks.addAll(Blocks.INSTANCE.getPatternGrid().values());
         blocks.addAll(Blocks.INSTANCE.getController().values());
         blocks.addAll(Blocks.INSTANCE.getCreativeController().values());
         blocks.addAll(Blocks.INSTANCE.getDetector().values());

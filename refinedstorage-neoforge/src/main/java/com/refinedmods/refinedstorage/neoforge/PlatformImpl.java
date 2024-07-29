@@ -398,4 +398,9 @@ public final class PlatformImpl extends AbstractPlatform {
             direction
         );
     }
+
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        return Minecraft.getInstance().getItemColors().getColor(stack, tintIndex);
+    }
 }

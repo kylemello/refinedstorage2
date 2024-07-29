@@ -75,7 +75,8 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
             y,
             getPermissionName(menuPermission),
             font,
-            menuPermission.allowed()
+            menuPermission.allowed(),
+            CustomCheckboxWidget.Size.REGULAR
         );
         checkbox.visible = visible;
         checkbox.setTooltip(getPermissionTooltip(menuPermission));

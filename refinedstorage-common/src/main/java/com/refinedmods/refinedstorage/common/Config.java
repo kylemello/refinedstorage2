@@ -20,6 +20,8 @@ public interface Config {
 
     GridEntry getGrid();
 
+    SimpleEnergyUsageEntry getPatternGrid();
+
     CraftingGridEntry getCraftingGrid();
 
     ControllerEntry getController();

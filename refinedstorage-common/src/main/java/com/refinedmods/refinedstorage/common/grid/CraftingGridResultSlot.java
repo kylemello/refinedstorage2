@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
@@ -58,7 +59,8 @@ class CraftingGridResultSlot extends ResultSlot {
             for (int x = 0; x < input.width(); ++x) {
                 final int index = x + left + (y + top) * source.getCraftingMatrix().getWidth();
                 final ItemStack matrixStack = source.getCraftingMatrix().getItem(index);
-                final ItemStack remainingItem = remainingItems.get(x + y * input.width());
+                final int recipeIndex = x + y * input.width();
+                final ItemStack remainingItem = remainingItems.get(recipeIndex);
                 if (!remainingItem.isEmpty()) {
                     useIngredientWithRemainingItem(player, index, remainingItem);
                 } else if (!matrixStack.isEmpty()) {
