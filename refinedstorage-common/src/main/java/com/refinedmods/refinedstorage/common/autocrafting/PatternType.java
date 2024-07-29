@@ -8,7 +8,6 @@ import net.minecraft.world.item.Items;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-// TODO: remove widgets.png
 // TODO: remove other unused textures, and rename icons.png to side_buttons.png
 public enum PatternType implements StringRepresentable {
     CRAFTING(Items.CRAFTING_TABLE.getDefaultInstance(), "crafting"),
