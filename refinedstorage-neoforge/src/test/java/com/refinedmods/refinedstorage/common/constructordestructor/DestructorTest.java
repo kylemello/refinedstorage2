@@ -14,10 +14,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import static com.refinedmods.refinedstorage.common.GameTestUtil.RSITEMS;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.asResource;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.networkIsAvailable;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.storageContainsExactly;
+import static net.minecraft.world.item.Items.DIAMOND;
+import static net.minecraft.world.item.Items.DIAMOND_ORE;
 import static net.minecraft.world.item.Items.DIRT;
 import static net.minecraft.world.item.Items.STONE;
 import static net.minecraft.world.level.material.Fluids.LAVA;
@@ -49,6 +52,15 @@ public final class DestructorTest {
                     pos,
                     new ResourceAmount(asResource(DIRT), 11),
                     new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenExecute(() -> helper.setBlock(pos.east(), Blocks.DIAMOND_ORE))
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIAMOND_ORE, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 11),
+                    new ResourceAmount(asResource(STONE), 15),
+                    new ResourceAmount(asResource(DIAMOND), 1)
                 ))
                 .thenSucceed();
         });
@@ -111,6 +123,33 @@ public final class DestructorTest {
                     pos,
                     new ResourceAmount(asResource(DIRT), 11),
                     new ResourceAmount(asResource(STONE), 15)
+                ))
+                .thenSucceed();
+        });
+    }
+
+    @GameTest(template = "empty_15x15")
+    public static void shouldBreakBlockWithSilkTouchUpgrade(final GameTestHelper helper) {
+        DestructorTestPlots.preparePlot(helper, Direction.EAST, (destructor, pos, sequence) -> {
+            // Arrange
+            sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
+                insert(helper, network, DIRT, 10);
+                insert(helper, network, STONE, 15);
+            }));
+
+            // Act
+            helper.setBlock(pos.east(), Blocks.DIAMOND_ORE);
+            destructor.addUpgradeItem(RSITEMS.getSilkTouchUpgrade());
+
+            // Assert
+            sequence
+                .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.DIAMOND_ORE, pos.east()))
+                .thenWaitUntil(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 10),
+                    new ResourceAmount(asResource(STONE), 15),
+                    new ResourceAmount(asResource(DIAMOND_ORE), 1)
                 ))
                 .thenSucceed();
         });
