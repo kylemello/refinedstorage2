@@ -33,7 +33,7 @@ class FuzzyResourceListImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new FuzzyResourceListImpl(new ResourceListImpl());
+        sut = new FuzzyResourceListImpl(ResourceListImpl.create());
     }
 
     @Test

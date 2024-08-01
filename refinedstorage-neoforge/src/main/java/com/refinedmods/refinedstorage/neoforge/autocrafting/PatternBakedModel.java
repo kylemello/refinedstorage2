@@ -10,9 +10,12 @@ import net.neoforged.neoforge.client.model.BakedModelWrapper;
 class PatternBakedModel extends BakedModelWrapper<BakedModel> {
     private final ItemOverrides itemOverrides;
 
-    PatternBakedModel(final ModelBaker modelBaker, final BakedModel emptyModel, final BakedModel craftingModel) {
+    PatternBakedModel(final ModelBaker modelBaker,
+                      final BakedModel emptyModel,
+                      final BakedModel craftingModel,
+                      final BakedModel processingModel) {
         super(emptyModel);
-        this.itemOverrides = new PatternItemOverrides(modelBaker, emptyModel, craftingModel);
+        this.itemOverrides = new PatternItemOverrides(modelBaker, emptyModel, craftingModel, processingModel);
     }
 
     @Override

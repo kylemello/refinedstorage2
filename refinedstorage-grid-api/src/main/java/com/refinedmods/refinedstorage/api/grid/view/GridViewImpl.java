@@ -249,7 +249,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public ResourceList copyBackingList() {
-        final ResourceList copy = new ResourceListImpl();
+        final ResourceList copy = ResourceListImpl.create();
         backingList.getAll().forEach(copy::add);
         return copy;
     }

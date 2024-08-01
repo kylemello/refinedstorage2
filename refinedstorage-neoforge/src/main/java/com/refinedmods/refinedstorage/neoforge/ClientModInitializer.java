@@ -4,10 +4,10 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
-import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternBlockEntityWithoutLevelRenderer;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItemColor;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternTooltipCache;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.Blocks;
@@ -222,20 +222,8 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
                     : createRegulatorUpgradeClientTooltipComponent(component.configuredResource(), help);
             }
         );
-        e.register(
-            PatternItem.CraftingPatternTooltipComponent.class,
-            component -> {
-                final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
-                return new CompositeClientTooltipComponent(List.of(
-                    new CraftingPatternClientTooltipComponent(
-                        component.width(),
-                        component.height(),
-                        component.craftingPattern()
-                    ),
-                    help
-                ));
-            }
-        );
+        e.register(PatternItem.CraftingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
+        e.register(PatternItem.ProcessingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
     }
 
     private static CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(

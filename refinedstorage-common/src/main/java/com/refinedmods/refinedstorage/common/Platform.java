@@ -37,6 +37,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -133,4 +134,6 @@ public interface Platform {
     NetworkNodeContainerProvider getContainerProviderSafely(Level level, BlockPos pos, @Nullable Direction direction);
 
     int getItemColor(ItemStack stack, int tintIndex);
+
+    void setSlotY(Slot slot, int y);
 }

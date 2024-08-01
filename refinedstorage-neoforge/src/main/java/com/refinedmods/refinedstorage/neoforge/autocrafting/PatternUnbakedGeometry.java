@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGeometry> {
     private static final ResourceLocation EMPTY_MODEL = createIdentifier("item/pattern/empty");
     private static final ResourceLocation CRAFTING_MODEL = createIdentifier("item/pattern/crafting");
+    private static final ResourceLocation PROCESSING_MODEL = createIdentifier("item/pattern/processing");
 
     @Override
     public BakedModel bake(final IGeometryBakingContext ctx,
@@ -29,7 +30,8 @@ public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGe
         return new PatternBakedModel(
             modelBaker,
             requireNonNull(modelBaker.bake(EMPTY_MODEL, modelState, function)),
-            requireNonNull(modelBaker.bake(CRAFTING_MODEL, modelState, function))
+            requireNonNull(modelBaker.bake(CRAFTING_MODEL, modelState, function)),
+            requireNonNull(modelBaker.bake(PROCESSING_MODEL, modelState, function))
         );
     }
 
@@ -38,5 +40,6 @@ public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGe
                                final IGeometryBakingContext context) {
         modelGetter.apply(EMPTY_MODEL).resolveParents(modelGetter);
         modelGetter.apply(CRAFTING_MODEL).resolveParents(modelGetter);
+        modelGetter.apply(PROCESSING_MODEL).resolveParents(modelGetter);
     }
 }

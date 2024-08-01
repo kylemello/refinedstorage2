@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
+import com.refinedmods.refinedstorage.common.api.autocrafting.ProcessingPattern;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
@@ -96,11 +97,20 @@ public class PatternItem extends Item implements PatternProviderItem {
                     .filter(CraftingPattern.class::isInstance)
                     .map(CraftingPattern.class::cast)
                     .map(craftingPattern -> new CraftingPatternTooltipComponent(
-                        HELP,
+                        state.id(),
                         craftingPattern,
                         craftingState.input().input().width(),
                         craftingState.input().input().height()
                     ));
+            }
+            case PROCESSING -> {
+                final ProcessingPatternState processingState = stack.get(
+                    DataComponents.INSTANCE.getProcessingPatternState()
+                );
+                if (processingState == null) {
+                    yield Optional.empty();
+                }
+                yield Optional.of(new ProcessingPatternTooltipComponent(state.id(), processingState));
             }
             default -> Optional.empty();
         };
@@ -124,6 +134,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         }
         return switch (state.type()) {
             case CRAFTING -> getCraftingPattern(stack, level);
+            case PROCESSING -> getProcessingPattern(stack);
             default -> Optional.empty();
         };
     }
@@ -199,6 +210,16 @@ public class PatternItem extends Item implements PatternProviderItem {
             .toList();
     }
 
+    private Optional<Pattern> getProcessingPattern(final ItemStack stack) {
+        final ProcessingPatternState state = stack.get(
+            DataComponents.INSTANCE.getProcessingPatternState()
+        );
+        if (state == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new ProcessingPattern(state.getFlatInputs(), state.getFlatOutputs()));
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
@@ -211,10 +232,11 @@ public class PatternItem extends Item implements PatternProviderItem {
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
-    public record CraftingPatternTooltipComponent(Component helpText,
-                                                  CraftingPattern craftingPattern,
-                                                  int width,
-                                                  int height)
+    public record CraftingPatternTooltipComponent(UUID id, CraftingPattern craftingPattern, int width, int height)
+        implements TooltipComponent {
+    }
+
+    public record ProcessingPatternTooltipComponent(UUID id, ProcessingPatternState state)
         implements TooltipComponent {
     }
 }

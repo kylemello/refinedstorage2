@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -95,7 +97,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         renderTooltip(graphics, mouseX, mouseY);
     }
 
-    protected final void renderResourceSlots(final GuiGraphics graphics) {
+    protected void renderResourceSlots(final GuiGraphics graphics) {
         if (!(menu instanceof AbstractResourceContainerMenu resourceContainerMenu)) {
             return;
         }
@@ -104,7 +106,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         }
     }
 
-    private void tryRenderResourceSlot(final GuiGraphics graphics, final ResourceSlot slot) {
+    protected final void tryRenderResourceSlot(final GuiGraphics graphics, final ResourceSlot slot) {
         final ResourceKey resource = slot.getResource();
         if (resource == null) {
             return;
@@ -128,15 +130,15 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
         rendering.render(resource, graphics, x, y);
         if (renderAmount) {
-            renderResourceSlotAmount(graphics, x, y, amount, rendering);
+            renderResourceAmount(graphics, x, y, amount, rendering);
         }
     }
 
-    private void renderResourceSlotAmount(final GuiGraphics graphics,
-                                          final int x,
-                                          final int y,
-                                          final long amount,
-                                          final ResourceRendering rendering) {
+    public static void renderResourceAmount(final GuiGraphics graphics,
+                                            final int x,
+                                            final int y,
+                                            final long amount,
+                                            final ResourceRendering rendering) {
         renderAmount(
             graphics,
             x,
@@ -147,12 +149,13 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         );
     }
 
-    protected void renderAmount(final GuiGraphics graphics,
-                                final int x,
-                                final int y,
-                                final String amount,
-                                final int color,
-                                final boolean large) {
+    protected static void renderAmount(final GuiGraphics graphics,
+                                       final int x,
+                                       final int y,
+                                       final String amount,
+                                       final int color,
+                                       final boolean large) {
+        final Font font = Minecraft.getInstance().font;
         final PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
         // Large amounts overlap with the slot lines (see Minecraft behavior)
@@ -186,7 +189,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
                 return;
             }
         }
-        if (hoveredSlot instanceof ResourceSlot resourceSlot) {
+        if (hoveredSlot instanceof ResourceSlot resourceSlot && canInteractWithResourceSlot(resourceSlot, x, y)) {
             final List<ClientTooltipComponent> tooltip = getResourceTooltip(menu.getCarried(), resourceSlot);
             if (!tooltip.isEmpty()) {
                 Platform.INSTANCE.renderTooltip(graphics, tooltip, x, y);
@@ -294,9 +297,10 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         if (hoveredSlot instanceof ResourceSlot resourceSlot
             && !resourceSlot.supportsItemSlotInteractions()
             && !resourceSlot.isDisabled()
-            && getMenu() instanceof AbstractResourceContainerMenu containerMenu) {
-            if (!tryOpenResourceAmountScreen(resourceSlot)) {
-                containerMenu.sendResourceSlotChange(hoveredSlot.index, clickedButton == 1);
+            && canInteractWithResourceSlot(resourceSlot, mouseX, mouseY)) {
+            if (!tryOpenResourceAmountScreen(resourceSlot)
+                && getMenu() instanceof AbstractResourceContainerMenu resourceMenu) {
+                resourceMenu.sendResourceSlotChange(hoveredSlot.index, clickedButton == 1);
             }
             return true;
         }
@@ -308,12 +312,20 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         final boolean canModifyAmount = isFilterSlot && slot.canModifyAmount();
         final boolean isNotTryingToRemoveFilter = !hasShiftDown();
         final boolean isNotCarryingItem = getMenu().getCarried().isEmpty();
-        final boolean canOpen =
-            isFilterSlot && canModifyAmount && isNotTryingToRemoveFilter && isNotCarryingItem;
+        final boolean canOpen = isFilterSlot
+            && canModifyAmount
+            && isNotTryingToRemoveFilter
+            && isNotCarryingItem;
         if (canOpen && minecraft != null) {
             minecraft.setScreen(new ResourceAmountScreen(this, playerInventory, slot));
         }
         return canOpen;
+    }
+
+    protected boolean canInteractWithResourceSlot(final ResourceSlot resourceSlot,
+                                                  final double mouseX,
+                                                  final double mouseY) {
+        return true;
     }
 
     @Nullable

@@ -21,7 +21,7 @@ class ListenableResourceListTest {
     @BeforeEach
     void setUp() {
         listener = new FakeResourceListListener();
-        list = new ResourceListImpl();
+        list = ResourceListImpl.create();
         sut = new ListenableResourceList(list);
     }
 

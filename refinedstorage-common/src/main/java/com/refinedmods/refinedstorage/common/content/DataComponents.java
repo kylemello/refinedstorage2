@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.security.SecurityCardBoundPlayer;
 import com.refinedmods.refinedstorage.common.security.SecurityCardPermissions;
@@ -37,6 +38,8 @@ public final class DataComponents {
     private Supplier<DataComponentType<PatternState>> patternState;
     @Nullable
     private Supplier<DataComponentType<CraftingPatternState>> craftingPatternState;
+    @Nullable
+    private Supplier<DataComponentType<ProcessingPatternState>> processingPatternState;
 
     private DataComponents() {
     }
@@ -121,5 +124,15 @@ public final class DataComponents {
         @Nullable final Supplier<DataComponentType<CraftingPatternState>> supplier
     ) {
         this.craftingPatternState = supplier;
+    }
+
+    public DataComponentType<ProcessingPatternState> getProcessingPatternState() {
+        return requireNonNull(processingPatternState).get();
+    }
+
+    public void setProcessingPatternState(
+        @Nullable final Supplier<DataComponentType<ProcessingPatternState>> supplier
+    ) {
+        this.processingPatternState = supplier;
     }
 }

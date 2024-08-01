@@ -136,6 +136,14 @@ public class ResourceContainerImpl implements ResourceContainer {
         changed();
     }
 
+    @Override
+    public void clear() {
+        for (int i = 0; i < size(); ++i) {
+            removeSilently(i);
+        }
+        changed();
+    }
+
     private void removeSilently(final int index) {
         slots[index] = null;
     }

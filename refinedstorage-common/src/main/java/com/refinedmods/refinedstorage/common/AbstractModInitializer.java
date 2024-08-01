@@ -18,6 +18,7 @@ import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMe
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridData;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -865,6 +866,12 @@ public abstract class AbstractModInitializer {
                 () -> DataComponentType.<CraftingPatternState>builder()
                     .persistent(CraftingPatternState.CODEC)
                     .networkSynchronized(CraftingPatternState.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setProcessingPatternState(
+            callback.register(createIdentifier("processing_pattern_state"),
+                () -> DataComponentType.<ProcessingPatternState>builder()
+                    .persistent(ProcessingPatternState.CODEC)
+                    .networkSynchronized(ProcessingPatternState.STREAM_CODEC)
                     .build()));
     }
 

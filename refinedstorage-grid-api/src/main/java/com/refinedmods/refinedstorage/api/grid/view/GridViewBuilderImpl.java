@@ -14,7 +14,7 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.4")
 public class GridViewBuilderImpl implements GridViewBuilder {
     private final GridResourceFactory resourceFactory;
-    private final ResourceList backingList = new ResourceListImpl();
+    private final ResourceList backingList = ResourceListImpl.create();
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
     private final GridSortingType identitySortingType;
     private final GridSortingType defaultSortingType;

@@ -40,6 +40,8 @@ public final class ResourceCodecs {
         CODEC.fieldOf("resource").forGetter(resourceAmount -> (PlatformResourceKey) resourceAmount.getResource()),
         Codec.LONG.fieldOf("amount").forGetter(ResourceAmount::getAmount)
     ).apply(instance, ResourceAmount::new));
+    public static final Codec<Optional<ResourceAmount>> AMOUNT_OPTIONAL_CODEC = AMOUNT_CODEC.optionalFieldOf("resource")
+        .codec();
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PlatformResourceKey> STREAM_CODEC = new StreamCodec<>() {
         @Override

@@ -56,7 +56,7 @@ public class ResourceSlot extends Slot {
     }
 
     public ResourceSlot forAmountScreen(final int newX, final int newY) {
-        return new ResourceSlot(resourceContainer, container, index, helpText, newX, newY, type) {
+        return new ResourceSlot(resourceContainer, container, getContainerSlot(), helpText, newX, newY, type) {
             @Override
             public boolean canModifyAmount() {
                 return false;

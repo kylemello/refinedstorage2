@@ -30,7 +30,7 @@ import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridExtractionS
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.grid.view.CompositeGridResourceFactory;
-import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListener;
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMenu
+public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
     implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
@@ -125,7 +125,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         final Inventory playerInventory,
         final Grid grid
     ) {
-        super(menuType, syncId);
+        super(menuType, syncId, playerInventory.player);
 
         this.view = createViewBuilder().build();
 

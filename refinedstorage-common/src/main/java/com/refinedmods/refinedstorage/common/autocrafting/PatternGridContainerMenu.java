@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
@@ -12,6 +13,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
+import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
@@ -23,12 +25,16 @@ import net.minecraft.world.item.ItemStack;
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_PATTERN_INPUT_SLOT = 81;
     private static final int SPACING_BETWEEN_PATTERN_INPUT_AND_PATTERN_OUTPUT_SLOTS = 36;
-    private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 86;
+    private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 85;
+    private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_PROCESSING_MATRIX_SLOT = 76;
+    private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
 
     private final Container patternInput;
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
+    private final ResourceContainer processingInput;
+    private final ResourceContainer processingOutput;
 
     @Nullable
     private PatternGridListener listener;
@@ -41,6 +47,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         super(Menus.INSTANCE.getPatternGrid(), syncId, playerInventory, patternGridData.gridData());
         this.patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
         this.patternOutput = new PatternOutputContainer();
+        this.processingInput = ResourceContainerImpl.createForFilter(patternGridData.processingInputData());
+        this.processingOutput = ResourceContainerImpl.createForFilter(patternGridData.processingOutputData());
         this.craftingMatrix = new CraftingMatrix(null, 3, 3);
         this.craftingResult = new ResultContainer();
         onScreenReady(0);
@@ -73,6 +81,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.patternOutput = grid.getPatternOutput();
         this.craftingMatrix = grid.getCraftingMatrix();
         this.craftingResult = grid.getCraftingResult();
+        this.processingInput = grid.getProcessingInput();
+        this.processingOutput = grid.getProcessingOutput();
         this.patternGrid = grid;
         onScreenReady(0);
         registerProperty(new ServerProperty<>(
@@ -118,6 +128,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         }
         return switch (getPatternType()) {
             case CRAFTING -> !craftingResult.getItem(0).isEmpty();
+            case PROCESSING -> !processingInput.isEmpty() && !processingOutput.isEmpty();
             default -> false;
         };
     }
@@ -128,6 +139,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         transferManager.clear();
         addPatternSlots(playerInventoryY);
         addCraftingMatrixSlots(playerInventoryY);
+        addProcessingMatrixSlots(playerInventoryY);
     }
 
     private void addPatternSlots(final int playerInventoryY) {
@@ -167,7 +179,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private void addCraftingMatrixSlots(final int playerInventoryY) {
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
-                final int slotX = 12 + ((x % 3) * 18);
+                final int slotX = 13 + ((x % 3) * 18);
                 final int slotY = playerInventoryY
                     - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT
                     + ((y % 3) * 18);
@@ -182,7 +194,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         addSlot(new DisabledSlot(
             craftingResult,
             0,
-            116 + 4,
+            117 + 4,
             playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT + 18
         ) {
             @Override
@@ -190,6 +202,42 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 return getPatternType() == PatternType.CRAFTING;
             }
         });
+    }
+
+    private void addProcessingMatrixSlots(final int playerInventoryY) {
+        final int y = playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_PROCESSING_MATRIX_SLOT;
+        final int startY = y - 18;
+        final int endY = y + INDIVIDUAL_PROCESSING_MATRIX_SIZE;
+        addProcessingMatrixSlots(13, y, startY, endY, processingInput, true);
+        addProcessingMatrixSlots(13 + INDIVIDUAL_PROCESSING_MATRIX_SIZE + 2, y, startY, endY, processingOutput, false);
+    }
+
+    private void addProcessingMatrixSlots(final int x,
+                                          final int y,
+                                          final int startY,
+                                          final int endY,
+                                          final ResourceContainer resourceContainer,
+                                          final boolean input) {
+        int slotX = x;
+        int slotY = y;
+        for (int i = 0; i < resourceContainer.size(); ++i) {
+            addSlot(new ProcessingMatrixResourceSlot(
+                resourceContainer,
+                i,
+                slotX,
+                slotY,
+                input,
+                this::getPatternType,
+                startY,
+                endY
+            ));
+            if ((i + 1) % 3 == 0) {
+                slotX = x;
+                slotY += 18;
+            } else {
+                slotX += 18;
+            }
+        }
     }
 
     public void clear() {

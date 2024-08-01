@@ -19,16 +19,18 @@ import static java.util.Objects.requireNonNull;
 public class PatternUnbakedModel implements UnbakedModel {
     private static final ResourceLocation EMPTY_MODEL = createIdentifier("item/pattern/empty");
     private static final ResourceLocation CRAFTING_MODEL = createIdentifier("item/pattern/crafting");
+    private static final ResourceLocation PROCESSING_MODEL = createIdentifier("item/pattern/processing");
 
     @Override
     public Collection<ResourceLocation> getDependencies() {
-        return Set.of(EMPTY_MODEL, CRAFTING_MODEL);
+        return Set.of(EMPTY_MODEL, CRAFTING_MODEL, PROCESSING_MODEL);
     }
 
     @Override
     public void resolveParents(final Function<ResourceLocation, UnbakedModel> resolver) {
         resolver.apply(EMPTY_MODEL).resolveParents(resolver);
         resolver.apply(CRAFTING_MODEL).resolveParents(resolver);
+        resolver.apply(PROCESSING_MODEL).resolveParents(resolver);
     }
 
     @Nullable
@@ -39,7 +41,8 @@ public class PatternUnbakedModel implements UnbakedModel {
         return new PatternBakedModel(
             baker,
             requireNonNull(baker.bake(EMPTY_MODEL, state)),
-            requireNonNull(baker.bake(CRAFTING_MODEL, state))
+            requireNonNull(baker.bake(CRAFTING_MODEL, state)),
+            requireNonNull(baker.bake(PROCESSING_MODEL, state))
         );
     }
 }

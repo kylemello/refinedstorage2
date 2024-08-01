@@ -23,7 +23,7 @@ public class InMemoryStorageImpl implements Storage {
     }
 
     public InMemoryStorageImpl() {
-        this(new ResourceListImpl());
+        this(ResourceListImpl.create());
     }
 
     @Override

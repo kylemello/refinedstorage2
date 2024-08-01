@@ -31,6 +31,10 @@ public final class ResourceAmount {
         return amount;
     }
 
+    public ResourceAmount copy() {
+        return new ResourceAmount(resource, amount);
+    }
+
     /**
      * Increments with the given amount.
      *
