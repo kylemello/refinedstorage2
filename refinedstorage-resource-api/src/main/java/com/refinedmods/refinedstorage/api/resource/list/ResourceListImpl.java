@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.api.resource.list;
 
+import com.refinedmods.refinedstorage.api.core.CoreValidations;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
@@ -17,9 +18,9 @@ import org.apiguardian.api.API;
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
 public class ResourceListImpl implements ResourceList {
-    private final Map<ResourceKey, ResourceAmount> entries;
+    private final Map<ResourceKey, Entry> entries;
 
-    private ResourceListImpl(final Map<ResourceKey, ResourceAmount> entries) {
+    private ResourceListImpl(final Map<ResourceKey, Entry> entries) {
         this.entries = entries;
     }
 
@@ -33,7 +34,8 @@ public class ResourceListImpl implements ResourceList {
 
     @Override
     public OperationResult add(final ResourceKey resource, final long amount) {
-        final ResourceAmount existing = entries.get(resource);
+        ResourceAmount.validate(resource, amount);
+        final Entry existing = entries.get(resource);
         if (existing != null) {
             return addToExisting(existing, amount);
         } else {
@@ -41,54 +43,49 @@ public class ResourceListImpl implements ResourceList {
         }
     }
 
-    private OperationResult addToExisting(final ResourceAmount resourceAmount, final long amount) {
-        resourceAmount.increment(amount);
-
-        return new OperationResult(resourceAmount, amount, true);
+    private OperationResult addToExisting(final Entry entry, final long amount) {
+        entry.increment(amount);
+        return new OperationResult(entry.resource, entry.amount, amount, true);
     }
 
     private OperationResult addNew(final ResourceKey resource, final long amount) {
-        final ResourceAmount resourceAmount = new ResourceAmount(resource, amount);
-        entries.put(resource, resourceAmount);
-        return new OperationResult(resourceAmount, amount, true);
+        final Entry entry = new Entry(resource, amount);
+        entries.put(resource, entry);
+        return new OperationResult(resource, amount, amount, true);
     }
 
     @Override
     public Optional<OperationResult> remove(final ResourceKey resource, final long amount) {
         ResourceAmount.validate(resource, amount);
-
-        final ResourceAmount existing = entries.get(resource);
+        final Entry existing = entries.get(resource);
         if (existing != null) {
-            if (existing.getAmount() - amount <= 0) {
+            if (existing.amount - amount <= 0) {
                 return removeCompletely(existing);
             } else {
                 return removePartly(amount, existing);
             }
         }
-
         return Optional.empty();
     }
 
-    private Optional<OperationResult> removePartly(final long amount,
-                                                   final ResourceAmount resourceAmount) {
-        resourceAmount.decrement(amount);
-
-        return Optional.of(new OperationResult(resourceAmount, -amount, true));
+    private Optional<OperationResult> removePartly(final long amount, final Entry entry) {
+        entry.decrement(amount);
+        return Optional.of(new OperationResult(entry.resource, entry.amount, -amount, true));
     }
 
-    private Optional<OperationResult> removeCompletely(final ResourceAmount resourceAmount) {
-        entries.remove(resourceAmount.getResource());
-
+    private Optional<OperationResult> removeCompletely(final Entry entry) {
+        entries.remove(entry.resource);
         return Optional.of(new OperationResult(
-            resourceAmount,
-            -resourceAmount.getAmount(),
+            entry.resource,
+            0,
+            -entry.amount,
             false
         ));
     }
 
     @Override
     public Collection<ResourceAmount> copyState() {
-        return entries.values();
+        return entries.values().stream().map(Entry::toResourceAmount).toList();
     }
 
     @Override
@@ -98,8 +95,8 @@ public class ResourceListImpl implements ResourceList {
 
     @Override
     public long get(final ResourceKey resource) {
-        final ResourceAmount entry = entries.get(resource);
-        return entry != null ? entry.getAmount() : 0;
+        final Entry entry = entries.get(resource);
+        return entry != null ? entry.amount : 0;
     }
 
     @Override
@@ -115,7 +112,35 @@ public class ResourceListImpl implements ResourceList {
     @Override
     public ResourceList copy() {
         final ResourceList copy = ResourceListImpl.create();
-        entries.forEach((key, value) -> copy.add(key, value.getAmount()));
+        entries.forEach((key, entry) -> copy.add(key, entry.amount));
         return copy;
+    }
+
+    private static class Entry {
+        private final ResourceKey resource;
+        private long amount;
+
+        private Entry(final ResourceKey resource, final long amount) {
+            this.resource = resource;
+            this.amount = amount;
+        }
+
+        private void increment(final long amountToIncrement) {
+            CoreValidations.validateLargerThanZero(amountToIncrement, "Amount to increment must be larger than 0");
+            this.amount += amountToIncrement;
+        }
+
+        private void decrement(final long amountToDecrement) {
+            CoreValidations.validateLargerThanZero(amountToDecrement, "Amount to decrement must be larger than 0");
+            CoreValidations.validateLargerThanZero(
+                amount - amountToDecrement,
+                "Cannot decrement, amount will be zero or negative"
+            );
+            this.amount -= amountToDecrement;
+        }
+
+        private ResourceAmount toResourceAmount() {
+            return new ResourceAmount(resource, amount);
+        }
     }
 }

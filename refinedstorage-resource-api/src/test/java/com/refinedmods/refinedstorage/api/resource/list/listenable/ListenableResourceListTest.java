@@ -35,8 +35,8 @@ class ListenableResourceListTest {
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
-        assertThat(result.resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.amount()).isEqualTo(10);
+        assertThat(result.resource()).isEqualTo(TestResource.A);
         assertThat(result.available()).isTrue();
         assertThat(listener.changes).hasSize(1);
     }
@@ -48,8 +48,8 @@ class ListenableResourceListTest {
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
-        assertThat(result.resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.amount()).isEqualTo(10);
+        assertThat(result.resource()).isEqualTo(TestResource.A);
         assertThat(result.available()).isTrue();
         assertThat(listener.changes).isEmpty();
     }
@@ -66,8 +66,8 @@ class ListenableResourceListTest {
         // Assert
         assertThat(result).isPresent();
         assertThat(result.get().change()).isEqualTo(-10);
-        assertThat(result.get().resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.get().amount()).isZero();
+        assertThat(result.get().resource()).isEqualTo(TestResource.A);
         assertThat(result.get().available()).isFalse();
         assertThat(listener.changes).hasSize(2);
     }
@@ -83,8 +83,8 @@ class ListenableResourceListTest {
         // Assert
         assertThat(result).isPresent();
         assertThat(result.get().change()).isEqualTo(-10);
-        assertThat(result.get().resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.get().amount()).isZero();
+        assertThat(result.get().resource()).isEqualTo(TestResource.A);
         assertThat(result.get().available()).isFalse();
         assertThat(listener.changes).isEmpty();
     }

@@ -31,8 +31,8 @@ abstract class AbstractResourceListTest {
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
-        assertThat(result.resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.amount()).isEqualTo(10);
+        assertThat(result.resource()).isEqualTo(TestResource.A);
         assertThat(result.available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
@@ -51,8 +51,8 @@ abstract class AbstractResourceListTest {
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
-        assertThat(result.resourceAmount().getAmount()).isEqualTo(10);
-        assertThat(result.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result.amount()).isEqualTo(10);
+        assertThat(result.resource()).isEqualTo(TestResource.A);
         assertThat(result.available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
@@ -72,13 +72,13 @@ abstract class AbstractResourceListTest {
 
         // Assert
         assertThat(result1.change()).isEqualTo(10);
-        assertThat(result1.resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result1.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result1.amount()).isEqualTo(10);
+        assertThat(result1.resource()).isEqualTo(TestResource.A);
         assertThat(result1.available()).isTrue();
 
         assertThat(result2.change()).isEqualTo(5);
-        assertThat(result1.resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result1.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result2.amount()).isEqualTo(15);
+        assertThat(result2.resource()).isEqualTo(TestResource.A);
         assertThat(result2.available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
@@ -99,18 +99,18 @@ abstract class AbstractResourceListTest {
 
         // Assert
         assertThat(result1.change()).isEqualTo(10);
-        assertThat(result1.resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result1.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result1.amount()).isEqualTo(10);
+        assertThat(result1.resource()).isEqualTo(TestResource.A);
         assertThat(result1.available()).isTrue();
 
         assertThat(result2.change()).isEqualTo(5);
-        assertThat(result2.resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result2.resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result2.amount()).isEqualTo(15);
+        assertThat(result2.resource()).isEqualTo(TestResource.A);
         assertThat(result2.available()).isTrue();
 
         assertThat(result3.change()).isEqualTo(3);
-        assertThat(result3.resourceAmount().getAmount()).isEqualTo(3);
-        assertThat(result3.resourceAmount().getResource()).isEqualTo(TestResource.B);
+        assertThat(result3.amount()).isEqualTo(3);
+        assertThat(result3.resource()).isEqualTo(TestResource.B);
         assertThat(result3.available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -160,8 +160,8 @@ abstract class AbstractResourceListTest {
         // Assert
         assertThat(result2).isPresent();
         assertThat(result2.get().change()).isEqualTo(-5);
-        assertThat(result2.get().resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result2.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result2.get().amount()).isEqualTo(15);
+        assertThat(result2.get().resource()).isEqualTo(TestResource.A);
         assertThat(result2.get().available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -192,8 +192,8 @@ abstract class AbstractResourceListTest {
         // Assert
         assertThat(result2).isPresent();
         assertThat(result2.get().change()).isEqualTo(-5);
-        assertThat(result2.get().resourceAmount().getAmount()).isEqualTo(15);
-        assertThat(result2.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result2.get().amount()).isEqualTo(15);
+        assertThat(result2.get().resource()).isEqualTo(TestResource.A);
         assertThat(result2.get().available()).isTrue();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -216,14 +216,14 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result2 = list.remove(TestResource.A, 20);
+        final Optional<ResourceList.OperationResult> result = list.remove(TestResource.A, 20);
 
         // Assert
-        assertThat(result2).isPresent();
-        assertThat(result2.get().change()).isEqualTo(-20);
-        assertThat(result2.get().resourceAmount().getAmount()).isEqualTo(20);
-        assertThat(result2.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
-        assertThat(result2.get().available()).isFalse();
+        assertThat(result).isPresent();
+        assertThat(result.get().change()).isEqualTo(-20);
+        assertThat(result.get().amount()).isZero();
+        assertThat(result.get().resource()).isEqualTo(TestResource.A);
+        assertThat(result.get().available()).isFalse();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(TestResource.B, 6)
@@ -252,8 +252,8 @@ abstract class AbstractResourceListTest {
         // Assert
         assertThat(result2).isPresent();
         assertThat(result2.get().change()).isEqualTo(-20);
-        assertThat(result2.get().resourceAmount().getAmount()).isEqualTo(20);
-        assertThat(result2.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
+        assertThat(result2.get().amount()).isZero();
+        assertThat(result2.get().resource()).isEqualTo(TestResource.A);
         assertThat(result2.get().available()).isFalse();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
@@ -275,14 +275,14 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result2 = list.remove(TestResource.A, 21);
+        final Optional<ResourceList.OperationResult> result = list.remove(TestResource.A, 21);
 
         // Assert
-        assertThat(result2).isPresent();
-        assertThat(result2.get().change()).isEqualTo(-20);
-        assertThat(result2.get().resourceAmount().getAmount()).isEqualTo(20);
-        assertThat(result2.get().resourceAmount().getResource()).isEqualTo(TestResource.A);
-        assertThat(result2.get().available()).isFalse();
+        assertThat(result).isPresent();
+        assertThat(result.get().change()).isEqualTo(-20);
+        assertThat(result.get().amount()).isZero();
+        assertThat(result.get().resource()).isEqualTo(TestResource.A);
+        assertThat(result.get().available()).isFalse();
 
         assertThat(list.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(TestResource.B, 6)

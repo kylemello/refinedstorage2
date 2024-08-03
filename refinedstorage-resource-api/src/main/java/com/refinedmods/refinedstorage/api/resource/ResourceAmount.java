@@ -11,7 +11,7 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
 public final class ResourceAmount {
     private final ResourceKey resource;
-    private long amount;
+    private final long amount;
 
     /**
      * @param resource the resource, must be non-null
@@ -33,31 +33,6 @@ public final class ResourceAmount {
 
     public ResourceAmount copy() {
         return new ResourceAmount(resource, amount);
-    }
-
-    /**
-     * Increments with the given amount.
-     *
-     * @param amountToIncrement the amount to increment, must be larger than 0
-     */
-    public void increment(final long amountToIncrement) {
-        CoreValidations.validateLargerThanZero(amountToIncrement, "Amount to increment must be larger than 0");
-        this.amount += amountToIncrement;
-    }
-
-    /**
-     * Decrements with the given amount.
-     * The amount, after performing this decrement, may not be 0 or less than 0.
-     *
-     * @param amountToDecrement the amount to decrement, a positive number
-     */
-    public void decrement(final long amountToDecrement) {
-        CoreValidations.validateLargerThanZero(amountToDecrement, "Amount to decrement must be larger than 0");
-        CoreValidations.validateLargerThanZero(
-            amount - amountToDecrement,
-            "Cannot decrement, amount will be zero or negative"
-        );
-        this.amount -= amountToDecrement;
     }
 
     @Override

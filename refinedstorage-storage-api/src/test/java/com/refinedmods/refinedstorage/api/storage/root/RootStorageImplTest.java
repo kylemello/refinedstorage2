@@ -114,9 +114,8 @@ class RootStorageImplTest {
             verify(listener, atMost(1)).onChanged(changedResource.capture());
 
             assertThat(changedResource.getValue().change()).isEqualTo(8);
-            assertThat(changedResource.getValue().resourceAmount()).usingRecursiveComparison().isEqualTo(
-                new ResourceAmount(A, 10)
-            );
+            assertThat(changedResource.getValue().resource()).isEqualTo(A);
+            assertThat(changedResource.getValue().amount()).isEqualTo(10);
         } else {
             verify(listener, never()).onChanged(any());
         }
@@ -145,9 +144,8 @@ class RootStorageImplTest {
             verify(listener, atMost(1)).onChanged(changedResource.capture());
 
             assertThat(changedResource.getValue().change()).isEqualTo(-5);
-            assertThat(changedResource.getValue().resourceAmount()).usingRecursiveComparison().isEqualTo(
-                new ResourceAmount(A, 3)
-            );
+            assertThat(changedResource.getValue().resource()).isEqualTo(A);
+            assertThat(changedResource.getValue().amount()).isEqualTo(3);
         } else {
             verify(listener, never()).onChanged(any());
         }

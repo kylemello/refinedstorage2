@@ -163,7 +163,7 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
         if (delegate != null && delegate.contains(delegate)) {
             return;
         }
-        final ResourceKey resource = change.resourceAmount().getResource();
+        final ResourceKey resource = change.resource();
         if (!filter.isAllowed(resource)) {
             return;
         }

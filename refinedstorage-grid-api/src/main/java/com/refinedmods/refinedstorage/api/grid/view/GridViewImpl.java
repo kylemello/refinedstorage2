@@ -161,8 +161,7 @@ public class GridViewImpl implements GridView {
                                                     final ResourceList.OperationResult operationResult,
                                                     final GridResource oldGridResource) {
         LOGGER.debug("{} was zeroed, unzeroing", resource);
-        final GridResource newResource = resourceFactory.apply(operationResult.resourceAmount().getResource())
-            .orElseThrow();
+        final GridResource newResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
         viewListIndex.put(resource, newResource);
         final int index = CoreValidations.validateNotNegative(
             viewList.indexOf(oldGridResource),
@@ -202,8 +201,7 @@ public class GridViewImpl implements GridView {
 
     private void handleChangeForNewResource(final ResourceKey resource,
                                             final ResourceList.OperationResult operationResult) {
-        final GridResource gridResource = resourceFactory.apply(operationResult.resourceAmount().getResource())
-            .orElseThrow();
+        final GridResource gridResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
         if (filter.test(this, gridResource)) {
             LOGGER.debug("Filter allowed, actually adding {}", resource);
             viewListIndex.put(resource, gridResource);

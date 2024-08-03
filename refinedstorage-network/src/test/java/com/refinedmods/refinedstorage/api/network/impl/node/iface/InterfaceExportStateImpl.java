@@ -134,7 +134,10 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount.getAmount() - amount <= 0) {
             this.current.remove(slotIndex);
         } else {
-            resourceAmount.decrement(amount);
+            this.current.put(
+                slotIndex,
+                new ResourceAmount(resourceAmount.getResource(), resourceAmount.getAmount() - amount)
+            );
         }
     }
 
@@ -142,7 +145,10 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
     public void growExportedAmount(final int slotIndex, final long amount) {
         validateIndex(slotIndex);
         final ResourceAmount resourceAmount = this.current.get(slotIndex);
-        resourceAmount.increment(amount);
+        this.current.put(
+            slotIndex,
+            new ResourceAmount(resourceAmount.getResource(), resourceAmount.getAmount() + amount)
+        );
     }
 
     @Override

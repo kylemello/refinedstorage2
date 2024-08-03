@@ -30,8 +30,7 @@ public class FuzzyResourceListImpl extends AbstractProxyResourceList implements 
 
     private void addToIndex(final ResourceKey resource, final OperationResult result) {
         if (resource instanceof FuzzyModeNormalizer normalizer) {
-            normalizedFuzzyMap.computeIfAbsent(normalizer.normalize(), k -> new HashSet<>())
-                .add(result.resourceAmount().getResource());
+            normalizedFuzzyMap.computeIfAbsent(normalizer.normalize(), k -> new HashSet<>()).add(result.resource());
         }
     }
 
@@ -54,7 +53,7 @@ public class FuzzyResourceListImpl extends AbstractProxyResourceList implements 
         if (index == null) {
             return;
         }
-        index.remove(result.resourceAmount().getResource());
+        index.remove(result.resource());
         if (index.isEmpty()) {
             normalizedFuzzyMap.remove(normalized);
         }
