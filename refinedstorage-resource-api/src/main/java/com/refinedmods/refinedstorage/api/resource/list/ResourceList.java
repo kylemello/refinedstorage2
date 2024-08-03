@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 
@@ -62,6 +63,11 @@ public interface ResourceList {
      * @return a list of resource amounts
      */
     Collection<ResourceAmount> getAll();
+
+    /**
+     * @return set of resources contained in this list
+     */
+    Set<ResourceKey> getResources();
 
     /**
      * @param resource the resource

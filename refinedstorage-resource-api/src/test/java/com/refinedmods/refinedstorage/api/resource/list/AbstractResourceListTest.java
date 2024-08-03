@@ -40,6 +40,8 @@ abstract class AbstractResourceListTest {
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
         assertThat(list.contains(TestResource.A)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.A);
     }
 
     @Test
@@ -58,6 +60,8 @@ abstract class AbstractResourceListTest {
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
         assertThat(list.contains(TestResource.A)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.A);
     }
 
     @Test
@@ -82,6 +86,8 @@ abstract class AbstractResourceListTest {
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
         assertThat(list.contains(TestResource.A)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.A);
     }
 
     @Test
@@ -115,6 +121,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(3);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactlyInAnyOrder(TestResource.A, TestResource.B);
     }
 
     @Test
@@ -165,6 +173,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactlyInAnyOrder(TestResource.A, TestResource.B);
     }
 
     @Test
@@ -195,6 +205,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactlyInAnyOrder(TestResource.A, TestResource.B);
     }
 
     @Test
@@ -221,6 +233,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.B);
     }
 
     @Test
@@ -250,6 +264,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.B);
     }
 
     @Test
@@ -276,6 +292,8 @@ abstract class AbstractResourceListTest {
         assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
         assertThat(list.contains(TestResource.B)).isTrue();
+
+        assertThat(list.getResources()).containsExactly(TestResource.B);
     }
 
     @Test
@@ -311,5 +329,7 @@ abstract class AbstractResourceListTest {
 
         assertThat(list.getAmount(TestResource.A)).isZero();
         assertThat(list.getAmount(TestResource.B)).isZero();
+
+        assertThat(list.getResources()).isEmpty();
     }
 }

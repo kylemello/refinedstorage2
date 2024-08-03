@@ -106,11 +106,11 @@ public class GridViewImpl implements GridView {
         viewListIndex.clear();
 
         final List<GridResource> newViewList = new ArrayList<>();
-        for (final ResourceAmount backingListItem : backingList.getAll()) {
-            resourceFactory.apply(backingListItem.getResource()).ifPresent(gridResource -> {
+        for (final ResourceKey resource : backingList.getResources()) {
+            resourceFactory.apply(resource).ifPresent(gridResource -> {
                 if (filter.test(this, gridResource)) {
                     newViewList.add(gridResource);
-                    viewListIndex.put(backingListItem.getResource(), gridResource);
+                    viewListIndex.put(resource, gridResource);
                 }
             });
         }

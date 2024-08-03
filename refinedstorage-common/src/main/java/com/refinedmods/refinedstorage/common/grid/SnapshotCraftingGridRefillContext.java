@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.core.Action;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
@@ -75,6 +76,9 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     }
 
     private void extractUsedItems(final RootStorage rootStorage) {
-        used.getAll().forEach(u -> rootStorage.extract(u.getResource(), u.getAmount(), Action.EXECUTE, playerActor));
+        for (final ResourceKey usedResource : used.getResources()) {
+            final long amountUsed = used.getAmount(usedResource);
+            rootStorage.extract(usedResource, amountUsed, Action.EXECUTE, playerActor);
+        }
     }
 }

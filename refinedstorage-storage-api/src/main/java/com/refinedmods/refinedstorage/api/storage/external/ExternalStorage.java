@@ -59,35 +59,38 @@ public class ExternalStorage implements CompositeAwareChild {
     }
 
     private boolean detectCompleteRemovals(final ResourceList updatedCache) {
-        final Set<ResourceAmount> removedInUpdatedCache = new HashSet<>();
-        for (final ResourceAmount inOldCache : cache.getAll()) {
-            if (!updatedCache.contains(inOldCache.getResource())) {
+        final Set<ResourceKey> removedInUpdatedCache = new HashSet<>();
+        for (final ResourceKey inOldCache : cache.getResources()) {
+            if (!updatedCache.contains(inOldCache)) {
                 removedInUpdatedCache.add(inOldCache);
             }
         }
-        removedInUpdatedCache.forEach(removed -> removeFromCache(removed.getResource(), removed.getAmount()));
+        removedInUpdatedCache.forEach(this::removeFromCache);
         return !removedInUpdatedCache.isEmpty();
     }
 
     private boolean detectAdditionsAndPartialRemovals(final ResourceList updatedCache) {
         boolean hasChanges = false;
-        for (final ResourceAmount inUpdatedCache : updatedCache.getAll()) {
-            final long amountInOldCache = cache.getAmount(inUpdatedCache.getResource());
+        for (final ResourceKey resource : updatedCache.getResources()) {
+            final long amountInUpdatedCache = updatedCache.getAmount(resource);
+            final long amountInOldCache = cache.getAmount(resource);
             final boolean doesNotExistInOldCache = amountInOldCache == 0;
             if (doesNotExistInOldCache) {
-                addToCache(inUpdatedCache.getResource(), inUpdatedCache.getAmount());
+                addToCache(resource, amountInUpdatedCache);
                 hasChanges = true;
             } else {
-                hasChanges |= detectPotentialDifference(inUpdatedCache, amountInOldCache);
+                hasChanges |= detectPotentialDifference(resource, amountInUpdatedCache, amountInOldCache);
             }
         }
         return hasChanges;
     }
 
-    private boolean detectPotentialDifference(final ResourceAmount inUpdatedCache,
-                                              final long amountInOldCache) {
-        final ResourceKey resource = inUpdatedCache.getResource();
-        final long diff = inUpdatedCache.getAmount() - amountInOldCache;
+    private boolean detectPotentialDifference(
+        final ResourceKey resource,
+        final long amountInUpdatedCache,
+        final long amountInOldCache
+    ) {
+        final long diff = amountInUpdatedCache - amountInOldCache;
         if (diff > 0) {
             addToCache(resource, diff);
             return true;
@@ -101,6 +104,10 @@ public class ExternalStorage implements CompositeAwareChild {
     private void addToCache(final ResourceKey resource, final long amount) {
         cache.add(resource, amount);
         parents.forEach(parent -> parent.addToCache(resource, amount));
+    }
+
+    private void removeFromCache(final ResourceKey resource) {
+        removeFromCache(resource, cache.getAmount(resource));
     }
 
     private void removeFromCache(final ResourceKey resource, final long amount) {

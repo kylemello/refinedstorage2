@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 
@@ -88,6 +89,11 @@ public class ResourceListImpl implements ResourceList {
     @Override
     public Collection<ResourceAmount> getAll() {
         return entries.values();
+    }
+
+    @Override
+    public Set<ResourceKey> getResources() {
+        return entries.keySet();
     }
 
     @Override
