@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.api.support.resource.list;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.api.support.resource.FuzzyModeNormalizer;

@@ -96,7 +96,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public long getAmount(final ResourceKey resource) {
-        return backingList.get(resource).map(ResourceAmount::getAmount).orElse(0L);
+        return backingList.getAmount(resource);
     }
 
     @Override

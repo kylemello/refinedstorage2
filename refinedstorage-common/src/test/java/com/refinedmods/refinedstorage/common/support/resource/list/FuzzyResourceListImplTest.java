@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.support.resource.list;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.common.SetupMinecraft;
@@ -8,7 +7,6 @@ import com.refinedmods.refinedstorage.common.api.support.resource.list.FuzzyReso
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -38,7 +36,6 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void testRetrievingFuzzy() {
         // Arrange
         sut.add(DUMMY_A, 5);
@@ -53,11 +50,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final Optional<ResourceAmount> strictA = sut.get(DUMMY_A);
-        final Optional<ResourceAmount> strictB = sut.get(DUMMY_B);
-        final Optional<ResourceAmount> strictC = sut.get(DUMMY_C);
-        final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
-        final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
+        final long strictA = sut.getAmount(DUMMY_A);
+        final long strictB = sut.getAmount(DUMMY_B);
+        final long strictC = sut.getAmount(DUMMY_C);
+        final long strictD = sut.getAmount(DUMMY_D);
+        final long strictE = sut.getAmount(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
@@ -66,11 +63,11 @@ class FuzzyResourceListImplTest {
         final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
-        assertThat(strictA).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_A, 1));
-        assertThat(strictB).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_B, 15));
-        assertThat(strictC).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_C, 20));
-        assertThat(strictD).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_D, 25));
-        assertThat(strictE).isNotPresent();
+        assertThat(strictA).isEqualTo(1);
+        assertThat(strictB).isEqualTo(15);
+        assertThat(strictC).isEqualTo(20);
+        assertThat(strictD).isEqualTo(25);
+        assertThat(strictE).isZero();
 
         assertThat(fuzzyA).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             DUMMY_A,
@@ -92,7 +89,6 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void shouldRemoveEntireResourceFromFuzzyIndexAfterRemoval() {
         // Arrange
         sut.add(DUMMY_A, 5);
@@ -109,11 +105,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final Optional<ResourceAmount> strictA = sut.get(DUMMY_A);
-        final Optional<ResourceAmount> strictB = sut.get(DUMMY_B);
-        final Optional<ResourceAmount> strictC = sut.get(DUMMY_C);
-        final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
-        final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
+        final long strictA = sut.getAmount(DUMMY_A);
+        final long strictB = sut.getAmount(DUMMY_B);
+        final long strictC = sut.getAmount(DUMMY_C);
+        final long strictD = sut.getAmount(DUMMY_D);
+        final long strictE = sut.getAmount(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
@@ -122,11 +118,11 @@ class FuzzyResourceListImplTest {
         final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
-        assertThat(strictA).isNotPresent();
-        assertThat(strictB).isNotPresent();
-        assertThat(strictC).isNotPresent();
-        assertThat(strictD).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_D, 25));
-        assertThat(strictE).isNotPresent();
+        assertThat(strictA).isZero();
+        assertThat(strictB).isZero();
+        assertThat(strictC).isZero();
+        assertThat(strictD).isEqualTo(25);
+        assertThat(strictE).isZero();
 
         assertThat(fuzzyA).isEmpty();
         assertThat(fuzzyB).isEmpty();
@@ -136,7 +132,6 @@ class FuzzyResourceListImplTest {
     }
 
     @Test
-    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     void shouldRemoveSingleResourceFromFuzzyIndexAfterRemoval() {
         // Arrange
         sut.add(DUMMY_A, 5);
@@ -151,11 +146,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final Optional<ResourceAmount> strictA = sut.get(DUMMY_A);
-        final Optional<ResourceAmount> strictB = sut.get(DUMMY_B);
-        final Optional<ResourceAmount> strictC = sut.get(DUMMY_C);
-        final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
-        final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
+        final long strictA = sut.getAmount(DUMMY_A);
+        final long strictB = sut.getAmount(DUMMY_B);
+        final long strictC = sut.getAmount(DUMMY_C);
+        final long strictD = sut.getAmount(DUMMY_D);
+        final long strictE = sut.getAmount(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
@@ -164,11 +159,11 @@ class FuzzyResourceListImplTest {
         final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
-        assertThat(strictA).isNotPresent();
-        assertThat(strictB).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_B, 15));
-        assertThat(strictC).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_C, 20));
-        assertThat(strictD).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_D, 25));
-        assertThat(strictE).isNotPresent();
+        assertThat(strictA).isZero();
+        assertThat(strictB).isEqualTo(15);
+        assertThat(strictC).isEqualTo(20);
+        assertThat(strictD).isEqualTo(25);
+        assertThat(strictE).isZero();
 
         assertThat(fuzzyA).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             DUMMY_B,

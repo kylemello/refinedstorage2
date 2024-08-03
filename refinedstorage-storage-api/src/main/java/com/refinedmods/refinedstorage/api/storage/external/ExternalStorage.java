@@ -11,7 +11,6 @@ import com.refinedmods.refinedstorage.api.storage.composite.ParentComposite;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apiguardian.api.API;
@@ -62,8 +61,7 @@ public class ExternalStorage implements CompositeAwareChild {
     private boolean detectCompleteRemovals(final ResourceList updatedCache) {
         final Set<ResourceAmount> removedInUpdatedCache = new HashSet<>();
         for (final ResourceAmount inOldCache : cache.getAll()) {
-            final Optional<ResourceAmount> inUpdatedCache = updatedCache.get(inOldCache.getResource());
-            if (inUpdatedCache.isEmpty()) {
+            if (!updatedCache.contains(inOldCache.getResource())) {
                 removedInUpdatedCache.add(inOldCache);
             }
         }
@@ -74,22 +72,22 @@ public class ExternalStorage implements CompositeAwareChild {
     private boolean detectAdditionsAndPartialRemovals(final ResourceList updatedCache) {
         boolean hasChanges = false;
         for (final ResourceAmount inUpdatedCache : updatedCache.getAll()) {
-            final Optional<ResourceAmount> inOldCache = cache.get(inUpdatedCache.getResource());
-            final boolean doesNotExistInOldCache = inOldCache.isEmpty();
+            final long amountInOldCache = cache.getAmount(inUpdatedCache.getResource());
+            final boolean doesNotExistInOldCache = amountInOldCache == 0;
             if (doesNotExistInOldCache) {
                 addToCache(inUpdatedCache.getResource(), inUpdatedCache.getAmount());
                 hasChanges = true;
             } else {
-                hasChanges |= detectPotentialDifference(inUpdatedCache, inOldCache.get());
+                hasChanges |= detectPotentialDifference(inUpdatedCache, amountInOldCache);
             }
         }
         return hasChanges;
     }
 
     private boolean detectPotentialDifference(final ResourceAmount inUpdatedCache,
-                                              final ResourceAmount inOldCache) {
+                                              final long amountInOldCache) {
         final ResourceKey resource = inUpdatedCache.getResource();
-        final long diff = inUpdatedCache.getAmount() - inOldCache.getAmount();
+        final long diff = inUpdatedCache.getAmount() - amountInOldCache;
         if (diff > 0) {
             addToCache(resource, diff);
             return true;

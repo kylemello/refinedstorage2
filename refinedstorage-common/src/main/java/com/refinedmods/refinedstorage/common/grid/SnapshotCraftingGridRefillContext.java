@@ -49,15 +49,18 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
                                   final ItemStack craftingMatrixStack) {
         final ItemResource craftingMatrixResource = ItemResource.ofItemStack(craftingMatrixStack);
         // a single resource can occur multiple times in a recipe, only add it once
-        if (available.get(craftingMatrixResource).isEmpty()) {
-            rootStorage.get(craftingMatrixResource).ifPresent(available::add);
+        if (!available.contains(craftingMatrixResource)) {
+            final long amount = rootStorage.getAmount(craftingMatrixResource);
+            if (amount > 0) {
+                available.add(craftingMatrixResource, amount);
+            }
         }
     }
 
     @Override
     public boolean extract(final ItemResource resource, final Player player) {
         return blockEntity.getNetwork().map(network -> {
-            final boolean isAvailable = available.get(resource).isPresent();
+            final boolean isAvailable = available.contains(resource);
             if (isAvailable) {
                 available.remove(resource, 1);
                 used.add(resource, 1);

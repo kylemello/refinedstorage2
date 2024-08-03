@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage.common.storagemonitor;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -102,12 +101,11 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     private long getAmount(final Network network, final ResourceKey configuredResource) {
         final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         if (!filter.isFuzzyMode() || !(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
-            return rootStorage.get(configuredResource).map(ResourceAmount::getAmount).orElse(0L);
+            return rootStorage.getAmount(configuredResource);
         }
         return fuzzyRootStorage.getFuzzy(configuredResource)
             .stream()
-            .flatMap(resource -> rootStorage.get(resource).stream())
-            .mapToLong(ResourceAmount::getAmount)
+            .mapToLong(rootStorage::getAmount)
             .sum();
     }
 

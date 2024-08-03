@@ -86,11 +86,6 @@ public class ResourceListImpl implements ResourceList {
     }
 
     @Override
-    public Optional<ResourceAmount> get(final ResourceKey resource) {
-        return Optional.ofNullable(entries.get(resource));
-    }
-
-    @Override
     public Collection<ResourceAmount> getAll() {
         return entries.values();
     }
@@ -99,6 +94,11 @@ public class ResourceListImpl implements ResourceList {
     public long getAmount(final ResourceKey resource) {
         final ResourceAmount entry = entries.get(resource);
         return entry != null ? entry.getAmount() : 0;
+    }
+
+    @Override
+    public boolean contains(final ResourceKey resource) {
+        return entries.containsKey(resource);
     }
 
     @Override

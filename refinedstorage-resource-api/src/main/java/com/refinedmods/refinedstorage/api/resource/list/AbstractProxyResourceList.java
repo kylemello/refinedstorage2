@@ -30,11 +30,6 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     }
 
     @Override
-    public Optional<ResourceAmount> get(final ResourceKey resource) {
-        return delegate.get(resource);
-    }
-
-    @Override
     public Collection<ResourceAmount> getAll() {
         return delegate.getAll();
     }
@@ -42,6 +37,11 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     @Override
     public long getAmount(final ResourceKey resource) {
         return delegate.getAmount(resource);
+    }
+
+    @Override
+    public boolean contains(final ResourceKey resource) {
+        return delegate.contains(resource);
     }
 
     @Override

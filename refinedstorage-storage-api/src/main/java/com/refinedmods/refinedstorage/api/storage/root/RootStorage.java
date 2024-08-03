@@ -1,12 +1,10 @@
 package com.refinedmods.refinedstorage.api.storage.root;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorage;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
@@ -33,16 +31,16 @@ public interface RootStorage extends Storage, TrackedStorage {
     void removeListener(ResourceListListener listener);
 
     /**
-     * @param resource the resource to retrieve
-     * @return the resource amount for the given resource, if present
-     */
-    Optional<ResourceAmount> get(ResourceKey resource);
-
-    /**
      * @param resource the resource
      * @return the amount stored, or zero if not stored
      */
     long getAmount(ResourceKey resource);
+
+    /**
+     * @param resource the resource
+     * @return whether the storage contains the resource
+     */
+    boolean contains(ResourceKey resource);
 
     /**
      * Sorts the sources in the backing storage.

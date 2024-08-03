@@ -52,10 +52,10 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         final List<ResourceKey> candidates = new ArrayList<>();
         candidates.add(A);
         // Simulate the behavior from FuzzyRootStorage
-        if (rootStorage.get(A_ALTERNATIVE).isPresent()) {
+        if (rootStorage.contains(A_ALTERNATIVE)) {
             candidates.add(A_ALTERNATIVE);
         }
-        if (rootStorage.get(A_ALTERNATIVE2).isPresent()) {
+        if (rootStorage.contains(A_ALTERNATIVE2)) {
             candidates.add(A_ALTERNATIVE2);
         }
         return candidates;

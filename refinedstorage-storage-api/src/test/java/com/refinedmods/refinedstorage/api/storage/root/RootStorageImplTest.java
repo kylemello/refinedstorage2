@@ -11,8 +11,6 @@ import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -211,20 +209,16 @@ class RootStorageImplTest {
     }
 
     @Test
-    void shouldRetrieveResource() {
+    void shouldRetrieveIfResourceIsContained() {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
 
         sut.addSource(storage);
 
-        // Act
-        final Optional<ResourceAmount> resource = sut.get(A);
-
-        // Assert
-        assertThat(resource).isPresent();
-        assertThat(resource.get()).usingRecursiveComparison().isEqualTo(new ResourceAmount(A, 50));
-        assertThat(sut.findTrackedResourceByActorType(A, EmptyActor.class)).isEmpty();
+        // Act & assert
+        assertThat(sut.contains(A)).isTrue();
+        assertThat(sut.contains(B)).isFalse();
     }
 
     @Test
@@ -256,26 +250,11 @@ class RootStorageImplTest {
         sut.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Assert
-        final Optional<ResourceAmount> value = sut.get(A);
-        assertThat(value).isPresent();
-        assertThat(value.get()).usingRecursiveComparison().isEqualTo(new ResourceAmount(A, 50));
-
+        assertThat(sut.contains(A)).isTrue();
         assertThat(sut.findTrackedResourceByActorType(A, EmptyActor.class))
             .get()
             .usingRecursiveComparison()
             .isEqualTo(new TrackedResource("Empty", 0));
-    }
-
-    @Test
-    void shouldNotRetrieveNonExistentResource() {
-        // Arrange
-        sut.addSource(new LimitedStorageImpl(100));
-
-        // Act
-        final Optional<ResourceAmount> resource = sut.get(A);
-
-        // Assert
-        assertThat(resource).isEmpty();
     }
 
     @Test

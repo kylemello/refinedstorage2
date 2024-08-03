@@ -39,6 +39,7 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 10)
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
+        assertThat(list.contains(TestResource.A)).isTrue();
     }
 
     @Test
@@ -56,6 +57,7 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 10)
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
+        assertThat(list.contains(TestResource.A)).isTrue();
     }
 
     @Test
@@ -79,6 +81,7 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 15)
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.contains(TestResource.A)).isTrue();
     }
 
     @Test
@@ -109,7 +112,9 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.B, 3)
         );
         assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(3);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -157,7 +162,9 @@ abstract class AbstractResourceListTest {
         );
 
         assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -185,7 +192,9 @@ abstract class AbstractResourceListTest {
         );
 
         assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.contains(TestResource.A)).isTrue();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -208,8 +217,10 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.B, 6)
         );
 
-        assertThat(list.getAmount(TestResource.A)).isEqualTo(0);
+        assertThat(list.getAmount(TestResource.A)).isZero();
+        assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -235,8 +246,10 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.B, 6)
         );
 
-        assertThat(list.getAmount(TestResource.A)).isEqualTo(0);
+        assertThat(list.getAmount(TestResource.A)).isZero();
+        assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -260,7 +273,9 @@ abstract class AbstractResourceListTest {
         );
 
         assertThat(list.getAmount(TestResource.A)).isZero();
+        assertThat(list.contains(TestResource.A)).isFalse();
         assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
+        assertThat(list.contains(TestResource.B)).isTrue();
     }
 
     @Test
@@ -275,48 +290,6 @@ abstract class AbstractResourceListTest {
         assertThrows(IllegalArgumentException.class, action1);
         assertThrows(IllegalArgumentException.class, action2);
         assertThrows(NullPointerException.class, action3);
-    }
-
-    @Test
-    void shouldBeAbleToRetrieveByResourceAfterAdding() {
-        // Arrange
-        list.add(TestResource.A, 6);
-
-        // Act
-        final Optional<ResourceAmount> resourceAmount = list.get(TestResource.A);
-
-        // Assert
-        assertThat(resourceAmount).isPresent();
-        assertThat(resourceAmount.get().getResource()).isEqualTo(TestResource.A);
-        assertThat(resourceAmount.get().getAmount()).isEqualTo(6);
-    }
-
-    @Test
-    void shouldStillBeAbleToRetrieveByResourceWhenRemovingPartly() {
-        // Arrange
-        list.add(TestResource.A, 10);
-        list.remove(TestResource.A, 3);
-
-        // Act
-        final Optional<ResourceAmount> resourceAmount = list.get(TestResource.A);
-
-        // Assert
-        assertThat(resourceAmount).isPresent();
-        assertThat(resourceAmount.get().getResource()).isEqualTo(TestResource.A);
-        assertThat(resourceAmount.get().getAmount()).isEqualTo(7);
-    }
-
-    @Test
-    void shouldNotBeAbleToRetrieveByResourceWhenRemovingCompletely() {
-        // Arrange
-        list.add(TestResource.A, 10);
-        list.remove(TestResource.A, 10);
-
-        // Act
-        final Optional<ResourceAmount> resourceAmount = list.get(TestResource.A);
-
-        // Assert
-        assertThat(resourceAmount).isNotPresent();
     }
 
     @Test

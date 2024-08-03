@@ -57,14 +57,6 @@ public interface ResourceList {
     }
 
     /**
-     * Retrieves the resource and its amount from the list, identified by resource.
-     *
-     * @param resource the resource
-     * @return the resource amount if it's present in the list, otherwise an empty {@link Optional}
-     */
-    Optional<ResourceAmount> get(ResourceKey resource);
-
-    /**
      * Retrieves all resources and their amounts from the list.
      *
      * @return a list of resource amounts
@@ -76,6 +68,12 @@ public interface ResourceList {
      * @return the amount stored, or zero if not stored
      */
     long getAmount(ResourceKey resource);
+
+    /**
+     * @param resource the resource
+     * @return whether the list contains this resource
+     */
+    boolean contains(ResourceKey resource);
 
     /**
      * Clears the list.

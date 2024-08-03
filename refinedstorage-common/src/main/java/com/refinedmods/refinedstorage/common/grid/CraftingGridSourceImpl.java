@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
@@ -151,10 +150,6 @@ class CraftingGridSourceImpl implements CraftingGridSource {
     }
 
     private Comparator<ItemResource> sortByHighestAvailableFirst(final ResourceList available) {
-        return Comparator.<ItemResource>comparingLong(resource -> getAvailableAmount(available, resource)).reversed();
-    }
-
-    private long getAvailableAmount(final ResourceList available, final ItemResource resource) {
-        return available.get(resource).map(ResourceAmount::getAmount).orElse(0L);
+        return Comparator.<ItemResource>comparingLong(available::getAmount).reversed();
     }
 }
