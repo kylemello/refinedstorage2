@@ -19,6 +19,7 @@ import static com.refinedmods.refinedstorage.common.GameTestUtil.RSBLOCKS;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.RSITEMS;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.asResource;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.containerContainsExactly;
+import static com.refinedmods.refinedstorage.common.GameTestUtil.getItemAsDamaged;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.interfaceContainsExactly;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.networkIsAvailable;
@@ -38,8 +39,7 @@ public final class ExporterTest {
     public static void shouldExportItem(final GameTestHelper helper) {
         ExporterTestPlots.preparePlot(helper, Blocks.CHEST, Direction.EAST, (exporter, pos, sequence) -> {
             // Arrange
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
 
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -116,8 +116,7 @@ public final class ExporterTest {
     public static void shouldExportItemFuzzy(final GameTestHelper helper) {
         ExporterTestPlots.preparePlot(helper, Blocks.CHEST, Direction.EAST, (exporter, pos, sequence) -> {
             // Arrange
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
 
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -202,10 +201,7 @@ public final class ExporterTest {
                 .thenExecute(interfaceContainsExactly(
                     helper,
                     pos.east(),
-                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 16),
-                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 16),
-                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 16),
-                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 16)
+                    new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 64)
                 ))
 
                 .thenSucceed();
