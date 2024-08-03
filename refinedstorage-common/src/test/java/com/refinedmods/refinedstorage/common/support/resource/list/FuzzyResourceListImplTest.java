@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.resource.list;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.common.SetupMinecraft;
 import com.refinedmods.refinedstorage.common.api.support.resource.list.FuzzyResourceList;
@@ -58,11 +59,11 @@ class FuzzyResourceListImplTest {
         final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
         final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
 
-        final Collection<ResourceAmount> fuzzyA = sut.getFuzzy(DUMMY_A);
-        final Collection<ResourceAmount> fuzzyB = sut.getFuzzy(DUMMY_B);
-        final Collection<ResourceAmount> fuzzyC = sut.getFuzzy(DUMMY_C);
-        final Collection<ResourceAmount> fuzzyD = sut.getFuzzy(DUMMY_D);
-        final Collection<ResourceAmount> fuzzyE = sut.getFuzzy(DUMMY_E);
+        final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
+        final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
+        final Collection<ResourceKey> fuzzyC = sut.getFuzzy(DUMMY_C);
+        final Collection<ResourceKey> fuzzyD = sut.getFuzzy(DUMMY_D);
+        final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
         assertThat(strictA).get().usingRecursiveComparison().isEqualTo(new ResourceAmount(DUMMY_A, 1));
@@ -72,23 +73,21 @@ class FuzzyResourceListImplTest {
         assertThat(strictE).isNotPresent();
 
         assertThat(fuzzyA).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_A, 1),
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_A,
+            DUMMY_B,
+            DUMMY_C
         );
         assertThat(fuzzyB).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_A, 1),
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_A,
+            DUMMY_B,
+            DUMMY_C
         );
         assertThat(fuzzyC).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_A, 1),
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_A,
+            DUMMY_B,
+            DUMMY_C
         );
-        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_D, 25)
-        );
+        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactly(DUMMY_D);
         assertThat(fuzzyE).isEmpty();
     }
 
@@ -116,11 +115,11 @@ class FuzzyResourceListImplTest {
         final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
         final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
 
-        final Collection<ResourceAmount> fuzzyA = sut.getFuzzy(DUMMY_A);
-        final Collection<ResourceAmount> fuzzyB = sut.getFuzzy(DUMMY_B);
-        final Collection<ResourceAmount> fuzzyC = sut.getFuzzy(DUMMY_C);
-        final Collection<ResourceAmount> fuzzyD = sut.getFuzzy(DUMMY_D);
-        final Collection<ResourceAmount> fuzzyE = sut.getFuzzy(DUMMY_E);
+        final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
+        final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
+        final Collection<ResourceKey> fuzzyC = sut.getFuzzy(DUMMY_C);
+        final Collection<ResourceKey> fuzzyD = sut.getFuzzy(DUMMY_D);
+        final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
         assertThat(strictA).isNotPresent();
@@ -132,9 +131,7 @@ class FuzzyResourceListImplTest {
         assertThat(fuzzyA).isEmpty();
         assertThat(fuzzyB).isEmpty();
         assertThat(fuzzyC).isEmpty();
-        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_D, 25)
-        );
+        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactly(DUMMY_D);
         assertThat(fuzzyE).isEmpty();
     }
 
@@ -160,11 +157,11 @@ class FuzzyResourceListImplTest {
         final Optional<ResourceAmount> strictD = sut.get(DUMMY_D);
         final Optional<ResourceAmount> strictE = sut.get(DUMMY_E);
 
-        final Collection<ResourceAmount> fuzzyA = sut.getFuzzy(DUMMY_A);
-        final Collection<ResourceAmount> fuzzyB = sut.getFuzzy(DUMMY_B);
-        final Collection<ResourceAmount> fuzzyC = sut.getFuzzy(DUMMY_C);
-        final Collection<ResourceAmount> fuzzyD = sut.getFuzzy(DUMMY_D);
-        final Collection<ResourceAmount> fuzzyE = sut.getFuzzy(DUMMY_E);
+        final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
+        final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
+        final Collection<ResourceKey> fuzzyC = sut.getFuzzy(DUMMY_C);
+        final Collection<ResourceKey> fuzzyD = sut.getFuzzy(DUMMY_D);
+        final Collection<ResourceKey> fuzzyE = sut.getFuzzy(DUMMY_E);
 
         // Assert
         assertThat(strictA).isNotPresent();
@@ -174,20 +171,18 @@ class FuzzyResourceListImplTest {
         assertThat(strictE).isNotPresent();
 
         assertThat(fuzzyA).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_B,
+            DUMMY_C
         );
         assertThat(fuzzyB).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_B,
+            DUMMY_C
         );
         assertThat(fuzzyC).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_B, 15),
-            new ResourceAmount(DUMMY_C, 20)
+            DUMMY_B,
+            DUMMY_C
         );
-        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
-            new ResourceAmount(DUMMY_D, 25)
-        );
+        assertThat(fuzzyD).usingRecursiveFieldByFieldElementComparator().containsExactly(DUMMY_D);
         assertThat(fuzzyE).isEmpty();
     }
 }

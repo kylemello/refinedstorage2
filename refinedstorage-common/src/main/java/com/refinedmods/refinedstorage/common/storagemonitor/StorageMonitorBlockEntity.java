@@ -104,7 +104,11 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
         if (!filter.isFuzzyMode() || !(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
             return rootStorage.get(configuredResource).map(ResourceAmount::getAmount).orElse(0L);
         }
-        return fuzzyRootStorage.getFuzzy(configuredResource).stream().mapToLong(ResourceAmount::getAmount).sum();
+        return fuzzyRootStorage.getFuzzy(configuredResource)
+            .stream()
+            .flatMap(resource -> rootStorage.get(resource).stream())
+            .mapToLong(ResourceAmount::getAmount)
+            .sum();
     }
 
     public void extract(final Player player) {
