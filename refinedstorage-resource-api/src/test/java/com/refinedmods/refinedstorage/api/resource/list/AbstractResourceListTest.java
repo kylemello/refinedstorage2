@@ -332,4 +332,32 @@ abstract class AbstractResourceListTest {
 
         assertThat(list.getResources()).isEmpty();
     }
+
+    @Test
+    void shouldCopyList() {
+        // Arrange
+        list.add(TestResource.A, 10);
+        list.add(TestResource.B, 5);
+
+        // Act
+        final ResourceList copy = list.copy();
+
+        list.add(TestResource.A, 1);
+        list.add(TestResource.C, 3);
+
+        copy.add(TestResource.A, 2);
+        copy.add(TestResource.D, 3);
+
+        // Assert
+        assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            new ResourceAmount(TestResource.A, 11),
+            new ResourceAmount(TestResource.B, 5),
+            new ResourceAmount(TestResource.C, 3)
+        );
+        assertThat(copy.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            new ResourceAmount(TestResource.A, 12),
+            new ResourceAmount(TestResource.B, 5),
+            new ResourceAmount(TestResource.D, 3)
+        );
+    }
 }

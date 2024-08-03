@@ -111,4 +111,11 @@ public class ResourceListImpl implements ResourceList {
     public void clear() {
         entries.clear();
     }
+
+    @Override
+    public ResourceList copy() {
+        final ResourceList copy = ResourceListImpl.create();
+        entries.forEach((key, value) -> copy.add(key, value.getAmount()));
+        return copy;
+    }
 }

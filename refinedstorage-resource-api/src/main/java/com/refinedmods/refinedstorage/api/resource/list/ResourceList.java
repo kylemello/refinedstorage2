@@ -87,6 +87,11 @@ public interface ResourceList {
     void clear();
 
     /**
+     * Copies the list.
+     */
+    ResourceList copy();
+
+    /**
      * Represents the result of an operation in a {@link ResourceList}.
      *
      * @param resourceAmount the current resource amount in the list

@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 
@@ -42,6 +43,16 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     @Override
     public boolean contains(final ResourceKey resource) {
         return delegate.contains(resource);
+    }
+
+    @Override
+    public Set<ResourceKey> getResources() {
+        return delegate.getResources();
+    }
+
+    @Override
+    public ResourceList copy() {
+        return delegate.copy();
     }
 
     @Override

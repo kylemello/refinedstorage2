@@ -1,10 +1,8 @@
 package com.refinedmods.refinedstorage.api.grid.view;
 
 import com.refinedmods.refinedstorage.api.core.CoreValidations;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.ArrayList;
@@ -256,9 +254,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public ResourceList copyBackingList() {
-        final ResourceList copy = ResourceListImpl.create();
-        backingList.getAll().forEach(copy::add);
-        return copy;
+        return backingList.copy();
     }
 
     @Override
