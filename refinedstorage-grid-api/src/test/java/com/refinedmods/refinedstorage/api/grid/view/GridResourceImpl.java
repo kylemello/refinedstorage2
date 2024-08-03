@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.api.grid.view;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
@@ -9,20 +8,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-class GridResourceImpl implements GridResource {
-    private final ResourceAmount resourceAmountRef;
+public class GridResourceImpl implements GridResource {
+    private final ResourceKey resource;
     private final Map<GridResourceAttributeKey, Set<String>> attributes;
     private boolean zeroed;
 
-    GridResourceImpl(final ResourceKey resource, final long amount) {
-        this(new ResourceAmount(resource, amount));
-    }
-
-    GridResourceImpl(final ResourceAmount resourceAmountRef) {
-        this.resourceAmountRef = resourceAmountRef;
+    public GridResourceImpl(final ResourceKey resource) {
+        this.resource = resource;
         this.attributes = Map.of(
-            FakeGridResourceAttributeKeys.MOD_ID, Set.of(resourceAmountRef.getResource().toString()),
-            FakeGridResourceAttributeKeys.MOD_NAME, Set.of(resourceAmountRef.getResource().toString())
+            FakeGridResourceAttributeKeys.MOD_ID, Set.of(resource.toString()),
+            FakeGridResourceAttributeKeys.MOD_NAME, Set.of(resource.toString())
         );
     }
 
@@ -33,17 +28,17 @@ class GridResourceImpl implements GridResource {
 
     @Override
     public Optional<TrackedResource> getTrackedResource(final GridView view) {
-        return view.getTrackedResource(resourceAmountRef.getResource());
+        return view.getTrackedResource(resource);
     }
 
     @Override
-    public long getAmount() {
-        return resourceAmountRef.getAmount();
+    public long getAmount(final GridView view) {
+        return view.getAmount(resource);
     }
 
     @Override
     public String getName() {
-        return resourceAmountRef.getResource().toString();
+        return resource.toString();
     }
 
     @Override
@@ -63,6 +58,6 @@ class GridResourceImpl implements GridResource {
 
     @Override
     public String toString() {
-        return resourceAmountRef.getResource().toString();
+        return resource.toString();
     }
 }

@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 public enum GridSortingTypes implements GridSortingType {
-    QUANTITY(view -> Comparator.comparingLong(GridResource::getAmount)),
+    QUANTITY(view -> Comparator.comparingLong(value -> value.getAmount(view))),
     NAME(view -> Comparator.comparing(GridResource::getName)),
     ID(view -> (a, b) -> {
         if (a instanceof PlatformGridResource aa && b instanceof PlatformGridResource bb) {

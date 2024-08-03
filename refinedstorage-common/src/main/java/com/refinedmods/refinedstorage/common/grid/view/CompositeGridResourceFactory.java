@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
@@ -16,10 +16,10 @@ public class CompositeGridResourceFactory implements GridResourceFactory {
     }
 
     @Override
-    public Optional<GridResource> apply(final ResourceAmount resourceAmount) {
+    public Optional<GridResource> apply(final ResourceKey resource) {
         return resourceTypeRegistry.getAll()
             .stream()
-            .flatMap(type -> type.toGridResource(resourceAmount).stream())
+            .flatMap(type -> type.toGridResource(resource).stream())
             .findFirst();
     }
 }

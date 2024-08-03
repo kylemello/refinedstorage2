@@ -2,10 +2,12 @@ package com.refinedmods.refinedstorage.common.api.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
+import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +30,11 @@ public interface PlatformGridResource extends GridResource {
 
     void render(GuiGraphics graphics, int x, int y);
 
-    String getDisplayedAmount();
+    String getDisplayedAmount(GridView view);
 
-    String getAmountInTooltip();
+    String getAmountInTooltip(GridView view);
+
+    boolean belongsToResourceType(ResourceType resourceType);
 
     List<Component> getTooltip();
 
@@ -38,9 +42,9 @@ public interface PlatformGridResource extends GridResource {
 
     int getRegistryId();
 
-    List<ClientTooltipComponent> getExtractionHints();
+    List<ClientTooltipComponent> getExtractionHints(GridView view);
 
     @Nullable
     @API(status = API.Status.INTERNAL)
-    PlatformResourceKey getUnderlyingResource();
+    PlatformResourceKey getResourceForRecipeMods();
 }

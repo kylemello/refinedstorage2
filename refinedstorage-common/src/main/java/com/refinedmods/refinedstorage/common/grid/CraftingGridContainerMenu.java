@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
+import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -35,7 +37,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     @Nullable
     private Consumer<Boolean> activenessListener;
     @Nullable
-    private Predicate<GridResource> filterBeforeFilteringBasedOnCraftingMatrixItems;
+    private BiPredicate<GridView, GridResource> filterBeforeFilteringBasedOnCraftingMatrixItems;
 
     public CraftingGridContainerMenu(final int syncId,
                                      final Inventory playerInventory,
@@ -149,9 +151,9 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     public void filterBasedOnCraftingMatrixItems() {
         final Set<ItemResource> craftingMatrixItems = getCraftingMatrixItems();
         filterBeforeFilteringBasedOnCraftingMatrixItems = getView().setFilterAndSort(
-            gridResource -> gridResource instanceof ItemGridResource itemGridResource
-                && itemGridResource.getUnderlyingResource() != null
-                && craftingMatrixItems.contains((ItemResource) itemGridResource.getUnderlyingResource())
+            (view, gridResource) -> gridResource instanceof ItemGridResource itemGridResource
+                && itemGridResource.getResourceForRecipeMods() != null
+                && craftingMatrixItems.contains((ItemResource) itemGridResource.getResourceForRecipeMods())
         );
     }
 

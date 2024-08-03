@@ -1,22 +1,22 @@
 package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.view.AbstractPlatformGridResource;
 import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
-import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
+import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -28,37 +28,29 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemGridResource extends AbstractPlatformGridResource {
+public class ItemGridResource extends AbstractPlatformGridResource<ItemResource> {
     private final int id;
     private final ItemStack itemStack;
-    private final ItemResource itemResource;
 
-    public ItemGridResource(final ResourceAmount resourceAmount,
+    public ItemGridResource(final ItemResource resource,
                             final ItemStack itemStack,
                             final String name,
                             final String modId,
                             final String modName,
                             final Set<String> tags,
                             final String tooltip) {
-        super(resourceAmount, name, Map.of(
+        super(resource, name, Map.of(
             GridResourceAttributeKeys.MOD_ID, Set.of(modId),
             GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
             GridResourceAttributeKeys.TAGS, tags,
             GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
         ));
-        this.itemResource = (ItemResource) resourceAmount.getResource();
-        this.id = Item.getId(itemResource.item());
+        this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
     }
 
     public ItemStack getItemStack() {
         return itemStack;
-    }
-
-    @Nullable
-    @Override
-    public PlatformResourceKey getUnderlyingResource() {
-        return itemResource;
     }
 
     @Override
@@ -67,8 +59,9 @@ public class ItemGridResource extends AbstractPlatformGridResource {
     }
 
     @Override
-    public List<ClientTooltipComponent> getExtractionHints() {
-        final long extractableAmount = Math.min(getAmount(), itemStack.getMaxStackSize());
+    public List<ClientTooltipComponent> getExtractionHints(final GridView view) {
+        final long amount = getAmount(view);
+        final long extractableAmount = Math.min(amount, itemStack.getMaxStackSize());
         final long halfExtractionAmount = extractableAmount == 1 ? 1 : extractableAmount / 2;
         return List.of(
             MouseClientTooltipComponent.itemWithDecorations(
@@ -88,12 +81,12 @@ public class ItemGridResource extends AbstractPlatformGridResource {
     public void onExtract(final GridExtractMode extractMode,
                           final boolean cursor,
                           final GridExtractionStrategy extractionStrategy) {
-        extractionStrategy.onExtract(itemResource, extractMode, cursor);
+        extractionStrategy.onExtract(resource, extractMode, cursor);
     }
 
     @Override
     public void onScroll(final GridScrollMode scrollMode, final GridScrollingStrategy scrollingStrategy) {
-        scrollingStrategy.onScroll(itemResource, scrollMode, -1);
+        scrollingStrategy.onScroll(resource, scrollMode, -1);
     }
 
     @Override
@@ -104,13 +97,18 @@ public class ItemGridResource extends AbstractPlatformGridResource {
     }
 
     @Override
-    public String getDisplayedAmount() {
-        return AmountFormatting.formatWithUnits(getAmount());
+    public String getDisplayedAmount(final GridView view) {
+        return AmountFormatting.formatWithUnits(getAmount(view));
     }
 
     @Override
-    public String getAmountInTooltip() {
-        return AmountFormatting.format(getAmount());
+    public String getAmountInTooltip(final GridView view) {
+        return AmountFormatting.format(getAmount(view));
+    }
+
+    @Override
+    public boolean belongsToResourceType(final ResourceType resourceType) {
+        return resourceType == ResourceTypes.ITEM;
     }
 
     @Override

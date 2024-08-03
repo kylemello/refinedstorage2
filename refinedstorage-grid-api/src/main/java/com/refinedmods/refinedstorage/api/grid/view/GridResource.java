@@ -14,7 +14,7 @@ import org.apiguardian.api.API;
 public interface GridResource {
     Optional<TrackedResource> getTrackedResource(GridView view);
 
-    long getAmount();
+    long getAmount(GridView view);
 
     String getName();
 
