@@ -115,7 +115,7 @@ class GridViewImplTest {
         assertThat(a).get().usingRecursiveComparison().isEqualTo(new TrackedResource("RaoulA", 2));
         assertThat(b).isEmpty();
         assertThat(d).isEmpty();
-        assertThat(backingList.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+        assertThat(backingList.copyState()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 2),
             new ResourceAmount(B, 2),
             new ResourceAmount(D, 1)
@@ -148,7 +148,7 @@ class GridViewImplTest {
             new GridResourceImpl(A),
             new GridResourceImpl(B)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -256,7 +256,7 @@ class GridViewImplTest {
             new GridResourceImpl(B),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -291,7 +291,7 @@ class GridViewImplTest {
             new GridResourceImpl(D),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(B, 11),
@@ -338,7 +338,7 @@ class GridViewImplTest {
             new GridResourceImpl(D),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(B, 11),
@@ -355,7 +355,7 @@ class GridViewImplTest {
             new GridResourceImpl(B),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(B, 11),
@@ -411,7 +411,7 @@ class GridViewImplTest {
             new GridResourceImpl(B),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -516,7 +516,7 @@ class GridViewImplTest {
             new GridResourceImpl(D),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -558,7 +558,7 @@ class GridViewImplTest {
             new GridResourceImpl(A),
             new GridResourceImpl(B).zeroed()
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -572,7 +572,7 @@ class GridViewImplTest {
             new GridResourceImpl(D),
             new GridResourceImpl(A)
         );
-        assertThat(view.copyBackingList().getAll())
+        assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyInAnyOrder(
                 new ResourceAmount(D, 10),
@@ -647,7 +647,7 @@ class GridViewImplTest {
 
         // Assert
         assertThat(view.getViewList()).isEmpty();
-        assertThat(view.copyBackingList().getAll()).isEmpty();
+        assertThat(view.copyBackingList().copyState()).isEmpty();
         assertThat(view.getTrackedResource(A)).isEmpty();
         assertThat(view.getTrackedResource(B)).isEmpty();
         assertThat(view.getTrackedResource(D)).isEmpty();

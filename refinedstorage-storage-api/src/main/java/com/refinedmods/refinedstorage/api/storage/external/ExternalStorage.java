@@ -60,7 +60,7 @@ public class ExternalStorage implements CompositeAwareChild {
 
     private boolean detectCompleteRemovals(final ResourceList updatedCache) {
         final Set<ResourceKey> removedInUpdatedCache = new HashSet<>();
-        for (final ResourceKey inOldCache : cache.getResources()) {
+        for (final ResourceKey inOldCache : cache.getAll()) {
             if (!updatedCache.contains(inOldCache)) {
                 removedInUpdatedCache.add(inOldCache);
             }
@@ -71,9 +71,9 @@ public class ExternalStorage implements CompositeAwareChild {
 
     private boolean detectAdditionsAndPartialRemovals(final ResourceList updatedCache) {
         boolean hasChanges = false;
-        for (final ResourceKey resource : updatedCache.getResources()) {
-            final long amountInUpdatedCache = updatedCache.getAmount(resource);
-            final long amountInOldCache = cache.getAmount(resource);
+        for (final ResourceKey resource : updatedCache.getAll()) {
+            final long amountInUpdatedCache = updatedCache.get(resource);
+            final long amountInOldCache = cache.get(resource);
             final boolean doesNotExistInOldCache = amountInOldCache == 0;
             if (doesNotExistInOldCache) {
                 addToCache(resource, amountInUpdatedCache);
@@ -107,7 +107,7 @@ public class ExternalStorage implements CompositeAwareChild {
     }
 
     private void removeFromCache(final ResourceKey resource) {
-        removeFromCache(resource, cache.getAmount(resource));
+        removeFromCache(resource, cache.get(resource));
     }
 
     private void removeFromCache(final ResourceKey resource, final long amount) {
@@ -123,7 +123,7 @@ public class ExternalStorage implements CompositeAwareChild {
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return cache.getAll();
+        return cache.copyState();
     }
 
     @Override

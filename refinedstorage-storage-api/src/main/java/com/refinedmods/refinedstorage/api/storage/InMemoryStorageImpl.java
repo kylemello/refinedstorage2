@@ -29,7 +29,7 @@ public class InMemoryStorageImpl implements Storage {
     @Override
     public long extract(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
         ResourceAmount.validate(resource, amount);
-        final long availableAmount = list.getAmount(resource);
+        final long availableAmount = list.get(resource);
         if (availableAmount == 0) {
             return 0;
         }
@@ -57,7 +57,7 @@ public class InMemoryStorageImpl implements Storage {
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return list.getAll();
+        return list.copyState();
     }
 
     @Override

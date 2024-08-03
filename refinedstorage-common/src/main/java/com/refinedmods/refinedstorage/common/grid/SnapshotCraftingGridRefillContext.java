@@ -51,7 +51,7 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
         final ItemResource craftingMatrixResource = ItemResource.ofItemStack(craftingMatrixStack);
         // a single resource can occur multiple times in a recipe, only add it once
         if (!available.contains(craftingMatrixResource)) {
-            final long amount = rootStorage.getAmount(craftingMatrixResource);
+            final long amount = rootStorage.get(craftingMatrixResource);
             if (amount > 0) {
                 available.add(craftingMatrixResource, amount);
             }
@@ -76,8 +76,8 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     }
 
     private void extractUsedItems(final RootStorage rootStorage) {
-        for (final ResourceKey usedResource : used.getResources()) {
-            final long amountUsed = used.getAmount(usedResource);
+        for (final ResourceKey usedResource : used.getAll()) {
+            final long amountUsed = used.get(usedResource);
             rootStorage.extract(usedResource, amountUsed, Action.EXECUTE, playerActor);
         }
     }

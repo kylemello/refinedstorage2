@@ -101,11 +101,11 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
     private long getAmount(final Network network, final ResourceKey configuredResource) {
         final RootStorage rootStorage = network.getComponent(StorageNetworkComponent.class);
         if (!filter.isFuzzyMode() || !(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
-            return rootStorage.getAmount(configuredResource);
+            return rootStorage.get(configuredResource);
         }
         return fuzzyRootStorage.getFuzzy(configuredResource)
             .stream()
-            .mapToLong(rootStorage::getAmount)
+            .mapToLong(rootStorage::get)
             .sum();
     }
 

@@ -31,13 +31,13 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     }
 
     @Override
-    public Collection<ResourceAmount> getAll() {
-        return delegate.getAll();
+    public Collection<ResourceAmount> copyState() {
+        return delegate.copyState();
     }
 
     @Override
-    public long getAmount(final ResourceKey resource) {
-        return delegate.getAmount(resource);
+    public long get(final ResourceKey resource) {
+        return delegate.get(resource);
     }
 
     @Override
@@ -46,8 +46,8 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     }
 
     @Override
-    public Set<ResourceKey> getResources() {
-        return delegate.getResources();
+    public Set<ResourceKey> getAll() {
+        return delegate.getAll();
     }
 
     @Override

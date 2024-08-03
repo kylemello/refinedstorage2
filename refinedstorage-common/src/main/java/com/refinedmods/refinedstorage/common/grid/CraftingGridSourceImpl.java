@@ -150,6 +150,6 @@ class CraftingGridSourceImpl implements CraftingGridSource {
     }
 
     private Comparator<ItemResource> sortByHighestAvailableFirst(final ResourceList available) {
-        return Comparator.<ItemResource>comparingLong(available::getAmount).reversed();
+        return Comparator.<ItemResource>comparingLong(available::get).reversed();
     }
 }

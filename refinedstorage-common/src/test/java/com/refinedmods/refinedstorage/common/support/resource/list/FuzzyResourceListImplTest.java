@@ -50,11 +50,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final long strictA = sut.getAmount(DUMMY_A);
-        final long strictB = sut.getAmount(DUMMY_B);
-        final long strictC = sut.getAmount(DUMMY_C);
-        final long strictD = sut.getAmount(DUMMY_D);
-        final long strictE = sut.getAmount(DUMMY_E);
+        final long strictA = sut.get(DUMMY_A);
+        final long strictB = sut.get(DUMMY_B);
+        final long strictC = sut.get(DUMMY_C);
+        final long strictD = sut.get(DUMMY_D);
+        final long strictE = sut.get(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
@@ -105,11 +105,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final long strictA = sut.getAmount(DUMMY_A);
-        final long strictB = sut.getAmount(DUMMY_B);
-        final long strictC = sut.getAmount(DUMMY_C);
-        final long strictD = sut.getAmount(DUMMY_D);
-        final long strictE = sut.getAmount(DUMMY_E);
+        final long strictA = sut.get(DUMMY_A);
+        final long strictB = sut.get(DUMMY_B);
+        final long strictC = sut.get(DUMMY_C);
+        final long strictD = sut.get(DUMMY_D);
+        final long strictE = sut.get(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);
@@ -146,11 +146,11 @@ class FuzzyResourceListImplTest {
         sut.add(DUMMY_D, 15);
 
         // Act
-        final long strictA = sut.getAmount(DUMMY_A);
-        final long strictB = sut.getAmount(DUMMY_B);
-        final long strictC = sut.getAmount(DUMMY_C);
-        final long strictD = sut.getAmount(DUMMY_D);
-        final long strictE = sut.getAmount(DUMMY_E);
+        final long strictA = sut.get(DUMMY_A);
+        final long strictB = sut.get(DUMMY_B);
+        final long strictC = sut.get(DUMMY_C);
+        final long strictD = sut.get(DUMMY_D);
+        final long strictE = sut.get(DUMMY_E);
 
         final Collection<ResourceKey> fuzzyA = sut.getFuzzy(DUMMY_A);
         final Collection<ResourceKey> fuzzyB = sut.getFuzzy(DUMMY_B);

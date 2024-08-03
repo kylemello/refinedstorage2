@@ -140,7 +140,7 @@ public class CompositeStorageImpl implements CompositeStorage, CompositeAwareChi
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return list.getAll();
+        return list.copyState();
     }
 
     @Override

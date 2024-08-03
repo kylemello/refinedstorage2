@@ -62,18 +62,18 @@ public interface ResourceList {
      *
      * @return a list of resource amounts
      */
-    Collection<ResourceAmount> getAll();
+    Collection<ResourceAmount> copyState();
 
     /**
      * @return set of resources contained in this list
      */
-    Set<ResourceKey> getResources();
+    Set<ResourceKey> getAll();
 
     /**
      * @param resource the resource
      * @return the amount stored, or zero if not stored
      */
-    long getAmount(ResourceKey resource);
+    long get(ResourceKey resource);
 
     /**
      * @param resource the resource

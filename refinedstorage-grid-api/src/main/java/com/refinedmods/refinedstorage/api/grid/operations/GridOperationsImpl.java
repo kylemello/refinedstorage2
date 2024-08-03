@@ -52,7 +52,7 @@ public class GridOperationsImpl implements GridOperations {
     }
 
     private long getExtractableAmount(final ResourceKey resource) {
-        final long totalSize = rootStorage.getAmount(resource);
+        final long totalSize = rootStorage.get(resource);
         final long maxAmount = maxAmountProvider.applyAsLong(resource);
         return Math.min(totalSize, maxAmount);
     }

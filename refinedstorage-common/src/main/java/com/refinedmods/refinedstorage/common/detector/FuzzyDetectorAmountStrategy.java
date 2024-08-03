@@ -22,7 +22,7 @@ class FuzzyDetectorAmountStrategy extends AbstractDetectorAmountStrategy {
         }
         return fuzzyRootStorage.getFuzzy(configuredResource)
             .stream()
-            .mapToLong(rootStorage::getAmount)
+            .mapToLong(rootStorage::get)
             .sum();
     }
 }

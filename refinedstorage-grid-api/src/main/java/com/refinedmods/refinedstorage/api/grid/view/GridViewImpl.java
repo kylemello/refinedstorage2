@@ -94,7 +94,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public long getAmount(final ResourceKey resource) {
-        return backingList.getAmount(resource);
+        return backingList.get(resource);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GridViewImpl implements GridView {
         viewListIndex.clear();
 
         final List<GridResource> newViewList = new ArrayList<>();
-        for (final ResourceKey resource : backingList.getResources()) {
+        for (final ResourceKey resource : backingList.getAll()) {
             resourceFactory.apply(resource).ifPresent(gridResource -> {
                 if (filter.test(this, gridResource)) {
                     newViewList.add(gridResource);

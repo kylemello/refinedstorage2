@@ -6,6 +6,6 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 public class DetectorAmountStrategyImpl extends AbstractDetectorAmountStrategy {
     @Override
     public long getAmount(final Network network, final ResourceKey configuredResource) {
-        return getRootStorage(network).getAmount(configuredResource);
+        return getRootStorage(network).get(configuredResource);
     }
 }

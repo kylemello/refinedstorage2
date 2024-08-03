@@ -36,12 +36,12 @@ public record ProcessingPatternState(
     List<ResourceAmount> getFlatInputs() {
         final ResourceList list = ResourceListImpl.orderPreserving();
         inputs.forEach(input -> input.ifPresent(list::add));
-        return new ArrayList<>(list.getAll());
+        return new ArrayList<>(list.copyState());
     }
 
     List<ResourceAmount> getFlatOutputs() {
         final ResourceList list = ResourceListImpl.orderPreserving();
         outputs.forEach(output -> output.ifPresent(list::add));
-        return new ArrayList<>(list.getAll());
+        return new ArrayList<>(list.copyState());
     }
 }

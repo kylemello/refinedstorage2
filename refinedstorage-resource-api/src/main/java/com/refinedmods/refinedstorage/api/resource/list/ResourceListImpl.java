@@ -87,17 +87,17 @@ public class ResourceListImpl implements ResourceList {
     }
 
     @Override
-    public Collection<ResourceAmount> getAll() {
+    public Collection<ResourceAmount> copyState() {
         return entries.values();
     }
 
     @Override
-    public Set<ResourceKey> getResources() {
+    public Set<ResourceKey> getAll() {
         return entries.keySet();
     }
 
     @Override
-    public long getAmount(final ResourceKey resource) {
+    public long get(final ResourceKey resource) {
         final ResourceAmount entry = entries.get(resource);
         return entry != null ? entry.getAmount() : 0;
     }

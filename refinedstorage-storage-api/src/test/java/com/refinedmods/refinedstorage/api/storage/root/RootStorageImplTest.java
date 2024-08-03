@@ -231,8 +231,8 @@ class RootStorageImplTest {
         sut.addSource(storage);
 
         // Act & assert
-        assertThat(sut.getAmount(A)).isEqualTo(25);
-        assertThat(sut.getAmount(B)).isZero();
+        assertThat(sut.get(A)).isEqualTo(25);
+        assertThat(sut.get(B)).isZero();
     }
 
     @Test
