@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResour
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
@@ -31,12 +32,11 @@ public record ItemResource(Item item, DataComponentPatch components)
         return toItemStack(1);
     }
 
-    @SuppressWarnings("deprecation")
     public ItemStack toItemStack(final long amount) {
         if (amount > Integer.MAX_VALUE) {
             LOGGER.warn("Truncating too large amount for {} to fit into ItemStack {}", this, amount);
         }
-        return new ItemStack(item.builtInRegistryHolder(), (int) amount, components);
+        return new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(item), (int) amount, components);
     }
 
     @Override

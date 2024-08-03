@@ -117,11 +117,11 @@ public class ResourceSlot extends Slot {
         resourceContainer.change(getContainerSlot(), stack, tryAlternatives);
     }
 
-    public void change(@Nullable final ResourceAmount instance) {
-        if (instance == null) {
+    public void change(@Nullable final ResourceAmount resourceAmount) {
+        if (resourceAmount == null) {
             resourceContainer.remove(getContainerSlot());
         } else {
-            resourceContainer.set(getContainerSlot(), instance);
+            resourceContainer.set(getContainerSlot(), resourceAmount);
         }
     }
 

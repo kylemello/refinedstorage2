@@ -150,9 +150,8 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     public void filterBasedOnCraftingMatrixItems() {
         final Set<ItemResource> craftingMatrixItems = getCraftingMatrixItems();
         filterBeforeFilteringBasedOnCraftingMatrixItems = getView().setFilterAndSort(
-            (view, gridResource) -> gridResource instanceof ItemGridResource itemGridResource
-                && itemGridResource.getResourceForRecipeMods() != null
-                && craftingMatrixItems.contains((ItemResource) itemGridResource.getResourceForRecipeMods())
+            (view, resource) -> resource instanceof ItemGridResource itemResource
+                && craftingMatrixItems.contains(itemResource.getItemResource())
         );
     }
 

@@ -139,6 +139,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         );
         button.setTooltip(Tooltip.create(CLEAR));
         button.visible = isClearButtonVisible();
+        button.active = getMenu().canCreatePattern();
         return button;
     }
 
@@ -276,9 +277,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         renderProcessingMatrix(
             graphics,
             getInsetContentX() + 1,
-            getInsetY() + 14,
             getInsetContentX() + 1 + 52 + 1, // include the edge so we get the item counts properly
-            getInsetY() + 14 + 52 + 1, // include the edge so we get the item counts properly
             mouseX,
             mouseY,
             true
@@ -286,9 +285,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         renderProcessingMatrix(
             graphics,
             getInsetContentX() + INDIVIDUAL_PROCESSING_MATRIX_SIZE + 2 + 1,
-            getInsetY() + 14,
             getInsetContentX() + INDIVIDUAL_PROCESSING_MATRIX_SIZE + 2 + 1 + 52 + 1,
-            getInsetY() + 14 + 52 + 1,
             mouseX,
             mouseY,
             false
@@ -297,12 +294,13 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
 
     private void renderProcessingMatrix(final GuiGraphics graphics,
                                         final int startX,
-                                        final int startY,
                                         final int endX,
-                                        final int endY,
                                         final int mouseX,
                                         final int mouseY,
                                         final boolean input) {
+        final int startY = getInsetY() + 14;
+        // include the edge so we get the item counts properly
+        final int endY = getInsetY() + 14 + 52 + 1;
         graphics.enableScissor(startX, startY, endX, endY);
         renderProcessingMatrixSlotBackground(graphics, input);
         renderProcessingMatrixSlots(graphics, mouseX, mouseY, input);
@@ -379,7 +377,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         super.renderLabels(graphics, mouseX, mouseY);
         if (getMenu().getPatternType() == PatternType.PROCESSING) {
             final int x = getInsetContentX() - leftPos;
-            final int y = getInsetContentY() - topPos;
+            final int y = getInsetContentY() - topPos - 1;
             graphics.drawString(font, INPUTS, x, y, 4210752, false);
             graphics.drawString(font, OUTPUTS, x + 56, y, 4210752, false);
         }

@@ -31,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 public class ItemGridResource extends AbstractPlatformGridResource<ItemResource> {
     private final int id;
     private final ItemStack itemStack;
+    private final ItemResource itemResource;
 
     public ItemGridResource(final ItemResource resource,
                             final ItemStack itemStack,
@@ -47,10 +48,15 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
         ));
         this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
+        this.itemResource = resource;
     }
 
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public ItemResource getItemResource() {
+        return itemResource;
     }
 
     @Override

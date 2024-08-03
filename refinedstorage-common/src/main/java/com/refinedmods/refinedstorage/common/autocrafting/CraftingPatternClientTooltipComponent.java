@@ -25,11 +25,7 @@ import static java.util.Objects.requireNonNullElse;
 
 public class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
-    private static long cycleStart = 0;
-    private static int currentCycle = 0;
-
     private static final int ARROW_SPACING = 8;
-
     private static final ResourceLocation LARGE_SLOT = createIdentifier("large_slot");
     private static final int LARGE_SLOT_WIDTH = 26;
     private static final int LARGE_SLOT_HEIGHT = 26;
@@ -42,6 +38,9 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
     private final ItemStack outputStack;
     @Nullable
     private final Component outputText;
+
+    private long cycleStart = 0;
+    private int currentCycle = 0;
 
     public CraftingPatternClientTooltipComponent(final int width,
                                                  final int height,
