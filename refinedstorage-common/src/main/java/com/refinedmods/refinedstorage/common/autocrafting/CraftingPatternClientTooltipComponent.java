@@ -49,14 +49,14 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
         this.width = width;
         this.height = height;
         this.craftingPattern = craftingPattern;
-        final ItemResource outputResource = craftingPattern.output().getResource() instanceof ItemResource itemResource
+        final ItemResource outputResource = craftingPattern.output().resource() instanceof ItemResource itemResource
             ? itemResource
             : null;
         this.outputStack = outputResource != null
-            ? outputResource.toItemStack(craftingPattern.output().getAmount())
+            ? outputResource.toItemStack(craftingPattern.output().amount())
             : null;
         this.outputText = outputResource != null
-            ? Component.literal(String.format("%dx ", craftingPattern.output().getAmount()))
+            ? Component.literal(String.format("%dx ", craftingPattern.output().amount()))
             .append(outputResource.toItemStack().getHoverName())
             .withStyle(ChatFormatting.GRAY) : null;
     }

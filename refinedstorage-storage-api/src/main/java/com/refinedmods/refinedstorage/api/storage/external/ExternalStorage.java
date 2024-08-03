@@ -128,7 +128,7 @@ public class ExternalStorage implements CompositeAwareChild {
 
     @Override
     public long getStored() {
-        return getAll().stream().mapToLong(ResourceAmount::getAmount).sum();
+        return getAll().stream().mapToLong(ResourceAmount::amount).sum();
     }
 
     @Override

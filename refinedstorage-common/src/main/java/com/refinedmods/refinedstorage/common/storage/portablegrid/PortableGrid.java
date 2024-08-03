@@ -106,7 +106,7 @@ class PortableGrid implements Grid {
         final RootStorage rootStorage = storage.getRootStorage();
         return rootStorage.getAll().stream().map(resource -> new TrackedResourceAmount(
             resource,
-            rootStorage.findTrackedResourceByActorType(resource.getResource(), actorType).orElse(null)
+            rootStorage.findTrackedResourceByActorType(resource.resource(), actorType).orElse(null)
         )).toList();
     }
 

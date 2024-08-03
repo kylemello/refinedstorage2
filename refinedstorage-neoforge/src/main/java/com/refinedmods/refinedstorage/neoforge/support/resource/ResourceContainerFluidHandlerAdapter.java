@@ -30,10 +30,10 @@ public class ResourceContainerFluidHandlerAdapter implements IFluidHandler {
     @Override
     public FluidStack getFluidInTank(final int tank) {
         final ResourceAmount resourceAmount = container.get(tank);
-        if (resourceAmount == null || !(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+        if (resourceAmount == null || !(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return FluidStack.EMPTY;
         }
-        return toFluidStack(fluidResource, resourceAmount.getAmount());
+        return toFluidStack(fluidResource, resourceAmount.amount());
     }
 
     @Override

@@ -121,11 +121,11 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
         long remainder = transferQuota;
         final Collection<ResourceAmount> sourceContents = new LinkedHashSet<>(source.getAll());
         for (final ResourceAmount resourceAmount : sourceContents) {
-            final ResourceKey resource = resourceAmount.getResource();
+            final ResourceKey resource = resourceAmount.resource();
             if (!filter.isAllowed(resource)) {
                 continue;
             }
-            final long amount = Math.min(remainder, resourceAmount.getAmount());
+            final long amount = Math.min(remainder, resourceAmount.amount());
             final long transferred = TransferHelper.transfer(resource, amount, actor, source, destination, source);
             remainder -= transferred;
             if (remainder == 0) {
@@ -136,7 +136,7 @@ public class StorageTransferNetworkNode extends AbstractStorageContainerNetworkN
     }
 
     private boolean hasNoExtractableResources(final Storage source) {
-        return source.getAll().stream().noneMatch(resourceAmount -> filter.isAllowed(resourceAmount.getResource()));
+        return source.getAll().stream().noneMatch(resourceAmount -> filter.isAllowed(resourceAmount.resource()));
     }
 
     private boolean storageIsFull(final Storage storage) {

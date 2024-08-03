@@ -155,11 +155,11 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public Optional<FluidOperationResult> fillContainer(final ItemStack container,
                                                         final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+        if (!(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
         return FluidUtil.getFluidHandler(container).map(handler -> {
-            final FluidStack fluidStack = toFluidStack(fluidResource, resourceAmount.getAmount());
+            final FluidStack fluidStack = toFluidStack(fluidResource, resourceAmount.amount());
             final long filled = handler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
             return new FluidOperationResult(handler.getContainer(), fluidResource, filled);
         });

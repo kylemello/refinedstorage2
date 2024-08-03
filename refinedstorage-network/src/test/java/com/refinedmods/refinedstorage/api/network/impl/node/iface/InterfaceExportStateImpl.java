@@ -83,7 +83,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return null;
         }
-        return resourceAmount.getResource();
+        return resourceAmount.resource();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return 0L;
         }
-        return resourceAmount.getAmount();
+        return resourceAmount.amount();
     }
 
     @Nullable
@@ -104,7 +104,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return null;
         }
-        return resourceAmount.getResource();
+        return resourceAmount.resource();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return 0L;
         }
-        return resourceAmount.getAmount();
+        return resourceAmount.amount();
     }
 
     @Override
@@ -131,12 +131,12 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
     public void shrinkExportedAmount(final int slotIndex, final long amount) {
         validateIndex(slotIndex);
         final ResourceAmount resourceAmount = this.current.get(slotIndex);
-        if (resourceAmount.getAmount() - amount <= 0) {
+        if (resourceAmount.amount() - amount <= 0) {
             this.current.remove(slotIndex);
         } else {
             this.current.put(
                 slotIndex,
-                new ResourceAmount(resourceAmount.getResource(), resourceAmount.getAmount() - amount)
+                new ResourceAmount(resourceAmount.resource(), resourceAmount.amount() - amount)
             );
         }
     }
@@ -147,7 +147,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         final ResourceAmount resourceAmount = this.current.get(slotIndex);
         this.current.put(
             slotIndex,
-            new ResourceAmount(resourceAmount.getResource(), resourceAmount.getAmount() + amount)
+            new ResourceAmount(resourceAmount.resource(), resourceAmount.amount() + amount)
         );
     }
 

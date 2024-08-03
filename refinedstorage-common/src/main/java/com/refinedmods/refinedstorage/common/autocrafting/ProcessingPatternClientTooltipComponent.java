@@ -60,14 +60,14 @@ public class ProcessingPatternClientTooltipComponent implements ClientTooltipCom
 
     private static Component getOutputText(final ResourceAmount resourceAmount) {
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
-            resourceAmount.getResource()
+            resourceAmount.resource()
         );
         final String displayAmount = rendering.getDisplayedAmount(
-            resourceAmount.getAmount(),
+            resourceAmount.amount(),
             false
         );
         return Component.literal(String.format("%sx ", displayAmount))
-            .append(rendering.getDisplayName(resourceAmount.getResource()))
+            .append(rendering.getDisplayName(resourceAmount.resource()))
             .withStyle(ChatFormatting.GRAY);
     }
 
@@ -113,10 +113,10 @@ public class ProcessingPatternClientTooltipComponent implements ClientTooltipCom
                 graphics.blitSprite(SLOT, slotX, slotY, 18, 18);
                 slots.get(idx).ifPresent(resourceAmount -> {
                     final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
-                        resourceAmount.getResource()
+                        resourceAmount.resource()
                     );
-                    rendering.render(resourceAmount.getResource(), graphics, slotX + 1, slotY + 1);
-                    AbstractBaseScreen.renderResourceAmount(graphics, slotX + 1, slotY + 1, resourceAmount.getAmount(),
+                    rendering.render(resourceAmount.resource(), graphics, slotX + 1, slotY + 1);
+                    AbstractBaseScreen.renderResourceAmount(graphics, slotX + 1, slotY + 1, resourceAmount.amount(),
                         rendering);
                 });
             }

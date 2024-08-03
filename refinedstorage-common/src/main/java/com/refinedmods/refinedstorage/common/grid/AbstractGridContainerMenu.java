@@ -101,10 +101,10 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         this.active = gridData.active();
 
         final GridViewBuilder viewBuilder = createViewBuilder();
-        gridData.resources().forEach(gridResource -> viewBuilder.withResource(
-            gridResource.resourceAmount().getResource(),
-            gridResource.resourceAmount().getAmount(),
-            gridResource.trackedResource().orElse(null)
+        gridData.resources().forEach(resource -> viewBuilder.withResource(
+            resource.resourceAmount().resource(),
+            resource.resourceAmount().amount(),
+            resource.trackedResource().orElse(null)
         ));
 
         this.view = viewBuilder.build();

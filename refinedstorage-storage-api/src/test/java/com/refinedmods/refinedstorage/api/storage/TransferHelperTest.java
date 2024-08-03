@@ -74,8 +74,8 @@ class TransferHelperTest {
 
         if (transfer.amountInSource != null) {
             source.insert(
-                transfer.amountInSource.getResource(),
-                transfer.amountInSource.getAmount(),
+                transfer.amountInSource.resource(),
+                transfer.amountInSource.amount(),
                 Action.EXECUTE,
                 EmptyActor.INSTANCE
             );
@@ -83,8 +83,8 @@ class TransferHelperTest {
 
         if (transfer.amountInDestination != null) {
             destination.insert(
-                transfer.amountInDestination.getResource(),
-                transfer.amountInDestination.getAmount(),
+                transfer.amountInDestination.resource(),
+                transfer.amountInDestination.amount(),
                 Action.EXECUTE,
                 EmptyActor.INSTANCE
             );
@@ -92,8 +92,8 @@ class TransferHelperTest {
 
         // Act
         final long transferred = TransferHelper.transfer(
-            transfer.amountToTransfer.getResource(),
-            transfer.amountToTransfer.getAmount(),
+            transfer.amountToTransfer.resource(),
+            transfer.amountToTransfer.amount(),
             EmptyActor.INSTANCE,
             source,
             destination,

@@ -95,7 +95,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         if (slot == null) {
             return 0;
         }
-        return slot.getResourceAmount().getAmount();
+        return slot.getResourceAmount().amount();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         if (slot == null) {
             return;
         }
-        final long newAmount = MathUtil.clamp(amount, 0, getMaxAmount(slot.getResourceAmount().getResource()));
+        final long newAmount = MathUtil.clamp(amount, 0, getMaxAmount(slot.getResourceAmount().resource()));
         if (newAmount == 0) {
             remove(index);
         } else {
@@ -190,7 +190,7 @@ public class ResourceContainerImpl implements ResourceContainer {
             if (slot == null) {
                 continue;
             }
-            result.add(slot.getResourceAmount().getResource());
+            result.add(slot.getResourceAmount().resource());
         }
         return result;
     }
@@ -203,7 +203,7 @@ public class ResourceContainerImpl implements ResourceContainer {
             if (slot == null) {
                 continue;
             }
-            result.add(slot.getResourceAmount().getResource());
+            result.add(slot.getResourceAmount().resource());
         }
         return result;
     }
@@ -290,7 +290,7 @@ public class ResourceContainerImpl implements ResourceContainer {
             final ResourceAmount slot = get(i);
             if (slot == null) {
                 remainder -= insertIntoEmptySlot(i, platformResource, action, remainder);
-            } else if (slot.getResource().equals(resource)) {
+            } else if (slot.resource().equals(resource)) {
                 remainder -= insertIntoExistingSlot(
                     i,
                     platformResource,
@@ -322,7 +322,7 @@ public class ResourceContainerImpl implements ResourceContainer {
                                         final Action action,
                                         final long amount,
                                         final ResourceAmount existing) {
-        final long spaceRemaining = resource.getInterfaceExportLimit() - existing.getAmount();
+        final long spaceRemaining = resource.getInterfaceExportLimit() - existing.amount();
         final long inserted = Math.min(spaceRemaining, amount);
         if (action == Action.EXECUTE) {
             grow(slotIndex, inserted);
@@ -335,11 +335,11 @@ public class ResourceContainerImpl implements ResourceContainer {
         long extracted = 0;
         for (int i = 0; i < size(); ++i) {
             final ResourceAmount slotContents = get(i);
-            if (slotContents == null || !resource.equals(slotContents.getResource())) {
+            if (slotContents == null || !resource.equals(slotContents.resource())) {
                 continue;
             }
             final long stillNeeded = amount - extracted;
-            final long toExtract = Math.min(slotContents.getAmount(), stillNeeded);
+            final long toExtract = Math.min(slotContents.amount(), stillNeeded);
             if (action == Action.EXECUTE) {
                 shrink(i, toExtract);
             }

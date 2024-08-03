@@ -175,7 +175,7 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public Optional<FluidOperationResult> fillContainer(final ItemStack container,
                                                         final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+        if (!(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
         final SimpleSingleStackStorage interceptingStorage = new SimpleSingleStackStorage(container);
@@ -186,7 +186,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return Optional.empty();
         }
         try (Transaction tx = Transaction.openOuter()) {
-            final long inserted = storage.insert(toFluidVariant(fluidResource), resourceAmount.getAmount(), tx);
+            final long inserted = storage.insert(toFluidVariant(fluidResource), resourceAmount.amount(), tx);
             return Optional.of(new FluidOperationResult(
                 interceptingStorage.getStack(),
                 fluidResource,

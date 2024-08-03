@@ -67,7 +67,7 @@ public final class StorageCodecs {
                 ? Optional.of(limitedStorage.getCapacity())
                 : Optional.empty();
             final List<StorageResource<T>> resources = storage.getAll().stream()
-                .filter(resourceAmount -> valid.test(resourceAmount.getResource()))
+                .filter(resourceAmount -> valid.test(resourceAmount.resource()))
                 .map(resourceAmount -> getResource(storage, caster, resourceAmount))
                 .toList();
             return new StorageData<>(capacity, resources);
@@ -79,8 +79,8 @@ public final class StorageCodecs {
             final ResourceAmount resourceAmount
         ) {
             return new StorageResource<>(
-                caster.apply(resourceAmount.getResource()),
-                resourceAmount.getAmount(),
+                caster.apply(resourceAmount.resource()),
+                resourceAmount.amount(),
                 getChanged(storage, resourceAmount)
             );
         }
@@ -90,7 +90,7 @@ public final class StorageCodecs {
             if (!(storage instanceof TrackedStorage trackedStorage)) {
                 return Optional.empty();
             }
-            return trackedStorage.findTrackedResourceByActorType(resourceAmount.getResource(), PlayerActor.class)
+            return trackedStorage.findTrackedResourceByActorType(resourceAmount.resource(), PlayerActor.class)
                 .map(StorageChangedByAt::ofTrackedResource);
         }
     }

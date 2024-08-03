@@ -26,10 +26,10 @@ class GridWatcherRegistration {
         rootStorage.addListener(listener);
         if (replay) {
             rootStorage.getAll().forEach(resourceAmount -> watcher.onChanged(
-                resourceAmount.getResource(),
-                resourceAmount.getAmount(),
+                resourceAmount.resource(),
+                resourceAmount.amount(),
                 rootStorage.findTrackedResourceByActorType(
-                    resourceAmount.getResource(),
+                    resourceAmount.resource(),
                     actorType
                 ).orElse(null)
             ));

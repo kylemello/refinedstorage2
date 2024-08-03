@@ -32,7 +32,7 @@ public interface ResourceList {
      * @return the result of the operation
      */
     default OperationResult add(ResourceAmount resourceAmount) {
-        return add(resourceAmount.getResource(), resourceAmount.getAmount());
+        return add(resourceAmount.resource(), resourceAmount.amount());
     }
 
     /**
@@ -54,7 +54,7 @@ public interface ResourceList {
      * @return a result if the removal operation was successful, otherwise an empty {@link Optional}
      */
     default Optional<OperationResult> remove(ResourceAmount resourceAmount) {
-        return remove(resourceAmount.getResource(), resourceAmount.getAmount());
+        return remove(resourceAmount.resource(), resourceAmount.amount());
     }
 
     /**
