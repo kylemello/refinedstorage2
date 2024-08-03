@@ -12,7 +12,6 @@ import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerI
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public class ExportedResourcesContainer extends ResourceContainerImpl implements InterfaceExportState {
@@ -42,11 +41,7 @@ public class ExportedResourcesContainer extends ResourceContainerImpl implements
         if (!(rootStorage instanceof FuzzyRootStorage fuzzyRootStorage)) {
             return Collections.singletonList(resource);
         }
-        return fuzzyRootStorage
-            .getFuzzy(resource)
-            .stream()
-            .map(ResourceAmount::getResource)
-            .collect(Collectors.toSet());
+        return fuzzyRootStorage.getFuzzy(resource);
     }
 
     @Override

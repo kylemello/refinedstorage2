@@ -63,8 +63,13 @@ public class RootStorageImpl implements RootStorage {
     }
 
     @Override
-    public Optional<ResourceAmount> get(final ResourceKey resource) {
+    public long get(final ResourceKey resource) {
         return list.get(resource);
+    }
+
+    @Override
+    public boolean contains(final ResourceKey resource) {
+        return list.contains(resource);
     }
 
     @Override

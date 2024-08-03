@@ -29,14 +29,12 @@ public class InMemoryStorageImpl implements Storage {
     @Override
     public long extract(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
         ResourceAmount.validate(resource, amount);
-
-        return list.get(resource).map(resourceAmount -> {
-            final long maxExtract = Math.min(
-                resourceAmount.getAmount(),
-                amount
-            );
-            return doExtract(resource, maxExtract, action);
-        }).orElse(0L);
+        final long availableAmount = list.get(resource);
+        if (availableAmount == 0) {
+            return 0;
+        }
+        final long maxExtract = Math.min(availableAmount, amount);
+        return doExtract(resource, maxExtract, action);
     }
 
     private long doExtract(final ResourceKey resource, final long amount, final Action action) {
@@ -59,7 +57,7 @@ public class InMemoryStorageImpl implements Storage {
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return list.getAll();
+        return list.copyState();
     }
 
     @Override

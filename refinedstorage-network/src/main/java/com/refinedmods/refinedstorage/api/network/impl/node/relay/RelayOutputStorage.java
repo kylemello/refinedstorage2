@@ -65,16 +65,16 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
     void setDelegate(@Nullable final StorageNetworkComponent delegate) {
         if (this.delegate != null) {
             parentComposites.forEach(parent -> getAll().forEach(resourceAmount -> parent.removeFromCache(
-                resourceAmount.getResource(),
-                resourceAmount.getAmount()
+                resourceAmount.resource(),
+                resourceAmount.amount()
             )));
             this.delegate.removeListener(this);
         }
         this.delegate = delegate;
         if (delegate != null) {
             parentComposites.forEach(parent -> getAll().forEach(resourceAmount -> parent.addToCache(
-                resourceAmount.getResource(),
-                resourceAmount.getAmount()
+                resourceAmount.resource(),
+                resourceAmount.amount()
             )));
             delegate.addListener(this);
         }
@@ -142,7 +142,7 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
         }
         return delegate.getAll()
             .stream()
-            .filter(resourceAmount -> filter.isAllowed(resourceAmount.getResource()))
+            .filter(resourceAmount -> filter.isAllowed(resourceAmount.resource()))
             .toList();
     }
 
@@ -153,8 +153,8 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
         }
         return delegate.getAll()
             .stream()
-            .filter(resourceAmount -> filter.isAllowed(resourceAmount.getResource()))
-            .mapToLong(ResourceAmount::getAmount)
+            .filter(resourceAmount -> filter.isAllowed(resourceAmount.resource()))
+            .mapToLong(ResourceAmount::amount)
             .sum();
     }
 
@@ -163,7 +163,7 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
         if (delegate != null && delegate.contains(delegate)) {
             return;
         }
-        final ResourceKey resource = change.resourceAmount().getResource();
+        final ResourceKey resource = change.resource();
         if (!filter.isAllowed(resource)) {
             return;
         }

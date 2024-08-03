@@ -244,11 +244,11 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         final ItemStack result = createPatternStack(PatternType.PROCESSING);
         final List<Optional<ResourceAmount>> inputs = new ArrayList<>();
         for (int i = 0; i < processingInput.size(); ++i) {
-            inputs.add(Optional.ofNullable(processingInput.get(i)).map(ResourceAmount::copy));
+            inputs.add(Optional.ofNullable(processingInput.get(i)));
         }
         final List<Optional<ResourceAmount>> outputs = new ArrayList<>();
         for (int i = 0; i < processingOutput.size(); ++i) {
-            outputs.add(Optional.ofNullable(processingOutput.get(i)).map(ResourceAmount::copy));
+            outputs.add(Optional.ofNullable(processingOutput.get(i)));
         }
         final ProcessingPatternState patternProcessingState = new ProcessingPatternState(
             inputs,

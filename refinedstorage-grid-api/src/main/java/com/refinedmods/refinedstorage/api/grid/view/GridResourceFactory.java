@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.api.grid.view;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Optional;
 
@@ -13,12 +13,10 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.6")
 public interface GridResourceFactory {
     /**
-     * Transforms a {@link ResourceAmount} into a {@link GridResource}.
-     * It's important to keep the {@link ResourceAmount} instance around to
-     * get updated resource amounts from the {@link GridView} backing list.
+     * Transforms a {@link com.refinedmods.refinedstorage.api.resource.ResourceKey} into a {@link GridResource}.
      *
-     * @param resourceAmount the resource amount from the backing list
+     * @param resource the resource
      * @return the grid resource, if applicable
      */
-    Optional<GridResource> apply(ResourceAmount resourceAmount);
+    Optional<GridResource> apply(ResourceKey resource);
 }

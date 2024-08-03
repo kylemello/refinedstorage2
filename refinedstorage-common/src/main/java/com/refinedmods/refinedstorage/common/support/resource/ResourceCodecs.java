@@ -37,8 +37,8 @@ public final class ResourceCodecs {
         .codec()
         .dispatch(PlatformResourceKey::getResourceType, ResourceType::getMapCodec);
     public static final Codec<ResourceAmount> AMOUNT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        CODEC.fieldOf("resource").forGetter(resourceAmount -> (PlatformResourceKey) resourceAmount.getResource()),
-        Codec.LONG.fieldOf("amount").forGetter(ResourceAmount::getAmount)
+        CODEC.fieldOf("resource").forGetter(resourceAmount -> (PlatformResourceKey) resourceAmount.resource()),
+        Codec.LONG.fieldOf("amount").forGetter(ResourceAmount::amount)
     ).apply(instance, ResourceAmount::new));
     public static final Codec<Optional<ResourceAmount>> AMOUNT_OPTIONAL_CODEC = AMOUNT_CODEC.optionalFieldOf("resource")
         .codec();
@@ -64,12 +64,12 @@ public final class ResourceCodecs {
     };
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceAmount> AMOUNT_STREAM_CODEC = StreamCodec.of(
         (buf, resourceAmount) -> {
-            final ResourceKey resourceKey = resourceAmount.getResource();
+            final ResourceKey resourceKey = resourceAmount.resource();
             if (!(resourceKey instanceof PlatformResourceKey platformResourceKey)) {
                 throw new DecoderException("Cannot encode non-platform resource key");
             }
             STREAM_CODEC.encode(buf, platformResourceKey);
-            buf.writeLong(resourceAmount.getAmount());
+            buf.writeLong(resourceAmount.amount());
         },
         buf -> {
             final PlatformResourceKey resourceKey = STREAM_CODEC.decode(buf);

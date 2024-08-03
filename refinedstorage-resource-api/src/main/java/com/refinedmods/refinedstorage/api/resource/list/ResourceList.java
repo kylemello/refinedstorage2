@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 
@@ -31,7 +32,7 @@ public interface ResourceList {
      * @return the result of the operation
      */
     default OperationResult add(ResourceAmount resourceAmount) {
-        return add(resourceAmount.getResource(), resourceAmount.getAmount());
+        return add(resourceAmount.resource(), resourceAmount.amount());
     }
 
     /**
@@ -53,23 +54,32 @@ public interface ResourceList {
      * @return a result if the removal operation was successful, otherwise an empty {@link Optional}
      */
     default Optional<OperationResult> remove(ResourceAmount resourceAmount) {
-        return remove(resourceAmount.getResource(), resourceAmount.getAmount());
+        return remove(resourceAmount.resource(), resourceAmount.amount());
     }
-
-    /**
-     * Retrieves the resource and its amount from the list, identified by resource.
-     *
-     * @param resource the resource
-     * @return the resource amount if it's present in the list, otherwise an empty {@link Optional}
-     */
-    Optional<ResourceAmount> get(ResourceKey resource);
 
     /**
      * Retrieves all resources and their amounts from the list.
      *
      * @return a list of resource amounts
      */
-    Collection<ResourceAmount> getAll();
+    Collection<ResourceAmount> copyState();
+
+    /**
+     * @return set of resources contained in this list
+     */
+    Set<ResourceKey> getAll();
+
+    /**
+     * @param resource the resource
+     * @return the amount stored, or zero if not stored
+     */
+    long get(ResourceKey resource);
+
+    /**
+     * @param resource the resource
+     * @return whether the list contains this resource
+     */
+    boolean contains(ResourceKey resource);
 
     /**
      * Clears the list.
@@ -77,13 +87,19 @@ public interface ResourceList {
     void clear();
 
     /**
+     * Copies the list.
+     */
+    ResourceList copy();
+
+    /**
      * Represents the result of an operation in a {@link ResourceList}.
      *
-     * @param resourceAmount the current resource amount in the list
-     * @param change         the delta caused by the operation
-     * @param available      whether this resource is still available in the list, or if it was removed
+     * @param resource  the resource affected by the operation
+     * @param amount    teh current amount in the list
+     * @param change    the delta caused by the operation
+     * @param available whether this resource is still available in the list, or if it was removed
      */
     @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
-    record OperationResult(ResourceAmount resourceAmount, long change, boolean available) {
+    record OperationResult(ResourceKey resource, long amount, long change, boolean available) {
     }
 }

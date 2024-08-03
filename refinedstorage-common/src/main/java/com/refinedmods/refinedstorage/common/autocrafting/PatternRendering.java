@@ -28,12 +28,12 @@ public final class PatternRendering {
         }
         return RefinedStorageApi.INSTANCE.getPattern(stack, level).map(pattern -> {
             if (pattern instanceof CraftingPattern craftingPattern
-                && craftingPattern.output().getResource() instanceof ItemResource itemResource) {
+                && craftingPattern.output().resource() instanceof ItemResource itemResource) {
                 return itemResource.toItemStack();
             }
             if (pattern instanceof ProcessingPattern processingPattern
                 && processingPattern.outputs().size() == 1
-                && processingPattern.outputs().getFirst().getResource() instanceof ItemResource itemResource) {
+                && processingPattern.outputs().getFirst().resource() instanceof ItemResource itemResource) {
                 return itemResource.toItemStack();
             }
             return null;

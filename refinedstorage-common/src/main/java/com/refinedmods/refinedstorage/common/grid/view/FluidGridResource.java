@@ -1,23 +1,23 @@
 package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.view.AbstractPlatformGridResource;
-import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
+import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -25,24 +25,22 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-public class FluidGridResource extends AbstractPlatformGridResource {
-    private final FluidResource fluidResource;
+public class FluidGridResource extends AbstractPlatformGridResource<FluidResource> {
     private final int id;
 
-    public FluidGridResource(final ResourceAmount resourceAmount,
+    public FluidGridResource(final FluidResource resource,
                              final String name,
                              final String modId,
                              final String modName,
                              final Set<String> tags,
                              final String tooltip) {
-        super(resourceAmount, name, Map.of(
+        super(resource, name, Map.of(
             GridResourceAttributeKeys.MOD_ID, Set.of(modId),
             GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
             GridResourceAttributeKeys.TAGS, tags,
             GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
         ));
-        this.fluidResource = (FluidResource) resourceAmount.getResource();
-        this.id = BuiltInRegistries.FLUID.getId(fluidResource.fluid());
+        this.id = BuiltInRegistries.FLUID.getId(resource.fluid());
     }
 
     @Override
@@ -51,25 +49,19 @@ public class FluidGridResource extends AbstractPlatformGridResource {
     }
 
     @Override
-    public List<ClientTooltipComponent> getExtractionHints() {
-        return Platform.INSTANCE.getFilledBucket(fluidResource).map(bucket -> MouseClientTooltipComponent.item(
+    public List<ClientTooltipComponent> getExtractionHints(final GridView view) {
+        return Platform.INSTANCE.getFilledBucket(resource).map(bucket -> MouseClientTooltipComponent.item(
             MouseClientTooltipComponent.Type.LEFT,
             bucket,
             null
         )).stream().toList();
     }
 
-    @Nullable
-    @Override
-    public PlatformResourceKey getUnderlyingResource() {
-        return fluidResource;
-    }
-
     @Override
     public void onExtract(final GridExtractMode extractMode,
                           final boolean cursor,
                           final GridExtractionStrategy extractionStrategy) {
-        extractionStrategy.onExtract(fluidResource, extractMode, cursor);
+        extractionStrategy.onExtract(resource, extractMode, cursor);
     }
 
     @Override
@@ -79,22 +71,27 @@ public class FluidGridResource extends AbstractPlatformGridResource {
 
     @Override
     public void render(final GuiGraphics graphics, final int x, final int y) {
-        Platform.INSTANCE.getFluidRenderer().render(graphics.pose(), x, y, fluidResource);
+        Platform.INSTANCE.getFluidRenderer().render(graphics.pose(), x, y, resource);
     }
 
     @Override
-    public String getDisplayedAmount() {
-        return FluidResourceRendering.formatWithUnits(getAmount());
+    public String getDisplayedAmount(final GridView view) {
+        return FluidResourceRendering.formatWithUnits(getAmount(view));
     }
 
     @Override
-    public String getAmountInTooltip() {
-        return FluidResourceRendering.format(getAmount());
+    public String getAmountInTooltip(final GridView view) {
+        return FluidResourceRendering.format(getAmount(view));
+    }
+
+    @Override
+    public boolean belongsToResourceType(final ResourceType resourceType) {
+        return resourceType == ResourceTypes.FLUID;
     }
 
     @Override
     public List<Component> getTooltip() {
-        return Platform.INSTANCE.getFluidRenderer().getTooltip(fluidResource);
+        return Platform.INSTANCE.getFluidRenderer().getTooltip(resource);
     }
 
     @Override

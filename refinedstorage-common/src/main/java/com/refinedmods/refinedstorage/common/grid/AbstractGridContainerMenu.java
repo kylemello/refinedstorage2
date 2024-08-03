@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage.common.api.grid.GridSynchronizer;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
+import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -39,7 +40,7 @@ import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -100,10 +101,10 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         this.active = gridData.active();
 
         final GridViewBuilder viewBuilder = createViewBuilder();
-        gridData.resources().forEach(gridResource -> viewBuilder.withResource(
-            gridResource.resourceAmount().getResource(),
-            gridResource.resourceAmount().getAmount(),
-            gridResource.trackedResource().orElse(null)
+        gridData.resources().forEach(resource -> viewBuilder.withResource(
+            resource.resourceAmount().resource(),
+            resource.resourceAmount().amount(),
+            resource.trackedResource().orElse(null)
         ));
 
         this.view = viewBuilder.build();
@@ -137,12 +138,13 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private Predicate<GridResource> filterResourceType() {
-        return gridResource -> Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
+    private BiPredicate<GridView, GridResource> filterResourceType() {
+        return (v, resource) -> resource instanceof PlatformGridResource platformResource
+            && Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
             RefinedStorageApi.INSTANCE
                 .getResourceTypeRegistry()
                 .get(resourceTypeId)
-                .map(type -> type.isGridResourceBelonging(gridResource))
+                .map(platformResource::belongsToResourceType)
         ).orElse(true);
     }
 
@@ -199,7 +201,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
             view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
             return true;
         } catch (GridQueryParserException e) {
-            view.setFilterAndSort(resource -> false);
+            view.setFilterAndSort((v, resource) -> false);
             return false;
         }
     }

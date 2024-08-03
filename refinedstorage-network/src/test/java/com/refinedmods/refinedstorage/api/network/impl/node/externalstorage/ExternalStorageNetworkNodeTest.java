@@ -592,7 +592,7 @@ class ExternalStorageNetworkNodeTest {
     ) {
         final AtomicBoolean found = new AtomicBoolean();
         networkStorage.addListener(change -> {
-            if (change.resourceAmount().getResource().equals(A)) {
+            if (change.resource().equals(A)) {
                 found.set(networkStorage.findTrackedResourceByActorType(A, FakeActor.class).isPresent());
             }
         });

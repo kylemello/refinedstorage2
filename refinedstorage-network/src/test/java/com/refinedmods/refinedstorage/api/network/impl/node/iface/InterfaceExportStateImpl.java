@@ -52,10 +52,10 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         final List<ResourceKey> candidates = new ArrayList<>();
         candidates.add(A);
         // Simulate the behavior from FuzzyRootStorage
-        if (rootStorage.get(A_ALTERNATIVE).isPresent()) {
+        if (rootStorage.contains(A_ALTERNATIVE)) {
             candidates.add(A_ALTERNATIVE);
         }
-        if (rootStorage.get(A_ALTERNATIVE2).isPresent()) {
+        if (rootStorage.contains(A_ALTERNATIVE2)) {
             candidates.add(A_ALTERNATIVE2);
         }
         return candidates;
@@ -83,7 +83,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return null;
         }
-        return resourceAmount.getResource();
+        return resourceAmount.resource();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return 0L;
         }
-        return resourceAmount.getAmount();
+        return resourceAmount.amount();
     }
 
     @Nullable
@@ -104,7 +104,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return null;
         }
-        return resourceAmount.getResource();
+        return resourceAmount.resource();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
         if (resourceAmount == null) {
             return 0L;
         }
-        return resourceAmount.getAmount();
+        return resourceAmount.amount();
     }
 
     @Override
@@ -131,10 +131,13 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
     public void shrinkExportedAmount(final int slotIndex, final long amount) {
         validateIndex(slotIndex);
         final ResourceAmount resourceAmount = this.current.get(slotIndex);
-        if (resourceAmount.getAmount() - amount <= 0) {
+        if (resourceAmount.amount() - amount <= 0) {
             this.current.remove(slotIndex);
         } else {
-            resourceAmount.decrement(amount);
+            this.current.put(
+                slotIndex,
+                new ResourceAmount(resourceAmount.resource(), resourceAmount.amount() - amount)
+            );
         }
     }
 
@@ -142,7 +145,10 @@ public class InterfaceExportStateImpl implements InterfaceExportState {
     public void growExportedAmount(final int slotIndex, final long amount) {
         validateIndex(slotIndex);
         final ResourceAmount resourceAmount = this.current.get(slotIndex);
-        resourceAmount.increment(amount);
+        this.current.put(
+            slotIndex,
+            new ResourceAmount(resourceAmount.resource(), resourceAmount.amount() + amount)
+        );
     }
 
     @Override

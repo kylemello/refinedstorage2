@@ -13,8 +13,8 @@ class ResourceContainerSlot {
 
     ResourceContainerSlot(final ResourceAmount resourceAmount) {
         this.resourceAmount = resourceAmount;
-        this.stackRepresentation = resourceAmount.getResource() instanceof ItemResource itemResource
-            ? itemResource.toItemStack(resourceAmount.getAmount())
+        this.stackRepresentation = resourceAmount.resource() instanceof ItemResource itemResource
+            ? itemResource.toItemStack(resourceAmount.amount())
             : ItemStack.EMPTY;
     }
 
@@ -23,7 +23,7 @@ class ResourceContainerSlot {
     }
 
     PlatformResourceKey getPlatformResource() {
-        return (PlatformResourceKey) resourceAmount.getResource();
+        return (PlatformResourceKey) resourceAmount.resource();
     }
 
     ItemStack getStackRepresentation() {
@@ -31,7 +31,7 @@ class ResourceContainerSlot {
     }
 
     ResourceContainerSlot withAmount(final long newAmount) {
-        return new ResourceContainerSlot(new ResourceAmount(resourceAmount.getResource(), newAmount));
+        return new ResourceContainerSlot(new ResourceAmount(resourceAmount.resource(), newAmount));
     }
 
     @Override

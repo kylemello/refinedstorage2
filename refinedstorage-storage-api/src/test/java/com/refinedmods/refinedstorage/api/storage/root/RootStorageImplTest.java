@@ -11,8 +11,6 @@ import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -116,9 +114,8 @@ class RootStorageImplTest {
             verify(listener, atMost(1)).onChanged(changedResource.capture());
 
             assertThat(changedResource.getValue().change()).isEqualTo(8);
-            assertThat(changedResource.getValue().resourceAmount()).usingRecursiveComparison().isEqualTo(
-                new ResourceAmount(A, 10)
-            );
+            assertThat(changedResource.getValue().resource()).isEqualTo(A);
+            assertThat(changedResource.getValue().amount()).isEqualTo(10);
         } else {
             verify(listener, never()).onChanged(any());
         }
@@ -147,9 +144,8 @@ class RootStorageImplTest {
             verify(listener, atMost(1)).onChanged(changedResource.capture());
 
             assertThat(changedResource.getValue().change()).isEqualTo(-5);
-            assertThat(changedResource.getValue().resourceAmount()).usingRecursiveComparison().isEqualTo(
-                new ResourceAmount(A, 3)
-            );
+            assertThat(changedResource.getValue().resource()).isEqualTo(A);
+            assertThat(changedResource.getValue().amount()).isEqualTo(3);
         } else {
             verify(listener, never()).onChanged(any());
         }
@@ -211,25 +207,35 @@ class RootStorageImplTest {
     }
 
     @Test
-    void shouldBeAbleToRetrieveResource() {
+    void shouldRetrieveIfResourceIsContained() {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
 
         sut.addSource(storage);
 
-        // Act
-        final Optional<ResourceAmount> resource = sut.get(A);
+        // Act & assert
+        assertThat(sut.contains(A)).isTrue();
+        assertThat(sut.contains(B)).isFalse();
+    }
 
-        // Assert
-        assertThat(resource).isPresent();
-        assertThat(resource.get()).usingRecursiveComparison().isEqualTo(new ResourceAmount(A, 50));
-        assertThat(sut.findTrackedResourceByActorType(A, EmptyActor.class)).isEmpty();
+    @Test
+    void shouldRetrieveResourceAmount() {
+        // Arrange
+        final Storage storage = new LimitedStorageImpl(100);
+        storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.extract(A, 25, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        sut.addSource(storage);
+
+        // Act & assert
+        assertThat(sut.get(A)).isEqualTo(25);
+        assertThat(sut.get(B)).isZero();
     }
 
     @Test
     @SuppressWarnings("AssertBetweenInconvertibleTypes")
-    void shouldBeAbleToRetrieveTrackedResource() {
+    void shouldRetrieveTrackedResource() {
         // Arrange
         final Storage storage = new TrackedStorageImpl(
             new LimitedStorageImpl(100),
@@ -242,26 +248,11 @@ class RootStorageImplTest {
         sut.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Assert
-        final Optional<ResourceAmount> value = sut.get(A);
-        assertThat(value).isPresent();
-        assertThat(value.get()).usingRecursiveComparison().isEqualTo(new ResourceAmount(A, 50));
-
+        assertThat(sut.contains(A)).isTrue();
         assertThat(sut.findTrackedResourceByActorType(A, EmptyActor.class))
             .get()
             .usingRecursiveComparison()
             .isEqualTo(new TrackedResource("Empty", 0));
-    }
-
-    @Test
-    void shouldNotBeAbleToRetrieveNonExistentResource() {
-        // Arrange
-        sut.addSource(new LimitedStorageImpl(100));
-
-        // Act
-        final Optional<ResourceAmount> resource = sut.get(A);
-
-        // Assert
-        assertThat(resource).isEmpty();
     }
 
     @Test

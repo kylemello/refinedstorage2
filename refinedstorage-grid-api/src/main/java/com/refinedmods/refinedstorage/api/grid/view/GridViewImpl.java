@@ -1,10 +1,8 @@
 package com.refinedmods.refinedstorage.api.grid.view;
 
 import com.refinedmods.refinedstorage.api.core.CoreValidations;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -35,7 +33,7 @@ public class GridViewImpl implements GridView {
 
     private GridSortingType sortingType;
     private GridSortingDirection sortingDirection = GridSortingDirection.ASCENDING;
-    private Predicate<GridResource> filter = resource -> true;
+    private BiPredicate<GridView, GridResource> filter = (view, resource) -> true;
     @Nullable
     private Runnable listener;
     private boolean preventSorting;
@@ -70,8 +68,8 @@ public class GridViewImpl implements GridView {
     }
 
     @Override
-    public Predicate<GridResource> setFilterAndSort(final Predicate<GridResource> predicate) {
-        final Predicate<GridResource> previousPredicate = filter;
+    public BiPredicate<GridView, GridResource> setFilterAndSort(final BiPredicate<GridView, GridResource> predicate) {
+        final BiPredicate<GridView, GridResource> previousPredicate = filter;
         this.filter = predicate;
         sort();
         return previousPredicate;
@@ -95,17 +93,22 @@ public class GridViewImpl implements GridView {
     }
 
     @Override
+    public long getAmount(final ResourceKey resource) {
+        return backingList.get(resource);
+    }
+
+    @Override
     public void sort() {
         LOGGER.info("Sorting grid view");
 
         viewListIndex.clear();
 
         final List<GridResource> newViewList = new ArrayList<>();
-        for (final ResourceAmount backingListItem : backingList.getAll()) {
-            resourceFactory.apply(backingListItem).ifPresent(gridResource -> {
-                if (filter.test(gridResource)) {
+        for (final ResourceKey resource : backingList.getAll()) {
+            resourceFactory.apply(resource).ifPresent(gridResource -> {
+                if (filter.test(this, gridResource)) {
                     newViewList.add(gridResource);
-                    viewListIndex.put(backingListItem.getResource(), gridResource);
+                    viewListIndex.put(resource, gridResource);
                 }
             });
         }
@@ -158,7 +161,7 @@ public class GridViewImpl implements GridView {
                                                     final ResourceList.OperationResult operationResult,
                                                     final GridResource oldGridResource) {
         LOGGER.debug("{} was zeroed, unzeroing", resource);
-        final GridResource newResource = resourceFactory.apply(operationResult.resourceAmount()).orElseThrow();
+        final GridResource newResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
         viewListIndex.put(resource, newResource);
         final int index = CoreValidations.validateNotNegative(
             viewList.indexOf(oldGridResource),
@@ -198,8 +201,8 @@ public class GridViewImpl implements GridView {
 
     private void handleChangeForNewResource(final ResourceKey resource,
                                             final ResourceList.OperationResult operationResult) {
-        final GridResource gridResource = resourceFactory.apply(operationResult.resourceAmount()).orElseThrow();
-        if (filter.test(gridResource)) {
+        final GridResource gridResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
+        if (filter.test(this, gridResource)) {
             LOGGER.debug("Filter allowed, actually adding {}", resource);
             viewListIndex.put(resource, gridResource);
             addIntoView(gridResource);
@@ -249,9 +252,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public ResourceList copyBackingList() {
-        final ResourceList copy = ResourceListImpl.create();
-        backingList.getAll().forEach(copy::add);
-        return copy;
+        return backingList.copy();
     }
 
     @Override

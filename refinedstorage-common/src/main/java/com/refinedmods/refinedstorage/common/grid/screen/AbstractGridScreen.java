@@ -262,7 +262,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (!(resource instanceof PlatformGridResource platformResource)) {
             return;
         }
-        final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount();
+        final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount(getMenu().getView());
         final int color = resource.isZeroed()
             ? requireNonNullElse(ChatFormatting.RED.getColor(), 15)
             : requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
@@ -319,7 +319,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             addDetailedTooltip(view, platformResource, processedLines);
         }
         if (!platformResource.isZeroed()) {
-            processedLines.addAll(platformResource.getExtractionHints());
+            processedLines.addAll(platformResource.getExtractionHints(getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
     }
@@ -327,7 +327,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private void addDetailedTooltip(final GridView view,
                                     final PlatformGridResource platformResource,
                                     final List<ClientTooltipComponent> lines) {
-        final String amountInTooltip = platformResource.isZeroed() ? "0" : platformResource.getAmountInTooltip();
+        final String amountInTooltip = platformResource.isZeroed()
+            ? "0"
+            : platformResource.getAmountInTooltip(getMenu().getView());
         lines.add(new SmallTextClientTooltipComponent(
             createTranslation("misc", "total", amountInTooltip).withStyle(ChatFormatting.GRAY)
         ));

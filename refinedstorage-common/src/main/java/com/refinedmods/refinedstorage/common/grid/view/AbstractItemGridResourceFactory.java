@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Optional;
@@ -18,8 +18,8 @@ import net.minecraft.world.item.TooltipFlag;
 
 public abstract class AbstractItemGridResourceFactory implements GridResourceFactory {
     @Override
-    public Optional<GridResource> apply(final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof ItemResource itemResource)) {
+    public Optional<GridResource> apply(final ResourceKey resource) {
+        if (!(resource instanceof ItemResource itemResource)) {
             return Optional.empty();
         }
         final Item item = itemResource.item();
@@ -30,7 +30,7 @@ public abstract class AbstractItemGridResourceFactory implements GridResourceFac
         final Set<String> tags = getTags(item);
         final String tooltip = getTooltip(itemStack);
         return Optional.of(new ItemGridResource(
-            resourceAmount,
+            itemResource,
             itemStack,
             name,
             modId,

@@ -250,7 +250,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         resourceSlot.getPrimaryResourceFactory().create(carried).ifPresent(primaryResourceInstance -> lines.add(
             MouseClientTooltipComponent.resource(
                 MouseClientTooltipComponent.Type.LEFT,
-                primaryResourceInstance.getResource(),
+                primaryResourceInstance.resource(),
                 null
             )
         ));
@@ -258,7 +258,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             final var result = alternativeResourceFactory.create(carried);
             result.ifPresent(alternativeResourceInstance -> lines.add(MouseClientTooltipComponent.resource(
                 MouseClientTooltipComponent.Type.RIGHT,
-                alternativeResourceInstance.getResource(),
+                alternativeResourceInstance.resource(),
                 null
             )));
         }
