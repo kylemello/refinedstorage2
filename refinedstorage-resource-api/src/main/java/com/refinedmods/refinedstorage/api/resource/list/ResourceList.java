@@ -72,6 +72,12 @@ public interface ResourceList {
     Collection<ResourceAmount> getAll();
 
     /**
+     * @param resource the resource
+     * @return the amount stored, or zero if not stored
+     */
+    long getAmount(ResourceKey resource);
+
+    /**
      * Clears the list.
      */
     void clear();

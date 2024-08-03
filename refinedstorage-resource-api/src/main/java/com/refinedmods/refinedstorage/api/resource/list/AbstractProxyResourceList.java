@@ -40,6 +40,11 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     }
 
     @Override
+    public long getAmount(final ResourceKey resource) {
+        return delegate.getAmount(resource);
+    }
+
+    @Override
     public void clear() {
         delegate.clear();
     }

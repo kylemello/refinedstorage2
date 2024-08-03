@@ -38,6 +38,7 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(TestResource.A, 10)
         );
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
     }
 
     @Test
@@ -54,6 +55,7 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(TestResource.A, 10)
         );
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(10);
     }
 
     @Test
@@ -76,6 +78,7 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(TestResource.A, 15)
         );
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
     }
 
     @Test
@@ -105,6 +108,8 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 15),
             new ResourceAmount(TestResource.B, 3)
         );
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(3);
     }
 
     @Test
@@ -150,6 +155,9 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 15),
             new ResourceAmount(TestResource.B, 6)
         );
+
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
     }
 
     @Test
@@ -175,6 +183,9 @@ abstract class AbstractResourceListTest {
             new ResourceAmount(TestResource.A, 15),
             new ResourceAmount(TestResource.B, 6)
         );
+
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(15);
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
     }
 
     @Test
@@ -196,6 +207,9 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(TestResource.B, 6)
         );
+
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(0);
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
     }
 
     @Test
@@ -220,6 +234,9 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(TestResource.B, 6)
         );
+
+        assertThat(list.getAmount(TestResource.A)).isEqualTo(0);
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
     }
 
     @Test
@@ -241,6 +258,9 @@ abstract class AbstractResourceListTest {
         assertThat(list.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(TestResource.B, 6)
         );
+
+        assertThat(list.getAmount(TestResource.A)).isZero();
+        assertThat(list.getAmount(TestResource.B)).isEqualTo(6);
     }
 
     @Test
@@ -315,5 +335,8 @@ abstract class AbstractResourceListTest {
 
         assertThat(contentsBeforeClear).hasSize(2);
         assertThat(contentsAfterClear).isEmpty();
+
+        assertThat(list.getAmount(TestResource.A)).isZero();
+        assertThat(list.getAmount(TestResource.B)).isZero();
     }
 }

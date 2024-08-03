@@ -39,6 +39,12 @@ public interface RootStorage extends Storage, TrackedStorage {
     Optional<ResourceAmount> get(ResourceKey resource);
 
     /**
+     * @param resource the resource
+     * @return the amount stored, or zero if not stored
+     */
+    long getAmount(ResourceKey resource);
+
+    /**
      * Sorts the sources in the backing storage.
      */
     void sortSources();

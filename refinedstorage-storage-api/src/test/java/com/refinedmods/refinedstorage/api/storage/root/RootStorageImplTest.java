@@ -211,7 +211,7 @@ class RootStorageImplTest {
     }
 
     @Test
-    void shouldBeAbleToRetrieveResource() {
+    void shouldRetrieveResource() {
         // Arrange
         final Storage storage = new LimitedStorageImpl(100);
         storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -228,8 +228,22 @@ class RootStorageImplTest {
     }
 
     @Test
+    void shouldRetrieveResourceAmount() {
+        // Arrange
+        final Storage storage = new LimitedStorageImpl(100);
+        storage.insert(A, 50, Action.EXECUTE, EmptyActor.INSTANCE);
+        storage.extract(A, 25, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        sut.addSource(storage);
+
+        // Act & assert
+        assertThat(sut.getAmount(A)).isEqualTo(25);
+        assertThat(sut.getAmount(B)).isZero();
+    }
+
+    @Test
     @SuppressWarnings("AssertBetweenInconvertibleTypes")
-    void shouldBeAbleToRetrieveTrackedResource() {
+    void shouldRetrieveTrackedResource() {
         // Arrange
         final Storage storage = new TrackedStorageImpl(
             new LimitedStorageImpl(100),
@@ -253,7 +267,7 @@ class RootStorageImplTest {
     }
 
     @Test
-    void shouldNotBeAbleToRetrieveNonExistentResource() {
+    void shouldNotRetrieveNonExistentResource() {
         // Arrange
         sut.addSource(new LimitedStorageImpl(100));
 

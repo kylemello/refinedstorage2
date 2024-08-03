@@ -96,6 +96,12 @@ public class ResourceListImpl implements ResourceList {
     }
 
     @Override
+    public long getAmount(final ResourceKey resource) {
+        final ResourceAmount entry = entries.get(resource);
+        return entry != null ? entry.getAmount() : 0;
+    }
+
+    @Override
     public void clear() {
         entries.clear();
     }

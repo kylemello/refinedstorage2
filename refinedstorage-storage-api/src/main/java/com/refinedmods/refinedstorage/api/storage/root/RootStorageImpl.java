@@ -68,6 +68,11 @@ public class RootStorageImpl implements RootStorage {
     }
 
     @Override
+    public long getAmount(final ResourceKey resource) {
+        return list.getAmount(resource);
+    }
+
+    @Override
     public long extract(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
         return storage.extract(resource, amount, action, actor);
     }
