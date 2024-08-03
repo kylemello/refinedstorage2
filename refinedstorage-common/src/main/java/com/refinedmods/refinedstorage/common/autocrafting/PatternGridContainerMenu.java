@@ -13,7 +13,6 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
-import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
 import javax.annotation.Nullable;
 
@@ -47,8 +46,12 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         super(Menus.INSTANCE.getPatternGrid(), syncId, playerInventory, patternGridData.gridData());
         this.patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
         this.patternOutput = new PatternOutputContainer();
-        this.processingInput = ResourceContainerImpl.createForFilter(patternGridData.processingInputData());
-        this.processingOutput = ResourceContainerImpl.createForFilter(patternGridData.processingOutputData());
+        this.processingInput = PatternGridBlockEntity.createProcessingMatrixContainer(
+            patternGridData.processingInputData()
+        );
+        this.processingOutput = PatternGridBlockEntity.createProcessingMatrixContainer(
+            patternGridData.processingOutputData()
+        );
         this.craftingMatrix = new CraftingMatrix(null, 3, 3);
         this.craftingResult = new ResultContainer();
         onScreenReady(0);

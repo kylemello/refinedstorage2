@@ -22,6 +22,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Clicking on a scrollbar no longer makes a clicking sound.
 -   Incorrect and outdated (mentioning NBT tags) help explanations for fuzzy mode.
+-   Amount screen allowing more than the maximum for fluids.
+-   Potential text overflow in the Grid for localization with long "Grid" text.
 
 ## [2.0.0-milestone.4.5] - 2024-07-26
 

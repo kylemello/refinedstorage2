@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -40,6 +42,8 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl.setResourceContainerData;
+
 public class PatternGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops,
     NetworkNodeExtendedMenuProvider<PatternGridData> {
     private static final String TAG_PATTERN_INPUT = "pattern_input";
@@ -50,8 +54,8 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     private static final String TAG_PATTERN_TYPE = "processing";
 
     private final CraftingState craftingState = new CraftingState(this::setChanged, this::getLevel);
-    private final ResourceContainer processingInput = ResourceContainerImpl.createForFilter(81);
-    private final ResourceContainer processingOutput = ResourceContainerImpl.createForFilter(81);
+    private final ResourceContainer processingInput = createProcessingMatrixContainer();
+    private final ResourceContainer processingOutput = createProcessingMatrixContainer();
     private final FilteredContainer patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
     private final FilteredContainer patternOutput = new PatternOutputContainer();
     private boolean fuzzyMode;
@@ -333,5 +337,22 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     static boolean isValidPattern(final ItemStack stack) {
         return stack.getItem() instanceof PatternItem;
+    }
+
+    static ResourceContainer createProcessingMatrixContainer() {
+        return new ResourceContainerImpl(
+            81,
+            resource -> resource instanceof PlatformResourceKey platformResource
+                ? platformResource.getProcessingPatternLimit()
+                : 1,
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
+        );
+    }
+
+    static ResourceContainer createProcessingMatrixContainer(final ResourceContainerData data) {
+        final ResourceContainer filterContainer = createProcessingMatrixContainer();
+        setResourceContainerData(data, filterContainer);
+        return filterContainer;
     }
 }

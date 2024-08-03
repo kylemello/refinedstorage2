@@ -24,11 +24,14 @@ public class CustomCheckboxWidget extends AbstractButton {
         "widget/checkbox_highlighted"
     );
     private static final ResourceLocation CHECKBOX_SPRITE = ResourceLocation.withDefaultNamespace("widget/checkbox");
+    private static final int CHECKBOX_TEXT_SPACING = 4;
 
+    private boolean selected;
+    private final TextMarquee marquee;
     private final Size size;
+
     @Nullable
     private OnPressed onPressed;
-    private boolean selected;
 
     public CustomCheckboxWidget(final int x,
                                 final int y,
@@ -36,9 +39,24 @@ public class CustomCheckboxWidget extends AbstractButton {
                                 final Font font,
                                 final boolean selected,
                                 final Size size) {
-        super(x, y, size.widthHeight + 4 + font.width(text), size.widthHeight, text);
+        this(x, y, size.widthHeight + CHECKBOX_TEXT_SPACING + font.width(text), text, font, selected, size);
+    }
+
+    public CustomCheckboxWidget(final int x,
+                                final int y,
+                                final int maxWidth,
+                                final Component text,
+                                final Font font,
+                                final boolean selected,
+                                final Size size) {
+        super(x, y, getWidth(maxWidth, text, font, size), size.widthHeight, text);
+        this.marquee = new TextMarquee(text, maxWidth - CHECKBOX_TEXT_SPACING - size.widthHeight);
         this.selected = selected;
         this.size = size;
+    }
+
+    private static int getWidth(final int maxWidth, final Component text, final Font font, final Size size) {
+        return Math.min(maxWidth, size.widthHeight + CHECKBOX_TEXT_SPACING + font.width(text));
     }
 
     public void setOnPressed(@Nullable final OnPressed onPressed) {
@@ -82,9 +100,9 @@ public class CustomCheckboxWidget extends AbstractButton {
         }
         graphics.blitSprite(sprite, getX(), getY(), size.widthHeight, size.widthHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        final int textX = getX() + size.widthHeight + 4;
+        final int textX = getX() + size.widthHeight + CHECKBOX_TEXT_SPACING;
         final int textY = (getY() + (height >> 1)) - (9 >> 1);
-        graphics.drawString(font, getMessage(), textX, textY, 4210752, false);
+        marquee.render(graphics, textX, textY, font, isHovered);
     }
 
     @FunctionalInterface

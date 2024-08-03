@@ -56,22 +56,7 @@ public class ResourceSlot extends Slot {
     }
 
     public ResourceSlot forAmountScreen(final int newX, final int newY) {
-        return new ResourceSlot(resourceContainer, container, getContainerSlot(), helpText, newX, newY, type) {
-            @Override
-            public boolean canModifyAmount() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldRenderAmount() {
-                return false;
-            }
-
-            @Override
-            public boolean isDisabled() {
-                return true;
-            }
-        };
+        return new DisabledResourceSlot(resourceContainer, container, getContainerSlot(), helpText, newX, newY, type);
     }
 
     public boolean shouldRenderAmount() {
@@ -200,10 +185,10 @@ public class ResourceSlot extends Slot {
 
     public double getMaxAmountWhenModifying() {
         final ResourceKey resource = getResource();
-        if (resource == null) {
+        if (!(resource instanceof PlatformResourceKey platformResource)) {
             return 0;
         }
-        return resourceContainer.getMaxAmount(resource);
+        return platformResource.getResourceType().getDisplayAmount(resourceContainer.getMaxAmount(resource));
     }
 
     public Component getHelpText() {

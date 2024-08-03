@@ -3,19 +3,22 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
+import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.CustomCheckboxWidget;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +26,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 import static java.util.Objects.requireNonNull;
 
 public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMenu> implements
@@ -38,6 +42,10 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private static final MutableComponent INPUTS = createTranslation("gui", "pattern_grid.processing.inputs");
     private static final MutableComponent OUTPUTS = createTranslation("gui", "pattern_grid.processing.outputs");
     private static final int CREATE_PATTERN_BUTTON_SIZE = 16;
+    private static final SmallTextClientTooltipComponent CLICK_TO_CONFIGURE_AMOUNT_AND_ALTERNATIVES =
+        new SmallTextClientTooltipComponent(
+            createTranslationAsHeading("gui", "pattern_grid.processing.click_to_configure_amount_and_alternatives")
+        );
 
     private static final int INSET_PADDING = 4;
     private static final int PROCESSING_INSET_Y_PADDING = 9;
@@ -72,12 +80,14 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private ScrollbarWidget processingScrollbar;
 
     private final Map<PatternType, PatternTypeButton> patternTypeButtons = new EnumMap<>(PatternType.class);
+    private final Inventory playerInventory;
 
     public PatternGridScreen(final PatternGridContainerMenu menu, final Inventory inventory, final Component title) {
         super(menu, inventory, title, 177);
         this.inventoryLabelY = 153;
         this.imageWidth = 193;
         this.imageHeight = 249;
+        this.playerInventory = inventory;
     }
 
     @Override
@@ -96,7 +106,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         menu.setListener(this);
     }
 
-    private ImageButton createCreatePatternButton(final int x, final int y) {
+    private HoveredImageButton createCreatePatternButton(final int x, final int y) {
         final HoveredImageButton button = new HoveredImageButton(
             x,
             y,
@@ -127,7 +137,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         }
     }
 
-    private ImageButton createClearButton(final PatternType patternType) {
+    private HoveredImageButton createClearButton(final PatternType patternType) {
         final HoveredImageButton button = new HoveredImageButton(
             getClearButtonX(patternType),
             getClearButtonY(patternType),
@@ -139,7 +149,6 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         );
         button.setTooltip(Tooltip.create(CLEAR));
         button.visible = isClearButtonVisible();
-        button.active = getMenu().canCreatePattern();
         return button;
     }
 
@@ -370,6 +379,24 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
             && mouseX < insetContentX + INDIVIDUAL_PROCESSING_MATRIX_SIZE
             && mouseY >= insetContentY + PROCESSING_INSET_Y_PADDING
             && mouseY < insetContentY + PROCESSING_INSET_Y_PADDING + INDIVIDUAL_PROCESSING_MATRIX_SIZE;
+    }
+
+    @Override
+    protected void addResourceSlotTooltips(final ResourceSlot resourceSlot,
+                                           final List<ClientTooltipComponent> tooltip) {
+        if (resourceSlot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
+            tooltip.add(CLICK_TO_CONFIGURE_AMOUNT_AND_ALTERNATIVES);
+        } else {
+            super.addResourceSlotTooltips(resourceSlot, tooltip);
+        }
+    }
+
+    @Override
+    protected Screen createResourceAmountScreen(final ResourceSlot slot) {
+        if (slot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
+            return new AlternativesScreen(this, playerInventory, slot);
+        }
+        return super.createResourceAmountScreen(slot);
     }
 
     @Override

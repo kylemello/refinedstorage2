@@ -373,10 +373,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public static ResourceContainer createForFilter(final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(data.resources().size());
-        for (int i = 0; i < data.resources().size(); ++i) {
-            final int ii = i;
-            data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
-        }
+        setResourceContainerData(data, resourceContainer);
         return resourceContainer;
     }
 
@@ -405,10 +402,15 @@ public class ResourceContainerImpl implements ResourceContainer {
     public static ResourceContainer createForFilter(final ResourceFactory resourceFactory,
                                                     final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(resourceFactory, data.resources().size());
+        setResourceContainerData(data, resourceContainer);
+        return resourceContainer;
+    }
+
+    public static void setResourceContainerData(final ResourceContainerData data,
+                                                final ResourceContainer resourceContainer) {
         for (int i = 0; i < data.resources().size(); ++i) {
             final int ii = i;
             data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
         }
-        return resourceContainer;
     }
 }

@@ -28,6 +28,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.Rect2i;
@@ -44,6 +45,13 @@ import static java.util.Objects.requireNonNullElse;
 public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     private static final SmallTextClientTooltipComponent CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("gui", "filter_slot.click_to_clear")
+    );
+    private static final SmallTextClientTooltipComponent CLICK_TO_CONFIGURE_AMOUNT =
+        new SmallTextClientTooltipComponent(
+            createTranslationAsHeading("gui", "filter_slot.click_to_configure_amount")
+        );
+    private static final SmallTextClientTooltipComponent SHIFT_CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
+        createTranslationAsHeading("gui", "filter_slot.shift_click_to_clear")
     );
     private static final ClientTooltipComponent EMPTY_FILTER = ClientTooltipComponent.create(
         createTranslationAsHeading("gui", "filter_slot.empty_filter").getVisualOrderText()
@@ -275,7 +283,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             .map(ClientTooltipComponent::create)
             .collect(Collectors.toList());
         if (!resourceSlot.isDisabled() && !resourceSlot.supportsItemSlotInteractions()) {
-            tooltip.add(CLICK_TO_CLEAR);
+            addResourceSlotTooltips(resourceSlot, tooltip);
         }
         if (resourceSlot.supportsItemSlotInteractions()) {
             RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies()
@@ -290,6 +298,15 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
                 .forEach(tooltip::add);
         }
         return tooltip;
+    }
+
+    protected void addResourceSlotTooltips(final ResourceSlot slot, final List<ClientTooltipComponent> tooltip) {
+        if (slot.canModifyAmount()) {
+            tooltip.add(CLICK_TO_CONFIGURE_AMOUNT);
+            tooltip.add(SHIFT_CLICK_TO_CLEAR);
+        } else {
+            tooltip.add(CLICK_TO_CLEAR);
+        }
     }
 
     @Override
@@ -317,9 +334,13 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             && isNotTryingToRemoveFilter
             && isNotCarryingItem;
         if (canOpen && minecraft != null) {
-            minecraft.setScreen(new ResourceAmountScreen(this, playerInventory, slot));
+            minecraft.setScreen(createResourceAmountScreen(slot));
         }
         return canOpen;
+    }
+
+    protected Screen createResourceAmountScreen(final ResourceSlot slot) {
+        return new ResourceAmountScreen(this, playerInventory, slot);
     }
 
     protected boolean canInteractWithResourceSlot(final ResourceSlot resourceSlot,

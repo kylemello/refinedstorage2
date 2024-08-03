@@ -14,6 +14,7 @@ public final class AmountScreenConfiguration<T extends Number> {
     private final int amountFieldWidth;
     private final Vector3f amountFieldPosition;
     private final Vector3f actionButtonsStartPosition;
+    private final boolean horizontalActionButtons;
     private final boolean actionButtonsEnabled;
     @Nullable
     private final T minAmount;
@@ -30,6 +31,7 @@ public final class AmountScreenConfiguration<T extends Number> {
                                       final int amountFieldWidth,
                                       final Vector3f amountFieldPosition,
                                       final Vector3f actionButtonsStartPosition,
+                                      final boolean horizontalActionButtons,
                                       final boolean actionButtonsEnabled,
                                       @Nullable final T minAmount,
                                       @Nullable final T maxAmount,
@@ -42,6 +44,7 @@ public final class AmountScreenConfiguration<T extends Number> {
         this.amountFieldWidth = amountFieldWidth;
         this.amountFieldPosition = amountFieldPosition;
         this.actionButtonsStartPosition = actionButtonsStartPosition;
+        this.horizontalActionButtons = horizontalActionButtons;
         this.actionButtonsEnabled = actionButtonsEnabled;
         this.minAmount = minAmount;
         this.maxAmount = maxAmount;
@@ -81,6 +84,10 @@ public final class AmountScreenConfiguration<T extends Number> {
         return actionButtonsStartPosition;
     }
 
+    public boolean isHorizontalActionButtons() {
+        return horizontalActionButtons;
+    }
+
     public boolean isActionButtonsEnabled() {
         return actionButtonsEnabled;
     }
@@ -110,6 +117,7 @@ public final class AmountScreenConfiguration<T extends Number> {
         private int amountFieldWidth = 68;
         private Vector3f amountFieldPosition = new Vector3f(0, 0, 0);
         private Vector3f actionButtonsStartPosition = new Vector3f(0, 0, 0);
+        private boolean horizontalActionButtons = false;
         private boolean actionButtonsEnabled = true;
         @Nullable
         private T minAmount;
@@ -167,6 +175,13 @@ public final class AmountScreenConfiguration<T extends Number> {
             return this;
         }
 
+        public AmountScreenConfigurationBuilder<T> withHorizontalActionButtons(
+            final boolean newHorizontalActionButtons
+        ) {
+            this.horizontalActionButtons = newHorizontalActionButtons;
+            return this;
+        }
+
         public AmountScreenConfigurationBuilder<T> withActionButtonsEnabled(
             final boolean newActionButtonsEnabled
         ) {
@@ -199,6 +214,7 @@ public final class AmountScreenConfiguration<T extends Number> {
                 amountFieldWidth,
                 amountFieldPosition,
                 actionButtonsStartPosition,
+                horizontalActionButtons,
                 actionButtonsEnabled,
                 minAmount,
                 maxAmount,

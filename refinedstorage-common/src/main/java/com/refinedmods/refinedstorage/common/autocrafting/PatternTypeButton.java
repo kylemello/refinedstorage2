@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 
+import java.util.function.Consumer;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -22,7 +24,7 @@ class PatternTypeButton extends HoveredImageButton {
 
     PatternTypeButton(final int x,
                       final int y,
-                      final OnPress onPress,
+                      final Consumer<HoveredImageButton> onPress,
                       final PatternType patternType,
                       final boolean selected) {
         super(x, y, 16, 16, SPRITES, onPress, patternType.getTranslatedName());

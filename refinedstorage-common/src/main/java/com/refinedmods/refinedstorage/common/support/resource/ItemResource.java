@@ -4,7 +4,10 @@ import com.refinedmods.refinedstorage.api.core.CoreValidations;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.FuzzyModeNormalizer;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceTag;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
+
+import java.util.List;
 
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,6 +50,22 @@ public record ItemResource(Item item, DataComponentPatch components)
     @Override
     public long getInterfaceExportLimit() {
         return item.getDefaultMaxStackSize();
+    }
+
+    @Override
+    public long getProcessingPatternLimit() {
+        return item.getDefaultMaxStackSize();
+    }
+
+    @Override
+    public List<ResourceTag> getTags() {
+        return BuiltInRegistries.ITEM.wrapAsHolder(item)
+            .tags()
+            .flatMap(tagKey -> BuiltInRegistries.ITEM.getTag(tagKey).stream())
+            .map(tag -> new ResourceTag(
+                tag.key(),
+                tag.stream().map(holder -> (PlatformResourceKey) new ItemResource(holder.value())).toList()
+            )).toList();
     }
 
     @Override

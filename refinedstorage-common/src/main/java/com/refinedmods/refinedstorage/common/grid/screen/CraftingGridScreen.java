@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
@@ -41,7 +40,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     );
 
     @Nullable
-    private ImageButton clearToNetworkButton;
+    private HoveredImageButton clearToNetworkButton;
 
     private boolean filteringBasedOnCraftingMatrixItems;
 
@@ -121,7 +120,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
         clearToNetworkButton.active = active;
     }
 
-    private ImageButton createClearButton(final int x, final int y, final boolean toPlayerInventory) {
+    private HoveredImageButton createClearButton(final int x, final int y, final boolean toPlayerInventory) {
         final MutableComponent text = createTranslation(
             "gui",
             "crafting_grid.move." + (toPlayerInventory ? "inventory" : "network")
