@@ -5,11 +5,14 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContai
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceTag;
 import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
@@ -85,5 +88,12 @@ public class AlternativeContainerMenu extends AbstractResourceContainerMenu {
     @Override
     public ItemStack quickMoveStack(final Player player, final int slot) {
         return ItemStack.EMPTY;
+    }
+
+    void sendAllowedAlternatives(final Set<Alternative> allowedAlternatives) {
+        C2SPackets.sendPatternGridAllowedAlternativesChange(
+            amountSlot.getContainerSlot(),
+            allowedAlternatives.stream().map(Alternative::getId).collect(Collectors.toSet())
+        );
     }
 }

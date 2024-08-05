@@ -10,7 +10,7 @@ public class TextMarquee {
 
     private int offset;
     private int ticks;
-    private State state;
+    private State state = State.MOVING_LEFT;
 
     public TextMarquee(final Component text, final int maxWidth) {
         this.text = text;

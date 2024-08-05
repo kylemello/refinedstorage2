@@ -74,7 +74,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         changed();
     }
 
-    private void setSilently(final int index, final ResourceAmount resourceAmount) {
+    protected void setSilently(final int index, final ResourceAmount resourceAmount) {
         slots[index] = resourceAmount;
         stackRepresentations[index] = resourceAmount.resource() instanceof ItemResource itemResource
             ? itemResource.toItemStack(resourceAmount.amount())
@@ -149,7 +149,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         changed();
     }
 
-    private void removeSilently(final int index) {
+    protected void removeSilently(final int index) {
         slots[index] = null;
         stackRepresentations[index] = null;
     }
@@ -266,7 +266,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         return alternativeResourceFactories;
     }
 
-    private void changed() {
+    protected final void changed() {
         if (listener != null) {
             listener.run();
         }

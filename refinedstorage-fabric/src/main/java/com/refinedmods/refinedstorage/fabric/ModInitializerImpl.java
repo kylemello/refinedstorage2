@@ -32,6 +32,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridReci
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridAllowedAlternativesChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
@@ -50,6 +51,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NetworkTransmitterStatusPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -415,6 +417,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             StorageInfoResponsePacket.PACKET_TYPE,
             StorageInfoResponsePacket.STREAM_CODEC
         );
+        PayloadTypeRegistry.playS2C().register(
+            PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC
+        );
     }
 
     private void registerClientToServerPackets() {
@@ -473,6 +479,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playC2S().register(
             UseSlotReferencedItemPacket.PACKET_TYPE,
             UseSlotReferencedItemPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesChangePacket.STREAM_CODEC
         );
     }
 
@@ -544,6 +554,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerPlayNetworking.registerGlobalReceiver(
             SecurityCardBoundPlayerPacket.PACKET_TYPE,
             wrapHandler(SecurityCardBoundPlayerPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
+            wrapHandler(PatternGridAllowedAlternativesChangePacket::handle)
         );
     }
 

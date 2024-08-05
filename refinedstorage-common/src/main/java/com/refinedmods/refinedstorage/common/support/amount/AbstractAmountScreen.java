@@ -244,7 +244,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         return false;
     }
 
-    private void reset() {
+    protected void reset() {
         if (amountField == null || configuration.getResetAmount() == null) {
             return;
         }

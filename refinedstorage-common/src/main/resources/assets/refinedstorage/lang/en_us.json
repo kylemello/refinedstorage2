@@ -72,6 +72,7 @@
   "gui.refinedstorage.pattern_grid.processing.input_slots_help": "The resources that will be extracted from the storage network and will be inserted into the target inventory.",
   "gui.refinedstorage.pattern_grid.processing.output_slots_help": "The resources that are expected to be returned to the storage network to deem the crafting task successful.",
   "gui.refinedstorage.pattern_grid.processing.click_to_configure_amount_and_alternatives": "Click to configure amount and alternatives",
+  "gui.refinedstorage.pattern_grid.processing.allowed_alternatives": "Allowed alternatives:",
   "gui.refinedstorage.pattern_grid.alternatives": "Alternatives",
   "gui.refinedstorage.pattern_grid.alternatives.expand": "Expand",
   "gui.refinedstorage.screen_size": "Screen size",

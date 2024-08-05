@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -54,8 +55,8 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     private static final String TAG_PATTERN_TYPE = "processing";
 
     private final CraftingState craftingState = new CraftingState(this::setChanged, this::getLevel);
-    private final ResourceContainer processingInput = createProcessingMatrixContainer();
-    private final ResourceContainer processingOutput = createProcessingMatrixContainer();
+    private final ProcessingMatrixInputResourceContainer processingInput = createProcessingMatrixInputContainer();
+    private final ResourceContainer processingOutput = createProcessingMatrixOutputContainer();
     private final FilteredContainer patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
     private final FilteredContainer patternOutput = new PatternOutputContainer();
     private boolean fuzzyMode;
@@ -82,7 +83,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         return craftingState.getCraftingResult();
     }
 
-    ResourceContainer getProcessingInput() {
+    ProcessingMatrixInputResourceContainer getProcessingInput() {
         return processingInput;
     }
 
@@ -170,7 +171,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         return new PatternGridData(
             GridData.of(this),
             patternType,
-            ResourceContainerData.of(processingInput),
+            ProcessingInputData.of(processingInput),
             ResourceContainerData.of(processingOutput)
         );
     }
@@ -246,9 +247,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             return null;
         }
         final ItemStack result = createPatternStack(PatternType.PROCESSING);
-        final List<Optional<ResourceAmount>> inputs = new ArrayList<>();
+        final List<Optional<ProcessingPatternState.Input>> inputs = new ArrayList<>();
         for (int i = 0; i < processingInput.size(); ++i) {
-            inputs.add(Optional.ofNullable(processingInput.get(i)));
+            inputs.add(processingInput.getInput(i));
         }
         final List<Optional<ResourceAmount>> outputs = new ArrayList<>();
         for (int i = 0; i < processingOutput.size(); ++i) {
@@ -323,7 +324,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         processingOutput.clear();
         for (int i = 0; i < state.inputs().size(); ++i) {
             final int ii = i;
-            state.inputs().get(i).ifPresent(amount -> processingInput.set(ii, amount));
+            state.inputs().get(i).ifPresent(input -> processingInput.set(ii, input));
         }
         for (int i = 0; i < state.outputs().size(); ++i) {
             final int ii = i;
@@ -339,20 +340,42 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         return stack.getItem() instanceof PatternItem;
     }
 
-    static ResourceContainer createProcessingMatrixContainer() {
-        return new ResourceContainerImpl(
+    static ProcessingMatrixInputResourceContainer createProcessingMatrixInputContainer() {
+        return new ProcessingMatrixInputResourceContainer(
             81,
-            resource -> resource instanceof PlatformResourceKey platformResource
-                ? platformResource.getProcessingPatternLimit()
-                : 1,
+            PatternGridBlockEntity::getProcessingPatternLimit,
             RefinedStorageApi.INSTANCE.getItemResourceFactory(),
             RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
         );
     }
 
-    static ResourceContainer createProcessingMatrixContainer(final ResourceContainerData data) {
-        final ResourceContainer filterContainer = createProcessingMatrixContainer();
+    static ProcessingMatrixInputResourceContainer createProcessingMatrixInputContainer(final ProcessingInputData data) {
+        final ProcessingMatrixInputResourceContainer filterContainer = createProcessingMatrixInputContainer();
+        setResourceContainerData(data.resourceContainerData(), filterContainer);
+        for (int i = 0; i < data.allowedTagIds().size(); ++i) {
+            filterContainer.setAllowedTagIds(i, data.allowedTagIds().get(i));
+        }
+        return filterContainer;
+    }
+
+    static ResourceContainer createProcessingMatrixOutputContainer() {
+        return new ResourceContainerImpl(
+            81,
+            PatternGridBlockEntity::getProcessingPatternLimit,
+            RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+            RefinedStorageApi.INSTANCE.getAlternativeResourceFactories()
+        );
+    }
+
+    static ResourceContainer createProcessingMatrixOutputContainer(final ResourceContainerData data) {
+        final ResourceContainer filterContainer = createProcessingMatrixOutputContainer();
         setResourceContainerData(data, filterContainer);
         return filterContainer;
+    }
+
+    private static long getProcessingPatternLimit(final ResourceKey resource) {
+        return resource instanceof PlatformResourceKey platformResource
+            ? platformResource.getProcessingPatternLimit()
+            : 1;
     }
 }

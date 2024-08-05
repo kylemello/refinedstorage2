@@ -11,8 +11,10 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyType;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
 public final class C2SPackets {
@@ -90,5 +92,10 @@ public final class C2SPackets {
 
     public static void sendSecurityCardBoundPlayer(final UUID playerId) {
         Platform.INSTANCE.sendPacketToServer(new SecurityCardBoundPlayerPacket(playerId));
+    }
+
+    public static void sendPatternGridAllowedAlternativesChange(final int slotIndex,
+                                                                final Set<ResourceLocation> ids) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridAllowedAlternativesChangePacket(slotIndex, ids));
     }
 }

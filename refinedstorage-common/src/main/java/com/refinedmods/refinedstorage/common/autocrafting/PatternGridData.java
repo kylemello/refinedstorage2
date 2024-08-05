@@ -9,12 +9,12 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record PatternGridData(GridData gridData,
                               PatternType patternType,
-                              ResourceContainerData processingInputData,
+                              ProcessingInputData processingInputData,
                               ResourceContainerData processingOutputData) {
     public static final StreamCodec<RegistryFriendlyByteBuf, PatternGridData> STREAM_CODEC = StreamCodec.composite(
         GridData.STREAM_CODEC, PatternGridData::gridData,
         PacketUtil.enumStreamCodec(PatternType.values()), PatternGridData::patternType,
-        ResourceContainerData.STREAM_CODEC, PatternGridData::processingInputData,
+        ProcessingInputData.STREAM_CODEC, PatternGridData::processingInputData,
         ResourceContainerData.STREAM_CODEC, PatternGridData::processingOutputData,
         PatternGridData::new
     );

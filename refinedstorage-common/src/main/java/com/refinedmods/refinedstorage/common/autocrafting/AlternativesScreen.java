@@ -11,7 +11,9 @@ import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,8 +67,12 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
 
     private final List<CustomCheckboxWidget> alternativeCheckboxes = new ArrayList<>();
     private final List<Button> expandButtons = new ArrayList<>();
+    private final Set<ResourceLocation> initialAllowedAlternativeIds;
 
-    public AlternativesScreen(final Screen parent, final Inventory playerInventory, final ResourceSlot slot) {
+    AlternativesScreen(final Screen parent,
+                       final Inventory playerInventory,
+                       final Set<ResourceLocation> allowedAlternativeIds,
+                       final ResourceSlot slot) {
         super(
             new AlternativeContainerMenu(slot),
             parent,
@@ -75,9 +81,9 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
             AmountScreenConfiguration.AmountScreenConfigurationBuilder.<Double>create()
                 .withInitialAmount(slot.getDisplayAmount())
                 .withIncrementsTop(1, 10, 64)
-                .withIncrementsTopStartPosition(new Vector3f(7 + 33, 20, 0))
+                .withIncrementsTopStartPosition(new Vector3f(40, 20, 0))
                 .withIncrementsBottom(-1, -10, -64)
-                .withIncrementsBottomStartPosition(new Vector3f(7 + 33, 71, 0))
+                .withIncrementsBottomStartPosition(new Vector3f(40, 71, 0))
                 .withAmountFieldPosition(new Vector3f(38, 51, 0))
                 .withActionButtonsStartPosition(new Vector3f(7, 199, 0))
                 .withHorizontalActionButtons(true)
@@ -90,6 +96,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         this.slot = slot;
         this.imageWidth = 175;
         this.imageHeight = 226;
+        this.initialAllowedAlternativeIds = allowedAlternativeIds;
     }
 
     @Override
@@ -154,7 +161,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
             144 - 16 - 1 - 4,
             hasTranslation ? Component.translatable(alternative.getTranslationKey()) : id,
             font,
-            false,
+            initialAllowedAlternativeIds.contains(alternative.getId()),
             CustomCheckboxWidget.Size.SMALL
         );
         if (hasTranslation) {
@@ -320,37 +327,31 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         if (!alternative.isVisible()) {
             return 0;
         }
-        final int overflowRows = getOverflowRows(alternative);
-        final int overflowRowsHeight = (int) (overflowRows * ALTERNATIVE_ROW_HEIGHT * alternative.getExpandPct());
-        final int height = ALTERNATIVE_HEIGHT + overflowRowsHeight;
+        final int height = ALTERNATIVE_HEIGHT
+            + (int) (getOverflowRows(alternative) * ALTERNATIVE_ROW_HEIGHT * alternative.getExpandPct());
         final boolean backgroundVisible = y >= startY - height && y < startY + INSET_HEIGHT;
         if (i % 2 == 0 && backgroundVisible) {
             graphics.fill(
                 x,
                 y,
                 x + INSET_WIDTH,
-                y + ALTERNATIVE_HEIGHT + overflowRowsHeight,
+                y + height,
                 0,
-                0x80C6C6C6
+                0xFFC6C6C6
             );
         }
         final int mainSlotsY = y + ALTERNATIVE_ROW_HEIGHT;
         renderMainSlotsBackground(graphics, startY, x, mainSlotsY, alternative);
-        if (overflowRowsHeight > 0) {
-            final int overflowSlotsY = y + (ALTERNATIVE_ROW_HEIGHT * 2);
-            renderOverflowSlotsBackground(
-                graphics,
-                mouseX,
-                mouseY,
-                startY,
-                x,
-                overflowSlotsY,
-                overflowRowsHeight,
-                overflowRows,
-                alternative
-            );
-        }
-        return height;
+        final int overflowSlotsY = y + (ALTERNATIVE_ROW_HEIGHT * 2);
+        return ALTERNATIVE_HEIGHT + renderOverflowSlotsBackground(
+            graphics,
+            mouseX,
+            mouseY,
+            startY,
+            x,
+            overflowSlotsY,
+            alternative
+        );
     }
 
     private void renderMainSlotsBackground(
@@ -368,15 +369,18 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         }
     }
 
-    private void renderOverflowSlotsBackground(final GuiGraphics graphics,
-                                               final int mouseX,
-                                               final int mouseY,
-                                               final int startY,
-                                               final int x,
-                                               final int y,
-                                               final int height,
-                                               final int rows,
-                                               final Alternative alternative) {
+    private int renderOverflowSlotsBackground(final GuiGraphics graphics,
+                                              final int mouseX,
+                                              final int mouseY,
+                                              final int startY,
+                                              final int x,
+                                              final int y,
+                                              final Alternative alternative) {
+        final int rows = getOverflowRows(alternative);
+        final int height = (int) (rows * ALTERNATIVE_ROW_HEIGHT * alternative.getExpandPct());
+        if (height == 0) {
+            return 0;
+        }
         graphics.enableScissor(x, y, x + (18 * RESOURCES_PER_ROW), y + height);
         for (int row = 0; row < rows; ++row) {
             final int rowY = y + (ALTERNATIVE_ROW_HEIGHT * row);
@@ -395,6 +399,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         }
         renderSlots(alternative.getOverflowSlots(), graphics, mouseX, mouseY);
         graphics.disableScissor();
+        return height;
     }
 
     private void renderAlternativeMainSlots(final GuiGraphics graphics,
@@ -489,5 +494,18 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
     @Override
     protected void accept(final Double amount) {
         slot.changeAmountOnClient(amount);
+        final Set<Alternative> allowedAlternatives = new HashSet<>();
+        for (int i = 0; i < alternativeCheckboxes.size(); ++i) {
+            if (alternativeCheckboxes.get(i).isSelected()) {
+                allowedAlternatives.add(getMenu().getAlternatives().get(i));
+            }
+        }
+        getMenu().sendAllowedAlternatives(allowedAlternatives);
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        alternativeCheckboxes.forEach(c -> c.setSelected(false));
     }
 }

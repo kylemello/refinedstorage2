@@ -74,6 +74,10 @@ public class CustomCheckboxWidget extends AbstractButton {
         this.selected = selected;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
     public void updateWidgetNarration(final NarrationElementOutput output) {
         output.add(NarratedElementType.TITLE, createNarrationMessage());
         if (active) {

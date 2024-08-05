@@ -65,7 +65,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     @Nullable
     GridSearchBoxWidget searchField;
 
-    private final TextMarquee title;
+    private final TextMarquee titleMarquee;
     private int totalRows;
     private int currentGridSlotIndex;
 
@@ -75,7 +75,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final int bottomHeight) {
         super(menu, playerInventory, text);
         this.bottomHeight = bottomHeight;
-        this.title = new TextMarquee(text, 70);
+        this.titleMarquee = new TextMarquee(text, 70);
     }
 
     @Override
@@ -166,14 +166,14 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final boolean hoveringOverTitle = isHovering(
             7,
             7,
-            title.getEffectiveWidth(font),
+            titleMarquee.getEffectiveWidth(font),
             font.lineHeight,
             mouseX,
             mouseY
         );
-        title.render(graphics, leftPos + 7, topPos + 7, font, hoveringOverTitle);
+        titleMarquee.render(graphics, leftPos + 7, topPos + 7, font, hoveringOverTitle);
         graphics.pose().pushPose();
-        graphics.pose().translate((float) leftPos, (float) topPos, 0.0F);
+        graphics.pose().translate(leftPos, topPos, 0.0F);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
     }
 

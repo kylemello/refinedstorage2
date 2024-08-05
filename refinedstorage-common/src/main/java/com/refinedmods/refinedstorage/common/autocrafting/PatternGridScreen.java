@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
@@ -9,10 +10,13 @@ import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -81,6 +85,8 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
 
     private final Map<PatternType, PatternTypeButton> patternTypeButtons = new EnumMap<>(PatternType.class);
     private final Inventory playerInventory;
+    private final Map<Pair<PlatformResourceKey, Set<ResourceLocation>>, ProcessingMatrixInputClientTooltipComponent>
+        processingMatrixInputTooltipCache = new HashMap<>();
 
     public PatternGridScreen(final PatternGridContainerMenu menu, final Inventory inventory, final Component title) {
         super(menu, inventory, title, 177);
@@ -385,6 +391,19 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     protected void addResourceSlotTooltips(final ResourceSlot resourceSlot,
                                            final List<ClientTooltipComponent> tooltip) {
         if (resourceSlot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
+            final Set<ResourceLocation> allowedAlternatives = getMenu().getAllowedAlternatives(
+                matrixSlot.getContainerSlot()
+            );
+            if (matrixSlot.getResource() != null && !allowedAlternatives.isEmpty()) {
+                final Pair<PlatformResourceKey, Set<ResourceLocation>> cacheKey = Pair.of(
+                    matrixSlot.getResource(),
+                    allowedAlternatives
+                );
+                final ProcessingMatrixInputClientTooltipComponent cached = processingMatrixInputTooltipCache
+                    .computeIfAbsent(cacheKey,
+                        k -> new ProcessingMatrixInputClientTooltipComponent(k.getFirst(), k.getSecond()));
+                tooltip.add(cached);
+            }
             tooltip.add(CLICK_TO_CONFIGURE_AMOUNT_AND_ALTERNATIVES);
         } else {
             super.addResourceSlotTooltips(resourceSlot, tooltip);
@@ -394,7 +413,12 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     @Override
     protected Screen createResourceAmountScreen(final ResourceSlot slot) {
         if (slot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
-            return new AlternativesScreen(this, playerInventory, slot);
+            return new AlternativesScreen(
+                this,
+                playerInventory,
+                getMenu().getAllowedAlternatives(matrixSlot.getContainerSlot()),
+                slot
+            );
         }
         return super.createResourceAmountScreen(slot);
     }
