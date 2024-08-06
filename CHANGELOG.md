@@ -16,7 +16,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   The Pattern now shows the crafting recipe in the tooltip.
 -   When a Pattern is created for a crafting recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
--   The Pattern Grid now has support for more pattern types.
+-   The Pattern Grid now has additional support for stonecutter recipes.
 
 ### Fixed
 

@@ -20,6 +20,7 @@ public class PatternUnbakedModel implements UnbakedModel {
     private static final ResourceLocation EMPTY_MODEL = createIdentifier("item/pattern/empty");
     private static final ResourceLocation CRAFTING_MODEL = createIdentifier("item/pattern/crafting");
     private static final ResourceLocation PROCESSING_MODEL = createIdentifier("item/pattern/processing");
+    private static final ResourceLocation STONECUTTER_MODEL = createIdentifier("item/pattern/stonecutter");
 
     @Override
     public Collection<ResourceLocation> getDependencies() {
@@ -31,6 +32,7 @@ public class PatternUnbakedModel implements UnbakedModel {
         resolver.apply(EMPTY_MODEL).resolveParents(resolver);
         resolver.apply(CRAFTING_MODEL).resolveParents(resolver);
         resolver.apply(PROCESSING_MODEL).resolveParents(resolver);
+        resolver.apply(STONECUTTER_MODEL).resolveParents(resolver);
     }
 
     @Nullable
@@ -42,7 +44,8 @@ public class PatternUnbakedModel implements UnbakedModel {
             baker,
             requireNonNull(baker.bake(EMPTY_MODEL, state)),
             requireNonNull(baker.bake(CRAFTING_MODEL, state)),
-            requireNonNull(baker.bake(PROCESSING_MODEL, state))
+            requireNonNull(baker.bake(PROCESSING_MODEL, state)),
+            requireNonNull(baker.bake(STONECUTTER_MODEL, state))
         );
     }
 }

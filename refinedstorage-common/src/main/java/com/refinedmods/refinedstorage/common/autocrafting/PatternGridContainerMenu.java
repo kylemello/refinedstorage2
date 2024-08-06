@@ -28,6 +28,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_PATTERN_INPUT_SLOT = 81;
@@ -41,6 +43,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
+    private final StonecutterInputContainer stonecutterInput;
     private final ProcessingMatrixInputResourceContainer processingInput;
     private final List<Set<ResourceLocation>> allowedAlternativesCache;
     private final ResourceContainer processingOutput;
@@ -65,6 +68,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         );
         this.craftingMatrix = new CraftingMatrix(null, 3, 3);
         this.craftingResult = new ResultContainer();
+        this.stonecutterInput = new StonecutterInputContainer(playerInventory.player::level);
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PatternGridPropertyTypes.PATTERN_TYPE, patternGridData.patternType()) {
@@ -85,6 +89,10 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 }
             }
         });
+        registerProperty(new ClientProperty<>(
+            PatternGridPropertyTypes.STONECUTTER_SELECTED_RECIPE,
+            patternGridData.stonecutterSelectedRecipe()
+        ));
     }
 
     PatternGridContainerMenu(final int syncId,
@@ -95,6 +103,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.patternOutput = grid.getPatternOutput();
         this.craftingMatrix = grid.getCraftingMatrix();
         this.craftingResult = grid.getCraftingResult();
+        this.stonecutterInput = grid.getStonecutterInput();
         this.processingInput = grid.getProcessingInput();
         this.allowedAlternativesCache = new ArrayList<>(processingInput.size());
         for (int i = 0; i < processingInput.size(); ++i) {
@@ -117,6 +126,11 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
             PropertyTypes.FUZZY_MODE,
             grid::isFuzzyMode,
             grid::setFuzzyMode
+        ));
+        registerProperty(new ServerProperty<>(
+            PatternGridPropertyTypes.STONECUTTER_SELECTED_RECIPE,
+            grid::getStonecutterSelectedRecipe,
+            grid::setStonecutterSelectedRecipe
         ));
     }
 
@@ -147,6 +161,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         return switch (getPatternType()) {
             case CRAFTING -> !craftingResult.getItem(0).isEmpty();
             case PROCESSING -> !processingInput.isEmpty() && !processingOutput.isEmpty();
+            case STONECUTTER -> !stonecutterInput.getItem(0).isEmpty() && getStonecutterSelectedRecipe() >= 0;
             default -> false;
         };
     }
@@ -158,6 +173,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         addPatternSlots(playerInventoryY);
         addCraftingMatrixSlots(playerInventoryY);
         addProcessingMatrixSlots(playerInventoryY);
+        addStonecutterSlots(playerInventoryY);
     }
 
     private void addPatternSlots(final int playerInventoryY) {
@@ -256,6 +272,27 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 slotX += 18;
             }
         }
+    }
+
+    private void addStonecutterSlots(final int playerInventoryY) {
+        addSlot(new FilterSlot(stonecutterInput, 0, 17, playerInventoryY - 63) {
+            @Override
+            public boolean isActive() {
+                return getPatternType() == PatternType.STONECUTTER;
+            }
+        });
+    }
+
+    List<RecipeHolder<StonecutterRecipe>> getStonecutterRecipes() {
+        return stonecutterInput.getRecipes();
+    }
+
+    int getStonecutterSelectedRecipe() {
+        return getProperty(PatternGridPropertyTypes.STONECUTTER_SELECTED_RECIPE).getValue();
+    }
+
+    void setStonecutterSelectedRecipe(final int idx) {
+        getProperty(PatternGridPropertyTypes.STONECUTTER_SELECTED_RECIPE).setValue(idx);
     }
 
     public void clear() {
