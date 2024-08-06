@@ -8,10 +8,12 @@ import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResour
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterData;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class S2CPackets {
@@ -72,5 +74,11 @@ public final class S2CPackets {
 
     public static void sendNoPermission(final ServerPlayer player, final Component message) {
         Platform.INSTANCE.sendPacketToClient(player, new NoPermissionPacket(message));
+    }
+
+    public static void sendPatternGridAllowedAlternativesUpdate(final ServerPlayer player,
+                                                                final int index,
+                                                                final Set<ResourceLocation> ids) {
+        Platform.INSTANCE.sendPacketToClient(player, new PatternGridAllowedAlternativesUpdatePacket(index, ids));
     }
 }

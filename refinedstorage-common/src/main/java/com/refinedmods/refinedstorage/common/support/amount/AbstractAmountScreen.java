@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.amount;
 
+import com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 
 import java.util.Objects;
@@ -25,12 +26,13 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N extends Number>
     extends AbstractBaseScreen<T> {
-    private static final MutableComponent SET_TEXT = createTranslation("gui", "amount.set");
-    private static final MutableComponent RESET_TEXT = createTranslation("gui", "amount.reset");
+    private static final MutableComponent SET_TEXT = createTranslation("gui", "configure_amount.set");
+    private static final MutableComponent RESET_TEXT = createTranslation("gui", "configure_amount.reset");
     private static final MutableComponent CANCEL_TEXT = Component.translatable("gui.cancel");
 
     private static final int INCREMENT_BUTTON_WIDTH = 30;
     private static final int ACTION_BUTTON_WIDTH = 50;
+    private static final int ACTION_BUTTON_HEIGHT = 20;
 
     @Nullable
     private final Screen parent;
@@ -66,18 +68,37 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
 
     private void addActionButtons() {
         final Vector3f pos = configuration.getActionButtonsStartPosition();
+        if (configuration.isHorizontalActionButtons()) {
+            final int xIncrement = ACTION_BUTTON_WIDTH + 3;
+            addCancelButton((int) pos.x, (int) pos.y);
+            addResetButton((int) pos.x + xIncrement, (int) pos.y);
+            addConfirmButton((int) pos.x + xIncrement * 2, (int) pos.y);
+        } else {
+            final int yIncrement = 24;
+            addResetButton((int) pos.x, (int) pos.y);
+            addConfirmButton((int) pos.x, (int) pos.y + yIncrement);
+            addCancelButton((int) pos.x, (int) pos.y + yIncrement * 2);
+        }
+    }
 
+    private void addResetButton(final int x, final int y) {
         addRenderableWidget(Button.builder(RESET_TEXT, btn -> reset())
-            .pos(leftPos + (int) pos.x(), topPos + (int) pos.y())
-            .size(ACTION_BUTTON_WIDTH, 20)
+            .pos(leftPos + x, topPos + y)
+            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
             .build());
+    }
+
+    private void addConfirmButton(final int x, final int y) {
         confirmButton = addRenderableWidget(Button.builder(SET_TEXT, btn -> tryConfirmAndCloseToParent())
-            .pos(leftPos + (int) pos.x(), topPos + (int) pos.y() + 24)
-            .size(ACTION_BUTTON_WIDTH, 20)
+            .pos(leftPos + x, topPos + y)
+            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
             .build());
+    }
+
+    private void addCancelButton(final int x, final int y) {
         addRenderableWidget(Button.builder(CANCEL_TEXT, btn -> tryCloseToParent())
-            .pos(leftPos + (int) pos.x(), topPos + (int) pos.y() + 48)
-            .size(ACTION_BUTTON_WIDTH, 20)
+            .pos(leftPos + x, topPos + y)
+            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
             .build());
     }
 
@@ -96,7 +117,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
             amountField.setValue(amountOperations.format(configuration.getInitialAmount()));
         }
         amountField.setVisible(true);
-        amountField.setCanLoseFocus(false);
+        amountField.setCanLoseFocus(this instanceof AlternativesScreen);
         amountField.setFocused(true);
         amountField.setResponder(value -> {
             final boolean valid = getAndValidateAmount().isPresent();
@@ -145,7 +166,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         final Component text = Component.literal((increment > 0 ? "+" : "") + increment);
         return Button.builder(text, btn -> changeAmount(increment))
             .pos(x, y)
-            .size(INCREMENT_BUTTON_WIDTH, 20)
+            .size(INCREMENT_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
             .build();
     }
 
@@ -197,10 +218,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
 
     @Override
     public boolean keyPressed(final int key, final int scanCode, final int modifiers) {
-        if (key == GLFW.GLFW_KEY_ESCAPE) {
-            if (!tryCloseToParent()) {
-                onClose();
-            }
+        if (tryClose(key)) {
             return true;
         }
         if (amountField != null
@@ -216,7 +234,17 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         return super.keyPressed(key, scanCode, modifiers);
     }
 
-    private void reset() {
+    protected final boolean tryClose(final int key) {
+        if (key == GLFW.GLFW_KEY_ESCAPE) {
+            if (!tryCloseToParent()) {
+                onClose();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected void reset() {
         if (amountField == null || configuration.getResetAmount() == null) {
             return;
         }

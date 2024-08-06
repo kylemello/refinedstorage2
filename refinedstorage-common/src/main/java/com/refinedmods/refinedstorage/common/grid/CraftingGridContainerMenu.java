@@ -29,7 +29,7 @@ import org.apiguardian.api.API;
 public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 69;
 
-    private final Player player;
+    private final Player gridPlayer;
     private final CraftingGridSource source;
     private final List<Slot> craftingMatrixSlots = new ArrayList<>();
 
@@ -43,7 +43,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
                                      final GridData gridData) {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, gridData);
         this.source = new ClientCraftingGridSource();
-        this.player = playerInventory.player;
+        this.gridPlayer = playerInventory.player;
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
@@ -53,7 +53,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
                               final CraftingGridBlockEntity grid) {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, grid);
         this.source = new CraftingGridSourceImpl(grid);
-        this.player = playerInventory.player;
+        this.gridPlayer = playerInventory.player;
         onScreenReady(0);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
@@ -110,7 +110,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
             }
         }
         addSlot(new CraftingGridResultSlot(
-            player,
+            gridPlayer,
             source,
             130 + 4,
             playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT + 18
@@ -122,14 +122,14 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     public void clear(final boolean toPlayerInventory) {
-        source.clearMatrix(player, toPlayerInventory);
+        source.clearMatrix(gridPlayer, toPlayerInventory);
     }
 
     @API(status = API.Status.INTERNAL)
     public ResourceList getAvailableListForRecipeTransfer() {
         final ResourceList available = getView().copyBackingList();
         addContainerToList(source.getCraftingMatrix(), available);
-        addContainerToList(player.getInventory(), available);
+        addContainerToList(gridPlayer.getInventory(), available);
         return available;
     }
 
@@ -144,15 +144,14 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     public void transferRecipe(final List<List<ItemResource>> recipe) {
-        source.transferRecipe(player, recipe);
+        source.transferRecipe(gridPlayer, recipe);
     }
 
     public void filterBasedOnCraftingMatrixItems() {
         final Set<ItemResource> craftingMatrixItems = getCraftingMatrixItems();
         filterBeforeFilteringBasedOnCraftingMatrixItems = getView().setFilterAndSort(
-            (view, gridResource) -> gridResource instanceof ItemGridResource itemGridResource
-                && itemGridResource.getResourceForRecipeMods() != null
-                && craftingMatrixItems.contains((ItemResource) itemGridResource.getResourceForRecipeMods())
+            (view, resource) -> resource instanceof ItemGridResource itemResource
+                && craftingMatrixItems.contains(itemResource.getItemResource())
         );
     }
 

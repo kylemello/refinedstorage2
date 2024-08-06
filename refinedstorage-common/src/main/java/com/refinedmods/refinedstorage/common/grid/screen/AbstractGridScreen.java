@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
+import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -19,6 +20,7 @@ import com.refinedmods.refinedstorage.common.support.stretching.AbstractStretchi
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighter;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighterColors;
 
@@ -42,6 +44,7 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static java.util.Objects.requireNonNullElse;
@@ -58,9 +61,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private static final List<String> SEARCH_FIELD_HISTORY = new ArrayList<>();
 
     protected final int bottomHeight;
+
     @Nullable
     GridSearchBoxWidget searchField;
 
+    private final TextMarquee titleMarquee;
     private int totalRows;
     private int currentGridSlotIndex;
 
@@ -70,6 +75,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final int bottomHeight) {
         super(menu, playerInventory, text);
         this.bottomHeight = bottomHeight;
+        this.titleMarquee = new TextMarquee(text, 70);
     }
 
     @Override
@@ -79,14 +85,14 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (searchField == null) {
             searchField = new GridSearchBoxWidget(
                 font,
-                leftPos + 80 + 1,
+                leftPos + 94 + 1,
                 topPos + 6 + 1,
-                88 - 6,
+                73 - 6,
                 new SyntaxHighlighter(SyntaxHighlighterColors.DEFAULT_COLORS),
                 new History(SEARCH_FIELD_HISTORY)
             );
         } else {
-            searchField.setX(leftPos + 80 + 1);
+            searchField.setX(leftPos + 94 + 1);
             searchField.setY(topPos + 6 + 1);
         }
         getMenu().setSearchBox(searchField);
@@ -146,6 +152,29 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         return relativeMouseX >= 7
             && relativeMouseX <= 168
             && isInStretchedArea(relativeMouseY);
+    }
+
+    @Override
+    protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
+        super.renderBg(graphics, delta, mouseX, mouseY);
+        graphics.blitSprite(TextureIds.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
+    }
+
+    @Override
+    protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+        graphics.pose().popPose();
+        final boolean hoveringOverTitle = isHovering(
+            7,
+            7,
+            titleMarquee.getEffectiveWidth(font),
+            font.lineHeight,
+            mouseX,
+            mouseY
+        );
+        titleMarquee.render(graphics, leftPos + 7, topPos + 7, font, hoveringOverTitle);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
     }
 
     @Override

@@ -32,6 +32,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridReci
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridAllowedAlternativesChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
@@ -50,6 +51,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NetworkTransmitterStatusPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -599,6 +601,11 @@ public class ModInitializer extends AbstractModInitializer {
             NoPermissionPacket.STREAM_CODEC,
             wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
         );
+        registrar.playToClient(
+            PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC,
+            wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
+        );
     }
 
     private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
@@ -686,6 +693,11 @@ public class ModInitializer extends AbstractModInitializer {
             SecurityCardBoundPlayerPacket.PACKET_TYPE,
             SecurityCardBoundPlayerPacket.STREAM_CODEC,
             wrapHandler(SecurityCardBoundPlayerPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesChangePacket.STREAM_CODEC,
+            wrapHandler(PatternGridAllowedAlternativesChangePacket::handle)
         );
     }
 

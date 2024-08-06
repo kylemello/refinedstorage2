@@ -13,10 +13,17 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
-import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
+import com.google.common.util.concurrent.RateLimiter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
@@ -29,11 +36,13 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_PROCESSING_MATRIX_SLOT = 76;
     private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
 
+    private final RateLimiter allowedAlternativesCacheCheckerRateLimiter = RateLimiter.create(2);
     private final Container patternInput;
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
-    private final ResourceContainer processingInput;
+    private final ProcessingMatrixInputResourceContainer processingInput;
+    private final List<Set<ResourceLocation>> allowedAlternativesCache;
     private final ResourceContainer processingOutput;
 
     @Nullable
@@ -47,8 +56,13 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         super(Menus.INSTANCE.getPatternGrid(), syncId, playerInventory, patternGridData.gridData());
         this.patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
         this.patternOutput = new PatternOutputContainer();
-        this.processingInput = ResourceContainerImpl.createForFilter(patternGridData.processingInputData());
-        this.processingOutput = ResourceContainerImpl.createForFilter(patternGridData.processingOutputData());
+        this.processingInput = PatternGridBlockEntity.createProcessingMatrixInputContainer(
+            patternGridData.processingInputData()
+        );
+        this.allowedAlternativesCache = Collections.emptyList();
+        this.processingOutput = PatternGridBlockEntity.createProcessingMatrixOutputContainer(
+            patternGridData.processingOutputData()
+        );
         this.craftingMatrix = new CraftingMatrix(null, 3, 3);
         this.craftingResult = new ResultContainer();
         onScreenReady(0);
@@ -82,6 +96,10 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.craftingMatrix = grid.getCraftingMatrix();
         this.craftingResult = grid.getCraftingResult();
         this.processingInput = grid.getProcessingInput();
+        this.allowedAlternativesCache = new ArrayList<>(processingInput.size());
+        for (int i = 0; i < processingInput.size(); ++i) {
+            allowedAlternativesCache.add(processingInput.getAllowedTagIds(i));
+        }
         this.processingOutput = grid.getProcessingOutput();
         this.patternGrid = grid;
         onScreenReady(0);
@@ -258,6 +276,34 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
     void sendCreatePattern() {
         C2SPackets.sendPatternGridCreatePattern();
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        if (player == null || !allowedAlternativesCacheCheckerRateLimiter.tryAcquire()) {
+            return;
+        }
+        for (int i = 0; i < allowedAlternativesCache.size(); ++i) {
+            final Set<ResourceLocation> cachedAllowedAlternatives = allowedAlternativesCache.get(i);
+            final Set<ResourceLocation> currentAllowedAlternatives = processingInput.getAllowedTagIds(i);
+            if (!cachedAllowedAlternatives.equals(currentAllowedAlternatives)) {
+                allowedAlternativesCache.set(i, currentAllowedAlternatives);
+                S2CPackets.sendPatternGridAllowedAlternativesUpdate(
+                    (ServerPlayer) player,
+                    i,
+                    currentAllowedAlternatives
+                );
+            }
+        }
+    }
+
+    public void handleAllowedAlternativesUpdate(final int slotIndex, final Set<ResourceLocation> ids) {
+        processingInput.setAllowedTagIds(slotIndex, ids);
+    }
+
+    Set<ResourceLocation> getAllowedAlternatives(final int containerSlot) {
+        return processingInput.getAllowedTagIds(containerSlot);
     }
 
     interface PatternGridListener {

@@ -1,21 +1,28 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
+import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.CustomCheckboxWidget;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +30,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 import static java.util.Objects.requireNonNull;
 
 public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMenu> implements
@@ -38,6 +46,10 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private static final MutableComponent INPUTS = createTranslation("gui", "pattern_grid.processing.inputs");
     private static final MutableComponent OUTPUTS = createTranslation("gui", "pattern_grid.processing.outputs");
     private static final int CREATE_PATTERN_BUTTON_SIZE = 16;
+    private static final SmallTextClientTooltipComponent CLICK_TO_CONFIGURE_AMOUNT_AND_ALTERNATIVES =
+        new SmallTextClientTooltipComponent(
+            createTranslationAsHeading("gui", "pattern_grid.processing.click_to_configure_amount_and_alternatives")
+        );
 
     private static final int INSET_PADDING = 4;
     private static final int PROCESSING_INSET_Y_PADDING = 9;
@@ -72,12 +84,16 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private ScrollbarWidget processingScrollbar;
 
     private final Map<PatternType, PatternTypeButton> patternTypeButtons = new EnumMap<>(PatternType.class);
+    private final Inventory playerInventory;
+    private final Map<Pair<PlatformResourceKey, Set<ResourceLocation>>, ProcessingMatrixInputClientTooltipComponent>
+        processingMatrixInputTooltipCache = new HashMap<>();
 
     public PatternGridScreen(final PatternGridContainerMenu menu, final Inventory inventory, final Component title) {
         super(menu, inventory, title, 177);
         this.inventoryLabelY = 153;
         this.imageWidth = 193;
         this.imageHeight = 249;
+        this.playerInventory = inventory;
     }
 
     @Override
@@ -96,7 +112,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         menu.setListener(this);
     }
 
-    private ImageButton createCreatePatternButton(final int x, final int y) {
+    private HoveredImageButton createCreatePatternButton(final int x, final int y) {
         final HoveredImageButton button = new HoveredImageButton(
             x,
             y,
@@ -127,7 +143,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         }
     }
 
-    private ImageButton createClearButton(final PatternType patternType) {
+    private HoveredImageButton createClearButton(final PatternType patternType) {
         final HoveredImageButton button = new HoveredImageButton(
             getClearButtonX(patternType),
             getClearButtonY(patternType),
@@ -276,9 +292,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         renderProcessingMatrix(
             graphics,
             getInsetContentX() + 1,
-            getInsetY() + 14,
             getInsetContentX() + 1 + 52 + 1, // include the edge so we get the item counts properly
-            getInsetY() + 14 + 52 + 1, // include the edge so we get the item counts properly
             mouseX,
             mouseY,
             true
@@ -286,9 +300,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         renderProcessingMatrix(
             graphics,
             getInsetContentX() + INDIVIDUAL_PROCESSING_MATRIX_SIZE + 2 + 1,
-            getInsetY() + 14,
             getInsetContentX() + INDIVIDUAL_PROCESSING_MATRIX_SIZE + 2 + 1 + 52 + 1,
-            getInsetY() + 14 + 52 + 1,
             mouseX,
             mouseY,
             false
@@ -297,12 +309,13 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
 
     private void renderProcessingMatrix(final GuiGraphics graphics,
                                         final int startX,
-                                        final int startY,
                                         final int endX,
-                                        final int endY,
                                         final int mouseX,
                                         final int mouseY,
                                         final boolean input) {
+        final int startY = getInsetY() + 14;
+        // include the edge so we get the item counts properly
+        final int endY = getInsetY() + 14 + 52 + 1;
         graphics.enableScissor(startX, startY, endX, endY);
         renderProcessingMatrixSlotBackground(graphics, input);
         renderProcessingMatrixSlots(graphics, mouseX, mouseY, input);
@@ -375,11 +388,47 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     }
 
     @Override
+    protected void addResourceSlotTooltips(final ResourceSlot resourceSlot,
+                                           final List<ClientTooltipComponent> tooltip) {
+        if (resourceSlot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
+            final Set<ResourceLocation> allowedAlternatives = getMenu().getAllowedAlternatives(
+                matrixSlot.getContainerSlot()
+            );
+            if (matrixSlot.getResource() != null && !allowedAlternatives.isEmpty()) {
+                final Pair<PlatformResourceKey, Set<ResourceLocation>> cacheKey = Pair.of(
+                    matrixSlot.getResource(),
+                    allowedAlternatives
+                );
+                final ProcessingMatrixInputClientTooltipComponent cached = processingMatrixInputTooltipCache
+                    .computeIfAbsent(cacheKey,
+                        k -> new ProcessingMatrixInputClientTooltipComponent(k.getFirst(), k.getSecond()));
+                tooltip.add(cached);
+            }
+            tooltip.add(CLICK_TO_CONFIGURE_AMOUNT_AND_ALTERNATIVES);
+        } else {
+            super.addResourceSlotTooltips(resourceSlot, tooltip);
+        }
+    }
+
+    @Override
+    protected Screen createResourceAmountScreen(final ResourceSlot slot) {
+        if (slot instanceof ProcessingMatrixResourceSlot matrixSlot && matrixSlot.isInput()) {
+            return new AlternativesScreen(
+                this,
+                playerInventory,
+                getMenu().getAllowedAlternatives(matrixSlot.getContainerSlot()),
+                slot
+            );
+        }
+        return super.createResourceAmountScreen(slot);
+    }
+
+    @Override
     protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
         if (getMenu().getPatternType() == PatternType.PROCESSING) {
             final int x = getInsetContentX() - leftPos;
-            final int y = getInsetContentY() - topPos;
+            final int y = getInsetContentY() - topPos - 1;
             graphics.drawString(font, INPUTS, x, y, 4210752, false);
             graphics.drawString(font, OUTPUTS, x + 56, y, 4210752, false);
         }

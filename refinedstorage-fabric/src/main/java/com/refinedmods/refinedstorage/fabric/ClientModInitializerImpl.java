@@ -26,6 +26,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NetworkTransmitterStatusPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -268,6 +269,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         ClientPlayNetworking.registerGlobalReceiver(
             NoPermissionPacket.PACKET_TYPE,
             wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
+            wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
         );
     }
 
