@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
@@ -18,6 +18,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -27,8 +28,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
@@ -43,10 +48,13 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
-    private final StonecutterInputContainer stonecutterInput;
     private final ProcessingMatrixInputResourceContainer processingInput;
     private final List<Set<ResourceLocation>> allowedAlternativesCache;
     private final ResourceContainer processingOutput;
+    private final StonecutterInputContainer stonecutterInput;
+    private final Container smithingTableMatrix;
+    private final Container smithingTableResult;
+    private final List<RecipeHolder<SmithingRecipe>> smithingTableRecipes;
 
     @Nullable
     private PatternGridListener listener;
@@ -66,9 +74,13 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.processingOutput = PatternGridBlockEntity.createProcessingMatrixOutputContainer(
             patternGridData.processingOutputData()
         );
-        this.craftingMatrix = new CraftingMatrix(null, 3, 3);
+        this.craftingMatrix = new RecipeMatrixContainer(null, 3, 3);
         this.craftingResult = new ResultContainer();
         this.stonecutterInput = new StonecutterInputContainer(playerInventory.player::level);
+        this.smithingTableMatrix = new RecipeMatrixContainer(null, 3, 1);
+        this.smithingTableResult = new ResultContainer();
+        this.smithingTableRecipes =
+            playerInventory.player.level().getRecipeManager().getAllRecipesFor(RecipeType.SMITHING);
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PatternGridPropertyTypes.PATTERN_TYPE, patternGridData.patternType()) {
@@ -110,6 +122,10 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
             allowedAlternativesCache.add(processingInput.getAllowedTagIds(i));
         }
         this.processingOutput = grid.getProcessingOutput();
+        this.smithingTableMatrix = grid.getSmithingTableMatrix();
+        this.smithingTableResult = grid.getSmithingTableResult();
+        this.smithingTableRecipes = playerInventory.player.level().getRecipeManager()
+            .getAllRecipesFor(RecipeType.SMITHING);
         this.patternGrid = grid;
         onScreenReady(0);
         registerProperty(new ServerProperty<>(
@@ -162,7 +178,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
             case CRAFTING -> !craftingResult.getItem(0).isEmpty();
             case PROCESSING -> !processingInput.isEmpty() && !processingOutput.isEmpty();
             case STONECUTTER -> !stonecutterInput.getItem(0).isEmpty() && getStonecutterSelectedRecipe() >= 0;
-            default -> false;
+            case SMITHING_TABLE -> !smithingTableResult.getItem(0).isEmpty();
         };
     }
 
@@ -170,10 +186,15 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     public void onScreenReady(final int playerInventoryY) {
         super.onScreenReady(playerInventoryY);
         transferManager.clear();
+        addSmithingTableSlots(playerInventoryY);
         addPatternSlots(playerInventoryY);
         addCraftingMatrixSlots(playerInventoryY);
         addProcessingMatrixSlots(playerInventoryY);
         addStonecutterSlots(playerInventoryY);
+    }
+
+    int getFirstSmithingTableSlotIndex() {
+        return 9 * 3 + 9;
     }
 
     private void addPatternSlots(final int playerInventoryY) {
@@ -283,6 +304,45 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         });
     }
 
+    private void addSmithingTableSlots(final int playerInventoryY) {
+        for (int i = 0; i < 3; ++i) {
+            final int ii = i;
+            addSlot(new FilterSlot(smithingTableMatrix, i, 13 + (i * 18), playerInventoryY - 63) {
+                @Override
+                public boolean isActive() {
+                    return getPatternType() == PatternType.SMITHING_TABLE;
+                }
+
+                @Override
+                public boolean mayPlace(final ItemStack stack) {
+                    return smithingTableRecipes.stream().anyMatch((recipe) -> switch (ii) {
+                        case 0 -> recipe.value().isTemplateIngredient(stack);
+                        case 1 -> recipe.value().isBaseIngredient(stack);
+                        case 2 -> recipe.value().isAdditionIngredient(stack);
+                        default -> false;
+                    });
+                }
+            });
+        }
+        addSlot(new DisabledSlot(smithingTableResult, 0, 93, playerInventoryY - 63) {
+            @Override
+            public boolean isActive() {
+                return getPatternType() == PatternType.SMITHING_TABLE;
+            }
+        });
+    }
+
+    Optional<SmithingTemplateItem> getSmithingTableTemplateItem() {
+        final ItemStack stack = getSlot(getFirstSmithingTableSlotIndex()).getItem();
+        if (!stack.isEmpty()) {
+            final Item item = stack.getItem();
+            if (item instanceof SmithingTemplateItem templateItem) {
+                return Optional.of(templateItem);
+            }
+        }
+        return Optional.empty();
+    }
+
     List<RecipeHolder<StonecutterRecipe>> getStonecutterRecipes() {
         return stonecutterInput.getRecipes();
     }
@@ -293,6 +353,10 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
     void setStonecutterSelectedRecipe(final int idx) {
         getProperty(PatternGridPropertyTypes.STONECUTTER_SELECTED_RECIPE).setValue(idx);
+    }
+
+    ItemStack getSmithingTableResult() {
+        return smithingTableResult.getItem(0);
     }
 
     public void clear() {

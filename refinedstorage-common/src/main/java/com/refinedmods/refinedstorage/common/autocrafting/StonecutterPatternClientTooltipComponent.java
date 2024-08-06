@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
@@ -17,38 +16,23 @@ import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARR
 import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
 import static java.util.Objects.requireNonNullElse;
 
-public class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent {
+class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final int ARROW_SPACING = 8;
-    private static final ResourceLocation STONECUTTER_RECIPE_SELECTED_SPRITE = ResourceLocation.withDefaultNamespace(
-        "container/stonecutter/recipe_selected"
-    );
 
-    private final Component outputName;
+    private final Component outputText;
     private final PlatformResourceKey input;
     private final PlatformResourceKey output;
 
-    public StonecutterPatternClientTooltipComponent(final PlatformResourceKey input, final PlatformResourceKey output) {
-        this.outputName = getOutputText(output);
+    StonecutterPatternClientTooltipComponent(final PlatformResourceKey input, final PlatformResourceKey output) {
+        this.outputText = getOutputText(output);
         this.input = input;
         this.output = output;
     }
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.drawString(
-            font,
-            outputName,
-            x,
-            y,
-            requireNonNullElse(ChatFormatting.GRAY.getColor(), 15)
-        );
-        graphics.blitSprite(
-            SLOT,
-            x,
-            y + 9 + 2,
-            18,
-            18
-        );
+        graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+        graphics.blitSprite(SLOT, x, y + 9 + 2, 18, 18);
         RefinedStorageApi.INSTANCE.getResourceRendering(input).render(input, graphics, x + 1, y + 9 + 2 + 1);
         graphics.blitSprite(
             LIGHT_ARROW,
@@ -58,7 +42,7 @@ public class StonecutterPatternClientTooltipComponent implements ClientTooltipCo
             LIGHT_ARROW_HEIGHT
         );
         graphics.blitSprite(
-            STONECUTTER_RECIPE_SELECTED_SPRITE,
+            VanillaConstants.STONECUTTER_RECIPE_SELECTED_SPRITE,
             x + 18 + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING,
             y + 9 + 2,
             16,
@@ -87,7 +71,7 @@ public class StonecutterPatternClientTooltipComponent implements ClientTooltipCo
     @Override
     public int getWidth(final Font font) {
         return Math.max(
-            font.width(outputName),
+            font.width(outputText),
             18 + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING + 16
         );
     }

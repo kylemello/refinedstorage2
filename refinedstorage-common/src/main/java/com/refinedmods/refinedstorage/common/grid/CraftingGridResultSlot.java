@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
@@ -95,7 +95,7 @@ class CraftingGridResultSlot extends ResultSlot {
     }
 
     private ItemStack decrementMatrixSlot(final int index) {
-        final CraftingMatrix matrix = source.getCraftingMatrix();
+        final RecipeMatrixContainer matrix = source.getCraftingMatrix();
         matrix.removeItem(index, 1);
         return matrix.getItem(index);
     }

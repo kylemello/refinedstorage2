@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 interface CraftingGridSource {
-    CraftingMatrix getCraftingMatrix();
+    RecipeMatrixContainer getCraftingMatrix();
 
     ResultContainer getCraftingResult();
 

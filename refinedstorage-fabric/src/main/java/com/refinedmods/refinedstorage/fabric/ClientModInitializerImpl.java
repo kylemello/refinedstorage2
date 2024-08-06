@@ -408,23 +408,14 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             }
             return null;
         });
-        TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof PatternItem.CraftingPatternTooltipComponent component) {
-                return PatternTooltipCache.getComponent(component);
-            }
-            return null;
-        });
-        TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof PatternItem.ProcessingPatternTooltipComponent component) {
-                return PatternTooltipCache.getComponent(component);
-            }
-            return null;
-        });
-        TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof PatternItem.StonecutterPatternTooltipComponent component) {
-                return PatternTooltipCache.getComponent(component);
-            }
-            return null;
+        TooltipComponentCallback.EVENT.register(data -> switch (data) {
+            case PatternItem.CraftingPatternTooltipComponent component -> PatternTooltipCache.getComponent(component);
+            case PatternItem.ProcessingPatternTooltipComponent component -> PatternTooltipCache.getComponent(component);
+            case PatternItem.StonecutterPatternTooltipComponent component ->
+                PatternTooltipCache.getComponent(component);
+            case PatternItem.SmithingTablePatternTooltipComponent component ->
+                PatternTooltipCache.getComponent(component);
+            case null, default -> null;
         });
     }
 

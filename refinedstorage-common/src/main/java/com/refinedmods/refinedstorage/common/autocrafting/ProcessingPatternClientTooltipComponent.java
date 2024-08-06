@@ -21,7 +21,7 @@ import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARR
 import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
 import static java.util.Objects.requireNonNullElse;
 
-public class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
+class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
     private static final int ARROW_SPACING = 8;
 
@@ -33,7 +33,7 @@ public class ProcessingPatternClientTooltipComponent implements ClientTooltipCom
     private long cycleStart = 0;
     private int currentCycle = 0;
 
-    public ProcessingPatternClientTooltipComponent(final ProcessingPatternState state) {
+    ProcessingPatternClientTooltipComponent(final ProcessingPatternState state) {
         this.rows = calculateMaxRows(state);
         this.outputTexts = getOutputText(state);
         this.inputs = state.inputs().stream().map(input -> input.map(mainInput ->

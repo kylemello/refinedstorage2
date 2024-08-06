@@ -9,7 +9,8 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -28,12 +29,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops,
     NetworkNodeExtendedMenuProvider<GridData> {
-    private final CraftingState craftingState = new CraftingState(this::setChanged, this::getLevel);
+    private static final String TAG_MATRIX = "matrix";
+
+    private final RecipeMatrix<CraftingRecipe, CraftingInput> craftingRecipe = RecipeMatrix.crafting(
+        this::setChanged,
+        this::getLevel
+    );
 
     public CraftingGridBlockEntity(final BlockPos pos, final BlockState state) {
         super(
@@ -44,16 +51,16 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
         );
     }
 
-    CraftingMatrix getCraftingMatrix() {
-        return craftingState.getCraftingMatrix();
+    RecipeMatrixContainer getCraftingMatrix() {
+        return craftingRecipe.getMatrix();
     }
 
     ResultContainer getCraftingResult() {
-        return craftingState.getCraftingResult();
+        return craftingRecipe.getResult();
     }
 
     NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput input) {
-        return craftingState.getRemainingItems(level, player, input);
+        return craftingRecipe.getRemainingItems(level, player, input);
     }
 
     @Override
@@ -80,26 +87,28 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        craftingState.writeToTag(tag, provider);
+        tag.put(TAG_MATRIX, craftingRecipe.writeToTag(provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        craftingState.readFromTag(tag, provider);
+        if (tag.contains(TAG_MATRIX)) {
+            craftingRecipe.readFromTag(tag.getCompound(TAG_MATRIX), provider);
+        }
     }
 
     @Override
     public void setLevel(final Level level) {
         super.setLevel(level);
-        craftingState.updateResult(level);
+        craftingRecipe.updateResult(level);
     }
 
     @Override
     public NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
-        for (int i = 0; i < craftingState.getCraftingMatrix().getContainerSize(); ++i) {
-            drops.add(craftingState.getCraftingMatrix().getItem(i));
+        for (int i = 0; i < craftingRecipe.getMatrix().getContainerSize(); ++i) {
+            drops.add(craftingRecipe.getMatrix().getItem(i));
         }
         return drops;
     }

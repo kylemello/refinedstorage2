@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.content;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.SmithingTablePatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.security.SecurityCardBoundPlayer;
@@ -43,6 +44,8 @@ public final class DataComponents {
     private Supplier<DataComponentType<ProcessingPatternState>> processingPatternState;
     @Nullable
     private Supplier<DataComponentType<StonecutterPatternState>> stonecutterPatternState;
+    @Nullable
+    private Supplier<DataComponentType<SmithingTablePatternState>> smithingTablePatternState;
 
     private DataComponents() {
     }
@@ -147,5 +150,15 @@ public final class DataComponents {
         @Nullable final Supplier<DataComponentType<StonecutterPatternState>> supplier
     ) {
         this.stonecutterPatternState = supplier;
+    }
+
+    public DataComponentType<SmithingTablePatternState> getSmithingTablePatternState() {
+        return requireNonNull(smithingTablePatternState).get();
+    }
+
+    public void setSmithingTablePatternState(
+        @Nullable final Supplier<DataComponentType<SmithingTablePatternState>> supplier
+    ) {
+        this.smithingTablePatternState = supplier;
     }
 }

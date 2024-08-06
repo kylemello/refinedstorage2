@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -13,16 +13,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 class ClientCraftingGridSource implements CraftingGridSource {
-    private final CraftingMatrix craftingMatrix;
+    private final RecipeMatrixContainer craftingMatrix;
     private final ResultContainer craftingResult;
 
     ClientCraftingGridSource() {
-        this.craftingMatrix = new CraftingMatrix(null, 3, 3);
+        this.craftingMatrix = new RecipeMatrixContainer(null, 3, 3);
         this.craftingResult = new ResultContainer();
     }
 
     @Override
-    public CraftingMatrix getCraftingMatrix() {
+    public RecipeMatrixContainer getCraftingMatrix() {
         return craftingMatrix;
     }
 
