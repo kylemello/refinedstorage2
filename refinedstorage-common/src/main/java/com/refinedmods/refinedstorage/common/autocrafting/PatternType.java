@@ -34,6 +34,19 @@ public enum PatternType implements StringRepresentable {
         return translatedName;
     }
 
+    PatternGridRenderer createRenderer(final PatternGridContainerMenu menu,
+                                       final int leftPos,
+                                       final int topPos,
+                                       final int x,
+                                       final int y) {
+        return switch (this) {
+            case CRAFTING -> new CraftingPatternGridRenderer(menu, leftPos, x, y);
+            case PROCESSING -> new ProcessingPatternGridRenderer(menu, leftPos, topPos, x, y);
+            case STONECUTTER -> new StonecutterPatternGridRenderer(menu, leftPos, x, y);
+            case SMITHING_TABLE -> new SmithingTablePatternGridRenderer(menu, leftPos, topPos, x, y);
+        };
+    }
+
     @Override
     public String getSerializedName() {
         return name;

@@ -41,6 +41,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int SPACING_BETWEEN_PATTERN_INPUT_AND_PATTERN_OUTPUT_SLOTS = 36;
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 85;
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_PROCESSING_MATRIX_SLOT = 76;
+    private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_STONECUTTER_SLOT = 63;
+    private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_SMITHING_TABLE_SLOTS = 63;
     private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
 
     private final RateLimiter allowedAlternativesCacheCheckerRateLimiter = RateLimiter.create(2);
@@ -296,7 +298,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     private void addStonecutterSlots(final int playerInventoryY) {
-        addSlot(new FilterSlot(stonecutterInput, 0, 17, playerInventoryY - 63) {
+        final int slotY = playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_STONECUTTER_SLOT;
+        addSlot(new FilterSlot(stonecutterInput, 0, 13, slotY) {
             @Override
             public boolean isActive() {
                 return getPatternType() == PatternType.STONECUTTER;
@@ -305,9 +308,10 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     private void addSmithingTableSlots(final int playerInventoryY) {
+        final int y = playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_SMITHING_TABLE_SLOTS;
         for (int i = 0; i < 3; ++i) {
             final int ii = i;
-            addSlot(new FilterSlot(smithingTableMatrix, i, 13 + (i * 18), playerInventoryY - 63) {
+            addSlot(new FilterSlot(smithingTableMatrix, i, 13 + (i * 18), y) {
                 @Override
                 public boolean isActive() {
                     return getPatternType() == PatternType.SMITHING_TABLE;
@@ -315,7 +319,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
                 @Override
                 public boolean mayPlace(final ItemStack stack) {
-                    return smithingTableRecipes.stream().anyMatch((recipe) -> switch (ii) {
+                    return smithingTableRecipes.stream().anyMatch(recipe -> switch (ii) {
                         case 0 -> recipe.value().isTemplateIngredient(stack);
                         case 1 -> recipe.value().isBaseIngredient(stack);
                         case 2 -> recipe.value().isAdditionIngredient(stack);
@@ -324,7 +328,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 }
             });
         }
-        addSlot(new DisabledSlot(smithingTableResult, 0, 93, playerInventoryY - 63) {
+        addSlot(new DisabledSlot(smithingTableResult, 0, 93, y) {
             @Override
             public boolean isActive() {
                 return getPatternType() == PatternType.SMITHING_TABLE;
@@ -408,8 +412,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     interface PatternGridListener {
-        void patternTypeChanged(PatternType value);
+        void patternTypeChanged(PatternType newPatternType);
 
-        void fuzzyModeChanged(boolean value);
+        void fuzzyModeChanged(boolean newFuzzyMode);
     }
 }

@@ -52,8 +52,14 @@ public class RecipeMatrix<T extends Recipe<I>, I extends RecipeInput> {
         final Runnable listener,
         final Supplier<@NullableType Level> levelSupplier
     ) {
-        return new RecipeMatrix<>(listener, levelSupplier, 3, 3, RecipeMatrixContainer::asCraftInput,
-            RecipeType.CRAFTING);
+        return new RecipeMatrix<>(
+            listener,
+            levelSupplier,
+            3,
+            3,
+            RecipeMatrixContainer::asCraftInput,
+            RecipeType.CRAFTING
+        );
     }
 
     public static RecipeMatrix<SmithingRecipe, SmithingRecipeInput> smithingTable(
@@ -65,7 +71,7 @@ public class RecipeMatrix<T extends Recipe<I>, I extends RecipeInput> {
             levelSupplier,
             3,
             1,
-            matrix -> new SmithingRecipeInput(matrix.getItem(0), matrix.getItem(1), matrix.getItem(2)),
+            slots -> new SmithingRecipeInput(slots.getItem(0), slots.getItem(1), slots.getItem(2)),
             RecipeType.SMITHING
         );
     }

@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
@@ -297,7 +298,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             : requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
         final boolean large = (minecraft != null && minecraft.isEnforceUnicode())
             || Platform.INSTANCE.getConfig().getGrid().isLargeFont();
-        renderAmount(graphics, slotX, slotY, text, color, large);
+        ResourceSlotRendering.renderAmount(graphics, slotX, slotY, text, color, large);
     }
 
     private void renderDisabledSlot(final GuiGraphics graphics, final int slotX, final int slotY) {
