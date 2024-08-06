@@ -29,4 +29,14 @@ public final class PatternTooltipCache {
         }
         return CACHE.computeIfAbsent(key.id(), id -> new ProcessingPatternClientTooltipComponent(key.state()));
     }
+
+    public static ClientTooltipComponent getComponent(final PatternItem.StonecutterPatternTooltipComponent key) {
+        if (CACHE.size() > 1000) {
+            CACHE.clear();
+        }
+        return CACHE.computeIfAbsent(key.id(), id -> new StonecutterPatternClientTooltipComponent(
+            key.stonecutterPattern().input(),
+            key.stonecutterPattern().output()
+        ));
+    }
 }

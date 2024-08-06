@@ -6,6 +6,7 @@ import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.autocrafting.ProcessingPattern;
+import com.refinedmods.refinedstorage.common.api.autocrafting.StonecutterPattern;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
@@ -37,6 +38,7 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
@@ -86,10 +88,10 @@ public class PatternItem extends Item implements PatternProviderItem {
         if (state == null) {
             return Optional.of(new HelpTooltipComponent(HELP));
         }
+        final Level level = PlatformUtil.getClientLevel();
         return switch (state.type()) {
             case CRAFTING -> {
                 final CraftingPatternState craftingState = stack.get(DataComponents.INSTANCE.getCraftingPatternState());
-                final Level level = PlatformUtil.getClientLevel();
                 if (craftingState == null || level == null) {
                     yield Optional.empty();
                 }
@@ -111,6 +113,18 @@ public class PatternItem extends Item implements PatternProviderItem {
                     yield Optional.empty();
                 }
                 yield Optional.of(new ProcessingPatternTooltipComponent(state.id(), processingState));
+            }
+            case STONECUTTER -> {
+                final StonecutterPatternState stonecutterState = stack.get(
+                    DataComponents.INSTANCE.getStonecutterPatternState()
+                );
+                if (stonecutterState == null || level == null) {
+                    yield Optional.empty();
+                }
+                yield RefinedStorageApi.INSTANCE.getPattern(stack, level)
+                    .filter(StonecutterPattern.class::isInstance)
+                    .map(StonecutterPattern.class::cast)
+                    .map(stonecutterPattern -> new StonecutterPatternTooltipComponent(state.id(), stonecutterPattern));
             }
             default -> Optional.empty();
         };
@@ -135,6 +149,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         return switch (state.type()) {
             case CRAFTING -> getCraftingPattern(stack, level);
             case PROCESSING -> getProcessingPattern(stack);
+            case STONECUTTER -> getStonecutterPattern(stack, level);
             default -> Optional.empty();
         };
     }
@@ -220,6 +235,29 @@ public class PatternItem extends Item implements PatternProviderItem {
         return Optional.of(new ProcessingPattern(state.getFlatInputs(), state.getFlatOutputs()));
     }
 
+    private Optional<Pattern> getStonecutterPattern(final ItemStack stack, final Level level) {
+        final StonecutterPatternState state = stack.get(DataComponents.INSTANCE.getStonecutterPatternState());
+        if (state == null) {
+            return Optional.empty();
+        }
+        return getStonecutterPattern(level, state);
+    }
+
+    private Optional<Pattern> getStonecutterPattern(final Level level, final StonecutterPatternState state) {
+        final SingleRecipeInput input = new SingleRecipeInput(state.input());
+        final var recipes = level.getRecipeManager().getRecipesFor(RecipeType.STONECUTTING, input, level);
+        for (final var recipe : recipes) {
+            final ItemStack output = recipe.value().assemble(input, level.registryAccess());
+            if (ItemStack.isSameItemSameComponents(output, state.selectedOutput())) {
+                return Optional.of(new StonecutterPattern(
+                    ItemResource.ofItemStack(state.input()),
+                    ItemResource.ofItemStack(output)
+                ));
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
@@ -237,6 +275,10 @@ public class PatternItem extends Item implements PatternProviderItem {
     }
 
     public record ProcessingPatternTooltipComponent(UUID id, ProcessingPatternState state)
+        implements TooltipComponent {
+    }
+
+    public record StonecutterPatternTooltipComponent(UUID id, StonecutterPattern stonecutterPattern)
         implements TooltipComponent {
     }
 }

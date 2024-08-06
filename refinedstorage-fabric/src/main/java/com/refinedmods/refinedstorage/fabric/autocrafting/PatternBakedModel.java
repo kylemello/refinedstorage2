@@ -13,9 +13,16 @@ class PatternBakedModel extends ForwardingBakedModel {
     PatternBakedModel(final ModelBaker modelBaker,
                       final BakedModel emptyModel,
                       final BakedModel craftingModel,
-                      final BakedModel processingModel) {
+                      final BakedModel processingModel,
+                      final BakedModel stonecutterModel) {
         this.wrapped = emptyModel;
-        this.itemOverrides = new PatternItemOverrides(modelBaker, emptyModel, craftingModel, processingModel);
+        this.itemOverrides = new PatternItemOverrides(
+            modelBaker,
+            emptyModel,
+            craftingModel,
+            processingModel,
+            stonecutterModel
+        );
     }
 
     @Override

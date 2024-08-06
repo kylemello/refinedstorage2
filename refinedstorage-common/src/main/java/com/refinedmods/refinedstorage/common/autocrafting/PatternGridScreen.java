@@ -17,16 +17,22 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
@@ -71,8 +77,22 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private static final ResourceLocation CRAFTING = createIdentifier("pattern_grid/crafting");
     private static final ResourceLocation PROCESSING = createIdentifier("pattern_grid/processing");
     private static final ResourceLocation PROCESSING_MATRIX = createIdentifier("pattern_grid/processing_matrix");
+    private static final ResourceLocation STONECUTTER = createIdentifier("pattern_grid/stonecutter");
+    private static final ResourceLocation STONECUTTER_RECIPE_SELECTED_SPRITE = ResourceLocation.withDefaultNamespace(
+        "container/stonecutter/recipe_selected"
+    );
+    private static final ResourceLocation STONECUTTER_RECIPE_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace(
+        "container/stonecutter/recipe_highlighted"
+    );
+    private static final ResourceLocation STONECUTTER_RECIPE_SPRITE = ResourceLocation.withDefaultNamespace(
+        "container/stonecutter/recipe"
+    );
+
     private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
     private static final int PROCESSING_MATRIX_SLOT_SIZE = 18;
+
+    private static final int STONECUTTER_RECIPES_PER_ROW = 4;
+    private static final int STONECUTTER_ROWS_VISIBLE = 3;
 
     @Nullable
     private Button createPatternButton;
@@ -82,6 +102,8 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     private Button clearButton;
     @Nullable
     private ScrollbarWidget processingScrollbar;
+    @Nullable
+    private ScrollbarWidget stonecutterScrollbar;
 
     private final Map<PatternType, PatternTypeButton> patternTypeButtons = new EnumMap<>(PatternType.class);
     private final Inventory playerInventory;
@@ -107,8 +129,11 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         this.fuzzyModeCheckbox = createFuzzyModeCheckbox();
         addRenderableWidget(fuzzyModeCheckbox);
         this.processingScrollbar = createProcessingScrollbar();
-        updateMaxProcessingScrollbarOffset();
+        updateProcessingScrollbarMaxOffset();
         addWidget(processingScrollbar);
+        this.stonecutterScrollbar = createStonecutterScrollbar();
+        updateStonecutterScrollbarMaxOffset();
+        addWidget(stonecutterScrollbar);
         menu.setListener(this);
     }
 
@@ -185,11 +210,11 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
             52
         );
         scrollbar.visible = isProcessingScrollbarVisible();
-        scrollbar.setListener(offset -> onScrollbarChanged((int) offset));
+        scrollbar.setListener(offset -> onProcessingScrollbarChanged((int) offset));
         return scrollbar;
     }
 
-    private void onScrollbarChanged(final int offset) {
+    private void onProcessingScrollbarChanged(final int offset) {
         int inputRow = 0;
         int outputRow = 0;
         final int scrollbarOffset = (processingScrollbar != null && processingScrollbar.isSmoothScrolling())
@@ -217,16 +242,28 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         }
     }
 
+    private ScrollbarWidget createStonecutterScrollbar() {
+        final ScrollbarWidget scrollbar = new ScrollbarWidget(
+            getInsetX() + 107,
+            getInsetY() + 9,
+            ScrollbarWidget.Type.NORMAL,
+            54
+        );
+        scrollbar.visible = isStonecutterScrollbarVisible();
+        return scrollbar;
+    }
+
     @Override
     protected void containerTick() {
         super.containerTick();
         if (createPatternButton != null) {
             createPatternButton.active = getMenu().canCreatePattern();
         }
-        updateMaxProcessingScrollbarOffset();
+        updateProcessingScrollbarMaxOffset();
+        updateStonecutterScrollbarMaxOffset();
     }
 
-    private void updateMaxProcessingScrollbarOffset() {
+    private void updateProcessingScrollbarMaxOffset() {
         if (processingScrollbar == null || getMenu().getPatternType() != PatternType.PROCESSING) {
             return;
         }
@@ -260,8 +297,21 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         final int maxOffsetCorrected = processingScrollbar.isSmoothScrolling()
             ? maxOffset * PROCESSING_MATRIX_SLOT_SIZE
             : maxOffset;
+
         processingScrollbar.setMaxOffset(maxOffsetCorrected);
         processingScrollbar.setEnabled(maxOffsetCorrected > 0);
+    }
+
+    private void updateStonecutterScrollbarMaxOffset() {
+        if (stonecutterScrollbar == null || getMenu().getPatternType() != PatternType.STONECUTTER) {
+            return;
+        }
+        final int items = getMenu().getStonecutterRecipes().size();
+        final int rows = Math.ceilDiv(items, STONECUTTER_RECIPES_PER_ROW);
+        final int maxOffset = rows - STONECUTTER_ROWS_VISIBLE;
+        final int maxOffsetCorrected = maxOffset * (stonecutterScrollbar.isSmoothScrolling() ? 18 : 1);
+        stonecutterScrollbar.setMaxOffset(maxOffsetCorrected);
+        stonecutterScrollbar.setEnabled(maxOffsetCorrected > 0);
     }
 
     @Override
@@ -269,6 +319,9 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         super.render(graphics, mouseX, mouseY, partialTicks);
         if (processingScrollbar != null) {
             processingScrollbar.render(graphics, mouseX, mouseY, partialTicks);
+        }
+        if (stonecutterScrollbar != null) {
+            stonecutterScrollbar.render(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -280,6 +333,7 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         switch (getMenu().getPatternType()) {
             case CRAFTING -> graphics.blitSprite(CRAFTING, insetContentX, insetContentY, 130, 54);
             case PROCESSING -> renderProcessingBackground(graphics, mouseX, mouseY, insetContentX, insetContentY);
+            case STONECUTTER -> renderStonecutterBackground(graphics, mouseX, mouseY, getInsetX(), getInsetY());
         }
     }
 
@@ -364,6 +418,76 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         }
     }
 
+    private void renderStonecutterBackground(final GuiGraphics graphics,
+                                             final int mouseX,
+                                             final int mouseY,
+                                             final int insetX,
+                                             final int insetY) {
+        graphics.blitSprite(STONECUTTER, insetX + 8, insetY + 8, 112, 56);
+        graphics.enableScissor(insetX + 40, insetY + 9, insetX + 40 + 64, insetY + 9 + 54);
+        final boolean isOverArea = isOverStonecutterArea(mouseX, mouseY);
+        for (int i = 0; i < getMenu().getStonecutterRecipes().size(); ++i) {
+            final RecipeHolder<StonecutterRecipe> recipe = getMenu().getStonecutterRecipes().get(i);
+            final int xx = getStonecutterRecipeX(insetX, i);
+            final int row = i / STONECUTTER_RECIPES_PER_ROW;
+            final int yy = getStonecutterRecipeY(insetY, row);
+            if (yy < insetY + 9 - 18 || yy > insetY + 9 + 54) {
+                continue;
+            }
+            final boolean hovering = mouseX >= xx && mouseY >= yy && mouseX < xx + 16 && mouseY < yy + 18;
+            final ResourceLocation buttonSprite;
+            if (i == getMenu().getStonecutterSelectedRecipe()) {
+                buttonSprite = STONECUTTER_RECIPE_SELECTED_SPRITE;
+            } else if (isOverArea && hovering) {
+                buttonSprite = STONECUTTER_RECIPE_HIGHLIGHTED_SPRITE;
+            } else {
+                buttonSprite = STONECUTTER_RECIPE_SPRITE;
+            }
+            graphics.blitSprite(buttonSprite, xx, yy, 16, 18);
+            graphics.renderItem(
+                recipe.value().getResultItem(requireNonNull(minecraft).level.registryAccess()),
+                xx,
+                yy + 1
+            );
+        }
+        graphics.disableScissor();
+    }
+
+    @Override
+    protected void renderTooltip(final GuiGraphics graphics, final int x, final int y) {
+        super.renderTooltip(graphics, x, y);
+        if (getMenu().getPatternType() != PatternType.STONECUTTER || !isOverStonecutterArea(x, y)) {
+            return;
+        }
+        final int insetX = getInsetX();
+        final int insetY = getInsetY();
+        for (int i = 0; i < getMenu().getStonecutterRecipes().size(); ++i) {
+            final RecipeHolder<StonecutterRecipe> recipe = getMenu().getStonecutterRecipes().get(i);
+            final ItemStack result = recipe.value().getResultItem(requireNonNull(minecraft).level.registryAccess());
+            final int xx = getStonecutterRecipeX(insetX, i);
+            final int row = i / STONECUTTER_RECIPES_PER_ROW;
+            final int yy = getStonecutterRecipeY(insetY, row);
+            if (yy < insetY + 9 - 18 || yy > insetY + 9 + 54) {
+                continue;
+            }
+            if (x >= xx && y >= yy && x < xx + 16 && y < yy + 18) {
+                graphics.renderTooltip(font, result, x, y);
+            }
+        }
+    }
+
+    private int getStonecutterRecipeX(final int insetX, final int i) {
+        return insetX + 40 + i % STONECUTTER_RECIPES_PER_ROW * 16;
+    }
+
+    private int getStonecutterRecipeY(final int insetY, final int row) {
+        return insetY
+            + 9
+            + (row * 18)
+            - ((stonecutterScrollbar != null ? (int) stonecutterScrollbar.getOffset() : 0)
+            * (stonecutterScrollbar != null && stonecutterScrollbar.isSmoothScrolling() ? 1 : 18));
+    }
+
     @Override
     protected void renderResourceSlots(final GuiGraphics graphics) {
         // no op, we render them in the scissor rendering
@@ -439,7 +563,37 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         if (processingScrollbar != null && processingScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
             return true;
         }
+        if (stonecutterScrollbar != null && stonecutterScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
+            return true;
+        }
+        if (clickedStonecutterRecipe(mouseX, mouseY)) {
+            return true;
+        }
         return super.mouseClicked(mouseX, mouseY, clickedButton);
+    }
+
+    private boolean clickedStonecutterRecipe(final double x, final double y) {
+        if (getMenu().getPatternType() != PatternType.STONECUTTER || !isOverStonecutterArea(x, y)) {
+            return false;
+        }
+        final int insetX = getInsetX();
+        final int insetY = getInsetY();
+        for (int i = 0; i < getMenu().getStonecutterRecipes().size(); ++i) {
+            final int xx = getStonecutterRecipeX(insetX, i);
+            final int row = i / STONECUTTER_RECIPES_PER_ROW;
+            final int yy = getStonecutterRecipeY(insetY, row);
+            if (yy < insetY + 9 - 18 || yy > insetY + 9 + 54) {
+                continue;
+            }
+            if (x >= xx && y >= yy && x < xx + 16 && y < yy + 18) {
+                getMenu().setStonecutterSelectedRecipe(i);
+                Minecraft.getInstance().getSoundManager().play(
+                    SimpleSoundInstance.forUI(SoundEvents.UI_STONECUTTER_SELECT_RECIPE, 1.0F)
+                );
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -447,26 +601,52 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         if (processingScrollbar != null) {
             processingScrollbar.mouseMoved(mx, my);
         }
+        if (stonecutterScrollbar != null) {
+            stonecutterScrollbar.mouseMoved(mx, my);
+        }
         super.mouseMoved(mx, my);
     }
 
     @Override
     public boolean mouseReleased(final double mx, final double my, final int button) {
-        return (processingScrollbar != null && processingScrollbar.mouseReleased(mx, my, button))
+        if (processingScrollbar == null || stonecutterScrollbar == null) {
+            return super.mouseReleased(mx, my, button);
+        }
+        return processingScrollbar.mouseReleased(mx, my, button)
+            || stonecutterScrollbar.mouseReleased(mx, my, button)
             || super.mouseReleased(mx, my, button);
     }
 
     @Override
     public boolean mouseScrolled(final double x, final double y, final double z, final double delta) {
+        return tryProcessingScrollbar(x, y, z, delta)
+            || tryStonecutterScrollbar(x, y, z, delta)
+            || super.mouseScrolled(x, y, z, delta);
+    }
+
+    private boolean tryProcessingScrollbar(final double x, final double y, final double z, final double delta) {
         final boolean isOverProcessingArea = x >= getInsetX()
             && (x < getInsetX() + INSET_WIDTH)
             && y > getInsetY()
             && (y < getInsetY() + INSET_HEIGHT);
-        final boolean didScrollbar = processingScrollbar != null
+        return processingScrollbar != null
             && processingScrollbar.isActive()
             && isOverProcessingArea
             && processingScrollbar.mouseScrolled(x, y, z, delta);
-        return didScrollbar || super.mouseScrolled(x, y, z, delta);
+    }
+
+    private boolean tryStonecutterScrollbar(final double x, final double y, final double z, final double delta) {
+        return stonecutterScrollbar != null
+            && stonecutterScrollbar.isActive()
+            && isOverStonecutterArea(x, y)
+            && stonecutterScrollbar.mouseScrolled(x, y, z, delta);
+    }
+
+    private boolean isOverStonecutterArea(final double x, final double y) {
+        return x >= getInsetX() + 40
+            && (x < getInsetX() + 40 + 81)
+            && y > getInsetY() + 8
+            && (y < getInsetY() + 8 + 56);
     }
 
     @Override
@@ -491,6 +671,9 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
         if (processingScrollbar != null) {
             processingScrollbar.visible = isProcessingScrollbarVisible();
         }
+        if (stonecutterScrollbar != null) {
+            stonecutterScrollbar.visible = isStonecutterScrollbarVisible();
+        }
     }
 
     @Override
@@ -503,19 +686,26 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
     }
 
     private int getClearButtonX(final PatternType patternType) {
-        return patternType == PatternType.CRAFTING ? leftPos + 69 : leftPos + 124;
+        return switch (patternType) {
+            case CRAFTING -> leftPos + 69;
+            case PROCESSING -> leftPos + 124;
+            case STONECUTTER -> leftPos + 131;
+            default -> getInsetContentY();
+        };
     }
 
     private int getClearButtonY(final PatternType patternType) {
-        if (patternType == PatternType.PROCESSING) {
-            return getInsetContentY() + PROCESSING_INSET_Y_PADDING;
-        }
-        return getInsetContentY();
+        return switch (patternType) {
+            case PROCESSING -> getInsetContentY() + PROCESSING_INSET_Y_PADDING;
+            case STONECUTTER -> getInsetContentY() + 8 - INSET_PADDING;
+            default -> getInsetContentY();
+        };
     }
 
     private boolean isClearButtonVisible() {
         return getMenu().getPatternType() == PatternType.CRAFTING
-            || getMenu().getPatternType() == PatternType.PROCESSING;
+            || getMenu().getPatternType() == PatternType.PROCESSING
+            || getMenu().getPatternType() == PatternType.STONECUTTER;
     }
 
     private boolean isFuzzyModeCheckboxVisible() {
@@ -524,6 +714,10 @@ public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMe
 
     private boolean isProcessingScrollbarVisible() {
         return getMenu().getPatternType() == PatternType.PROCESSING;
+    }
+
+    private boolean isStonecutterScrollbarVisible() {
+        return getMenu().getPatternType() == PatternType.STONECUTTER;
     }
 
     private int getInsetX() {

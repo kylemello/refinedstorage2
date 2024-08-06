@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.content;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.security.SecurityCardBoundPlayer;
 import com.refinedmods.refinedstorage.common.security.SecurityCardPermissions;
@@ -40,6 +41,8 @@ public final class DataComponents {
     private Supplier<DataComponentType<CraftingPatternState>> craftingPatternState;
     @Nullable
     private Supplier<DataComponentType<ProcessingPatternState>> processingPatternState;
+    @Nullable
+    private Supplier<DataComponentType<StonecutterPatternState>> stonecutterPatternState;
 
     private DataComponents() {
     }
@@ -134,5 +137,15 @@ public final class DataComponents {
         @Nullable final Supplier<DataComponentType<ProcessingPatternState>> supplier
     ) {
         this.processingPatternState = supplier;
+    }
+
+    public DataComponentType<StonecutterPatternState> getStonecutterPatternState() {
+        return requireNonNull(stonecutterPatternState).get();
+    }
+
+    public void setStonecutterPatternState(
+        @Nullable final Supplier<DataComponentType<StonecutterPatternState>> supplier
+    ) {
+        this.stonecutterPatternState = supplier;
     }
 }

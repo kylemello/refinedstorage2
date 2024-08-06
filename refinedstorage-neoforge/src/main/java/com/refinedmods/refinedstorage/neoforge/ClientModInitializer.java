@@ -224,6 +224,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         );
         e.register(PatternItem.CraftingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
         e.register(PatternItem.ProcessingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
+        e.register(PatternItem.StonecutterPatternTooltipComponent.class, PatternTooltipCache::getComponent);
     }
 
     private static CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(

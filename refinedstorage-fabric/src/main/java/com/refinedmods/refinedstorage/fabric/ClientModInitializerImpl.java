@@ -420,6 +420,12 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             }
             return null;
         });
+        TooltipComponentCallback.EVENT.register(data -> {
+            if (data instanceof PatternItem.StonecutterPatternTooltipComponent component) {
+                return PatternTooltipCache.getComponent(component);
+            }
+            return null;
+        });
     }
 
     private CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(
