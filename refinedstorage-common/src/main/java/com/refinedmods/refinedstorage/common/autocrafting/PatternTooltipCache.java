@@ -39,4 +39,13 @@ public final class PatternTooltipCache {
             key.stonecutterPattern().output()
         ));
     }
+
+    public static ClientTooltipComponent getComponent(final PatternItem.SmithingTablePatternTooltipComponent key) {
+        if (CACHE.size() > 1000) {
+            CACHE.clear();
+        }
+        return CACHE.computeIfAbsent(key.id(), id -> new SmithingTablePatternClientTooltipComponent(
+            key.smithingTablePattern()
+        ));
+    }
 }

@@ -5,7 +5,6 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
-import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.support.amount.ResourceAmountScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
@@ -23,10 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -40,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
-import static java.util.Objects.requireNonNullElse;
 
 public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     private static final SmallTextClientTooltipComponent CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
@@ -110,69 +104,8 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             return;
         }
         for (final ResourceSlot slot : resourceContainerMenu.getResourceSlots()) {
-            tryRenderResourceSlot(graphics, slot);
+            ResourceSlotRendering.render(graphics, slot, leftPos, topPos);
         }
-    }
-
-    protected final void tryRenderResourceSlot(final GuiGraphics graphics, final ResourceSlot slot) {
-        final ResourceKey resource = slot.getResource();
-        if (resource == null) {
-            return;
-        }
-        renderResourceSlot(
-            graphics,
-            leftPos + slot.x,
-            topPos + slot.y,
-            resource,
-            slot.getAmount(),
-            slot.shouldRenderAmount()
-        );
-    }
-
-    private void renderResourceSlot(final GuiGraphics graphics,
-                                    final int x,
-                                    final int y,
-                                    final ResourceKey resource,
-                                    final long amount,
-                                    final boolean renderAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
-        rendering.render(resource, graphics, x, y);
-        if (renderAmount) {
-            renderResourceAmount(graphics, x, y, amount, rendering);
-        }
-    }
-
-    public static void renderResourceAmount(final GuiGraphics graphics,
-                                            final int x,
-                                            final int y,
-                                            final long amount,
-                                            final ResourceRendering rendering) {
-        renderAmount(
-            graphics,
-            x,
-            y,
-            rendering.getDisplayedAmount(amount, true),
-            requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
-            true
-        );
-    }
-
-    protected static void renderAmount(final GuiGraphics graphics,
-                                       final int x,
-                                       final int y,
-                                       final String amount,
-                                       final int color,
-                                       final boolean large) {
-        final Font font = Minecraft.getInstance().font;
-        final PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        // Large amounts overlap with the slot lines (see Minecraft behavior)
-        poseStack.translate(x + (large ? 1D : 0D), y + (large ? 1D : 0D), 199);
-        if (!large) {
-            poseStack.scale(0.5F, 0.5F, 1);
-        }
-        graphics.drawString(font, amount, (large ? 16 : 30) - font.width(amount), large ? 8 : 22, color, true);
-        poseStack.popPose();
     }
 
     public void addSideButton(final AbstractSideButtonWidget button) {

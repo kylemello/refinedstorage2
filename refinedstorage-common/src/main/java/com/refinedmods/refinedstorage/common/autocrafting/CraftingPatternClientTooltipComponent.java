@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -23,7 +22,7 @@ import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static java.util.Objects.requireNonNullElse;
 
-public class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
+class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
     private static final int ARROW_SPACING = 8;
     private static final ResourceLocation LARGE_SLOT = createIdentifier("large_slot");
@@ -42,9 +41,7 @@ public class CraftingPatternClientTooltipComponent implements ClientTooltipCompo
     private long cycleStart = 0;
     private int currentCycle = 0;
 
-    public CraftingPatternClientTooltipComponent(final int width,
-                                                 final int height,
-                                                 final CraftingPattern craftingPattern) {
+    CraftingPatternClientTooltipComponent(final int width, final int height, final CraftingPattern craftingPattern) {
         this.width = width;
         this.height = height;
         this.craftingPattern = craftingPattern;

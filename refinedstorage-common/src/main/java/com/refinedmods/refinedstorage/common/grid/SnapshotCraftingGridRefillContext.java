@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import net.minecraft.world.entity.player.Player;
@@ -21,14 +21,14 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     SnapshotCraftingGridRefillContext(
         final Player player,
         final CraftingGridBlockEntity blockEntity,
-        final CraftingMatrix craftingMatrix
+        final RecipeMatrixContainer craftingMatrix
     ) {
         this.playerActor = new PlayerActor(player);
         this.blockEntity = blockEntity;
         addAvailableItems(craftingMatrix);
     }
 
-    private void addAvailableItems(final CraftingMatrix craftingMatrix) {
+    private void addAvailableItems(final RecipeMatrixContainer craftingMatrix) {
         blockEntity.getRootStorage().ifPresent(rootStorage -> {
             for (int i = 0; i < craftingMatrix.getContainerSize(); ++i) {
                 addAvailableItem(craftingMatrix, rootStorage, i);
@@ -36,7 +36,7 @@ class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
         });
     }
 
-    private void addAvailableItem(final CraftingMatrix craftingMatrix,
+    private void addAvailableItem(final RecipeMatrixContainer craftingMatrix,
                                   final RootStorage rootStorage,
                                   final int craftingMatrixSlotIndex) {
         final ItemStack craftingMatrixStack = craftingMatrix.getItem(craftingMatrixSlotIndex);

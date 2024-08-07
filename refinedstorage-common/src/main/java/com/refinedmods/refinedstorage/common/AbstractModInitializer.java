@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage.common.autocrafting.PatternGridData;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.SmithingTablePatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
@@ -879,6 +880,12 @@ public abstract class AbstractModInitializer {
                 () -> DataComponentType.<StonecutterPatternState>builder()
                     .persistent(StonecutterPatternState.CODEC)
                     .networkSynchronized(StonecutterPatternState.STREAM_CODEC)
+                    .build()));
+        DataComponents.INSTANCE.setSmithingTablePatternState(
+            callback.register(createIdentifier("smithing_table_pattern_state"),
+                () -> DataComponentType.<SmithingTablePatternState>builder()
+                    .persistent(SmithingTablePatternState.CODEC)
+                    .networkSynchronized(SmithingTablePatternState.STREAM_CODEC)
                     .build()));
     }
 

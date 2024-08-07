@@ -21,6 +21,7 @@ public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGe
     private static final ResourceLocation CRAFTING_MODEL = createIdentifier("item/pattern/crafting");
     private static final ResourceLocation PROCESSING_MODEL = createIdentifier("item/pattern/processing");
     private static final ResourceLocation STONECUTTER_MODEL = createIdentifier("item/pattern/stonecutter");
+    private static final ResourceLocation SMITHING_TABLE_MODEL = createIdentifier("item/pattern/smithing_table");
 
     @Override
     public BakedModel bake(final IGeometryBakingContext ctx,
@@ -33,7 +34,8 @@ public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGe
             requireNonNull(modelBaker.bake(EMPTY_MODEL, modelState, function)),
             requireNonNull(modelBaker.bake(CRAFTING_MODEL, modelState, function)),
             requireNonNull(modelBaker.bake(PROCESSING_MODEL, modelState, function)),
-            requireNonNull(modelBaker.bake(STONECUTTER_MODEL, modelState, function))
+            requireNonNull(modelBaker.bake(STONECUTTER_MODEL, modelState, function)),
+            requireNonNull(modelBaker.bake(SMITHING_TABLE_MODEL, modelState, function))
         );
     }
 
@@ -44,5 +46,6 @@ public class PatternUnbakedGeometry implements IUnbakedGeometry<PatternUnbakedGe
         modelGetter.apply(CRAFTING_MODEL).resolveParents(modelGetter);
         modelGetter.apply(PROCESSING_MODEL).resolveParents(modelGetter);
         modelGetter.apply(STONECUTTER_MODEL).resolveParents(modelGetter);
+        modelGetter.apply(SMITHING_TABLE_MODEL).resolveParents(modelGetter);
     }
 }

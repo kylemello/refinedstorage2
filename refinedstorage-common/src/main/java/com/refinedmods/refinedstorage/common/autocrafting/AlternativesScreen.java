@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
 import com.refinedmods.refinedstorage.common.support.amount.AmountScreenConfiguration;
@@ -273,7 +274,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
 
     @Override
     protected void renderResourceSlots(final GuiGraphics graphics) {
-        tryRenderResourceSlot(graphics, getMenu().getAmountSlot());
+        ResourceSlotRendering.render(graphics, getMenu().getAmountSlot(), leftPos, topPos);
     }
 
     @Override
@@ -416,7 +417,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
                              final int mouseY) {
         for (final ResourceSlot resourceSlot : slots) {
             if (resourceSlot.isActive()) {
-                tryRenderResourceSlot(graphics, resourceSlot);
+                ResourceSlotRendering.render(graphics, resourceSlot, leftPos, topPos);
                 if (isHovering(resourceSlot.x, resourceSlot.y, 16, 16, mouseX, mouseY)
                     && canInteractWithResourceSlot(resourceSlot, mouseX, mouseY)) {
                     renderSlotHighlight(graphics, leftPos + resourceSlot.x, topPos + resourceSlot.y, 0);

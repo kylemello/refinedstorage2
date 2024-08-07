@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
-import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -21,7 +21,7 @@ import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARR
 import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
 import static java.util.Objects.requireNonNullElse;
 
-public class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
+class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
     private static final int ARROW_SPACING = 8;
 
@@ -33,7 +33,7 @@ public class ProcessingPatternClientTooltipComponent implements ClientTooltipCom
     private long cycleStart = 0;
     private int currentCycle = 0;
 
-    public ProcessingPatternClientTooltipComponent(final ProcessingPatternState state) {
+    ProcessingPatternClientTooltipComponent(final ProcessingPatternState state) {
         this.rows = calculateMaxRows(state);
         this.outputTexts = getOutputText(state);
         this.inputs = state.inputs().stream().map(input -> input.map(mainInput ->
@@ -155,8 +155,7 @@ public class ProcessingPatternClientTooltipComponent implements ClientTooltipCom
             resourceAmount.resource()
         );
         rendering.render(resourceAmount.resource(), graphics, slotX + 1, slotY + 1);
-        AbstractBaseScreen.renderResourceAmount(graphics, slotX + 1, slotY + 1, resourceAmount.amount(),
-            rendering);
+        ResourceSlotRendering.render(graphics, slotX + 1, slotY + 1, resourceAmount.amount(), rendering);
     }
 
     private void renderOutputText(final Font font, final int x, final int y, final GuiGraphics graphics) {

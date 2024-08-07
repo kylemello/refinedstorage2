@@ -2,16 +2,13 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.CraftingPattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
-import com.refinedmods.refinedstorage.common.api.autocrafting.ProcessingPattern;
-import com.refinedmods.refinedstorage.common.api.autocrafting.StonecutterPattern;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
 import com.refinedmods.refinedstorage.common.content.Items;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
@@ -39,6 +36,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
@@ -126,7 +124,21 @@ public class PatternItem extends Item implements PatternProviderItem {
                     .map(StonecutterPattern.class::cast)
                     .map(stonecutterPattern -> new StonecutterPatternTooltipComponent(state.id(), stonecutterPattern));
             }
-            default -> Optional.empty();
+            case SMITHING_TABLE -> {
+                final SmithingTablePatternState smithingTableState = stack.get(
+                    DataComponents.INSTANCE.getSmithingTablePatternState()
+                );
+                if (smithingTableState == null || level == null) {
+                    yield Optional.empty();
+                }
+                yield RefinedStorageApi.INSTANCE.getPattern(stack, level)
+                    .filter(SmithingTablePattern.class::isInstance)
+                    .map(SmithingTablePattern.class::cast)
+                    .map(smithingTablePattern -> new SmithingTablePatternTooltipComponent(
+                        state.id(),
+                        smithingTablePattern
+                    ));
+            }
         };
     }
 
@@ -150,7 +162,7 @@ public class PatternItem extends Item implements PatternProviderItem {
             case CRAFTING -> getCraftingPattern(stack, level);
             case PROCESSING -> getProcessingPattern(stack);
             case STONECUTTER -> getStonecutterPattern(stack, level);
-            default -> Optional.empty();
+            case SMITHING_TABLE -> getSmithingTablePattern(stack, level);
         };
     }
 
@@ -163,7 +175,7 @@ public class PatternItem extends Item implements PatternProviderItem {
     }
 
     private Optional<Pattern> getCraftingPattern(final Level level, final CraftingPatternState state) {
-        final CraftingMatrix craftingMatrix = getFilledCraftingMatrix(state);
+        final RecipeMatrixContainer craftingMatrix = getFilledCraftingMatrix(state);
         final CraftingInput.Positioned positionedCraftingInput = craftingMatrix.asPositionedCraftInput();
         final CraftingInput craftingInput = positionedCraftingInput.input();
         return level.getRecipeManager()
@@ -172,10 +184,10 @@ public class PatternItem extends Item implements PatternProviderItem {
             .map(recipe -> toCraftingPattern(level, recipe, craftingInput, state));
     }
 
-    private CraftingMatrix getFilledCraftingMatrix(final CraftingPatternState state) {
+    private RecipeMatrixContainer getFilledCraftingMatrix(final CraftingPatternState state) {
         final CraftingInput.Positioned positionedInput = state.input();
         final CraftingInput input = positionedInput.input();
-        final CraftingMatrix craftingMatrix = new CraftingMatrix(null, input.width(), input.height());
+        final RecipeMatrixContainer craftingMatrix = new RecipeMatrixContainer(null, input.width(), input.height());
         for (int i = 0; i < input.size(); ++i) {
             craftingMatrix.setItem(i, input.getItem(i));
         }
@@ -258,6 +270,26 @@ public class PatternItem extends Item implements PatternProviderItem {
         return Optional.empty();
     }
 
+    private Optional<Pattern> getSmithingTablePattern(final ItemStack stack, final Level level) {
+        final SmithingTablePatternState state = stack.get(DataComponents.INSTANCE.getSmithingTablePatternState());
+        if (state == null) {
+            return Optional.empty();
+        }
+        return getSmithingTablePattern(level, state);
+    }
+
+    private Optional<Pattern> getSmithingTablePattern(final Level level, final SmithingTablePatternState state) {
+        final SmithingRecipeInput input = new SmithingRecipeInput(state.template(), state.base(), state.addition());
+        return level.getRecipeManager()
+            .getRecipeFor(RecipeType.SMITHING, input, level)
+            .map(recipe -> new SmithingTablePattern(
+                ItemResource.ofItemStack(state.template()),
+                ItemResource.ofItemStack(state.base()),
+                ItemResource.ofItemStack(state.addition()),
+                ItemResource.ofItemStack(recipe.value().assemble(input, level.registryAccess())))
+            );
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
@@ -279,6 +311,10 @@ public class PatternItem extends Item implements PatternProviderItem {
     }
 
     public record StonecutterPatternTooltipComponent(UUID id, StonecutterPattern stonecutterPattern)
+        implements TooltipComponent {
+    }
+
+    public record SmithingTablePatternTooltipComponent(UUID id, SmithingTablePattern smithingTablePattern)
         implements TooltipComponent {
     }
 }

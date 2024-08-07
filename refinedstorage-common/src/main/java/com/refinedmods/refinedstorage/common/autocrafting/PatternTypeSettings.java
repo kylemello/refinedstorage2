@@ -9,7 +9,7 @@ class PatternTypeSettings {
     private PatternTypeSettings() {
     }
 
-    public static PatternType getPatternType(final int patternType) {
+    static PatternType getPatternType(final int patternType) {
         return switch (patternType) {
             case PROCESSING -> PatternType.PROCESSING;
             case STONECUTTER -> PatternType.STONECUTTER;
@@ -18,7 +18,7 @@ class PatternTypeSettings {
         };
     }
 
-    public static int getPatternType(final PatternType patternType) {
+    static int getPatternType(final PatternType patternType) {
         return switch (patternType) {
             case CRAFTING -> CRAFTING;
             case PROCESSING -> PROCESSING;

@@ -12,11 +12,11 @@ import com.refinedmods.refinedstorage.common.content.DataComponents;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridBlockEntity;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
-import com.refinedmods.refinedstorage.common.grid.CraftingState;
 import com.refinedmods.refinedstorage.common.grid.GridData;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
-import com.refinedmods.refinedstorage.common.support.CraftingMatrix;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
@@ -40,8 +40,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,6 +53,7 @@ import static com.refinedmods.refinedstorage.common.support.resource.ResourceCon
 
 public class PatternGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops,
     NetworkNodeExtendedMenuProvider<PatternGridData> {
+    private static final String TAG_CRAFTING_INPUT = "crafting_input";
     private static final String TAG_PATTERN_INPUT = "pattern_input";
     private static final String TAG_PATTERN_OUTPUT = "pattern_output";
     private static final String TAG_PROCESSING_INPUT = "processing_input";
@@ -58,13 +62,22 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     private static final String TAG_PATTERN_TYPE = "processing";
     private static final String TAG_STONECUTTER_INPUT = "stonecutter_input";
     private static final String TAG_STONECUTTER_SELECTED_RECIPE = "stonecutter_selected_recipe";
+    private static final String TAG_SMITHING_INPUT = "smithing_input";
 
-    private final CraftingState craftingState = new CraftingState(this::setChanged, this::getLevel);
+    private final RecipeMatrix<CraftingRecipe, CraftingInput> craftingRecipe = RecipeMatrix.crafting(
+        this::setChanged,
+        this::getLevel
+    );
     private final ProcessingMatrixInputResourceContainer processingInput = createProcessingMatrixInputContainer();
     private final ResourceContainer processingOutput = createProcessingMatrixOutputContainer();
     private final FilteredContainer patternInput = new FilteredContainer(1, PatternGridBlockEntity::isValidPattern);
     private final FilteredContainer patternOutput = new PatternOutputContainer();
     private final StonecutterInputContainer stonecutterInput = new StonecutterInputContainer(this::getLevel);
+    private final RecipeMatrix<SmithingRecipe, SmithingRecipeInput> smithingTableRecipe = RecipeMatrix.smithingTable(
+        this::setChanged,
+        this::getLevel
+    );
+
     private boolean fuzzyMode;
     private PatternType patternType = PatternType.CRAFTING;
 
@@ -82,12 +95,12 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         stonecutterInput.addListener(container -> setChanged());
     }
 
-    CraftingMatrix getCraftingMatrix() {
-        return craftingState.getCraftingMatrix();
+    RecipeMatrixContainer getCraftingMatrix() {
+        return craftingRecipe.getMatrix();
     }
 
     ResultContainer getCraftingResult() {
-        return craftingState.getCraftingResult();
+        return craftingRecipe.getResult();
     }
 
     ProcessingMatrixInputResourceContainer getProcessingInput() {
@@ -119,6 +132,14 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         setChanged();
     }
 
+    RecipeMatrixContainer getSmithingTableMatrix() {
+        return smithingTableRecipe.getMatrix();
+    }
+
+    ResultContainer getSmithingTableResult() {
+        return smithingTableRecipe.getResult();
+    }
+
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
@@ -130,7 +151,8 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         tag.put(TAG_PROCESSING_OUTPUT, processingOutput.toTag(provider));
         tag.put(TAG_STONECUTTER_INPUT, ContainerUtil.write(stonecutterInput, provider));
         tag.putInt(TAG_STONECUTTER_SELECTED_RECIPE, stonecutterInput.getSelectedRecipe());
-        craftingState.writeToTag(tag, provider);
+        tag.put(TAG_SMITHING_INPUT, smithingTableRecipe.writeToTag(provider));
+        tag.put(TAG_CRAFTING_INPUT, craftingRecipe.writeToTag(provider));
     }
 
     @Override
@@ -154,14 +176,20 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             ContainerUtil.read(tag.getCompound(TAG_STONECUTTER_INPUT), stonecutterInput, provider);
         }
         stonecutterInput.setSelectedRecipe(tag.getInt(TAG_STONECUTTER_SELECTED_RECIPE));
-        craftingState.readFromTag(tag, provider);
+        if (tag.contains(TAG_SMITHING_INPUT)) {
+            smithingTableRecipe.readFromTag(tag.getCompound(TAG_SMITHING_INPUT), provider);
+        }
+        if (tag.contains(TAG_CRAFTING_INPUT)) {
+            craftingRecipe.readFromTag(tag.getCompound(TAG_CRAFTING_INPUT), provider);
+        }
     }
 
     @Override
     public void setLevel(final Level level) {
         super.setLevel(level);
-        craftingState.updateResult(level);
+        craftingRecipe.updateResult(level);
         stonecutterInput.updateRecipes(level);
+        smithingTableRecipe.updateResult(level);
     }
 
     boolean isFuzzyMode() {
@@ -214,8 +242,8 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         final NonNullList<ItemStack> drops = NonNullList.create();
         drops.add(patternInput.getItem(0));
         drops.add(patternOutput.getItem(0));
-        for (int i = 0; i < craftingState.getCraftingMatrix().getContainerSize(); ++i) {
-            drops.add(craftingState.getCraftingMatrix().getItem(i));
+        for (int i = 0; i < craftingRecipe.getMatrix().getContainerSize(); ++i) {
+            drops.add(craftingRecipe.getMatrix().getItem(i));
         }
         return drops;
     }
@@ -225,17 +253,17 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             return;
         }
         switch (patternType) {
-            case CRAFTING -> {
-                craftingState.getCraftingMatrix().clearContent();
-                craftingState.updateResult(level);
-            }
-            case PROCESSING -> {
-                processingInput.clear();
-                processingOutput.clear();
-            }
+            case CRAFTING -> craftingRecipe.clear(level);
+            case PROCESSING -> clearProcessing();
             case STONECUTTER -> stonecutterInput.clearContent();
+            case SMITHING_TABLE -> smithingTableRecipe.clear(level);
         }
         setChanged();
+    }
+
+    private void clearProcessing() {
+        processingInput.clear();
+        processingOutput.clear();
     }
 
     void createPattern() {
@@ -246,7 +274,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             case CRAFTING -> createCraftingPattern();
             case PROCESSING -> createProcessingPattern();
             case STONECUTTER -> createStonecutterPattern();
-            default -> null;
+            case SMITHING_TABLE -> createSmithingTablePattern();
         };
         if (result != null) {
             final boolean shouldExtractInputPattern = patternOutput.getItem(0).isEmpty();
@@ -259,7 +287,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     @Nullable
     private ItemStack createCraftingPattern() {
-        if (!craftingState.hasCraftingResult()) {
+        if (!craftingRecipe.hasResult()) {
             return null;
         }
         final ItemStack result = createPatternStack(PatternType.CRAFTING);
@@ -317,6 +345,21 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         return result;
     }
 
+    @Nullable
+    private ItemStack createSmithingTablePattern() {
+        if (!smithingTableRecipe.hasResult()) {
+            return null;
+        }
+        final ItemStack result = createPatternStack(PatternType.SMITHING_TABLE);
+        final SmithingTablePatternState state = new SmithingTablePatternState(
+            smithingTableRecipe.getMatrix().getItem(0),
+            smithingTableRecipe.getMatrix().getItem(1),
+            smithingTableRecipe.getMatrix().getItem(2)
+        );
+        result.set(DataComponents.INSTANCE.getSmithingTablePatternState(), state);
+        return result;
+    }
+
     private static ItemStack createPatternStack(final PatternType patternType) {
         final ItemStack result = new ItemStack(Items.INSTANCE.getPattern());
         final PatternState patternState = new PatternState(UUID.randomUUID(), patternType);
@@ -333,24 +376,29 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         switch (patternState.type()) {
             case CRAFTING -> {
                 final CraftingPatternState state = stack.get(DataComponents.INSTANCE.getCraftingPatternState());
-                if (state == null) {
-                    return;
+                if (state != null) {
+                    copyCraftingPattern(state);
                 }
-                copyCraftingPattern(state);
             }
             case PROCESSING -> {
                 final ProcessingPatternState state = stack.get(DataComponents.INSTANCE.getProcessingPatternState());
-                if (state == null) {
-                    return;
+                if (state != null) {
+                    copyProcessingPattern(state);
                 }
-                copyProcessingPattern(state);
             }
             case STONECUTTER -> {
                 final StonecutterPatternState state = stack.get(DataComponents.INSTANCE.getStonecutterPatternState());
-                if (state == null) {
-                    return;
+                if (state != null) {
+                    copyStonecutterPattern(state);
                 }
-                copyStonecutterPattern(state);
+            }
+            case SMITHING_TABLE -> {
+                final SmithingTablePatternState state = stack.get(
+                    DataComponents.INSTANCE.getSmithingTablePatternState()
+                );
+                if (state != null) {
+                    copySmithingTablePattern(state);
+                }
             }
         }
         setChanged();
@@ -358,27 +406,26 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     private void copyCraftingPattern(final CraftingPatternState state) {
         this.fuzzyMode = state.fuzzyMode();
-        craftingState.getCraftingMatrix().clearContent();
+        craftingRecipe.getMatrix().clearContent();
         final CraftingInput.Positioned positionedInput = state.input();
         final int left = positionedInput.left();
         final int top = positionedInput.top();
         final CraftingInput input = positionedInput.input();
         for (int x = 0; x < input.width(); ++x) {
             for (int y = 0; y < input.height(); ++y) {
-                final int matrixIndex = x + left + (y + top) * craftingState.getCraftingMatrix().getWidth();
+                final int matrixIndex = x + left + (y + top) * craftingRecipe.getMatrix().getWidth();
                 final int recipeIndex = x + y * input.width();
                 final ItemStack stack = input.getItem(recipeIndex);
-                craftingState.getCraftingMatrix().setItem(matrixIndex, stack);
+                craftingRecipe.getMatrix().setItem(matrixIndex, stack);
             }
         }
         if (level != null) {
-            craftingState.updateResult(level);
+            craftingRecipe.updateResult(level);
         }
     }
 
     private void copyProcessingPattern(final ProcessingPatternState state) {
-        processingInput.clear();
-        processingOutput.clear();
+        clearProcessing();
         for (int i = 0; i < state.inputs().size(); ++i) {
             final int ii = i;
             state.inputs().get(i).ifPresent(input -> processingInput.set(ii, input));
@@ -403,6 +450,16 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
                 stonecutterInput.setSelectedRecipe(i);
                 return;
             }
+        }
+    }
+
+    private void copySmithingTablePattern(final SmithingTablePatternState state) {
+        smithingTableRecipe.getMatrix().clearContent();
+        smithingTableRecipe.getMatrix().setItem(0, state.template());
+        smithingTableRecipe.getMatrix().setItem(1, state.base());
+        smithingTableRecipe.getMatrix().setItem(2, state.addition());
+        if (level != null) {
+            smithingTableRecipe.updateResult(level);
         }
     }
 

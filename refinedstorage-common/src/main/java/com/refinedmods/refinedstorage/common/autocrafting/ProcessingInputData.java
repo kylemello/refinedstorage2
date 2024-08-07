@@ -12,9 +12,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
-public record ProcessingInputData(ResourceContainerData resourceContainerData,
-                                  List<Set<ResourceLocation>> allowedTagIds) {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ProcessingInputData> STREAM_CODEC = StreamCodec.composite(
+record ProcessingInputData(ResourceContainerData resourceContainerData, List<Set<ResourceLocation>> allowedTagIds) {
+    static final StreamCodec<RegistryFriendlyByteBuf, ProcessingInputData> STREAM_CODEC = StreamCodec.composite(
         ResourceContainerData.STREAM_CODEC, ProcessingInputData::resourceContainerData,
         ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.collection(HashSet::new, ResourceLocation.STREAM_CODEC)),
         ProcessingInputData::allowedTagIds,
