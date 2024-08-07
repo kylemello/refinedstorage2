@@ -1,9 +1,8 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
+import com.refinedmods.refinedstorage.common.support.network.ResourceSorters;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Comparator;
@@ -15,10 +14,10 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
-class CraftingGridSourceImpl implements CraftingGridSource {
+class CraftingGridImpl implements CraftingGrid {
     private final CraftingGridBlockEntity blockEntity;
 
-    CraftingGridSourceImpl(final CraftingGridBlockEntity blockEntity) {
+    CraftingGridImpl(final CraftingGridBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
     }
 
@@ -89,11 +88,13 @@ class CraftingGridSourceImpl implements CraftingGridSource {
         if (!clearMatrix(player, clearToPlayerInventory)) {
             return;
         }
-        final ResourceList available = createCombinedPlayerInventoryAndNetworkList(player);
-        final Comparator<ItemResource> sorter = sortByHighestAvailableFirst(available);
+        final Comparator<ResourceKey> sorter = ResourceSorters.create(
+            blockEntity.getNetwork().orElse(null),
+            player.getInventory()
+        );
         for (int i = 0; i < getCraftingMatrix().getContainerSize(); ++i) {
-            if (i > recipe.size() || recipe.get(i) == null) {
-                continue;
+            if (i >= recipe.size()) {
+                break;
             }
             final List<ItemResource> possibilities = recipe.get(i);
             possibilities.sort(sorter);
@@ -124,32 +125,5 @@ class CraftingGridSourceImpl implements CraftingGridSource {
             }
         }
         return false;
-    }
-
-    private ResourceList createCombinedPlayerInventoryAndNetworkList(final Player player) {
-        final ResourceList list = ResourceListImpl.create();
-        addNetworkItemsIntoList(list);
-        addPlayerInventoryItemsIntoList(player, list);
-        return list;
-    }
-
-    private void addNetworkItemsIntoList(final ResourceList list) {
-        blockEntity.getNetwork().ifPresent(network -> network.getComponent(StorageNetworkComponent.class)
-            .getAll()
-            .forEach(list::add));
-    }
-
-    private void addPlayerInventoryItemsIntoList(final Player player, final ResourceList list) {
-        for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
-            final ItemStack playerInventoryStack = player.getInventory().getItem(i);
-            if (playerInventoryStack.isEmpty()) {
-                continue;
-            }
-            list.add(ItemResource.ofItemStack(playerInventoryStack), playerInventoryStack.getCount());
-        }
-    }
-
-    private Comparator<ItemResource> sortByHighestAvailableFirst(final ResourceList available) {
-        return Comparator.<ItemResource>comparingLong(available::get).reversed();
     }
 }

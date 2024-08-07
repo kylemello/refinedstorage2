@@ -29,12 +29,17 @@ import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridAllowedAlternativesChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCraftingRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridProcessingRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridSmithingTableRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridStonecutterRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceSlotAmountChangePacket;
@@ -185,7 +190,7 @@ public class ModInitializer extends AbstractModInitializer {
 
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onRegister);
-        eventBus.addListener(this::registerNetworkPackets);
+        eventBus.addListener(this::registerPackets);
         eventBus.addListener(this::registerCapabilities);
 
         NeoForge.EVENT_BUS.addListener(this::registerWrenchingEvent);
@@ -549,7 +554,7 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     @SubscribeEvent
-    public void registerNetworkPackets(final RegisterPayloadHandlersEvent event) {
+    public void registerPackets(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(MOD_ID);
         registerServerToClientPackets(registrar);
         registerClientToServerPackets(registrar);
@@ -665,6 +670,11 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(ResourceSlotChangePacket::handle)
         );
         registrar.playToServer(
+            FilterSlotChangePacket.PACKET_TYPE,
+            FilterSlotChangePacket.STREAM_CODEC,
+            wrapHandler(FilterSlotChangePacket::handle)
+        );
+        registrar.playToServer(
             SingleAmountChangePacket.PACKET_TYPE,
             SingleAmountChangePacket.STREAM_CODEC,
             wrapHandler(SingleAmountChangePacket::handle)
@@ -698,6 +708,26 @@ public class ModInitializer extends AbstractModInitializer {
             PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
             PatternGridAllowedAlternativesChangePacket.STREAM_CODEC,
             wrapHandler(PatternGridAllowedAlternativesChangePacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridCraftingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridCraftingRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridCraftingRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridProcessingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridProcessingRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridProcessingRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridStonecutterRecipeTransferPacket.PACKET_TYPE,
+            PatternGridStonecutterRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridStonecutterRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
+            PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
         );
     }
 

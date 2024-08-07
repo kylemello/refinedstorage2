@@ -29,12 +29,17 @@ import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridAllowedAlternativesChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCraftingRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridProcessingRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridSmithingTableRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridStonecutterRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceSlotAmountChangePacket;
@@ -457,6 +462,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             ResourceSlotChangePacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playC2S().register(
+            FilterSlotChangePacket.PACKET_TYPE,
+            FilterSlotChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
             SecurityCardBoundPlayerPacket.PACKET_TYPE,
             SecurityCardBoundPlayerPacket.STREAM_CODEC
         );
@@ -483,6 +492,22 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playC2S().register(
             PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
             PatternGridAllowedAlternativesChangePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridCraftingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridCraftingRecipeTransferPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridProcessingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridProcessingRecipeTransferPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridStonecutterRecipeTransferPacket.PACKET_TYPE,
+            PatternGridStonecutterRecipeTransferPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
+            PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC
         );
     }
 
@@ -536,6 +561,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             wrapHandler(ResourceSlotChangePacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
+            FilterSlotChangePacket.PACKET_TYPE,
+            wrapHandler(FilterSlotChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
             SingleAmountChangePacket.PACKET_TYPE,
             wrapHandler(SingleAmountChangePacket::handle)
         );
@@ -558,6 +587,22 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerPlayNetworking.registerGlobalReceiver(
             PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
             wrapHandler(PatternGridAllowedAlternativesChangePacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridCraftingRecipeTransferPacket.PACKET_TYPE,
+            wrapHandler(PatternGridCraftingRecipeTransferPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridProcessingRecipeTransferPacket.PACKET_TYPE,
+            wrapHandler(PatternGridProcessingRecipeTransferPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridStonecutterRecipeTransferPacket.PACKET_TYPE,
+            wrapHandler(PatternGridStonecutterRecipeTransferPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
+            wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
         );
     }
 

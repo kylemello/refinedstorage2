@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
@@ -14,6 +15,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.ServerPropert
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import org.apiguardian.api.API;
 
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_PATTERN_INPUT_SLOT = 81;
@@ -400,6 +403,51 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                     currentAllowedAlternatives
                 );
             }
+        }
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferCraftingRecipe(final List<List<ItemResource>> recipe) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridCraftingRecipeTransfer(recipe);
+            return;
+        }
+        if (player != null) {
+            patternGrid.transferCraftingRecipe(player, recipe);
+        }
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferProcessingRecipe(final List<List<ResourceAmount>> inputs,
+                                         final List<List<ResourceAmount>> outputs) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridProcessingRecipeTransfer(inputs, outputs);
+            return;
+        }
+        if (player != null) {
+            patternGrid.transferProcessingRecipe(player, inputs, outputs);
+        }
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferStonecutterRecipe(final ItemResource input, final ItemResource selectedOutput) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridStonecutterRecipeTransfer(input, selectedOutput);
+            return;
+        }
+        patternGrid.transferStonecutterRecipe(input, selectedOutput);
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferSmithingTableRecipe(final List<ItemResource> templates,
+                                            final List<ItemResource> bases,
+                                            final List<ItemResource> additions) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridSmithingTableRecipeTransfer(templates, bases, additions);
+            return;
+        }
+        if (player != null) {
+            patternGrid.transferSmithingTableRecipe(player, templates, bases, additions);
         }
     }
 

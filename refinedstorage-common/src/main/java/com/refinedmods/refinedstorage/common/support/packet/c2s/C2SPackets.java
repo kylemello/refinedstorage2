@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
@@ -97,5 +98,27 @@ public final class C2SPackets {
     public static void sendPatternGridAllowedAlternativesChange(final int slotIndex,
                                                                 final Set<ResourceLocation> ids) {
         Platform.INSTANCE.sendPacketToServer(new PatternGridAllowedAlternativesChangePacket(slotIndex, ids));
+    }
+
+    public static void sendPatternGridCraftingRecipeTransfer(final List<List<ItemResource>> recipe) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridCraftingRecipeTransferPacket(recipe));
+    }
+
+    public static void sendPatternGridProcessingRecipeTransfer(final List<List<ResourceAmount>> inputs,
+                                                               final List<List<ResourceAmount>> outputs) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridProcessingRecipeTransferPacket(inputs, outputs));
+    }
+
+    public static void sendPatternGridStonecutterRecipeTransfer(final ItemResource input,
+                                                                final ItemResource selectedOutput) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridStonecutterRecipeTransferPacket(input, selectedOutput));
+    }
+
+    public static void sendPatternGridSmithingTableRecipeTransfer(final List<ItemResource> template,
+                                                                  final List<ItemResource> base,
+                                                                  final List<ItemResource> addition) {
+        Platform.INSTANCE.sendPacketToServer(
+            new PatternGridSmithingTableRecipeTransferPacket(template, base, addition)
+        );
     }
 }

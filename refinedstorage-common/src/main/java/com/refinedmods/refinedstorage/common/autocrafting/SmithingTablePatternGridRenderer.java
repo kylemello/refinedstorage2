@@ -111,8 +111,8 @@ class SmithingTablePatternGridRenderer implements PatternGridRenderer {
         if (preview != null) {
             InventoryScreen.renderEntityInInventory(
                 graphics,
-                x + 128,
-                y + 52,
+                x + 128F,
+                y + 52F,
                 25.0F,
                 VanillaConstants.ARMOR_STAND_TRANSLATION,
                 VanillaConstants.ARMOR_STAND_ANGLE,

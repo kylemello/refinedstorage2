@@ -12,11 +12,11 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
-class ClientCraftingGridSource implements CraftingGridSource {
+class ClientCraftingGrid implements CraftingGrid {
     private final RecipeMatrixContainer craftingMatrix;
     private final ResultContainer craftingResult;
 
-    ClientCraftingGridSource() {
+    ClientCraftingGrid() {
         this.craftingMatrix = new RecipeMatrixContainer(null, 3, 3);
         this.craftingResult = new ResultContainer();
     }
