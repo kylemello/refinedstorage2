@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.widget;
 
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 
@@ -21,32 +20,26 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING_SIZE;
+import static com.refinedmods.refinedstorage.common.support.Sprites.WARNING;
+import static com.refinedmods.refinedstorage.common.support.Sprites.WARNING_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractSideButtonWidget extends Button {
-    private static final ResourceLocation TEXTURE = createIdentifier("widget/side_button");
-    private static final ResourceLocation HOVERED_TEXTURE = createIdentifier("widget/side_button_hovered");
-    private static final ResourceLocation HOVER_OVERLAY_TEXTURE = createIdentifier("widget/side_button_hover_overlay");
+    private static final ResourceLocation SPRITE = createIdentifier("widget/side_button/base");
+    private static final ResourceLocation HOVERED_SPRITE = createIdentifier("widget/side_button/hovered");
+    private static final ResourceLocation HOVER_OVERLAY_SPRITE = createIdentifier("widget/side_button/hover_overlay");
 
-    private static final int WIDTH = 18;
-    private static final int HEIGHT = 18;
+    private static final int SIZE = 18;
+    private static final int ICON_SIZE = 16;
 
     @Nullable
     private ClientTooltipComponent warning;
 
     protected AbstractSideButtonWidget(final OnPress pressAction) {
-        super(-1, -1, WIDTH, HEIGHT, Component.empty(), pressAction, DEFAULT_NARRATION);
+        super(-1, -1, SIZE, SIZE, Component.empty(), pressAction, DEFAULT_NARRATION);
     }
 
-    protected abstract int getXTexture();
-
-    protected abstract int getYTexture();
-
-    protected ResourceLocation getTextureIdentifier() {
-        return TextureIds.SIDE_BUTTON_ICONS;
-    }
+    protected abstract ResourceLocation getSprite();
 
     public void setWarning(@Nullable final Component text) {
         if (text == null) {
@@ -58,21 +51,19 @@ public abstract class AbstractSideButtonWidget extends Button {
 
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        graphics.blitSprite(isHovered ? HOVERED_TEXTURE : TEXTURE, getX(), getY(), WIDTH, HEIGHT);
-        graphics.blit(
-            getTextureIdentifier(),
+        graphics.blitSprite(isHovered ? HOVERED_SPRITE : SPRITE, getX(), getY(), SIZE, SIZE);
+        graphics.blitSprite(
+            getSprite(),
             getX() + 1,
             getY() + 1,
-            getXTexture(),
-            getYTexture(),
-            WIDTH - 2,
-            HEIGHT - 2
+            ICON_SIZE,
+            ICON_SIZE
         );
         if (isHovered) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
-            graphics.blitSprite(HOVER_OVERLAY_TEXTURE, getX(), getY(), WIDTH, HEIGHT);
+            graphics.blitSprite(HOVER_OVERLAY_SPRITE, getX(), getY(), SIZE, SIZE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             final Screen screen = Minecraft.getInstance().screen;
@@ -90,8 +81,8 @@ public abstract class AbstractSideButtonWidget extends Button {
         graphics.pose().translate(0, 0, 200);
         graphics.blitSprite(
             WARNING,
-            getX() + WIDTH - WARNING_SIZE + 2,
-            getY() + HEIGHT - WARNING_SIZE + 2,
+            getX() + SIZE - WARNING_SIZE + 2,
+            getY() + SIZE - WARNING_SIZE + 2,
             WARNING_SIZE,
             WARNING_SIZE
         );

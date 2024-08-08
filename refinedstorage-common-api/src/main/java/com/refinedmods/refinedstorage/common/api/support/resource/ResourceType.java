@@ -23,11 +23,7 @@ public interface ResourceType {
 
     MutableComponent getTitle();
 
-    ResourceLocation getTextureIdentifier();
-
-    int getXTexture();
-
-    int getYTexture();
+    ResourceLocation getSprite();
 
     long normalizeAmount(double amount);
 

@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING_SIZE;
+import static com.refinedmods.refinedstorage.common.support.Sprites.WARNING;
+import static com.refinedmods.refinedstorage.common.support.Sprites.WARNING_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class NetworkTransmitterScreen extends AbstractBaseScreen<NetworkTransmitterContainerMenu> {

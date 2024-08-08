@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
+import com.refinedmods.refinedstorage.common.support.Sprites;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -11,9 +11,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static java.util.Objects.requireNonNullElse;
 
 class SmithingTablePatternClientTooltipComponent implements ClientTooltipComponent {
@@ -31,13 +31,13 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
         graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
         final int slotsY = y + 9 + 2;
-        graphics.blitSprite(TextureIds.SLOT, x, slotsY, 18, 18);
+        graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
         RefinedStorageApi.INSTANCE.getResourceRendering(pattern.template())
             .render(pattern.template(), graphics, x + 1, slotsY + 1);
-        graphics.blitSprite(TextureIds.SLOT, x + 18, slotsY, 18, 18);
+        graphics.blitSprite(Sprites.SLOT, x + 18, slotsY, 18, 18);
         RefinedStorageApi.INSTANCE.getResourceRendering(pattern.base())
             .render(pattern.base(), graphics, x + 18 + 1, slotsY + 1);
-        graphics.blitSprite(TextureIds.SLOT, x + 18 + 18, slotsY, 18, 18);
+        graphics.blitSprite(Sprites.SLOT, x + 18 + 18, slotsY, 18, 18);
         RefinedStorageApi.INSTANCE.getResourceRendering(pattern.addition())
             .render(pattern.addition(), graphics, x + 18 + 18 + 1, slotsY + 1);
         graphics.blitSprite(
@@ -48,7 +48,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
             LIGHT_ARROW_HEIGHT
         );
         final int lastSlotX = x + (18 * 3) + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING;
-        graphics.blitSprite(TextureIds.SLOT, lastSlotX, slotsY, 18, 18);
+        graphics.blitSprite(Sprites.SLOT, lastSlotX, slotsY, 18, 18);
         RefinedStorageApi.INSTANCE.getResourceRendering(pattern.output())
             .render(pattern.output(), graphics, lastSlotX + 1, slotsY + 1);
     }

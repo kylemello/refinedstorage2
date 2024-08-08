@@ -4,8 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public final class TextureIds {
-    public static final ResourceLocation SIDE_BUTTON_ICONS = createIdentifier("textures/side_button_icons.png");
+public final class Sprites {
     public static final ResourceLocation LIGHT_ARROW = createIdentifier("light_arrow");
     public static final ResourceLocation SLOT = createIdentifier("slot");
     public static final int LIGHT_ARROW_WIDTH = 22;
@@ -15,6 +14,6 @@ public final class TextureIds {
     public static final ResourceLocation SEARCH = createIdentifier("search");
     public static final int SEARCH_SIZE = 12;
 
-    private TextureIds() {
+    private Sprites() {
     }
 }

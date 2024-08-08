@@ -19,7 +19,7 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 import static net.minecraft.client.gui.screens.Screen.hasShiftDown;
 
 public class HelpClientTooltipComponent implements ClientTooltipComponent {
-    private static final ResourceLocation TEXTURE = createIdentifier("help");
+    private static final ResourceLocation SPRITE = createIdentifier("help");
     private static final ClientTooltipComponent PRESS_SHIFT_FOR_HELP = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("misc", "press_shift_for_help")
     );
@@ -77,7 +77,7 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.blitSprite(TEXTURE, x, y + 2, 20, 20);
+        graphics.blitSprite(SPRITE, x, y + 2, 20, 20);
     }
 
     public static ClientTooltipComponent create(final Component text) {
