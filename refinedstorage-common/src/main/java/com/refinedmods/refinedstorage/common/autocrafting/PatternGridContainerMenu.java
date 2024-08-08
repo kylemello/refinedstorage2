@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SmithingTemplateItem;
@@ -58,6 +59,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private PatternGridListener listener;
     @Nullable
     private PatternGridBlockEntity patternGrid;
+    @Nullable
+    private Slot patternOutputSlot;
 
     public PatternGridContainerMenu(final int syncId,
                                     final Inventory playerInventory,
@@ -198,7 +201,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
             playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_PATTERN_INPUT_SLOT,
             PatternGridBlockEntity::isValidPattern
         ));
-        addSlot(new ValidatedSlot(
+        patternOutputSlot = addSlot(new ValidatedSlot(
             patternOutput,
             0,
             152,
@@ -222,6 +225,11 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         });
         transferManager.addBiTransfer(playerInventory, patternInput);
         transferManager.addTransfer(patternOutput, playerInventory);
+    }
+
+    @Nullable
+    Slot getPatternOutputSlot() {
+        return patternOutputSlot;
     }
 
     private void addCraftingMatrixSlots(final int playerInventoryY) {

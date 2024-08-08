@@ -17,6 +17,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Pattern now shows the recipe in the tooltip.
 -   When a Pattern is created for a recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
 -   The Pattern Grid now has additional support for encoding stonecutter and smithing table recipes.
+-   The Pattern output is now always rendered in the Pattern Grid result slot.
 
 ### Fixed
 
