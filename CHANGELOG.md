@@ -7,6 +7,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+-   Updated to Minecraft 1.21.1.
+
+### Fixed
+
+-   Use new slimeballs convention tag for Processor Binding.
+
 ## [2.0.0-milestone.4.6] - 2024-08-08
 
 ### Added
