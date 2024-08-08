@@ -15,6 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Use new slimeballs convention tag for Processor Binding.
 -   Portable Grid search bar texture being positioned in the wrong way.
+-   External Storage screen unnecessarily showing upgrade slots.
 
 ## [2.0.0-milestone.4.6] - 2024-08-08
 
