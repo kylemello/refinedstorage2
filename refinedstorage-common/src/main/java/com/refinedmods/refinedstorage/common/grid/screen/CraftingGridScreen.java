@@ -38,6 +38,9 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
         createIdentifier("widget/move_up_focused"),
         createIdentifier("widget/move_up_disabled")
     );
+    private static final ResourceLocation CRAFTING_MATRIX_FILTERING_SLOT_HIGHLIGHT = createIdentifier(
+        "crafting_grid/crafting_matrix_filtering_slot_highlight"
+    );
 
     @Nullable
     private HoveredImageButton clearToNetworkButton;
@@ -67,7 +70,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     }
 
     private int getClearButtonX(final int i) {
-        return leftPos + 82 + ((CLEAR_BUTTON_SIZE + 3) * i);
+        return leftPos + 81 + ((CLEAR_BUTTON_SIZE + 2) * i);
     }
 
     @Override
@@ -83,12 +86,14 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
             if (!slot.hasItem()) {
                 continue;
             }
-            renderCraftingMatrixFilteringHighlight(graphics, slot);
+            graphics.blitSprite(
+                CRAFTING_MATRIX_FILTERING_SLOT_HIGHLIGHT,
+                leftPos + slot.x - 1,
+                topPos + slot.y - 1,
+                18,
+                18
+            );
         }
-    }
-
-    private void renderCraftingMatrixFilteringHighlight(final GuiGraphics graphics, final Slot slot) {
-        graphics.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 224, 238, 18, 18);
     }
 
     @Override

@@ -2,16 +2,19 @@ package com.refinedmods.refinedstorage.common.grid.screen;
 
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
+import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
-import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.NO;
-import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.YES;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 class AutoSelectedSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "grid.auto_selected");
+    private static final ResourceLocation YES = createIdentifier("widget/side_button/grid/autoselected/yes");
+    private static final ResourceLocation NO = createIdentifier("widget/side_button/grid/autoselected/no");
     private static final Component HELP = createTranslation("gui", "grid.auto_selected.help");
 
     private final AbstractGridContainerMenu menu;
@@ -26,13 +29,8 @@ class AutoSelectedSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected int getXTexture() {
-        return menu.isAutoSelected() ? 16 : 0;
-    }
-
-    @Override
-    protected int getYTexture() {
-        return 96;
+    protected ResourceLocation getSprite() {
+        return menu.isAutoSelected() ? YES : NO;
     }
 
     @Override
@@ -42,7 +40,7 @@ class AutoSelectedSideButtonWidget extends AbstractSideButtonWidget {
 
     @Override
     protected MutableComponent getSubText() {
-        return menu.isAutoSelected() ? YES : NO;
+        return menu.isAutoSelected() ? IdentifierUtil.YES : IdentifierUtil.NO;
     }
 
     @Override

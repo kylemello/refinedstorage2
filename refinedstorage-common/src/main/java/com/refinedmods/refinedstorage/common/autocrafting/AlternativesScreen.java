@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
+import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
 import com.refinedmods.refinedstorage.common.support.amount.AmountScreenConfiguration;
 import com.refinedmods.refinedstorage.common.support.amount.DoubleAmountOperations;
@@ -30,7 +30,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.joml.Vector3f;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.SEARCH_SIZE;
+import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
@@ -300,7 +300,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
     @Override
     protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
         super.renderBg(graphics, delta, mouseX, mouseY);
-        graphics.blitSprite(TextureIds.SEARCH, leftPos + 7, topPos + 107, SEARCH_SIZE, SEARCH_SIZE);
+        graphics.blitSprite(Sprites.SEARCH, leftPos + 7, topPos + 107, SEARCH_SIZE, SEARCH_SIZE);
         final int x = getInsetX();
         final int y = getInsetY();
         graphics.enableScissor(x, y, x + INSET_WIDTH, y + INSET_HEIGHT);
@@ -365,7 +365,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         if (y >= startY - ALTERNATIVE_ROW_HEIGHT && y < startY + INSET_HEIGHT) {
             for (int col = 0; col < Math.min(alternative.getResources().size(), RESOURCES_PER_ROW); ++col) {
                 final int slotX = x + 1 + (col * 18);
-                graphics.blitSprite(TextureIds.SLOT, slotX, y, 18, 18);
+                graphics.blitSprite(Sprites.SLOT, slotX, y, 18, 18);
             }
         }
     }
@@ -395,7 +395,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
                     break;
                 }
                 final int slotX = x + 1 + (col * 18);
-                graphics.blitSprite(TextureIds.SLOT, slotX, rowY, 18, 18);
+                graphics.blitSprite(Sprites.SLOT, slotX, rowY, 18, 18);
             }
         }
         renderSlots(alternative.getOverflowSlots(), graphics, mouseX, mouseY);

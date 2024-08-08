@@ -9,12 +9,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-class SynchronizationSideButtonWidget extends AbstractSideButtonWidget {
-    private static final MutableComponent TITLE = createTranslation("gui", "grid.synchronizer");
+class SynchronizationModeSideButtonWidget extends AbstractSideButtonWidget {
+    private static final MutableComponent TITLE = createTranslation("gui", "grid.synchronization_mode");
 
     private final AbstractGridContainerMenu menu;
 
-    SynchronizationSideButtonWidget(final AbstractGridContainerMenu menu) {
+    SynchronizationModeSideButtonWidget(final AbstractGridContainerMenu menu) {
         super(createPressAction(menu));
         this.menu = menu;
     }
@@ -24,8 +24,8 @@ class SynchronizationSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected ResourceLocation getTextureIdentifier() {
-        return menu.getSynchronizer().getTextureIdentifier();
+    protected ResourceLocation getSprite() {
+        return menu.getSynchronizer().getSprite();
     }
 
     @Override
@@ -41,15 +41,5 @@ class SynchronizationSideButtonWidget extends AbstractSideButtonWidget {
     @Override
     protected Component getHelpText() {
         return menu.getSynchronizer().getHelpText();
-    }
-
-    @Override
-    protected int getXTexture() {
-        return menu.getSynchronizer().getXTexture();
-    }
-
-    @Override
-    protected int getYTexture() {
-        return menu.getSynchronizer().getYTexture();
     }
 }

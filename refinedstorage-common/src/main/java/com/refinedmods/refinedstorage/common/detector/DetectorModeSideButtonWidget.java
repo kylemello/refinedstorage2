@@ -5,7 +5,9 @@ import com.refinedmods.refinedstorage.common.support.containermenu.ClientPropert
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 class DetectorModeSideButtonWidget extends AbstractSideButtonWidget {
@@ -13,6 +15,9 @@ class DetectorModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent SUBTEXT_EQUAL = createTranslation("gui", "detector.mode.equal");
     private static final MutableComponent SUBTEXT_ABOVE = createTranslation("gui", "detector.mode.above");
     private static final MutableComponent SUBTEXT_UNDER = createTranslation("gui", "detector.mode.under");
+    private static final ResourceLocation EQUAL = createIdentifier("widget/side_button/detector_mode/equal");
+    private static final ResourceLocation ABOVE = createIdentifier("widget/side_button/detector_mode/above");
+    private static final ResourceLocation UNDER = createIdentifier("widget/side_button/detector_mode/under");
 
     private final ClientProperty<DetectorMode> property;
 
@@ -34,17 +39,12 @@ class DetectorModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected int getXTexture() {
+    protected ResourceLocation getSprite() {
         return switch (property.getValue()) {
-            case UNDER -> 0;
-            case EQUAL -> 16;
-            case ABOVE -> 32;
+            case UNDER -> UNDER;
+            case EQUAL -> EQUAL;
+            case ABOVE -> ABOVE;
         };
-    }
-
-    @Override
-    protected int getYTexture() {
-        return 176;
     }
 
     @Override
