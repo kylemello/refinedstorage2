@@ -7,6 +7,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+-   Updated to Minecraft 1.21.1.
+
+### Fixed
+
+-   Use new slimeballs convention tag for Processor Binding.
+
 ## [2.0.0-milestone.4.6] - 2024-08-08
 
 ### Added
@@ -20,6 +28,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   When a Pattern is created for a recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
 -   The Pattern Grid now has additional support for encoding stonecutter and smithing table recipes.
 -   The Pattern output is now always rendered in the Pattern Grid result slot.
+-   You can now search in the Pattern Grid alternatives screen.
+-   In the Pattern Grid alternatives screen, all resources belonging to a tag or no longer shown at once. You can expand or collapse them.
+-   The tag names in the Pattern Grid alternatives screen will now be translated.
+-   "Exact mode" in the Pattern Grid has been replaced with "Fuzzy mode" (inverse).
 
 ### Fixed
 

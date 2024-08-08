@@ -15,6 +15,6 @@ Refined Storage is a mass storage mod for Minecraft that offers the player a net
 [[dependencies.refinedstorage]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.0.112-beta,)"
+versionRange = "[21.0.153,)"
 ordering = "NONE"
 side = "BOTH"
