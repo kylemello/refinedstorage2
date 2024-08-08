@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
-interface CraftingGridSource {
+interface CraftingGrid {
     RecipeMatrixContainer getCraftingMatrix();
 
     ResultContainer getCraftingResult();

@@ -18,11 +18,14 @@ import com.refinedmods.refinedstorage.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrix;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
+import com.refinedmods.refinedstorage.common.support.network.ResourceSorters;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -437,16 +440,24 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     }
 
     private void copyStonecutterPattern(final StonecutterPatternState state) {
+        final ItemStack input = state.input();
+        final ItemStack selectedOutput = state.selectedOutput();
+        setStonecutterInputAndSelectedRecipe(input, selectedOutput);
+    }
+
+    private void setStonecutterInputAndSelectedRecipe(final ItemStack input, final ItemStack selectedOutput) {
         if (level == null) {
             return;
         }
-        stonecutterInput.setItem(0, state.input());
+        stonecutterInput.clearContent();
+        stonecutterInput.setSelectedRecipe(-1);
+        stonecutterInput.setItem(0, input);
         for (int i = 0; i < stonecutterInput.getRecipes().size(); ++i) {
             final ItemStack result = stonecutterInput.getRecipes().get(i).value().assemble(
-                new SingleRecipeInput(state.input()),
+                new SingleRecipeInput(input),
                 level.registryAccess()
             );
-            if (ItemStack.isSameItemSameComponents(result, state.selectedOutput())) {
+            if (ItemStack.isSameItemSameComponents(result, selectedOutput)) {
                 stonecutterInput.setSelectedRecipe(i);
                 return;
             }
@@ -454,10 +465,17 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     }
 
     private void copySmithingTablePattern(final SmithingTablePatternState state) {
+        final ItemStack template = state.template();
+        final ItemStack base = state.base();
+        final ItemStack addition = state.addition();
+        setSmithingTableInput(template, base, addition);
+    }
+
+    private void setSmithingTableInput(final ItemStack template, final ItemStack base, final ItemStack addition) {
         smithingTableRecipe.getMatrix().clearContent();
-        smithingTableRecipe.getMatrix().setItem(0, state.template());
-        smithingTableRecipe.getMatrix().setItem(1, state.base());
-        smithingTableRecipe.getMatrix().setItem(2, state.addition());
+        smithingTableRecipe.getMatrix().setItem(0, template);
+        smithingTableRecipe.getMatrix().setItem(1, base);
+        smithingTableRecipe.getMatrix().setItem(2, addition);
         if (level != null) {
             smithingTableRecipe.updateResult(level);
         }
@@ -465,6 +483,82 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     private boolean isPatternAvailable() {
         return !patternInput.getItem(0).isEmpty() || !patternOutput.getItem(0).isEmpty();
+    }
+
+    void transferCraftingRecipe(final Player player, final List<List<ItemResource>> recipe) {
+        final Comparator<ResourceKey> sorter = ResourceSorters.create(
+            mainNetworkNode.getNetwork(),
+            player.getInventory()
+        );
+        getCraftingMatrix().clearContent();
+        for (int i = 0; i < getCraftingMatrix().getContainerSize(); ++i) {
+            if (i >= recipe.size()) {
+                break;
+            }
+            final List<ItemResource> possibilities = recipe.get(i);
+            if (!possibilities.isEmpty()) {
+                possibilities.sort(sorter);
+                getCraftingMatrix().setItem(i, possibilities.getFirst().toItemStack());
+            }
+        }
+        setPatternType(PatternType.CRAFTING);
+    }
+
+    void transferProcessingRecipe(final Player player,
+                                  final List<List<ResourceAmount>> inputs,
+                                  final List<List<ResourceAmount>> outputs) {
+        final Comparator<ResourceAmount> sorter = ResourceSorters.create(
+            mainNetworkNode.getNetwork(),
+            player.getInventory(),
+            ResourceAmount::resource
+        );
+        getProcessingInput().clear();
+        transferProcessingRecipe(inputs, getProcessingInput(), sorter);
+        getProcessingOutput().clear();
+        transferProcessingRecipe(outputs, getProcessingOutput(), sorter);
+        setPatternType(PatternType.PROCESSING);
+    }
+
+    private void transferProcessingRecipe(final List<List<ResourceAmount>> recipe,
+                                          final ResourceContainer container,
+                                          final Comparator<ResourceAmount> sorter) {
+        for (int i = 0; i < container.size(); ++i) {
+            if (i >= recipe.size()) {
+                break;
+            }
+            final List<ResourceAmount> possibilities = recipe.get(i);
+            if (!possibilities.isEmpty()) {
+                possibilities.sort(sorter);
+                container.set(i, possibilities.getFirst());
+            }
+        }
+    }
+
+    void transferStonecutterRecipe(final ItemResource input, final ItemResource selectedOutput) {
+        setStonecutterInputAndSelectedRecipe(input.toItemStack(), selectedOutput.toItemStack());
+        setPatternType(PatternType.STONECUTTER);
+    }
+
+    void transferSmithingTableRecipe(final Player player,
+                                     final List<ItemResource> templates,
+                                     final List<ItemResource> bases,
+                                     final List<ItemResource> additions) {
+        if (templates.isEmpty() || bases.isEmpty() || additions.isEmpty()) {
+            return;
+        }
+        final Comparator<ItemResource> sorter = ResourceSorters.create(
+            mainNetworkNode.getNetwork(),
+            player.getInventory(),
+            r -> r
+        );
+        templates.sort(sorter);
+        bases.sort(sorter);
+        additions.sort(sorter);
+        final ItemResource template = templates.getFirst();
+        final ItemResource base = bases.getFirst();
+        final ItemResource addition = additions.getFirst();
+        setSmithingTableInput(template.toItemStack(), base.toItemStack(), addition.toItemStack());
+        setPatternType(PatternType.SMITHING_TABLE);
     }
 
     static boolean isValidPattern(final ItemStack stack) {

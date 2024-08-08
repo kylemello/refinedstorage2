@@ -5,7 +5,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-// TODO: does jei transfer work with this?
 public class FilterSlot extends Slot {
     public FilterSlot(final Container container, final int index, final int x, final int y) {
         super(container, index, x, y);

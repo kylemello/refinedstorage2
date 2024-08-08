@@ -127,4 +127,13 @@ public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
             && clickType == ClickType.SWAP
             && disabledSlot.isDisabledSlot(dragType);
     }
+
+    public void handleFilterSlotChange(final int slotIndex, final ItemStack stack) {
+        if (slotIndex < 0 || slotIndex >= slots.size()) {
+            return;
+        }
+        if (slots.get(slotIndex) instanceof FilterSlot filterSlot && filterSlot.mayPlace(stack)) {
+            filterSlot.set(stack);
+        }
+    }
 }

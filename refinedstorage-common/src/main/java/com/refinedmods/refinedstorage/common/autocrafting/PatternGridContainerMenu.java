@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
@@ -13,18 +14,14 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
@@ -35,6 +32,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import org.apiguardian.api.API;
 
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_PATTERN_INPUT_SLOT = 81;
@@ -45,13 +43,11 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_SMITHING_TABLE_SLOTS = 63;
     private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
 
-    private final RateLimiter allowedAlternativesCacheCheckerRateLimiter = RateLimiter.create(2);
     private final Container patternInput;
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
     private final ProcessingMatrixInputResourceContainer processingInput;
-    private final List<Set<ResourceLocation>> allowedAlternativesCache;
     private final ResourceContainer processingOutput;
     private final StonecutterInputContainer stonecutterInput;
     private final Container smithingTableMatrix;
@@ -72,7 +68,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.processingInput = PatternGridBlockEntity.createProcessingMatrixInputContainer(
             patternGridData.processingInputData()
         );
-        this.allowedAlternativesCache = Collections.emptyList();
         this.processingOutput = PatternGridBlockEntity.createProcessingMatrixOutputContainer(
             patternGridData.processingOutputData()
         );
@@ -119,10 +114,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.craftingResult = grid.getCraftingResult();
         this.stonecutterInput = grid.getStonecutterInput();
         this.processingInput = grid.getProcessingInput();
-        this.allowedAlternativesCache = new ArrayList<>(processingInput.size());
-        for (int i = 0; i < processingInput.size(); ++i) {
-            allowedAlternativesCache.add(processingInput.getAllowedTagIds(i));
-        }
         this.processingOutput = grid.getProcessingOutput();
         this.smithingTableMatrix = grid.getSmithingTableMatrix();
         this.smithingTableResult = grid.getSmithingTableResult();
@@ -383,23 +374,48 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         C2SPackets.sendPatternGridCreatePattern();
     }
 
-    @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-        if (player == null || !allowedAlternativesCacheCheckerRateLimiter.tryAcquire()) {
+    @API(status = API.Status.INTERNAL)
+    public void transferCraftingRecipe(final List<List<ItemResource>> recipe) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridCraftingRecipeTransfer(recipe);
             return;
         }
-        for (int i = 0; i < allowedAlternativesCache.size(); ++i) {
-            final Set<ResourceLocation> cachedAllowedAlternatives = allowedAlternativesCache.get(i);
-            final Set<ResourceLocation> currentAllowedAlternatives = processingInput.getAllowedTagIds(i);
-            if (!cachedAllowedAlternatives.equals(currentAllowedAlternatives)) {
-                allowedAlternativesCache.set(i, currentAllowedAlternatives);
-                S2CPackets.sendPatternGridAllowedAlternativesUpdate(
-                    (ServerPlayer) player,
-                    i,
-                    currentAllowedAlternatives
-                );
-            }
+        if (player != null) {
+            patternGrid.transferCraftingRecipe(player, recipe);
+        }
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferProcessingRecipe(final List<List<ResourceAmount>> inputs,
+                                         final List<List<ResourceAmount>> outputs) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridProcessingRecipeTransfer(inputs, outputs);
+            return;
+        }
+        if (player != null) {
+            patternGrid.transferProcessingRecipe(player, inputs, outputs);
+        }
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferStonecutterRecipe(final ItemResource input, final ItemResource selectedOutput) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridStonecutterRecipeTransfer(input, selectedOutput);
+            return;
+        }
+        patternGrid.transferStonecutterRecipe(input, selectedOutput);
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public void transferSmithingTableRecipe(final List<ItemResource> templates,
+                                            final List<ItemResource> bases,
+                                            final List<ItemResource> additions) {
+        if (patternGrid == null) {
+            C2SPackets.sendPatternGridSmithingTableRecipeTransfer(templates, bases, additions);
+            return;
+        }
+        if (player != null) {
+            patternGrid.transferSmithingTableRecipe(player, templates, bases, additions);
         }
     }
 
