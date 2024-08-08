@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ResourceSlot extends Slot {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceSlot.class);
 
-    private final ResourceContainer resourceContainer;
+    protected final ResourceContainer resourceContainer;
     private final Component helpText;
     private final ResourceSlotType type;
     @Nullable
@@ -152,13 +152,15 @@ public class ResourceSlot extends Slot {
         return ItemStack.matches(stack, getStackRepresentation());
     }
 
-    public void broadcastChanges(final Player player) {
+    public boolean broadcastChanges(final Player player) {
         final ResourceAmount currentResourceAmount = resourceContainer.get(getContainerSlot());
         if (!Objects.equals(currentResourceAmount, cachedResource)) {
             LOGGER.debug("Resource slot {} has changed", getContainerSlot());
             this.cachedResource = currentResourceAmount;
             broadcastChange((ServerPlayer) player, currentResourceAmount);
+            return true;
         }
+        return false;
     }
 
     private void broadcastChange(final ServerPlayer player, @Nullable final ResourceAmount contents) {

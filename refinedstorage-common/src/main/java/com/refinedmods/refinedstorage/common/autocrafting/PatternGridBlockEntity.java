@@ -496,11 +496,10 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
                 break;
             }
             final List<ItemResource> possibilities = recipe.get(i);
-            if (possibilities.isEmpty()) {
-                continue;
+            if (!possibilities.isEmpty()) {
+                possibilities.sort(sorter);
+                getCraftingMatrix().setItem(i, possibilities.getFirst().toItemStack());
             }
-            possibilities.sort(sorter);
-            getCraftingMatrix().setItem(i, possibilities.getFirst().toItemStack());
         }
         setPatternType(PatternType.CRAFTING);
     }
@@ -528,11 +527,10 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
                 break;
             }
             final List<ResourceAmount> possibilities = recipe.get(i);
-            if (possibilities.isEmpty()) {
-                continue;
+            if (!possibilities.isEmpty()) {
+                possibilities.sort(sorter);
+                container.set(i, possibilities.getFirst());
             }
-            possibilities.sort(sorter);
-            container.set(i, possibilities.getFirst());
         }
     }
 

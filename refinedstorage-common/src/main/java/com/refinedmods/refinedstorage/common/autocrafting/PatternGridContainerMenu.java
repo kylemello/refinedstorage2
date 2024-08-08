@@ -14,19 +14,14 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.ValidatedSlot;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
@@ -48,13 +43,11 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_SMITHING_TABLE_SLOTS = 63;
     private static final int INDIVIDUAL_PROCESSING_MATRIX_SIZE = 54;
 
-    private final RateLimiter allowedAlternativesCacheCheckerRateLimiter = RateLimiter.create(2);
     private final Container patternInput;
     private final Container patternOutput;
     private final Container craftingMatrix;
     private final Container craftingResult;
     private final ProcessingMatrixInputResourceContainer processingInput;
-    private final List<Set<ResourceLocation>> allowedAlternativesCache;
     private final ResourceContainer processingOutput;
     private final StonecutterInputContainer stonecutterInput;
     private final Container smithingTableMatrix;
@@ -75,7 +68,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.processingInput = PatternGridBlockEntity.createProcessingMatrixInputContainer(
             patternGridData.processingInputData()
         );
-        this.allowedAlternativesCache = Collections.emptyList();
         this.processingOutput = PatternGridBlockEntity.createProcessingMatrixOutputContainer(
             patternGridData.processingOutputData()
         );
@@ -122,10 +114,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.craftingResult = grid.getCraftingResult();
         this.stonecutterInput = grid.getStonecutterInput();
         this.processingInput = grid.getProcessingInput();
-        this.allowedAlternativesCache = new ArrayList<>(processingInput.size());
-        for (int i = 0; i < processingInput.size(); ++i) {
-            allowedAlternativesCache.add(processingInput.getAllowedTagIds(i));
-        }
         this.processingOutput = grid.getProcessingOutput();
         this.smithingTableMatrix = grid.getSmithingTableMatrix();
         this.smithingTableResult = grid.getSmithingTableResult();
@@ -384,26 +372,6 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
     void sendCreatePattern() {
         C2SPackets.sendPatternGridCreatePattern();
-    }
-
-    @Override
-    public void broadcastChanges() {
-        super.broadcastChanges();
-        if (player == null || !allowedAlternativesCacheCheckerRateLimiter.tryAcquire()) {
-            return;
-        }
-        for (int i = 0; i < allowedAlternativesCache.size(); ++i) {
-            final Set<ResourceLocation> cachedAllowedAlternatives = allowedAlternativesCache.get(i);
-            final Set<ResourceLocation> currentAllowedAlternatives = processingInput.getAllowedTagIds(i);
-            if (!cachedAllowedAlternatives.equals(currentAllowedAlternatives)) {
-                allowedAlternativesCache.set(i, currentAllowedAlternatives);
-                S2CPackets.sendPatternGridAllowedAlternativesUpdate(
-                    (ServerPlayer) player,
-                    i,
-                    currentAllowedAlternatives
-                );
-            }
-        }
     }
 
     @API(status = API.Status.INTERNAL)
