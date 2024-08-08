@@ -256,13 +256,14 @@ public class PatternItem extends Item implements PatternProviderItem {
     }
 
     private Optional<Pattern> getStonecutterPattern(final Level level, final StonecutterPatternState state) {
-        final SingleRecipeInput input = new SingleRecipeInput(state.input());
+        final SingleRecipeInput input = new SingleRecipeInput(state.input().toItemStack());
+        final ItemStack selectedOutput = state.selectedOutput().toItemStack();
         final var recipes = level.getRecipeManager().getRecipesFor(RecipeType.STONECUTTING, input, level);
         for (final var recipe : recipes) {
             final ItemStack output = recipe.value().assemble(input, level.registryAccess());
-            if (ItemStack.isSameItemSameComponents(output, state.selectedOutput())) {
+            if (ItemStack.isSameItemSameComponents(output, selectedOutput)) {
                 return Optional.of(new StonecutterPattern(
-                    ItemResource.ofItemStack(state.input()),
+                    state.input(),
                     ItemResource.ofItemStack(output)
                 ));
             }
@@ -279,13 +280,16 @@ public class PatternItem extends Item implements PatternProviderItem {
     }
 
     private Optional<Pattern> getSmithingTablePattern(final Level level, final SmithingTablePatternState state) {
-        final SmithingRecipeInput input = new SmithingRecipeInput(state.template(), state.base(), state.addition());
-        return level.getRecipeManager()
-            .getRecipeFor(RecipeType.SMITHING, input, level)
+        final SmithingRecipeInput input = new SmithingRecipeInput(
+            state.template().toItemStack(),
+            state.base().toItemStack(),
+            state.addition().toItemStack()
+        );
+        return level.getRecipeManager().getRecipeFor(RecipeType.SMITHING, input, level)
             .map(recipe -> new SmithingTablePattern(
-                ItemResource.ofItemStack(state.template()),
-                ItemResource.ofItemStack(state.base()),
-                ItemResource.ofItemStack(state.addition()),
+                state.template(),
+                state.base(),
+                state.addition(),
                 ItemResource.ofItemStack(recipe.value().assemble(input, level.registryAccess())))
             );
     }
