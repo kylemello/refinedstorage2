@@ -70,7 +70,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     }
 
     private int getClearButtonX(final int i) {
-        return leftPos + 82 + ((CLEAR_BUTTON_SIZE + 3) * i);
+        return leftPos + 81 + ((CLEAR_BUTTON_SIZE + 2) * i);
     }
 
     @Override
