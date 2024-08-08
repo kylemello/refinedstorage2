@@ -24,7 +24,7 @@ public class RootStorageImpl implements RootStorage {
     private final ListenableResourceList list;
 
     public RootStorageImpl() {
-        this(new ResourceListImpl());
+        this(ResourceListImpl.create());
     }
 
     public RootStorageImpl(final ResourceList list) {
@@ -63,8 +63,13 @@ public class RootStorageImpl implements RootStorage {
     }
 
     @Override
-    public Optional<ResourceAmount> get(final ResourceKey resource) {
+    public long get(final ResourceKey resource) {
         return list.get(resource);
+    }
+
+    @Override
+    public boolean contains(final ResourceKey resource) {
+        return list.contains(resource);
     }
 
     @Override

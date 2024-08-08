@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -55,6 +56,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.impl.transfer.context.ConstantContainerItemContext;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -80,6 +82,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -172,7 +175,7 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public Optional<FluidOperationResult> fillContainer(final ItemStack container,
                                                         final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+        if (!(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
         final SimpleSingleStackStorage interceptingStorage = new SimpleSingleStackStorage(container);
@@ -183,7 +186,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return Optional.empty();
         }
         try (Transaction tx = Transaction.openOuter()) {
-            final long inserted = storage.insert(toFluidVariant(fluidResource), resourceAmount.getAmount(), tx);
+            final long inserted = storage.insert(toFluidVariant(fluidResource), resourceAmount.amount(), tx);
             return Optional.of(new FluidOperationResult(
                 interceptingStorage.getStack(),
                 fluidResource,
@@ -472,6 +475,20 @@ public final class PlatformImpl extends AbstractPlatform {
             safeBlockEntity,
             direction
         );
+    }
+
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        final ItemColor itemColor = ColorProviderRegistry.ITEM.get(stack.getItem());
+        if (itemColor == null) {
+            return -1;
+        }
+        return itemColor.getColor(stack, tintIndex);
+    }
+
+    @Override
+    public void setSlotY(final Slot slot, final int y) {
+        slot.y = y;
     }
 
     private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {

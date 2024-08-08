@@ -4,6 +4,9 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItemColor;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternTooltipCache;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -23,6 +26,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NetworkTransmitterStatusPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -32,6 +36,7 @@ import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientToolt
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
+import com.refinedmods.refinedstorage.fabric.autocrafting.PatternUnbakedModel;
 import com.refinedmods.refinedstorage.fabric.mixin.ItemPropertiesAccessor;
 import com.refinedmods.refinedstorage.fabric.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage.fabric.storage.diskdrive.DiskDriveUnbakedModel;
@@ -51,6 +56,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -96,6 +102,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         registerResourceRendering();
         registerAlternativeGridHints();
         registerItemProperties();
+        registerItemColors();
     }
 
     private void setRenderLayers() {
@@ -105,6 +112,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getCable());
         setCutout(Blocks.INSTANCE.getGrid());
         setCutout(Blocks.INSTANCE.getCraftingGrid());
+        setCutout(Blocks.INSTANCE.getPatternGrid());
         setCutout(Blocks.INSTANCE.getController());
         setCutout(Blocks.INSTANCE.getCreativeController());
         setCutout(Blocks.INSTANCE.getDetector());
@@ -133,6 +141,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         registerColoredEmissiveModels(Blocks.INSTANCE.getCreativeController(), "controller");
         registerColoredEmissiveModels(Blocks.INSTANCE.getGrid(), "grid");
         registerColoredEmissiveModels(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getPatternGrid(), "pattern_grid");
         registerColoredEmissiveModels(Blocks.INSTANCE.getDetector(), "detector");
         registerConstructorDestructorEmissiveModels(Blocks.INSTANCE.getConstructor(), "constructor");
         registerConstructorDestructorEmissiveModels(Blocks.INSTANCE.getDestructor(), "destructor");
@@ -261,6 +270,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             NoPermissionPacket.PACKET_TYPE,
             wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
         );
+        ClientPlayNetworking.registerGlobalReceiver(
+            PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
+            wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
+        );
     }
 
     private static <T extends CustomPacketPayload> ClientPlayNetworking.PlayPayloadHandler<T> wrapHandler(
@@ -299,6 +312,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             registerCustomDiskDriveModels(pluginContext, quadRotators);
             registerCustomDiskInterfaceModels(pluginContext, quadRotators);
             registerCustomPortableGridModels(pluginContext, quadRotators);
+            registerCustomPatternModel(pluginContext);
         });
     }
 
@@ -362,14 +376,30 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
     }
 
+    private void registerCustomPatternModel(final ModelLoadingPlugin.Context pluginContext) {
+        final ResourceLocation patternIdentifier = createIdentifier(ITEM_PREFIX + "/pattern");
+        pluginContext.resolveModel().register(context -> {
+            if (context.id().equals(patternIdentifier)) {
+                return new PatternUnbakedModel();
+            }
+            return null;
+        });
+    }
+
     private void registerCustomTooltips() {
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof AbstractUpgradeItem.UpgradeDestinationTooltipComponent component) {
                 return new UpgradeDestinationClientTooltipComponent(component.destinations());
             }
+            return null;
+        });
+        TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof HelpTooltipComponent component) {
                 return HelpClientTooltipComponent.create(component.text());
             }
+            return null;
+        });
+        TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof RegulatorUpgradeItem.RegulatorTooltipComponent component) {
                 final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
                 return component.configuredResource() == null
@@ -377,6 +407,15 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                     : createRegulatorUpgradeClientTooltipComponent(component.configuredResource(), help);
             }
             return null;
+        });
+        TooltipComponentCallback.EVENT.register(data -> switch (data) {
+            case PatternItem.CraftingPatternTooltipComponent component -> PatternTooltipCache.getComponent(component);
+            case PatternItem.ProcessingPatternTooltipComponent component -> PatternTooltipCache.getComponent(component);
+            case PatternItem.StonecutterPatternTooltipComponent component ->
+                PatternTooltipCache.getComponent(component);
+            case PatternItem.SmithingTablePatternTooltipComponent component ->
+                PatternTooltipCache.getComponent(component);
+            case null, default -> null;
         });
     }
 
@@ -446,5 +485,9 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             SecurityCardItemPropertyFunction.NAME,
             new SecurityCardItemPropertyFunction()
         );
+    }
+
+    private void registerItemColors() {
+        ColorProviderRegistry.ITEM.register(new PatternItemColor(), Items.INSTANCE.getPattern());
     }
 }

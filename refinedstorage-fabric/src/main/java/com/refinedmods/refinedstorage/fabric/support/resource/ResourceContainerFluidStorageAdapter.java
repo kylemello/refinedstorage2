@@ -88,11 +88,11 @@ public class ResourceContainerFluidStorageAdapter extends SnapshotParticipant<Re
         public long extract(final FluidVariant resource, final long maxAmount, final TransactionContext transaction) {
             final ResourceAmount resourceAmount = resourceContainer.get(index);
             if (resourceAmount == null
-                || !(resourceAmount.getResource() instanceof FluidResource fluidResource)
+                || !(resourceAmount.resource() instanceof FluidResource fluidResource)
                 || !resource.equals(toFluidVariant(fluidResource))) {
                 return 0;
             }
-            final long extracted = Math.min(maxAmount, resourceAmount.getAmount());
+            final long extracted = Math.min(maxAmount, resourceAmount.amount());
             if (extracted > 0) {
                 updateSnapshots(transaction);
             }

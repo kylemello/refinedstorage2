@@ -43,7 +43,7 @@ public class StorageNetworkComponentImpl extends RootStorageImpl implements Stor
     public List<TrackedResourceAmount> getResources(final Class<? extends Actor> actorType) {
         return getAll().stream().map(resourceAmount -> new TrackedResourceAmount(
             resourceAmount,
-            findTrackedResourceByActorType(resourceAmount.getResource(), actorType).orElse(null)
+            findTrackedResourceByActorType(resourceAmount.resource(), actorType).orElse(null)
         )).toList();
     }
 

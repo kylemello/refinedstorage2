@@ -14,13 +14,13 @@ import net.minecraft.resources.ResourceLocation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class ScrollbarWidget extends AbstractWidget {
-    private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/widgets.png");
     private static final int SCROLLER_HEIGHT = 15;
 
     private static final int ANIMATION_SCROLL_DURATION_IN_TICKS = 10;
     private static final double ANIMATION_SCROLL_HEIGHT_IN_PIXELS = 30;
 
     private final boolean smoothScrolling;
+    private final Type type;
 
     private double offset;
     private double maxOffset;
@@ -34,9 +34,10 @@ public class ScrollbarWidget extends AbstractWidget {
     @Nullable
     private DoubleConsumer listener;
 
-    public ScrollbarWidget(final int x, final int y, final int width, final int height) {
-        super(x, y, width, height, Component.empty());
+    public ScrollbarWidget(final int x, final int y, final Type type, final int height) {
+        super(x, y, type.width, height, Component.empty());
         this.smoothScrolling = Platform.INSTANCE.getConfig().isSmoothScrolling();
+        this.type = type;
     }
 
     public void setListener(@Nullable final DoubleConsumer listener) {
@@ -51,23 +52,24 @@ public class ScrollbarWidget extends AbstractWidget {
         this.enabled = enabled;
     }
 
+    private ResourceLocation getTexture() {
+        if (!enabled) {
+            return type.disabledTexture;
+        }
+        return clicked ? type.clickedTexture : type.texture;
+    }
+
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         if (isAnimatingScroll()) {
             updateScrollingAnimation(partialTicks);
         }
-
-        final int enabledU = clicked ? 220 : 232;
-        final int u = enabled ? enabledU : 244;
-
-        graphics.blit(
-            TEXTURE,
+        graphics.blitSprite(
+            getTexture(),
             getX(),
             getY() + (int) ((float) offset / (float) maxOffset * (height - SCROLLER_HEIGHT)),
-            u,
-            0,
-            12,
-            15
+            type.width,
+            SCROLLER_HEIGHT
         );
     }
 
@@ -161,6 +163,9 @@ public class ScrollbarWidget extends AbstractWidget {
         this.maxOffset = Math.max(0, maxOffset);
         if (this.offset > this.maxOffset) {
             this.offset = this.maxOffset;
+            if (listener != null) {
+                listener.accept(this.offset);
+            }
         }
     }
 
@@ -182,5 +187,35 @@ public class ScrollbarWidget extends AbstractWidget {
     @Override
     protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
         // intentionally empty
+    }
+
+    public enum Type {
+        NORMAL(
+            createIdentifier("widget/scrollbar"),
+            createIdentifier("widget/scrollbar_clicked"),
+            createIdentifier("widget/scrollbar_disabled"),
+            12
+        ),
+        SMALL(
+            createIdentifier("widget/small_scrollbar"),
+            createIdentifier("widget/small_scrollbar_clicked"),
+            createIdentifier("widget/small_scrollbar_disabled"),
+            7
+        );
+
+        private final ResourceLocation texture;
+        private final ResourceLocation clickedTexture;
+        private final ResourceLocation disabledTexture;
+        private final int width;
+
+        Type(final ResourceLocation texture,
+             final ResourceLocation clickedTexture,
+             final ResourceLocation disabledTexture,
+             final int width) {
+            this.texture = texture;
+            this.clickedTexture = clickedTexture;
+            this.disabledTexture = disabledTexture;
+            this.width = width;
+        }
     }
 }

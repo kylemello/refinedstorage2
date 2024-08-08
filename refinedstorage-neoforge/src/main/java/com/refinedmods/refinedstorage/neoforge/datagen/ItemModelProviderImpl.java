@@ -41,6 +41,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerCreativeControllers();
         registerGrids();
         registerCraftingGrids();
+        registerPatternGrids();
         registerDetectors();
         registerConstructors();
         registerDestructors();
@@ -125,6 +126,14 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         blocks.forEach((color, id, block) -> withExistingParent(
             id.getPath(),
             createIdentifier("block/crafting_grid/" + color.getName())
+        ));
+    }
+
+    private void registerPatternGrids() {
+        final var blocks = Blocks.INSTANCE.getPatternGrid();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/pattern_grid/" + color.getName())
         ));
     }
 

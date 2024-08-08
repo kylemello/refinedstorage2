@@ -11,7 +11,6 @@ import com.refinedmods.refinedstorage.api.storage.composite.ParentComposite;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apiguardian.api.API;
@@ -20,7 +19,7 @@ import org.apiguardian.api.API;
 public class ExternalStorage implements CompositeAwareChild {
     private final ExternalStorageProvider provider;
     private final Set<ParentComposite> parents = new HashSet<>();
-    private final ResourceList cache = new ResourceListImpl();
+    private final ResourceList cache = ResourceListImpl.create();
     private final ExternalStorageListener listener;
 
     public ExternalStorage(final ExternalStorageProvider provider, final ExternalStorageListener listener) {
@@ -60,36 +59,38 @@ public class ExternalStorage implements CompositeAwareChild {
     }
 
     private boolean detectCompleteRemovals(final ResourceList updatedCache) {
-        final Set<ResourceAmount> removedInUpdatedCache = new HashSet<>();
-        for (final ResourceAmount inOldCache : cache.getAll()) {
-            final Optional<ResourceAmount> inUpdatedCache = updatedCache.get(inOldCache.getResource());
-            if (inUpdatedCache.isEmpty()) {
+        final Set<ResourceKey> removedInUpdatedCache = new HashSet<>();
+        for (final ResourceKey inOldCache : cache.getAll()) {
+            if (!updatedCache.contains(inOldCache)) {
                 removedInUpdatedCache.add(inOldCache);
             }
         }
-        removedInUpdatedCache.forEach(removed -> removeFromCache(removed.getResource(), removed.getAmount()));
+        removedInUpdatedCache.forEach(this::removeFromCache);
         return !removedInUpdatedCache.isEmpty();
     }
 
     private boolean detectAdditionsAndPartialRemovals(final ResourceList updatedCache) {
         boolean hasChanges = false;
-        for (final ResourceAmount inUpdatedCache : updatedCache.getAll()) {
-            final Optional<ResourceAmount> inOldCache = cache.get(inUpdatedCache.getResource());
-            final boolean doesNotExistInOldCache = inOldCache.isEmpty();
+        for (final ResourceKey resource : updatedCache.getAll()) {
+            final long amountInUpdatedCache = updatedCache.get(resource);
+            final long amountInOldCache = cache.get(resource);
+            final boolean doesNotExistInOldCache = amountInOldCache == 0;
             if (doesNotExistInOldCache) {
-                addToCache(inUpdatedCache.getResource(), inUpdatedCache.getAmount());
+                addToCache(resource, amountInUpdatedCache);
                 hasChanges = true;
             } else {
-                hasChanges |= detectPotentialDifference(inUpdatedCache, inOldCache.get());
+                hasChanges |= detectPotentialDifference(resource, amountInUpdatedCache, amountInOldCache);
             }
         }
         return hasChanges;
     }
 
-    private boolean detectPotentialDifference(final ResourceAmount inUpdatedCache,
-                                              final ResourceAmount inOldCache) {
-        final ResourceKey resource = inUpdatedCache.getResource();
-        final long diff = inUpdatedCache.getAmount() - inOldCache.getAmount();
+    private boolean detectPotentialDifference(
+        final ResourceKey resource,
+        final long amountInUpdatedCache,
+        final long amountInOldCache
+    ) {
+        final long diff = amountInUpdatedCache - amountInOldCache;
         if (diff > 0) {
             addToCache(resource, diff);
             return true;
@@ -105,25 +106,29 @@ public class ExternalStorage implements CompositeAwareChild {
         parents.forEach(parent -> parent.addToCache(resource, amount));
     }
 
+    private void removeFromCache(final ResourceKey resource) {
+        removeFromCache(resource, cache.get(resource));
+    }
+
     private void removeFromCache(final ResourceKey resource, final long amount) {
         cache.remove(resource, amount);
         parents.forEach(parent -> parent.removeFromCache(resource, amount));
     }
 
     private ResourceList buildCache() {
-        final ResourceList list = new ResourceListImpl();
+        final ResourceList list = ResourceListImpl.create();
         provider.iterator().forEachRemaining(list::add);
         return list;
     }
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return cache.getAll();
+        return cache.copyState();
     }
 
     @Override
     public long getStored() {
-        return getAll().stream().mapToLong(ResourceAmount::getAmount).sum();
+        return getAll().stream().mapToLong(ResourceAmount::amount).sum();
     }
 
     @Override

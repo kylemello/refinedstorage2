@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage.common.api.grid.GridSynchronizer;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
+import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -30,7 +31,7 @@ import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridExtractionS
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.grid.view.CompositeGridResourceFactory;
-import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
+import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListener;
@@ -39,7 +40,7 @@ import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMenu
+public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
     implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
@@ -100,10 +101,10 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         this.active = gridData.active();
 
         final GridViewBuilder viewBuilder = createViewBuilder();
-        gridData.resources().forEach(gridResource -> viewBuilder.withResource(
-            gridResource.resourceAmount().getResource(),
-            gridResource.resourceAmount().getAmount(),
-            gridResource.trackedResource().orElse(null)
+        gridData.resources().forEach(resource -> viewBuilder.withResource(
+            resource.resourceAmount().resource(),
+            resource.resourceAmount().amount(),
+            resource.trackedResource().orElse(null)
         ));
 
         this.view = viewBuilder.build();
@@ -125,7 +126,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         final Inventory playerInventory,
         final Grid grid
     ) {
-        super(menuType, syncId);
+        super(menuType, syncId, playerInventory.player);
 
         this.view = createViewBuilder().build();
 
@@ -137,12 +138,13 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private Predicate<GridResource> filterResourceType() {
-        return gridResource -> Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
+    private BiPredicate<GridView, GridResource> filterResourceType() {
+        return (v, resource) -> resource instanceof PlatformGridResource platformResource
+            && Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
             RefinedStorageApi.INSTANCE
                 .getResourceTypeRegistry()
                 .get(resourceTypeId)
-                .map(type -> type.isGridResourceBelonging(gridResource))
+                .map(platformResource::belongsToResourceType)
         ).orElse(true);
     }
 
@@ -199,7 +201,7 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
             view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
             return true;
         } catch (GridQueryParserException e) {
-            view.setFilterAndSort(resource -> false);
+            view.setFilterAndSort((v, resource) -> false);
             return false;
         }
     }
@@ -404,13 +406,15 @@ public abstract class AbstractGridContainerMenu extends AbstractBaseContainerMen
     @SuppressWarnings("resource")
     @Override
     public ItemStack quickMoveStack(final Player playerEntity, final int slotIndex) {
-        if (!playerEntity.level().isClientSide() && grid != null && grid.isGridActive()) {
+        if (transferManager.transfer(slotIndex)) {
+            return ItemStack.EMPTY;
+        } else if (!playerEntity.level().isClientSide() && grid != null && grid.isGridActive()) {
             final Slot slot = getSlot(slotIndex);
             if (slot.hasItem() && insertionStrategy != null && canTransferSlot(slot)) {
                 insertionStrategy.onTransfer(slot.index);
             }
         }
-        return super.quickMoveStack(playerEntity, slotIndex);
+        return ItemStack.EMPTY;
     }
 
     protected boolean canTransferSlot(final Slot slot) {

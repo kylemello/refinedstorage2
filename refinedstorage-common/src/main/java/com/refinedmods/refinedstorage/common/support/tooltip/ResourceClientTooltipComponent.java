@@ -33,8 +33,8 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        RefinedStorageApi.INSTANCE.getResourceRendering(resourceAmount.getResource()).render(
-            resourceAmount.getResource(),
+        RefinedStorageApi.INSTANCE.getResourceRendering(resourceAmount.resource()).render(
+            resourceAmount.resource(),
             graphics,
             x,
             y
@@ -50,10 +50,10 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
 
     private static Component getNameWithAmount(final ResourceAmount resourceAmount) {
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
-            resourceAmount.getResource()
+            resourceAmount.resource()
         );
-        final String amount = rendering.getDisplayedAmount(resourceAmount.getAmount(), true);
-        final Component displayName = rendering.getDisplayName(resourceAmount.getResource());
+        final String amount = rendering.getDisplayedAmount(resourceAmount.amount(), true);
+        final Component displayName = rendering.getDisplayName(resourceAmount.resource());
         if (amount.isEmpty()) {
             return displayName;
         }

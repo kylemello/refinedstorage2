@@ -7,6 +7,27 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.6] - 2024-08-08
+
+### Added
+
+-   Pattern Grid
+-   Pattern
+
+### Changed
+
+-   The Pattern now shows the recipe in the tooltip.
+-   When a Pattern is created for a recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
+-   The Pattern Grid now has additional support for encoding stonecutter and smithing table recipes.
+-   The Pattern output is now always rendered in the Pattern Grid result slot.
+
+### Fixed
+
+-   Clicking on a scrollbar no longer makes a clicking sound.
+-   Incorrect and outdated (mentioning NBT tags) help explanations for fuzzy mode.
+-   Amount screen allowing more than the maximum for fluids.
+-   Potential text overflow in the Grid for localization with long "Grid" text.
+
 ## [2.0.0-milestone.4.5] - 2024-07-26
 
 ### Added
@@ -691,7 +712,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.5...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...HEAD
+
+[2.0.0-milestone.4.6]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.5...v2.0.0-milestone.4.6
 
 [2.0.0-milestone.4.5]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.4...v2.0.0-milestone.4.5
 

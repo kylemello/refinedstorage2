@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.api.grid.operations;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.ExtractableStorage;
@@ -53,7 +52,7 @@ public class GridOperationsImpl implements GridOperations {
     }
 
     private long getExtractableAmount(final ResourceKey resource) {
-        final long totalSize = rootStorage.get(resource).map(ResourceAmount::getAmount).orElse(0L);
+        final long totalSize = rootStorage.get(resource);
         final long maxAmount = maxAmountProvider.applyAsLong(resource);
         return Math.min(totalSize, maxAmount);
     }

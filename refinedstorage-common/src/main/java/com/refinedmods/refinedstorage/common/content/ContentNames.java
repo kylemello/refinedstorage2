@@ -14,6 +14,7 @@ public final class ContentNames {
     public static final MutableComponent CABLE = name("cable");
     public static final MutableComponent GRID = name("grid");
     public static final MutableComponent CRAFTING_GRID = name("crafting_grid");
+    public static final MutableComponent PATTERN_GRID = name("pattern_grid");
     public static final MutableComponent DETECTOR = name("detector");
     public static final MutableComponent IMPORTER = name("importer");
     public static final MutableComponent EXPORTER = name("exporter");

@@ -51,6 +51,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -154,11 +155,11 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public Optional<FluidOperationResult> fillContainer(final ItemStack container,
                                                         final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+        if (!(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
         return FluidUtil.getFluidHandler(container).map(handler -> {
-            final FluidStack fluidStack = toFluidStack(fluidResource, resourceAmount.getAmount());
+            final FluidStack fluidStack = toFluidStack(fluidResource, resourceAmount.amount());
             final long filled = handler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
             return new FluidOperationResult(handler.getContainer(), fluidResource, filled);
         });
@@ -397,5 +398,15 @@ public final class PlatformImpl extends AbstractPlatform {
             safeBlockEntity,
             direction
         );
+    }
+
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        return Minecraft.getInstance().getItemColors().getColor(stack, tintIndex);
+    }
+
+    @Override
+    public void setSlotY(final Slot slot, final int y) {
+        slot.y = y;
     }
 }

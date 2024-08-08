@@ -1,5 +1,10 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.SmithingTablePatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.security.SecurityCardBoundPlayer;
 import com.refinedmods.refinedstorage.common.security.SecurityCardPermissions;
@@ -31,6 +36,16 @@ public final class DataComponents {
     private Supplier<DataComponentType<SecurityCardPermissions>> securityCardPermissions;
     @Nullable
     private Supplier<DataComponentType<ConfigurationCardState>> configurationCardState;
+    @Nullable
+    private Supplier<DataComponentType<PatternState>> patternState;
+    @Nullable
+    private Supplier<DataComponentType<CraftingPatternState>> craftingPatternState;
+    @Nullable
+    private Supplier<DataComponentType<ProcessingPatternState>> processingPatternState;
+    @Nullable
+    private Supplier<DataComponentType<StonecutterPatternState>> stonecutterPatternState;
+    @Nullable
+    private Supplier<DataComponentType<SmithingTablePatternState>> smithingTablePatternState;
 
     private DataComponents() {
     }
@@ -95,5 +110,55 @@ public final class DataComponents {
         @Nullable final Supplier<DataComponentType<ConfigurationCardState>> supplier
     ) {
         this.configurationCardState = supplier;
+    }
+
+    public DataComponentType<PatternState> getPatternState() {
+        return requireNonNull(patternState).get();
+    }
+
+    public void setPatternState(
+        @Nullable final Supplier<DataComponentType<PatternState>> supplier
+    ) {
+        this.patternState = supplier;
+    }
+
+    public DataComponentType<CraftingPatternState> getCraftingPatternState() {
+        return requireNonNull(craftingPatternState).get();
+    }
+
+    public void setCraftingPatternState(
+        @Nullable final Supplier<DataComponentType<CraftingPatternState>> supplier
+    ) {
+        this.craftingPatternState = supplier;
+    }
+
+    public DataComponentType<ProcessingPatternState> getProcessingPatternState() {
+        return requireNonNull(processingPatternState).get();
+    }
+
+    public void setProcessingPatternState(
+        @Nullable final Supplier<DataComponentType<ProcessingPatternState>> supplier
+    ) {
+        this.processingPatternState = supplier;
+    }
+
+    public DataComponentType<StonecutterPatternState> getStonecutterPatternState() {
+        return requireNonNull(stonecutterPatternState).get();
+    }
+
+    public void setStonecutterPatternState(
+        @Nullable final Supplier<DataComponentType<StonecutterPatternState>> supplier
+    ) {
+        this.stonecutterPatternState = supplier;
+    }
+
+    public DataComponentType<SmithingTablePatternState> getSmithingTablePatternState() {
+        return requireNonNull(smithingTablePatternState).get();
+    }
+
+    public void setSmithingTablePatternState(
+        @Nullable final Supplier<DataComponentType<SmithingTablePatternState>> supplier
+    ) {
+        this.smithingTablePatternState = supplier;
     }
 }

@@ -41,7 +41,12 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
 
         super.init();
 
-        this.scrollbar = new ScrollbarWidget(leftPos + 174, topPos + 20, 12, (visibleRows * ROW_SIZE) - 2);
+        this.scrollbar = new ScrollbarWidget(
+            leftPos + 174,
+            topPos + 20,
+            ScrollbarWidget.Type.NORMAL,
+            (visibleRows * ROW_SIZE) - 2
+        );
         this.scrollbar.setListener(offset -> scrollbarChanged(visibleRows));
         addWidget(scrollbar);
 

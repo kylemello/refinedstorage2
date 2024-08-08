@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.api.support.resource.list;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.api.support.resource.FuzzyModeNormalizer;
@@ -17,5 +16,5 @@ public interface FuzzyResourceList extends ResourceList {
      * @param resource the resource, doesn't matter if it's normalized or not
      * @return a list of fuzzy matched variants, or empty list if none found
      */
-    Collection<ResourceAmount> getFuzzy(ResourceKey resource);
+    Collection<ResourceKey> getFuzzy(ResourceKey resource);
 }

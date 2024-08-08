@@ -11,6 +11,8 @@ import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
+import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
@@ -93,6 +95,7 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -166,6 +169,7 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     private final CompositeSlotReferenceProvider slotReferenceProvider = new CompositeSlotReferenceProvider();
     private final PlatformRegistry<PlatformPermission> permissionRegistry = new PlatformRegistryImpl<>();
     private final List<ResourceContainerInsertStrategy> resourceExtractStrategies = new ArrayList<>();
+    private final Map<UUID, Pattern> patternCache = new HashMap<>();
 
     public RefinedStorageApiImpl() {
         gridSynchronizerRegistry.register(createIdentifier("off"), NoopGridSynchronizer.INSTANCE);
@@ -572,5 +576,23 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
             }
         }
         return true;
+    }
+
+    @Override
+    public Optional<Pattern> getPattern(final ItemStack stack, final Level level) {
+        if (patternCache.size() > 2000) {
+            patternCache.clear();
+        }
+        if (!(stack.getItem() instanceof PatternProviderItem providerItem)) {
+            return Optional.empty();
+        }
+        final UUID id = providerItem.getId(stack);
+        if (id == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(patternCache.computeIfAbsent(
+            id,
+            i -> providerItem.getPattern(stack, level).orElse(null)
+        ));
     }
 }

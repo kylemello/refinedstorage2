@@ -168,28 +168,29 @@ public final class GameTestUtil {
                                                              final ResourceContainer container,
                                                              final ResourceAmount... expected) {
         return () -> {
+            // todo: investigate issue with EnderIO integration
             // TODO: This does not take duplicate ResourceAmount into account
             for (final ResourceAmount expectedStack : expected) {
                 final boolean contains = IntStream.range(0, container.size())
                     .mapToObj(container::get)
                     .anyMatch(resource -> resource != null
-                        && resource.getResource().equals(expectedStack.getResource())
-                        && resource.getAmount() == expectedStack.getAmount());
+                        && resource.resource().equals(expectedStack.resource())
+                        && resource.amount() == expectedStack.amount());
 
                 helper.assertTrue(contains, "Expected resource is missing from " + displayName.getString() + ": "
-                    + expectedStack + " with count: " + expectedStack.getAmount());
+                    + expectedStack + " with count: " + expectedStack.amount());
             }
 
             for (int i = 0; i < container.size(); i++) {
                 final ResourceAmount resource = container.get(i);
                 if (resource != null) {
                     final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                        expectedResource -> expectedResource.getResource().equals(resource.getResource())
-                            && expectedResource.getAmount() == resource.getAmount()
+                        expectedResource -> expectedResource.resource().equals(resource.resource())
+                            && expectedResource.amount() == resource.amount()
                     );
 
                     helper.assertTrue(wasExpected, "Unexpected resource found in " + displayName.getString() + ": "
-                        + resource.getResource() + " with count: " + resource.getAmount());
+                        + resource.resource() + " with count: " + resource.amount());
                 }
             }
         };
@@ -205,18 +206,18 @@ public final class GameTestUtil {
             for (final ResourceAmount expectedStack : expected) {
                 final boolean contains = IntStream.range(0, containerBlockEntity.getContainerSize())
                     .mapToObj(containerBlockEntity::getItem)
-                    .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.getResource())
-                        && inContainer.getCount() == expectedStack.getAmount());
+                    .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.resource())
+                        && inContainer.getCount() == expectedStack.amount());
                 helper.assertTrue(contains, "Expected resource is missing from container: "
-                    + expectedStack + " with count: " + expectedStack.getAmount());
+                    + expectedStack + " with count: " + expectedStack.amount());
             }
             for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
                 final ItemStack inContainer = containerBlockEntity.getItem(i);
 
                 if (!inContainer.isEmpty()) {
                     final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                        expectedStack -> expectedStack.getResource().equals(asResource(inContainer))
-                            && expectedStack.getAmount() == inContainer.getCount()
+                        expectedStack -> expectedStack.resource().equals(asResource(inContainer))
+                            && expectedStack.amount() == inContainer.getCount()
                     );
                     helper.assertTrue(wasExpected, "Unexpected resource found in container: "
                         + inContainer.getDescriptionId() + " with count: " + inContainer.getCount());
@@ -233,14 +234,14 @@ public final class GameTestUtil {
             for (final ResourceAmount expectedResource : expected) {
                 final boolean contains = storage.getAll()
                     .stream()
-                    .anyMatch(inStorage -> inStorage.getResource().equals(expectedResource.getResource())
-                        && inStorage.getAmount() == expectedResource.getAmount());
+                    .anyMatch(inStorage -> inStorage.resource().equals(expectedResource.resource())
+                        && inStorage.amount() == expectedResource.amount());
                 helper.assertTrue(contains, "Expected resource is missing from storage: " + expectedResource);
             }
             for (final ResourceAmount inStorage : storage.getAll()) {
                 final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                    expectedResource -> expectedResource.getResource().equals(inStorage.getResource())
-                        && expectedResource.getAmount() == inStorage.getAmount()
+                    expectedResource -> expectedResource.resource().equals(inStorage.resource())
+                        && expectedResource.amount() == inStorage.amount()
                 );
                 helper.assertTrue(wasExpected, "Unexpected resource found in storage: " + inStorage);
             }

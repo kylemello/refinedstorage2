@@ -140,7 +140,7 @@ public class CompositeStorageImpl implements CompositeStorage, CompositeAwareChi
 
     @Override
     public Collection<ResourceAmount> getAll() {
-        return list.getAll();
+        return list.copyState();
     }
 
     @Override
@@ -211,8 +211,8 @@ public class CompositeStorageImpl implements CompositeStorage, CompositeAwareChi
 
     private void removeContentOfSourceFromList(final Storage source) {
         source.getAll().forEach(resourceAmount -> list.remove(
-            resourceAmount.getResource(),
-            resourceAmount.getAmount()
+            resourceAmount.resource(),
+            resourceAmount.amount()
         ));
     }
 }

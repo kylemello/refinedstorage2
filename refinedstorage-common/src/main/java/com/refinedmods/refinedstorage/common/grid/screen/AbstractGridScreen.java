@@ -12,6 +12,8 @@ import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
+import com.refinedmods.refinedstorage.common.support.TextureIds;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -19,6 +21,7 @@ import com.refinedmods.refinedstorage.common.support.stretching.AbstractStretchi
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighter;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighterColors;
 
@@ -34,6 +37,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -41,21 +45,28 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.SEARCH_SIZE;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static java.util.Objects.requireNonNullElse;
 
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
+    protected static final int CLEAR_BUTTON_SIZE = 7;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
+    private static final ResourceLocation ROW_TEXTURE = createIdentifier("grid_row");
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
     private static final int COLUMNS = 9;
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
     private static final List<String> SEARCH_FIELD_HISTORY = new ArrayList<>();
 
     protected final int bottomHeight;
+
     @Nullable
     GridSearchBoxWidget searchField;
 
+    private final TextMarquee titleMarquee;
     private int totalRows;
     private int currentGridSlotIndex;
 
@@ -65,6 +76,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final int bottomHeight) {
         super(menu, playerInventory, text);
         this.bottomHeight = bottomHeight;
+        this.titleMarquee = new TextMarquee(text, 70);
     }
 
     @Override
@@ -74,14 +86,14 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (searchField == null) {
             searchField = new GridSearchBoxWidget(
                 font,
-                leftPos + 80 + 1,
+                leftPos + 94 + 1,
                 topPos + 6 + 1,
-                88 - 6,
+                73 - 6,
                 new SyntaxHighlighter(SyntaxHighlighterColors.DEFAULT_COLORS),
                 new History(SEARCH_FIELD_HISTORY)
             );
         } else {
-            searchField.setX(leftPos + 80 + 1);
+            searchField.setX(leftPos + 94 + 1);
             searchField.setY(topPos + 6 + 1);
         }
         getMenu().setSearchBox(searchField);
@@ -144,6 +156,29 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     @Override
+    protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
+        super.renderBg(graphics, delta, mouseX, mouseY);
+        graphics.blitSprite(TextureIds.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
+    }
+
+    @Override
+    protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+        graphics.pose().popPose();
+        final boolean hoveringOverTitle = isHovering(
+            7,
+            7,
+            titleMarquee.getEffectiveWidth(font),
+            font.lineHeight,
+            mouseX,
+            mouseY
+        );
+        titleMarquee.render(graphics, leftPos + 7, topPos + 7, font, hoveringOverTitle);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
+    }
+
+    @Override
     protected void renderStretchingBackground(final GuiGraphics graphics, final int x, final int y, final int rows) {
         for (int row = 0; row < rows; ++row) {
             int textureY = 37;
@@ -193,7 +228,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                            final int rowX,
                            final int rowY,
                            final int row) {
-        graphics.blit(getTexture(), rowX, rowY, 0, 238, 162, ROW_SIZE);
+        graphics.blitSprite(ROW_TEXTURE, rowX, rowY, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);
         }
@@ -257,13 +292,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (!(resource instanceof PlatformGridResource platformResource)) {
             return;
         }
-        final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount();
+        final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount(getMenu().getView());
         final int color = resource.isZeroed()
             ? requireNonNullElse(ChatFormatting.RED.getColor(), 15)
             : requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
         final boolean large = (minecraft != null && minecraft.isEnforceUnicode())
             || Platform.INSTANCE.getConfig().getGrid().isLargeFont();
-        renderAmount(graphics, slotX, slotY, text, color, large);
+        ResourceSlotRendering.renderAmount(graphics, slotX, slotY, text, color, large);
     }
 
     private void renderDisabledSlot(final GuiGraphics graphics, final int slotX, final int slotY) {
@@ -314,7 +349,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             addDetailedTooltip(view, platformResource, processedLines);
         }
         if (!platformResource.isZeroed()) {
-            processedLines.addAll(platformResource.getExtractionHints());
+            processedLines.addAll(platformResource.getExtractionHints(getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
     }
@@ -322,7 +357,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private void addDetailedTooltip(final GridView view,
                                     final PlatformGridResource platformResource,
                                     final List<ClientTooltipComponent> lines) {
-        final String amountInTooltip = platformResource.isZeroed() ? "0" : platformResource.getAmountInTooltip();
+        final String amountInTooltip = platformResource.isZeroed()
+            ? "0"
+            : platformResource.getAmountInTooltip(getMenu().getView());
         lines.add(new SmallTextClientTooltipComponent(
             createTranslation("misc", "total", amountInTooltip).withStyle(ChatFormatting.GRAY)
         ));

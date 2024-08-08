@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import java.util.Optional;
@@ -15,8 +15,8 @@ import net.minecraft.world.level.material.Fluid;
 
 public abstract class AbstractFluidGridResourceFactory implements GridResourceFactory {
     @Override
-    public Optional<GridResource> apply(final ResourceAmount resourceAmount) {
-        if (!(resourceAmount.getResource() instanceof FluidResource fluidResource)) {
+    public Optional<GridResource> apply(final ResourceKey resource) {
+        if (!(resource instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
         final String name = getName(fluidResource);
@@ -25,7 +25,7 @@ public abstract class AbstractFluidGridResourceFactory implements GridResourceFa
         final Set<String> tags = getTags(fluidResource.fluid());
         final String tooltip = getTooltip(fluidResource);
         return Optional.of(new FluidGridResource(
-            resourceAmount,
+            fluidResource,
             name,
             modId,
             modName,

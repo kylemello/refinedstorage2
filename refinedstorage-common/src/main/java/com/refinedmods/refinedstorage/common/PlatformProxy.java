@@ -37,6 +37,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -252,6 +253,16 @@ public class PlatformProxy implements Platform {
                                                                    final BlockPos pos,
                                                                    @Nullable final Direction direction) {
         return ensureLoaded().getContainerProviderSafely(level, pos, direction);
+    }
+
+    @Override
+    public int getItemColor(final ItemStack stack, final int tintIndex) {
+        return ensureLoaded().getItemColor(stack, tintIndex);
+    }
+
+    @Override
+    public void setSlotY(final Slot slot, final int y) {
+        ensureLoaded().setSlotY(slot, y);
     }
 
     private Platform ensureLoaded() {

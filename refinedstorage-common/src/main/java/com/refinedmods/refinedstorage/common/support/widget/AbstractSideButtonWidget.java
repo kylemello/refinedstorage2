@@ -21,10 +21,17 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING;
+import static com.refinedmods.refinedstorage.common.support.TextureIds.WARNING_SIZE;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+
 public abstract class AbstractSideButtonWidget extends Button {
+    private static final ResourceLocation TEXTURE = createIdentifier("widget/side_button");
+    private static final ResourceLocation HOVERED_TEXTURE = createIdentifier("widget/side_button_hovered");
+    private static final ResourceLocation HOVER_OVERLAY_TEXTURE = createIdentifier("widget/side_button_hover_overlay");
+
     private static final int WIDTH = 18;
     private static final int HEIGHT = 18;
-    private static final int WARNING_SIZE = 10;
 
     @Nullable
     private ClientTooltipComponent warning;
@@ -38,7 +45,7 @@ public abstract class AbstractSideButtonWidget extends Button {
     protected abstract int getYTexture();
 
     protected ResourceLocation getTextureIdentifier() {
-        return TextureIds.ICONS;
+        return TextureIds.SIDE_BUTTON_ICONS;
     }
 
     public void setWarning(@Nullable final Component text) {
@@ -51,7 +58,7 @@ public abstract class AbstractSideButtonWidget extends Button {
 
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        graphics.blit(getTextureIdentifier(), getX(), getY(), 238, isHovered ? 35 : 16, WIDTH, HEIGHT);
+        graphics.blitSprite(isHovered ? HOVERED_TEXTURE : TEXTURE, getX(), getY(), WIDTH, HEIGHT);
         graphics.blit(
             getTextureIdentifier(),
             getX() + 1,
@@ -65,7 +72,7 @@ public abstract class AbstractSideButtonWidget extends Button {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
-            graphics.blit(getTextureIdentifier(), getX(), getY(), 238, 54, WIDTH, HEIGHT);
+            graphics.blitSprite(HOVER_OVERLAY_TEXTURE, getX(), getY(), WIDTH, HEIGHT);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             final Screen screen = Minecraft.getInstance().screen;
@@ -81,12 +88,10 @@ public abstract class AbstractSideButtonWidget extends Button {
     private void renderWarning(final GuiGraphics graphics) {
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 200);
-        graphics.blit(
-            TextureIds.ICONS,
+        graphics.blitSprite(
+            WARNING,
             getX() + WIDTH - WARNING_SIZE + 2,
             getY() + HEIGHT - WARNING_SIZE + 2,
-            246,
-            148,
             WARNING_SIZE,
             WARNING_SIZE
         );

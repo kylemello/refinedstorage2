@@ -29,9 +29,17 @@ import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridExtractPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridInsertPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.GridScrollPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridAllowedAlternativesChangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridClearPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCraftingRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridCreatePatternPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridProcessingRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridSmithingTableRecipeTransferPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.PatternGridStonecutterRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.PropertyChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceFilterSlotChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.ResourceSlotAmountChangePacket;
@@ -48,6 +56,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NetworkTransmitterStatusPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
@@ -173,13 +182,15 @@ public class ModInitializer extends AbstractModInitializer {
             eventBus.addListener(ClientModInitializer::onRegisterModelGeometry);
             eventBus.addListener(ClientModInitializer::onRegisterMenuScreens);
             eventBus.addListener(ClientModInitializer::onRegisterKeyMappings);
+            eventBus.addListener(ClientModInitializer::onRegisterItemColors);
+            eventBus.addListener(ClientModInitializer::onRegisterClientExtensions);
             eventBus.addListener(ClientModInitializer::onRegisterTooltipFactories);
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
 
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onRegister);
-        eventBus.addListener(this::registerNetworkPackets);
+        eventBus.addListener(this::registerPackets);
         eventBus.addListener(this::registerCapabilities);
 
         NeoForge.EVENT_BUS.addListener(this::registerWrenchingEvent);
@@ -379,6 +390,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getConstructor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getController());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCraftingGrid());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getPatternGrid());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCreativeController());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDestructor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getDetector());
@@ -542,7 +554,7 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     @SubscribeEvent
-    public void registerNetworkPackets(final RegisterPayloadHandlersEvent event) {
+    public void registerPackets(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(MOD_ID);
         registerServerToClientPackets(registrar);
         registerClientToServerPackets(registrar);
@@ -594,6 +606,11 @@ public class ModInitializer extends AbstractModInitializer {
             NoPermissionPacket.STREAM_CODEC,
             wrapHandler((packet, ctx) -> NoPermissionPacket.handle(packet))
         );
+        registrar.playToClient(
+            PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC,
+            wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
+        );
     }
 
     private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
@@ -601,6 +618,16 @@ public class ModInitializer extends AbstractModInitializer {
             CraftingGridClearPacket.PACKET_TYPE,
             CraftingGridClearPacket.STREAM_CODEC,
             wrapHandler(CraftingGridClearPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridClearPacket.PACKET_TYPE,
+            PatternGridClearPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> PatternGridClearPacket.handle(ctx))
+        );
+        registrar.playToServer(
+            PatternGridCreatePatternPacket.PACKET_TYPE,
+            PatternGridCreatePatternPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> PatternGridCreatePatternPacket.handle(ctx))
         );
         registrar.playToServer(
             CraftingGridRecipeTransferPacket.PACKET_TYPE,
@@ -643,6 +670,11 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(ResourceSlotChangePacket::handle)
         );
         registrar.playToServer(
+            FilterSlotChangePacket.PACKET_TYPE,
+            FilterSlotChangePacket.STREAM_CODEC,
+            wrapHandler(FilterSlotChangePacket::handle)
+        );
+        registrar.playToServer(
             SingleAmountChangePacket.PACKET_TYPE,
             SingleAmountChangePacket.STREAM_CODEC,
             wrapHandler(SingleAmountChangePacket::handle)
@@ -671,6 +703,31 @@ public class ModInitializer extends AbstractModInitializer {
             SecurityCardBoundPlayerPacket.PACKET_TYPE,
             SecurityCardBoundPlayerPacket.STREAM_CODEC,
             wrapHandler(SecurityCardBoundPlayerPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridAllowedAlternativesChangePacket.PACKET_TYPE,
+            PatternGridAllowedAlternativesChangePacket.STREAM_CODEC,
+            wrapHandler(PatternGridAllowedAlternativesChangePacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridCraftingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridCraftingRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridCraftingRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridProcessingRecipeTransferPacket.PACKET_TYPE,
+            PatternGridProcessingRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridProcessingRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridStonecutterRecipeTransferPacket.PACKET_TYPE,
+            PatternGridStonecutterRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridStonecutterRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
+            PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC,
+            wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
         );
     }
 

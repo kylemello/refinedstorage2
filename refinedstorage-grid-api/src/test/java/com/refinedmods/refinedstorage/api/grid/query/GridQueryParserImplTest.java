@@ -3,15 +3,19 @@ package com.refinedmods.refinedstorage.api.grid.query;
 import com.refinedmods.refinedstorage.api.grid.view.FakeGridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
+import com.refinedmods.refinedstorage.api.grid.view.GridResourceImpl;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.grid.view.GridViewImpl;
+import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -28,49 +32,57 @@ class GridQueryParserImplTest {
         FakeGridResourceAttributeKeys.UNARY_OPERATOR_TO_ATTRIBUTE_KEY_MAPPING
     );
 
+    private final GridView view = new GridViewImpl(
+        resource -> Optional.of(new GridResourceImpl(resource)),
+        ResourceListImpl.create(),
+        new HashMap<>(),
+        v -> Comparator.comparing(GridResource::getName),
+        v -> Comparator.comparingLong(resource -> resource.getAmount(v))
+    );
+
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     void testEmptyQuery(final String query) throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(query);
+        final var predicate = queryParser.parse(query);
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isTrue();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isTrue();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"dirt", "Dirt", "DiRt", "Di", "irt"})
     void testNameQuery(final String query) throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(query);
+        final var predicate = queryParser.parse(query);
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isFalse();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"@refined", "@\"Refined Storage\"", "@ReFiNe", "@Storage", "@rs", "@RS"})
     void testModQuery(final String query) throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(query);
+        final var predicate = queryParser.parse(query);
 
         // Assert
-        assertThat(predicate.test(new R("Sponge", 1, "rs", "Refined Storage", Set.of()))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isFalse();
+        assertThat(predicate.test(view, new R("Sponge", 1, "rs", "Refined Storage", Set.of()))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isFalse();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"$underwater", "$UnDerWate", "$water", "$unrelated", "$UNREL", "$laTed"})
     void testTagQuery(final String query) throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(query);
+        final var predicate = queryParser.parse(query);
 
         // Assert
-        assertThat(predicate.test(
+        assertThat(predicate.test(view,
             new R("Sponge", 1, "mc", "Minecraft", Set.of("underwater", "unrelated")))).isTrue();
-        assertThat(predicate.test(new R("Dirt", 1, "mc", "Minecraft", Set.of("transparent")))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt", 1, "mc", "Minecraft", Set.of("transparent")))).isFalse();
     }
 
     @Test
@@ -86,154 +98,154 @@ class GridQueryParserImplTest {
     @Test
     void testImplicitAndQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("DirT di RT");
+        final var predicate = queryParser.parse("DirT di RT");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isFalse();
     }
 
     @Test
     void testImplicitAndQueryInParenthesis() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("(DirT di RT) || (sto stone)");
+        final var predicate = queryParser.parse("(DirT di RT) || (sto stone)");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isFalse();
-        assertThat(predicate.test(new R("Stone"))).isTrue();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isFalse();
+        assertThat(predicate.test(view, new R("Stone"))).isTrue();
     }
 
     @Test
     void testImplicitAndQueryWithUnaryOperator() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("@minecraft >5");
+        final var predicate = queryParser.parse("@minecraft >5");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt", 6, "minecraft", "Minecraft", Set.of()))).isTrue();
-        assertThat(predicate.test(new R("Glass", 5, "minecraft", "Minecraft", Set.of()))).isFalse();
-        assertThat(predicate.test(new R("Sponge", 5, "rs", "Refined Storage", Set.of()))).isFalse();
-        assertThat(predicate.test(new R("Cobblestone", 6, "rs", "Refined Storage", Set.of()))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt", 6, "minecraft", "Minecraft", Set.of()))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 5, "minecraft", "Minecraft", Set.of()))).isFalse();
+        assertThat(predicate.test(view, new R("Sponge", 5, "rs", "Refined Storage", Set.of()))).isFalse();
+        assertThat(predicate.test(view, new R("Cobblestone", 6, "rs", "Refined Storage", Set.of()))).isFalse();
     }
 
     @Test
     void testAndQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("DirT && di && RT");
+        final var predicate = queryParser.parse("DirT && di && RT");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isFalse();
     }
 
     @Test
     void testOrQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("dir || glass || StoNe");
+        final var predicate = queryParser.parse("dir || glass || StoNe");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isTrue();
-        assertThat(predicate.test(new R("Stone"))).isTrue();
-        assertThat(predicate.test(new R("Cobblestone"))).isTrue();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isTrue();
+        assertThat(predicate.test(view, new R("Stone"))).isTrue();
+        assertThat(predicate.test(view, new R("Cobblestone"))).isTrue();
 
-        assertThat(predicate.test(new R("Sponge"))).isFalse();
-        assertThat(predicate.test(new R("Furnace"))).isFalse();
+        assertThat(predicate.test(view, new R("Sponge"))).isFalse();
+        assertThat(predicate.test(view, new R("Furnace"))).isFalse();
     }
 
     @Test
     void testSimpleNotQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("!stone");
+        final var predicate = queryParser.parse("!stone");
 
         // Assert
-        assertThat(predicate.test(new R("Dirt"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isTrue();
+        assertThat(predicate.test(view, new R("Dirt"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isTrue();
 
-        assertThat(predicate.test(new R("Stone"))).isFalse();
-        assertThat(predicate.test(new R("Cobblestone"))).isFalse();
+        assertThat(predicate.test(view, new R("Stone"))).isFalse();
+        assertThat(predicate.test(view, new R("Cobblestone"))).isFalse();
     }
 
     @Test
     void testNotQueryWithMultipleOrParts() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("!(stone || dirt)");
+        final var predicate = queryParser.parse("!(stone || dirt)");
 
         // Assert
-        assertThat(predicate.test(new R("Sponge"))).isTrue();
-        assertThat(predicate.test(new R("Glass"))).isTrue();
+        assertThat(predicate.test(view, new R("Sponge"))).isTrue();
+        assertThat(predicate.test(view, new R("Glass"))).isTrue();
 
-        assertThat(predicate.test(new R("Stone"))).isFalse();
-        assertThat(predicate.test(new R("Dirt"))).isFalse();
+        assertThat(predicate.test(view, new R("Stone"))).isFalse();
+        assertThat(predicate.test(view, new R("Dirt"))).isFalse();
     }
 
     @Test
     void testComplexModQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(
+        final var predicate = queryParser.parse(
             "((spo || buck) && @refined) || (glass && @mine)"
         );
 
         // Assert
-        assertThat(predicate.test(new R("Sponge", 1, "rs", "Refined Storage", Set.of()))).isTrue();
-        assertThat(predicate.test(new R("Bucket", 1, "rs", "Refined Storage", Set.of()))).isTrue();
-        assertThat(predicate.test(new R("Saddle", 1, "rs", "Refined Storage", Set.of()))).isFalse();
+        assertThat(predicate.test(view, new R("Sponge", 1, "rs", "Refined Storage", Set.of()))).isTrue();
+        assertThat(predicate.test(view, new R("Bucket", 1, "rs", "Refined Storage", Set.of()))).isTrue();
+        assertThat(predicate.test(view, new R("Saddle", 1, "rs", "Refined Storage", Set.of()))).isFalse();
 
-        assertThat(predicate.test(new R("Glass", 1, "mc", "Minecraft", Set.of()))).isTrue();
-        assertThat(predicate.test(new R("Furnace", 1, "mc", "Minecraft", Set.of()))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 1, "mc", "Minecraft", Set.of()))).isTrue();
+        assertThat(predicate.test(view, new R("Furnace", 1, "mc", "Minecraft", Set.of()))).isFalse();
     }
 
     @Test
     void testLessThanUnaryCountQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("<5");
+        final var predicate = queryParser.parse("<5");
 
         // Assert
-        assertThat(predicate.test(new R("Glass", 5))).isFalse();
-        assertThat(predicate.test(new R("Glass", 4))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 5))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 4))).isTrue();
     }
 
     @Test
     void testLessThanEqualsUnaryCountQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("<=5");
+        final var predicate = queryParser.parse("<=5");
 
         // Assert
-        assertThat(predicate.test(new R("Glass", 6))).isFalse();
-        assertThat(predicate.test(new R("Glass", 5))).isTrue();
-        assertThat(predicate.test(new R("Glass", 4))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 6))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 5))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 4))).isTrue();
     }
 
     @Test
     void testGreaterThanUnaryCountQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(">5");
+        final var predicate = queryParser.parse(">5");
 
         // Assert
-        assertThat(predicate.test(new R("Glass", 5))).isFalse();
-        assertThat(predicate.test(new R("Glass", 6))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 5))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 6))).isTrue();
     }
 
     @Test
     void testGreaterThanEqualsUnaryCountQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse(">=5");
+        final var predicate = queryParser.parse(">=5");
 
         // Assert
-        assertThat(predicate.test(new R("Glass", 4))).isFalse();
-        assertThat(predicate.test(new R("Glass", 5))).isTrue();
-        assertThat(predicate.test(new R("Glass", 6))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 4))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 5))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 6))).isTrue();
     }
 
     @Test
     void testEqualsUnaryCountQuery() throws GridQueryParserException {
         // Act
-        final Predicate<GridResource> predicate = queryParser.parse("=5");
+        final var predicate = queryParser.parse("=5");
 
         // Assert
-        assertThat(predicate.test(new R("Glass", 4))).isFalse();
-        assertThat(predicate.test(new R("Glass", 5))).isTrue();
-        assertThat(predicate.test(new R("Glass", 6))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 4))).isFalse();
+        assertThat(predicate.test(view, new R("Glass", 5))).isTrue();
+        assertThat(predicate.test(view, new R("Glass", 6))).isFalse();
     }
 
     @ParameterizedTest
@@ -295,7 +307,7 @@ class GridQueryParserImplTest {
         }
 
         @Override
-        public long getAmount() {
+        public long getAmount(final GridView view) {
             return amount;
         }
 

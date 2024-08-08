@@ -5,7 +5,6 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
-import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.support.amount.ResourceAmountScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
@@ -23,9 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.Rect2i;
@@ -37,11 +35,17 @@ import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
-import static java.util.Objects.requireNonNullElse;
 
 public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     private static final SmallTextClientTooltipComponent CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("gui", "filter_slot.click_to_clear")
+    );
+    private static final SmallTextClientTooltipComponent CLICK_TO_CONFIGURE_AMOUNT =
+        new SmallTextClientTooltipComponent(
+            createTranslationAsHeading("gui", "filter_slot.click_to_configure_amount")
+        );
+    private static final SmallTextClientTooltipComponent SHIFT_CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
+        createTranslationAsHeading("gui", "filter_slot.shift_click_to_clear")
     );
     private static final ClientTooltipComponent EMPTY_FILTER = ClientTooltipComponent.create(
         createTranslationAsHeading("gui", "filter_slot.empty_filter").getVisualOrderText()
@@ -95,73 +99,13 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         renderTooltip(graphics, mouseX, mouseY);
     }
 
-    protected final void renderResourceSlots(final GuiGraphics graphics) {
+    protected void renderResourceSlots(final GuiGraphics graphics) {
         if (!(menu instanceof AbstractResourceContainerMenu resourceContainerMenu)) {
             return;
         }
         for (final ResourceSlot slot : resourceContainerMenu.getResourceSlots()) {
-            tryRenderResourceSlot(graphics, slot);
+            ResourceSlotRendering.render(graphics, slot, leftPos, topPos);
         }
-    }
-
-    private void tryRenderResourceSlot(final GuiGraphics graphics, final ResourceSlot slot) {
-        final ResourceKey resource = slot.getResource();
-        if (resource == null) {
-            return;
-        }
-        renderResourceSlot(
-            graphics,
-            leftPos + slot.x,
-            topPos + slot.y,
-            resource,
-            slot.getAmount(),
-            slot.shouldRenderAmount()
-        );
-    }
-
-    private void renderResourceSlot(final GuiGraphics graphics,
-                                    final int x,
-                                    final int y,
-                                    final ResourceKey resource,
-                                    final long amount,
-                                    final boolean renderAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
-        rendering.render(resource, graphics, x, y);
-        if (renderAmount) {
-            renderResourceSlotAmount(graphics, x, y, amount, rendering);
-        }
-    }
-
-    private void renderResourceSlotAmount(final GuiGraphics graphics,
-                                          final int x,
-                                          final int y,
-                                          final long amount,
-                                          final ResourceRendering rendering) {
-        renderAmount(
-            graphics,
-            x,
-            y,
-            rendering.getDisplayedAmount(amount, true),
-            requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
-            true
-        );
-    }
-
-    protected void renderAmount(final GuiGraphics graphics,
-                                final int x,
-                                final int y,
-                                final String amount,
-                                final int color,
-                                final boolean large) {
-        final PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        // Large amounts overlap with the slot lines (see Minecraft behavior)
-        poseStack.translate(x + (large ? 1D : 0D), y + (large ? 1D : 0D), 199);
-        if (!large) {
-            poseStack.scale(0.5F, 0.5F, 1);
-        }
-        graphics.drawString(font, amount, (large ? 16 : 30) - font.width(amount), large ? 8 : 22, color, true);
-        poseStack.popPose();
     }
 
     public void addSideButton(final AbstractSideButtonWidget button) {
@@ -186,7 +130,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
                 return;
             }
         }
-        if (hoveredSlot instanceof ResourceSlot resourceSlot) {
+        if (hoveredSlot instanceof ResourceSlot resourceSlot && canInteractWithResourceSlot(resourceSlot, x, y)) {
             final List<ClientTooltipComponent> tooltip = getResourceTooltip(menu.getCarried(), resourceSlot);
             if (!tooltip.isEmpty()) {
                 Platform.INSTANCE.renderTooltip(graphics, tooltip, x, y);
@@ -247,7 +191,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         resourceSlot.getPrimaryResourceFactory().create(carried).ifPresent(primaryResourceInstance -> lines.add(
             MouseClientTooltipComponent.resource(
                 MouseClientTooltipComponent.Type.LEFT,
-                primaryResourceInstance.getResource(),
+                primaryResourceInstance.resource(),
                 null
             )
         ));
@@ -255,7 +199,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             final var result = alternativeResourceFactory.create(carried);
             result.ifPresent(alternativeResourceInstance -> lines.add(MouseClientTooltipComponent.resource(
                 MouseClientTooltipComponent.Type.RIGHT,
-                alternativeResourceInstance.getResource(),
+                alternativeResourceInstance.resource(),
                 null
             )));
         }
@@ -272,7 +216,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             .map(ClientTooltipComponent::create)
             .collect(Collectors.toList());
         if (!resourceSlot.isDisabled() && !resourceSlot.supportsItemSlotInteractions()) {
-            tooltip.add(CLICK_TO_CLEAR);
+            addResourceSlotTooltips(resourceSlot, tooltip);
         }
         if (resourceSlot.supportsItemSlotInteractions()) {
             RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies()
@@ -289,14 +233,24 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         return tooltip;
     }
 
+    protected void addResourceSlotTooltips(final ResourceSlot slot, final List<ClientTooltipComponent> tooltip) {
+        if (slot.canModifyAmount()) {
+            tooltip.add(CLICK_TO_CONFIGURE_AMOUNT);
+            tooltip.add(SHIFT_CLICK_TO_CLEAR);
+        } else {
+            tooltip.add(CLICK_TO_CLEAR);
+        }
+    }
+
     @Override
     public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
         if (hoveredSlot instanceof ResourceSlot resourceSlot
             && !resourceSlot.supportsItemSlotInteractions()
             && !resourceSlot.isDisabled()
-            && getMenu() instanceof AbstractResourceContainerMenu containerMenu) {
-            if (!tryOpenResourceAmountScreen(resourceSlot)) {
-                containerMenu.sendResourceSlotChange(hoveredSlot.index, clickedButton == 1);
+            && canInteractWithResourceSlot(resourceSlot, mouseX, mouseY)) {
+            if (!tryOpenResourceAmountScreen(resourceSlot)
+                && getMenu() instanceof AbstractResourceContainerMenu resourceMenu) {
+                resourceMenu.sendResourceSlotChange(hoveredSlot.index, clickedButton == 1);
             }
             return true;
         }
@@ -308,12 +262,24 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         final boolean canModifyAmount = isFilterSlot && slot.canModifyAmount();
         final boolean isNotTryingToRemoveFilter = !hasShiftDown();
         final boolean isNotCarryingItem = getMenu().getCarried().isEmpty();
-        final boolean canOpen =
-            isFilterSlot && canModifyAmount && isNotTryingToRemoveFilter && isNotCarryingItem;
+        final boolean canOpen = isFilterSlot
+            && canModifyAmount
+            && isNotTryingToRemoveFilter
+            && isNotCarryingItem;
         if (canOpen && minecraft != null) {
-            minecraft.setScreen(new ResourceAmountScreen(this, playerInventory, slot));
+            minecraft.setScreen(createResourceAmountScreen(slot));
         }
         return canOpen;
+    }
+
+    protected Screen createResourceAmountScreen(final ResourceSlot slot) {
+        return new ResourceAmountScreen(this, playerInventory, slot);
+    }
+
+    protected boolean canInteractWithResourceSlot(final ResourceSlot resourceSlot,
+                                                  final double mouseX,
+                                                  final double mouseY) {
+        return true;
     }
 
     @Nullable

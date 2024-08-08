@@ -9,8 +9,10 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrix;
+import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
+import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
-import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -19,26 +21,26 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops {
-    private static final String TAG_CRAFTING_MATRIX = "matrix";
+public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements BlockEntityWithDrops,
+    NetworkNodeExtendedMenuProvider<GridData> {
+    private static final String TAG_MATRIX = "matrix";
 
-    @Nullable
-    private CraftingRecipe currentRecipe;
-
-    private final CraftingMatrix craftingMatrix = new CraftingMatrix(this::setOutput);
-    private final ResultContainer craftingResult = new ResultContainer();
+    private final RecipeMatrix<CraftingRecipe, CraftingInput> craftingRecipe = RecipeMatrix.crafting(
+        this::setChanged,
+        this::getLevel
+    );
 
     public CraftingGridBlockEntity(final BlockPos pos, final BlockState state) {
         super(
@@ -49,55 +51,26 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
         );
     }
 
-    private void setOutput() {
-        if (level == null) {
-            return;
-        }
-        setOutputSilently(level);
-        setChanged();
-    }
-
-    private void setOutputSilently(final Level level) {
-        if (level.isClientSide()) {
-            return;
-        }
-        final CraftingInput input = craftingMatrix.asCraftInput();
-        if (currentRecipe == null || !currentRecipe.matches(input, level)) {
-            currentRecipe = loadRecipe(level);
-        }
-        if (currentRecipe == null) {
-            setResult(ItemStack.EMPTY);
-        } else {
-            setResult(currentRecipe.assemble(input, level.registryAccess()));
-        }
-    }
-
-    private void setResult(final ItemStack result) {
-        craftingResult.setItem(0, result);
-    }
-
-    @Nullable
-    private CraftingRecipe loadRecipe(final Level level) {
-        return level
-            .getRecipeManager()
-            .getRecipeFor(RecipeType.CRAFTING, craftingMatrix.asCraftInput(), level)
-            .map(RecipeHolder::value)
-            .orElse(null);
-    }
-
-    CraftingMatrix getCraftingMatrix() {
-        return craftingMatrix;
+    RecipeMatrixContainer getCraftingMatrix() {
+        return craftingRecipe.getMatrix();
     }
 
     ResultContainer getCraftingResult() {
-        return craftingResult;
+        return craftingRecipe.getResult();
     }
 
     NonNullList<ItemStack> getRemainingItems(final Player player, final CraftingInput input) {
-        if (level == null || currentRecipe == null) {
-            return NonNullList.create();
-        }
-        return Platform.INSTANCE.getRemainingCraftingItems(player, currentRecipe, input);
+        return craftingRecipe.getRemainingItems(level, player, input);
+    }
+
+    @Override
+    public GridData getMenuData() {
+        return GridData.of(this);
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, GridData> getMenuCodec() {
+        return GridData.STREAM_CODEC;
     }
 
     @Override
@@ -114,28 +87,28 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put(TAG_CRAFTING_MATRIX, ContainerUtil.write(craftingMatrix, provider));
+        tag.put(TAG_MATRIX, craftingRecipe.writeToTag(provider));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        if (tag.contains(TAG_CRAFTING_MATRIX)) {
-            ContainerUtil.read(tag.getCompound(TAG_CRAFTING_MATRIX), craftingMatrix, provider);
+        if (tag.contains(TAG_MATRIX)) {
+            craftingRecipe.readFromTag(tag.getCompound(TAG_MATRIX), provider);
         }
     }
 
     @Override
     public void setLevel(final Level level) {
         super.setLevel(level);
-        setOutputSilently(level);
+        craftingRecipe.updateResult(level);
     }
 
     @Override
     public NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
-        for (int i = 0; i < craftingMatrix.getContainerSize(); ++i) {
-            drops.add(craftingMatrix.getItem(i));
+        for (int i = 0; i < craftingRecipe.getMatrix().getContainerSize(); ++i) {
+            drops.add(craftingRecipe.getMatrix().getItem(i));
         }
         return drops;
     }

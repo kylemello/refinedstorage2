@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.network.component;
 
 import com.refinedmods.refinedstorage.api.network.impl.storage.StorageNetworkComponentImpl;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
@@ -14,7 +13,7 @@ public class PlatformStorageNetworkComponent extends StorageNetworkComponentImpl
     private final FuzzyResourceList fuzzyResourceList;
 
     public PlatformStorageNetworkComponent() {
-        this(new FuzzyResourceListImpl(new ResourceListImpl()));
+        this(new FuzzyResourceListImpl(ResourceListImpl.create()));
     }
 
     private PlatformStorageNetworkComponent(final FuzzyResourceList fuzzyResourceList) {
@@ -23,7 +22,7 @@ public class PlatformStorageNetworkComponent extends StorageNetworkComponentImpl
     }
 
     @Override
-    public Collection<ResourceAmount> getFuzzy(final ResourceKey resource) {
+    public Collection<ResourceKey> getFuzzy(final ResourceKey resource) {
         return fuzzyResourceList.getFuzzy(resource);
     }
 }

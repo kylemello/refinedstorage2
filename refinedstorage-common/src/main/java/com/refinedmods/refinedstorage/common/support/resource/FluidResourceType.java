@@ -3,13 +3,12 @@ package com.refinedmods.refinedstorage.common.support.resource;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperationsImpl;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.support.resource.AbstractResourceType;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
-import com.refinedmods.refinedstorage.common.grid.view.FluidGridResource;
 import com.refinedmods.refinedstorage.common.support.TextureIds;
 
 import java.util.Optional;
@@ -25,20 +24,15 @@ class FluidResourceType extends AbstractResourceType {
         super(
             "FLUID",
             createTranslation("misc", "resource_type.fluid"),
-            TextureIds.ICONS,
+            TextureIds.SIDE_BUTTON_ICONS,
             16,
             128
         );
     }
 
     @Override
-    public Optional<GridResource> toGridResource(final ResourceAmount resourceAmount) {
-        return Platform.INSTANCE.getFluidGridResourceFactory().apply(resourceAmount);
-    }
-
-    @Override
-    public boolean isGridResourceBelonging(final GridResource gridResource) {
-        return gridResource instanceof FluidGridResource;
+    public Optional<GridResource> toGridResource(final ResourceKey resource) {
+        return Platform.INSTANCE.getFluidGridResourceFactory().apply(resource);
     }
 
     @Override

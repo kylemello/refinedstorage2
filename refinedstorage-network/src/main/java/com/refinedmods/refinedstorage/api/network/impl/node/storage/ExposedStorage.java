@@ -17,7 +17,7 @@ import java.util.Optional;
 
 class ExposedStorage extends AbstractImmutableConfiguredProxyStorage<CompositeStorageImpl> implements CompositeStorage {
     protected ExposedStorage(final StorageConfiguration config) {
-        super(config, new CompositeStorageImpl(new ResourceListImpl()));
+        super(config, new CompositeStorageImpl(ResourceListImpl.create()));
     }
 
     long getCapacity() {

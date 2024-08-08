@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
@@ -11,8 +12,11 @@ import com.refinedmods.refinedstorage.common.support.containermenu.PropertyType;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
 public final class C2SPackets {
@@ -39,6 +43,14 @@ public final class C2SPackets {
         Platform.INSTANCE.sendPacketToServer(new CraftingGridClearPacket(toPlayerInventory));
     }
 
+    public static void sendPatternGridClear() {
+        Platform.INSTANCE.sendPacketToServer(PatternGridClearPacket.INSTANCE);
+    }
+
+    public static void sendPatternGridCreatePattern() {
+        Platform.INSTANCE.sendPacketToServer(PatternGridCreatePatternPacket.INSTANCE);
+    }
+
     public static void sendCraftingGridRecipeTransfer(final List<List<ItemResource>> recipe) {
         Platform.INSTANCE.sendPacketToServer(new CraftingGridRecipeTransferPacket(recipe));
     }
@@ -53,6 +65,11 @@ public final class C2SPackets {
 
     public static void sendResourceSlotChange(final int slotIndex, final boolean tryAlternatives) {
         Platform.INSTANCE.sendPacketToServer(new ResourceSlotChangePacket(slotIndex, tryAlternatives));
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public static void sendFilterSlotChange(final ItemStack stack, final int slotIndex) {
+        Platform.INSTANCE.sendPacketToServer(new FilterSlotChangePacket(slotIndex, stack));
     }
 
     @API(status = API.Status.INTERNAL)
@@ -82,5 +99,32 @@ public final class C2SPackets {
 
     public static void sendSecurityCardBoundPlayer(final UUID playerId) {
         Platform.INSTANCE.sendPacketToServer(new SecurityCardBoundPlayerPacket(playerId));
+    }
+
+    public static void sendPatternGridAllowedAlternativesChange(final int slotIndex,
+                                                                final Set<ResourceLocation> ids) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridAllowedAlternativesChangePacket(slotIndex, ids));
+    }
+
+    public static void sendPatternGridCraftingRecipeTransfer(final List<List<ItemResource>> recipe) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridCraftingRecipeTransferPacket(recipe));
+    }
+
+    public static void sendPatternGridProcessingRecipeTransfer(final List<List<ResourceAmount>> inputs,
+                                                               final List<List<ResourceAmount>> outputs) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridProcessingRecipeTransferPacket(inputs, outputs));
+    }
+
+    public static void sendPatternGridStonecutterRecipeTransfer(final ItemResource input,
+                                                                final ItemResource selectedOutput) {
+        Platform.INSTANCE.sendPacketToServer(new PatternGridStonecutterRecipeTransferPacket(input, selectedOutput));
+    }
+
+    public static void sendPatternGridSmithingTableRecipeTransfer(final List<ItemResource> template,
+                                                                  final List<ItemResource> base,
+                                                                  final List<ItemResource> addition) {
+        Platform.INSTANCE.sendPacketToServer(
+            new PatternGridSmithingTableRecipeTransferPacket(template, base, addition)
+        );
     }
 }

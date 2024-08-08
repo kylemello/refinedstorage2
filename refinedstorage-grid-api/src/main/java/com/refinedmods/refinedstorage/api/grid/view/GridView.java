@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -38,7 +38,7 @@ public interface GridView {
      * @param predicate the filter
      * @return the previous filtering predicate
      */
-    Predicate<GridResource> setFilterAndSort(Predicate<GridResource> predicate);
+    BiPredicate<GridView, GridResource> setFilterAndSort(BiPredicate<GridView, GridResource> predicate);
 
     /**
      * Preventing sorting means that the changes will still arrive at the backing list and view list, but,
@@ -63,6 +63,12 @@ public interface GridView {
      * @return the tracked resource, if present
      */
     Optional<TrackedResource> getTrackedResource(ResourceKey resource);
+
+    /**
+     * @param resource the resource
+     * @return the amount in the view, or zero if not present
+     */
+    long getAmount(ResourceKey resource);
 
     /**
      * Sorts the view list.

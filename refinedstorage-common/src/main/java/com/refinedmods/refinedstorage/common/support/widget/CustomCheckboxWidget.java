@@ -12,7 +12,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-// A custom checkbox so that we can change the font color.
+// A custom checkbox so that we can change the font color and size.
 public class CustomCheckboxWidget extends AbstractButton {
     private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace(
         "widget/checkbox_selected_highlighted"
@@ -24,20 +24,39 @@ public class CustomCheckboxWidget extends AbstractButton {
         "widget/checkbox_highlighted"
     );
     private static final ResourceLocation CHECKBOX_SPRITE = ResourceLocation.withDefaultNamespace("widget/checkbox");
+    private static final int CHECKBOX_TEXT_SPACING = 4;
 
-    private static final int BOX_SIZE = 9 + 8;
+    private boolean selected;
+    private final TextMarquee marquee;
+    private final Size size;
 
     @Nullable
     private OnPressed onPressed;
-    private boolean selected;
 
     public CustomCheckboxWidget(final int x,
                                 final int y,
                                 final Component text,
                                 final Font font,
-                                final boolean selected) {
-        super(x, y, BOX_SIZE + 4 + font.width(text), BOX_SIZE, text);
+                                final boolean selected,
+                                final Size size) {
+        this(x, y, size.widthHeight + CHECKBOX_TEXT_SPACING + font.width(text), text, font, selected, size);
+    }
+
+    public CustomCheckboxWidget(final int x,
+                                final int y,
+                                final int maxWidth,
+                                final Component text,
+                                final Font font,
+                                final boolean selected,
+                                final Size size) {
+        super(x, y, getWidth(maxWidth, text, font, size), size.widthHeight, text);
+        this.marquee = new TextMarquee(text, maxWidth - CHECKBOX_TEXT_SPACING - size.widthHeight);
         this.selected = selected;
+        this.size = size;
+    }
+
+    private static int getWidth(final int maxWidth, final Component text, final Font font, final Size size) {
+        return Math.min(maxWidth, size.widthHeight + CHECKBOX_TEXT_SPACING + font.width(text));
     }
 
     public void setOnPressed(@Nullable final OnPressed onPressed) {
@@ -53,6 +72,10 @@ public class CustomCheckboxWidget extends AbstractButton {
 
     public void setSelected(final boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 
     public void updateWidgetNarration(final NarrationElementOutput output) {
@@ -79,15 +102,26 @@ public class CustomCheckboxWidget extends AbstractButton {
         } else {
             sprite = isFocused() ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
         }
-        final int x = getX() + BOX_SIZE + 4;
-        final int y = (getY() + (height >> 1)) - (9 >> 1);
-        graphics.blitSprite(sprite, getX(), getY(), BOX_SIZE, BOX_SIZE);
+        graphics.blitSprite(sprite, getX(), getY(), size.widthHeight, size.widthHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        graphics.drawString(font, getMessage(), x, y, 4210752, false);
+        final int textX = getX() + size.widthHeight + CHECKBOX_TEXT_SPACING;
+        final int textY = (getY() + (height >> 1)) - (9 >> 1);
+        marquee.render(graphics, textX, textY, font, isHovered);
     }
 
     @FunctionalInterface
     public interface OnPressed {
         void onPressed(CustomCheckboxWidget checkbox, boolean selected);
+    }
+
+    public enum Size {
+        REGULAR(9 + 8),
+        SMALL(9);
+
+        private final int widthHeight;
+
+        Size(final int widthHeight) {
+            this.widthHeight = widthHeight;
+        }
     }
 }

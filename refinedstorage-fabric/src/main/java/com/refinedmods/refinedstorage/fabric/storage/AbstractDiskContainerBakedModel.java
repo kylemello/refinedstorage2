@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.fabric.storage;
 import com.refinedmods.refinedstorage.api.storage.StorageState;
 import com.refinedmods.refinedstorage.common.storage.AbstractDiskContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.Disk;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 import com.refinedmods.refinedstorage.fabric.support.render.QuadTranslator;
 
 import java.util.Map;
@@ -11,7 +12,6 @@ import javax.annotation.Nullable;
 
 import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -58,7 +58,7 @@ public abstract class AbstractDiskContainerBakedModel extends ForwardingBakedMod
     public void emitItemQuads(final ItemStack stack,
                               final Supplier<RandomSource> randomSupplier,
                               final RenderContext context) {
-        final Level level = Minecraft.getInstance().level;
+        final Level level = PlatformUtil.getClientLevel();
         final CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         if (customData == null || level == null) {
             return;

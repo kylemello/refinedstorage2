@@ -19,20 +19,17 @@ class GridWatcherRegistration {
 
     void attach(final RootStorage rootStorage, final boolean replay) {
         this.listener = change -> watcher.onChanged(
-            change.resourceAmount().getResource(),
+            change.resource(),
             change.change(),
-            rootStorage.findTrackedResourceByActorType(
-                change.resourceAmount().getResource(),
-                actorType
-            ).orElse(null)
+            rootStorage.findTrackedResourceByActorType(change.resource(), actorType).orElse(null)
         );
         rootStorage.addListener(listener);
         if (replay) {
             rootStorage.getAll().forEach(resourceAmount -> watcher.onChanged(
-                resourceAmount.getResource(),
-                resourceAmount.getAmount(),
+                resourceAmount.resource(),
+                resourceAmount.amount(),
                 rootStorage.findTrackedResourceByActorType(
-                    resourceAmount.getResource(),
+                    resourceAmount.resource(),
                     actorType
                 ).orElse(null)
             ));

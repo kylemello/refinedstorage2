@@ -13,6 +13,7 @@ public final class Tags {
     public static final TagKey<Item> FLUID_STORAGE_DISKS = createTag("fluid_storage_disks");
     public static final TagKey<Item> GRIDS = createTag("grids");
     public static final TagKey<Item> CRAFTING_GRIDS = createTag("crafting_grids");
+    public static final TagKey<Item> PATTERN_GRIDS = createTag("pattern_grids");
     public static final TagKey<Item> STORAGE_DISKS = createTag("storage_disks");
     public static final TagKey<Item> IMPORTERS = createTag("importers");
     public static final TagKey<Item> EXPORTERS = createTag("exporters");

@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.support.resource.list;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.AbstractProxyResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
@@ -16,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class FuzzyResourceListImpl extends AbstractProxyResourceList implements FuzzyResourceList {
-    private final Map<ResourceKey, Set<ResourceAmount>> normalizedFuzzyMap = new HashMap<>();
+    private final Map<ResourceKey, Set<ResourceKey>> normalizedFuzzyMap = new HashMap<>();
 
     public FuzzyResourceListImpl(final ResourceList delegate) {
         super(delegate);
@@ -31,8 +30,7 @@ public class FuzzyResourceListImpl extends AbstractProxyResourceList implements 
 
     private void addToIndex(final ResourceKey resource, final OperationResult result) {
         if (resource instanceof FuzzyModeNormalizer normalizer) {
-            normalizedFuzzyMap.computeIfAbsent(normalizer.normalize(), k -> new HashSet<>())
-                .add(result.resourceAmount());
+            normalizedFuzzyMap.computeIfAbsent(normalizer.normalize(), k -> new HashSet<>()).add(result.resource());
         }
     }
 
@@ -51,21 +49,25 @@ public class FuzzyResourceListImpl extends AbstractProxyResourceList implements 
             return;
         }
         final ResourceKey normalized = normalizer.normalize();
-        final Collection<ResourceAmount> index = normalizedFuzzyMap.get(normalized);
+        final Collection<ResourceKey> index = normalizedFuzzyMap.get(normalized);
         if (index == null) {
             return;
         }
-        index.remove(result.resourceAmount());
+        index.remove(result.resource());
         if (index.isEmpty()) {
             normalizedFuzzyMap.remove(normalized);
         }
     }
 
     @Override
-    public Collection<ResourceAmount> getFuzzy(final ResourceKey resource) {
+    public Collection<ResourceKey> getFuzzy(final ResourceKey resource) {
         if (resource instanceof FuzzyModeNormalizer normalizer) {
-            return normalizedFuzzyMap.getOrDefault(normalizer.normalize(), Collections.emptySet());
+            return Collections.unmodifiableCollection(
+                normalizedFuzzyMap.getOrDefault(normalizer.normalize(), Collections.emptySet())
+            );
         }
-        return normalizedFuzzyMap.getOrDefault(resource, Collections.emptySet());
+        return Collections.unmodifiableCollection(
+            normalizedFuzzyMap.getOrDefault(resource, Collections.emptySet())
+        );
     }
 }

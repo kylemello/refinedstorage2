@@ -37,7 +37,7 @@ class StorageNetworkComponentImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new StorageNetworkComponentImpl(new ResourceListImpl());
+        sut = new StorageNetworkComponentImpl(ResourceListImpl.create());
 
         storage1 = new StorageNetworkNode(0, 0, 1);
         storage1.setNetwork(new NetworkImpl(NetworkTestFixtures.NETWORK_COMPONENT_MAP_FACTORY));

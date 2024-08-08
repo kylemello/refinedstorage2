@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
+import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
@@ -14,8 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.Container;
@@ -28,21 +29,21 @@ import org.apiguardian.api.API;
 public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     private static final int Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT = 69;
 
-    private final Player player;
-    private final CraftingGridSource source;
+    private final Player gridPlayer;
+    private final CraftingGrid craftingGrid;
     private final List<Slot> craftingMatrixSlots = new ArrayList<>();
 
     @Nullable
     private Consumer<Boolean> activenessListener;
     @Nullable
-    private Predicate<GridResource> filterBeforeFilteringBasedOnCraftingMatrixItems;
+    private BiPredicate<GridView, GridResource> filterBeforeFilteringBasedOnCraftingMatrixItems;
 
     public CraftingGridContainerMenu(final int syncId,
                                      final Inventory playerInventory,
                                      final GridData gridData) {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, gridData);
-        this.source = new ClientCraftingGridSource();
-        this.player = playerInventory.player;
+        this.craftingGrid = new ClientCraftingGrid();
+        this.gridPlayer = playerInventory.player;
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
     }
@@ -51,8 +52,8 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
                               final Inventory playerInventory,
                               final CraftingGridBlockEntity grid) {
         super(Menus.INSTANCE.getCraftingGrid(), syncId, playerInventory, grid);
-        this.source = new CraftingGridSourceImpl(grid);
-        this.player = playerInventory.player;
+        this.craftingGrid = new CraftingGridImpl(grid);
+        this.gridPlayer = playerInventory.player;
         onScreenReady(0);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
@@ -75,7 +76,10 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
 
     @Override
     public boolean canTakeItemForPickAll(final ItemStack stack, final Slot slot) {
-        return !(slot instanceof CraftingGridResultSlot);
+        if (slot instanceof CraftingGridResultSlot) {
+            return false;
+        }
+        return super.canTakeItemForPickAll(stack, slot);
     }
 
     @Override
@@ -86,7 +90,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
             && slot instanceof CraftingGridResultSlot resultSlot
             && resultSlot.hasItem()) {
             final ItemStack craftedStack = resultSlot.onQuickCraft(actor);
-            source.acceptQuickCraft(actor, craftedStack);
+            craftingGrid.acceptQuickCraft(actor, craftedStack);
             return ItemStack.EMPTY;
         }
         return super.quickMoveStack(actor, slotIndex);
@@ -102,12 +106,12 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
                 final int slotY = playerInventoryY
                     - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT
                     + ((y % 3) * 18);
-                craftingMatrixSlots.add(addSlot(new Slot(source.getCraftingMatrix(), x + y * 3, slotX, slotY)));
+                craftingMatrixSlots.add(addSlot(new Slot(craftingGrid.getCraftingMatrix(), x + y * 3, slotX, slotY)));
             }
         }
         addSlot(new CraftingGridResultSlot(
-            player,
-            source,
+            gridPlayer,
+            craftingGrid,
             130 + 4,
             playerInventoryY - Y_OFFSET_BETWEEN_PLAYER_INVENTORY_AND_FIRST_CRAFTING_MATRIX_SLOT + 18
         ));
@@ -118,14 +122,14 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     public void clear(final boolean toPlayerInventory) {
-        source.clearMatrix(player, toPlayerInventory);
+        craftingGrid.clearMatrix(gridPlayer, toPlayerInventory);
     }
 
     @API(status = API.Status.INTERNAL)
     public ResourceList getAvailableListForRecipeTransfer() {
         final ResourceList available = getView().copyBackingList();
-        addContainerToList(source.getCraftingMatrix(), available);
-        addContainerToList(player.getInventory(), available);
+        addContainerToList(craftingGrid.getCraftingMatrix(), available);
+        addContainerToList(gridPlayer.getInventory(), available);
         return available;
     }
 
@@ -140,22 +144,21 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     public void transferRecipe(final List<List<ItemResource>> recipe) {
-        source.transferRecipe(player, recipe);
+        craftingGrid.transferRecipe(gridPlayer, recipe);
     }
 
     public void filterBasedOnCraftingMatrixItems() {
         final Set<ItemResource> craftingMatrixItems = getCraftingMatrixItems();
         filterBeforeFilteringBasedOnCraftingMatrixItems = getView().setFilterAndSort(
-            gridResource -> gridResource instanceof ItemGridResource itemGridResource
-                && itemGridResource.getUnderlyingResource() != null
-                && craftingMatrixItems.contains((ItemResource) itemGridResource.getUnderlyingResource())
+            (view, resource) -> resource instanceof ItemGridResource itemResource
+                && craftingMatrixItems.contains(itemResource.getItemResource())
         );
     }
 
     private Set<ItemResource> getCraftingMatrixItems() {
         final Set<ItemResource> craftingMatrixItems = new HashSet<>();
-        for (int i = 0; i < source.getCraftingMatrix().getContainerSize(); ++i) {
-            final ItemStack craftingMatrixStack = source.getCraftingMatrix().getItem(i);
+        for (int i = 0; i < craftingGrid.getCraftingMatrix().getContainerSize(); ++i) {
+            final ItemStack craftingMatrixStack = craftingGrid.getCraftingMatrix().getItem(i);
             if (craftingMatrixStack.isEmpty()) {
                 continue;
             }

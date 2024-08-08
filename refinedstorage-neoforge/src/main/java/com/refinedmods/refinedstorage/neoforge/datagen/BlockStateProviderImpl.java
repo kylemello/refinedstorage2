@@ -162,6 +162,11 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             block,
             "crafting_grid"
         ));
+        Blocks.INSTANCE.getPatternGrid().forEach((color, id, block) -> configureActiveColoredDirectionalBlock(
+            color,
+            block,
+            "pattern_grid"
+        ));
     }
 
     private void registerControllers() {

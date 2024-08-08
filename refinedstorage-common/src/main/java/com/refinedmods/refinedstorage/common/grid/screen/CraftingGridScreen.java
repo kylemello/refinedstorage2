@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
@@ -26,7 +25,6 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainerMenu> {
     private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/crafting_grid.png");
-    private static final int CLEAR_BUTTON_SIZE = 7;
 
     private static final WidgetSprites CLEAR_BUTTON_TO_PLAYER_INVENTORY_SPRITES = new WidgetSprites(
         createIdentifier("widget/move_down"),
@@ -42,7 +40,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     );
 
     @Nullable
-    private ImageButton clearToNetworkButton;
+    private HoveredImageButton clearToNetworkButton;
 
     private boolean filteringBasedOnCraftingMatrixItems;
 
@@ -57,8 +55,8 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     protected void init() {
         super.init();
 
-        final int clearToNetworkButtonX = leftPos + 82;
-        final int clearToInventoryButtonX = clearToNetworkButtonX + CLEAR_BUTTON_SIZE + 3;
+        final int clearToNetworkButtonX = getClearButtonX(0);
+        final int clearToInventoryButtonX = getClearButtonX(1);
         final int clearButtonY = topPos + imageHeight - bottomHeight + 4;
 
         clearToNetworkButton = createClearButton(clearToNetworkButtonX, clearButtonY, false);
@@ -66,6 +64,10 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
         getMenu().setActivenessListener(this::setClearToNetworkButtonActive);
         addRenderableWidget(clearToNetworkButton);
         addRenderableWidget(createClearButton(clearToInventoryButtonX, clearButtonY, true));
+    }
+
+    private int getClearButtonX(final int i) {
+        return leftPos + 82 + ((CLEAR_BUTTON_SIZE + 3) * i);
     }
 
     @Override
@@ -118,7 +120,7 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
         clearToNetworkButton.active = active;
     }
 
-    private ImageButton createClearButton(final int x, final int y, final boolean toPlayerInventory) {
+    private HoveredImageButton createClearButton(final int x, final int y, final boolean toPlayerInventory) {
         final MutableComponent text = createTranslation(
             "gui",
             "crafting_grid.move." + (toPlayerInventory ? "inventory" : "network")

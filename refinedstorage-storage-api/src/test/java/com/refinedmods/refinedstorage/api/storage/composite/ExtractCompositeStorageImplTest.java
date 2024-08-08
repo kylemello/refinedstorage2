@@ -23,7 +23,7 @@ class ExtractCompositeStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CompositeStorageImpl(new ResourceListImpl());
+        sut = new CompositeStorageImpl(ResourceListImpl.create());
     }
 
     @ParameterizedTest

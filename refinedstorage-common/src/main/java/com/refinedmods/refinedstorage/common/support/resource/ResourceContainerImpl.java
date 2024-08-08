@@ -26,7 +26,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
 public class ResourceContainerImpl implements ResourceContainer {
-    private final ResourceContainerSlot[] slots;
+    private final ResourceAmount[] slots;
+    private final ItemStack[] stackRepresentations;
     private final ToLongFunction<ResourceKey> maxAmountProvider;
     private final ResourceFactory primaryResourceFactory;
     private final Set<ResourceFactory> alternativeResourceFactories;
@@ -38,7 +39,8 @@ public class ResourceContainerImpl implements ResourceContainer {
                                  final ToLongFunction<ResourceKey> maxAmountProvider,
                                  final ResourceFactory primaryResourceFactory,
                                  final Set<ResourceFactory> alternativeResourceFactories) {
-        this.slots = new ResourceContainerSlot[size];
+        this.slots = new ResourceAmount[size];
+        this.stackRepresentations = new ItemStack[size];
         this.maxAmountProvider = maxAmountProvider;
         this.primaryResourceFactory = primaryResourceFactory;
         this.alternativeResourceFactories = alternativeResourceFactories;
@@ -72,8 +74,11 @@ public class ResourceContainerImpl implements ResourceContainer {
         changed();
     }
 
-    private void setSilently(final int index, final ResourceAmount resourceAmount) {
-        slots[index] = new ResourceContainerSlot(resourceAmount);
+    protected void setSilently(final int index, final ResourceAmount resourceAmount) {
+        slots[index] = resourceAmount;
+        stackRepresentations[index] = resourceAmount.resource() instanceof ItemResource itemResource
+            ? itemResource.toItemStack(resourceAmount.amount())
+            : null;
     }
 
     @Override
@@ -91,11 +96,11 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     @Override
     public long getAmount(final int index) {
-        final ResourceContainerSlot slot = slots[index];
+        final ResourceAmount slot = slots[index];
         if (slot == null) {
             return 0;
         }
-        return slot.getResourceAmount().getAmount();
+        return slot.amount();
     }
 
     @Override
@@ -112,15 +117,15 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     @Override
     public void setAmount(final int index, final long amount) {
-        final ResourceContainerSlot slot = slots[index];
+        final ResourceAmount slot = slots[index];
         if (slot == null) {
             return;
         }
-        final long newAmount = MathUtil.clamp(amount, 0, getMaxAmount(slot.getResourceAmount().getResource()));
+        final long newAmount = MathUtil.clamp(amount, 0, getMaxAmount(slot.resource()));
         if (newAmount == 0) {
-            remove(index);
+            removeSilently(index);
         } else {
-            slots[index] = slot.withAmount(newAmount);
+            setSilently(index, new ResourceAmount(slot.resource(), newAmount));
         }
         changed();
     }
@@ -136,8 +141,17 @@ public class ResourceContainerImpl implements ResourceContainer {
         changed();
     }
 
-    private void removeSilently(final int index) {
+    @Override
+    public void clear() {
+        for (int i = 0; i < size(); ++i) {
+            removeSilently(i);
+        }
+        changed();
+    }
+
+    protected void removeSilently(final int index) {
         slots[index] = null;
+        stackRepresentations[index] = null;
     }
 
     @Override
@@ -148,41 +162,37 @@ public class ResourceContainerImpl implements ResourceContainer {
     @Override
     @Nullable
     public ResourceAmount get(final int index) {
-        final ResourceContainerSlot slot = slots[index];
-        if (slot == null) {
-            return null;
-        }
-        return slot.getResourceAmount();
+        return slots[index];
     }
 
     @Nullable
     @Override
     public PlatformResourceKey getResource(final int index) {
-        final ResourceContainerSlot slot = slots[index];
+        final ResourceAmount slot = slots[index];
         if (slot == null) {
             return null;
         }
-        return slot.getPlatformResource();
+        return (PlatformResourceKey) slot.resource();
     }
 
     @Override
     public ItemStack getStackRepresentation(final int index) {
-        final ResourceContainerSlot slot = slots[index];
-        if (slot == null) {
+        final ItemStack stack = stackRepresentations[index];
+        if (stack == null) {
             return ItemStack.EMPTY;
         }
-        return slot.getStackRepresentation();
+        return stack;
     }
 
     @Override
     public Set<ResourceKey> getUniqueResources() {
         final Set<ResourceKey> result = new HashSet<>();
         for (int i = 0; i < size(); ++i) {
-            final ResourceContainerSlot slot = slots[i];
+            final ResourceAmount slot = slots[i];
             if (slot == null) {
                 continue;
             }
-            result.add(slot.getResourceAmount().getResource());
+            result.add(slot.resource());
         }
         return result;
     }
@@ -191,11 +201,11 @@ public class ResourceContainerImpl implements ResourceContainer {
     public List<ResourceKey> getResources() {
         final List<ResourceKey> result = new ArrayList<>();
         for (int i = 0; i < size(); ++i) {
-            final ResourceContainerSlot slot = slots[i];
+            final ResourceAmount slot = slots[i];
             if (slot == null) {
                 continue;
             }
-            result.add(slot.getResourceAmount().getResource());
+            result.add(slot.resource());
         }
         return result;
     }
@@ -204,7 +214,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     public CompoundTag toTag(final HolderLookup.Provider provider) {
         final CompoundTag tag = new CompoundTag();
         for (int i = 0; i < size(); ++i) {
-            final ResourceContainerSlot slot = slots[i];
+            final ResourceAmount slot = slots[i];
             if (slot == null) {
                 continue;
             }
@@ -215,10 +225,10 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private void addToTag(final CompoundTag tag,
                           final int index,
-                          final ResourceContainerSlot slot,
+                          final ResourceAmount slot,
                           final HolderLookup.Provider provider) {
         final Tag serialized = ResourceCodecs.AMOUNT_CODEC.encode(
-            slot.getResourceAmount(),
+            slot,
             provider.createSerializationContext(NbtOps.INSTANCE),
             new CompoundTag()
         ).getOrThrow();
@@ -256,7 +266,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         return alternativeResourceFactories;
     }
 
-    private void changed() {
+    protected final void changed() {
         if (listener != null) {
             listener.run();
         }
@@ -282,7 +292,7 @@ public class ResourceContainerImpl implements ResourceContainer {
             final ResourceAmount slot = get(i);
             if (slot == null) {
                 remainder -= insertIntoEmptySlot(i, platformResource, action, remainder);
-            } else if (slot.getResource().equals(resource)) {
+            } else if (slot.resource().equals(resource)) {
                 remainder -= insertIntoExistingSlot(
                     i,
                     platformResource,
@@ -314,7 +324,7 @@ public class ResourceContainerImpl implements ResourceContainer {
                                         final Action action,
                                         final long amount,
                                         final ResourceAmount existing) {
-        final long spaceRemaining = resource.getInterfaceExportLimit() - existing.getAmount();
+        final long spaceRemaining = resource.getInterfaceExportLimit() - existing.amount();
         final long inserted = Math.min(spaceRemaining, amount);
         if (action == Action.EXECUTE) {
             grow(slotIndex, inserted);
@@ -327,11 +337,11 @@ public class ResourceContainerImpl implements ResourceContainer {
         long extracted = 0;
         for (int i = 0; i < size(); ++i) {
             final ResourceAmount slotContents = get(i);
-            if (slotContents == null || !resource.equals(slotContents.getResource())) {
+            if (slotContents == null || !resource.equals(slotContents.resource())) {
                 continue;
             }
             final long stillNeeded = amount - extracted;
-            final long toExtract = Math.min(slotContents.getAmount(), stillNeeded);
+            final long toExtract = Math.min(slotContents.amount(), stillNeeded);
             if (action == Action.EXECUTE) {
                 shrink(i, toExtract);
             }
@@ -349,9 +359,9 @@ public class ResourceContainerImpl implements ResourceContainer {
             alternativeResourceFactories
         );
         for (int i = 0; i < size(); ++i) {
-            final ResourceAmount slotContents = get(i);
-            if (slotContents != null) {
-                copy.set(i, slotContents);
+            final ResourceAmount slot = get(i);
+            if (slot != null) {
+                copy.set(i, slot);
             }
         }
         return copy;
@@ -363,10 +373,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public static ResourceContainer createForFilter(final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(data.resources().size());
-        for (int i = 0; i < data.resources().size(); ++i) {
-            final int ii = i;
-            data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
-        }
+        setResourceContainerData(data, resourceContainer);
         return resourceContainer;
     }
 
@@ -395,10 +402,15 @@ public class ResourceContainerImpl implements ResourceContainer {
     public static ResourceContainer createForFilter(final ResourceFactory resourceFactory,
                                                     final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(resourceFactory, data.resources().size());
+        setResourceContainerData(data, resourceContainer);
+        return resourceContainer;
+    }
+
+    public static void setResourceContainerData(final ResourceContainerData data,
+                                                final ResourceContainer resourceContainer) {
         for (int i = 0; i < data.resources().size(); ++i) {
             final int ii = i;
             data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
         }
-        return resourceContainer;
     }
 }

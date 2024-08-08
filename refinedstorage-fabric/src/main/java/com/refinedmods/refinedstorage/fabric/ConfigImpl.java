@@ -29,6 +29,9 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     private GridEntryImpl grid = new GridEntryImpl();
 
     @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl patternGrid = new SimpleEnergyUsageEntryImpl(DefaultEnergyUsage.PATTERN_GRID);
+
+    @ConfigEntry.Gui.CollapsibleObject
     private CraftingGridEntryImpl craftingGrid = new CraftingGridEntryImpl();
 
     @ConfigEntry.Gui.CollapsibleObject
@@ -143,6 +146,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public GridEntry getGrid() {
         return grid;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getPatternGrid() {
+        return patternGrid;
     }
 
     @Override

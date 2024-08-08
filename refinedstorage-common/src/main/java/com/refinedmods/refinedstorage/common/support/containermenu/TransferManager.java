@@ -46,23 +46,22 @@ public class TransferManager {
         addTransfer(to, from);
     }
 
-    public void transfer(final int index) {
+    public boolean transfer(final int index) {
         final Slot slot = containerMenu.getSlot(index);
         if (slot.getItem().isEmpty()) {
-            return;
+            return false;
         }
         final TransferDestination key = destinationFactory.apply(slot.container);
         final List<TransferDestination> destinations = destinationMap.get(key);
-        if (destinations != null) {
-            transfer(slot, destinations);
-        }
+        return destinations != null && transfer(slot, destinations);
     }
 
-    private void transfer(final Slot slot, final List<TransferDestination> destinations) {
+    private boolean transfer(final Slot slot, final List<TransferDestination> destinations) {
         final ItemStack initial = slot.getItem().copy();
         final ItemStack remainder = doTransfer(initial, destinations);
         slot.set(remainder);
         slot.setChanged();
+        return initial.getCount() != remainder.getCount();
     }
 
     private ItemStack doTransfer(final ItemStack initial, final List<TransferDestination> destinations) {
@@ -78,5 +77,9 @@ public class TransferManager {
             }
         }
         return remainder;
+    }
+
+    public void clear() {
+        destinationMap.clear();
     }
 }
