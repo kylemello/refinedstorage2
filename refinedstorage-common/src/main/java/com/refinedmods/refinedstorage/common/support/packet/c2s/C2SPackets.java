@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
 public final class C2SPackets {
@@ -64,6 +65,11 @@ public final class C2SPackets {
 
     public static void sendResourceSlotChange(final int slotIndex, final boolean tryAlternatives) {
         Platform.INSTANCE.sendPacketToServer(new ResourceSlotChangePacket(slotIndex, tryAlternatives));
+    }
+
+    @API(status = API.Status.INTERNAL)
+    public static void sendFilterSlotChange(final ItemStack stack, final int slotIndex) {
+        Platform.INSTANCE.sendPacketToServer(new FilterSlotChangePacket(slotIndex, stack));
     }
 
     @API(status = API.Status.INTERNAL)
