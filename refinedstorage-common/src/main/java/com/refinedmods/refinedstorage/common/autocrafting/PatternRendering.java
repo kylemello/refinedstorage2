@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.Optional;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -16,7 +17,18 @@ public final class PatternRendering {
     }
 
     public static boolean canDisplayOutput(final ItemStack stack) {
-        return stack.getItem() instanceof PatternProviderItem && Screen.hasShiftDown();
+        if (!(stack.getItem() instanceof PatternProviderItem)) {
+            return false;
+        }
+        if (Screen.hasShiftDown()) {
+            return true;
+        }
+        final Screen screen = Minecraft.getInstance().screen;
+        if (screen instanceof PatternGridScreen patternGridScreen) {
+            return patternGridScreen.getMenu().getPatternOutputSlot() != null
+                && patternGridScreen.getMenu().getPatternOutputSlot().getItem() == stack;
+        }
+        return false;
     }
 
     public static Optional<ItemStack> getOutput(final ItemStack stack) {

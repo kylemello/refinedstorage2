@@ -343,7 +343,10 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             return null;
         }
         final ItemStack result = createPatternStack(PatternType.STONECUTTER);
-        final StonecutterPatternState state = new StonecutterPatternState(input, selectedOutput);
+        final StonecutterPatternState state = new StonecutterPatternState(
+            ItemResource.ofItemStack(input),
+            ItemResource.ofItemStack(selectedOutput)
+        );
         result.set(DataComponents.INSTANCE.getStonecutterPatternState(), state);
         return result;
     }
@@ -355,9 +358,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
         }
         final ItemStack result = createPatternStack(PatternType.SMITHING_TABLE);
         final SmithingTablePatternState state = new SmithingTablePatternState(
-            smithingTableRecipe.getMatrix().getItem(0),
-            smithingTableRecipe.getMatrix().getItem(1),
-            smithingTableRecipe.getMatrix().getItem(2)
+            ItemResource.ofItemStack(smithingTableRecipe.getMatrix().getItem(0)),
+            ItemResource.ofItemStack(smithingTableRecipe.getMatrix().getItem(1)),
+            ItemResource.ofItemStack(smithingTableRecipe.getMatrix().getItem(2))
         );
         result.set(DataComponents.INSTANCE.getSmithingTablePatternState(), state);
         return result;
@@ -440,9 +443,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     }
 
     private void copyStonecutterPattern(final StonecutterPatternState state) {
-        final ItemStack input = state.input();
-        final ItemStack selectedOutput = state.selectedOutput();
-        setStonecutterInputAndSelectedRecipe(input, selectedOutput);
+        final ItemResource input = state.input();
+        final ItemResource selectedOutput = state.selectedOutput();
+        setStonecutterInputAndSelectedRecipe(input.toItemStack(), selectedOutput.toItemStack());
     }
 
     private void setStonecutterInputAndSelectedRecipe(final ItemStack input, final ItemStack selectedOutput) {
@@ -465,10 +468,10 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     }
 
     private void copySmithingTablePattern(final SmithingTablePatternState state) {
-        final ItemStack template = state.template();
-        final ItemStack base = state.base();
-        final ItemStack addition = state.addition();
-        setSmithingTableInput(template, base, addition);
+        final ItemResource template = state.template();
+        final ItemResource base = state.base();
+        final ItemResource addition = state.addition();
+        setSmithingTableInput(template.toItemStack(), base.toItemStack(), addition.toItemStack());
     }
 
     private void setSmithingTableInput(final ItemStack template, final ItemStack base, final ItemStack addition) {
