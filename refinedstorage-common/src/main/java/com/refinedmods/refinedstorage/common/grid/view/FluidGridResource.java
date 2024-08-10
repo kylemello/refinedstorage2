@@ -3,14 +3,15 @@ package com.refinedmods.refinedstorage.common.grid.view;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.view.AbstractPlatformGridResource;
+import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
-import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 
@@ -27,6 +28,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 public class FluidGridResource extends AbstractPlatformGridResource<FluidResource> {
     private final int id;
+    private final ResourceRendering rendering;
 
     public FluidGridResource(final FluidResource resource,
                              final String name,
@@ -41,6 +43,7 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
             GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
         ));
         this.id = BuiltInRegistries.FLUID.getId(resource.fluid());
+        this.rendering = RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class);
     }
 
     @Override
@@ -76,12 +79,12 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
 
     @Override
     public String getDisplayedAmount(final GridView view) {
-        return FluidResourceRendering.formatWithUnits(getAmount(view));
+        return rendering.formatAmount(getAmount(view), true);
     }
 
     @Override
     public String getAmountInTooltip(final GridView view) {
-        return FluidResourceRendering.format(getAmount(view));
+        return rendering.formatAmount(getAmount(view));
     }
 
     @Override

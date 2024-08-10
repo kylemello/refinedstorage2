@@ -41,7 +41,7 @@ public final class ResourceSlotRendering {
                                final ResourceKey resource,
                                final long amount,
                                final boolean renderAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
         rendering.render(resource, graphics, x, y);
         if (renderAmount) {
             render(graphics, x, y, amount, rendering);
@@ -57,7 +57,7 @@ public final class ResourceSlotRendering {
             graphics,
             x,
             y,
-            rendering.getDisplayedAmount(amount, true),
+            rendering.formatAmount(amount, true),
             requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
             true
         );

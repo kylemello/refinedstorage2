@@ -69,7 +69,7 @@ public abstract class AbstractStorageScreen<T extends AbstractStorageContainerMe
         }
     }
 
-    protected String formatQuantity(final long qty) {
+    protected String formatAmount(final long qty) {
         return AmountFormatting.format(qty);
     }
 }

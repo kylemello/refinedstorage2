@@ -61,14 +61,14 @@ public class StorageMonitorBlockEntityRenderer implements BlockEntityRenderer<St
                           final BiDirection direction,
                           final ResourceKey resource,
                           final long amount) {
-        final ResourceRendering resourceRendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
         doRender(
             poseStack,
             vertexConsumers,
             direction.getQuaternion(),
-            resourceRendering.getDisplayedAmount(amount, false),
+            rendering.formatAmount(amount, false),
             level,
-            resourceRendering,
+            rendering,
             resource
         );
     }

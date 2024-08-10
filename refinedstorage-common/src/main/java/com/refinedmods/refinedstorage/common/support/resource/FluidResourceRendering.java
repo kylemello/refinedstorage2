@@ -23,12 +23,18 @@ public class FluidResourceRendering implements ResourceRendering {
     private static final DecimalFormat FORMATTER =
         new DecimalFormat("#,###.#", DecimalFormatSymbols.getInstance(Locale.US));
 
+    private final long bucketAmount;
+
+    public FluidResourceRendering(final long bucketAmount) {
+        this.bucketAmount = bucketAmount;
+    }
+
     @Override
-    public String getDisplayedAmount(final long amount, final boolean withUnits) {
+    public String formatAmount(final long amount, final boolean withUnits) {
         if (!withUnits) {
-            return format(amount);
+            return format(amount, bucketAmount);
         }
-        return formatWithUnits(amount);
+        return formatWithUnits(amount, bucketAmount);
     }
 
     @Override
@@ -67,8 +73,8 @@ public class FluidResourceRendering implements ResourceRendering {
         Platform.INSTANCE.getFluidRenderer().render(poseStack, renderTypeBuffer, light, fluidResource);
     }
 
-    public static String formatWithUnits(final long droplets) {
-        final double buckets = convertToBuckets(droplets);
+    private static String formatWithUnits(final long droplets, final long bucketAmount) {
+        final double buckets = convertToBuckets(droplets, bucketAmount);
         if (buckets >= 1) {
             return AmountFormatting.formatWithUnits((long) Math.floor(buckets));
         } else {
@@ -76,12 +82,12 @@ public class FluidResourceRendering implements ResourceRendering {
         }
     }
 
-    public static String format(final long droplets) {
-        final double buckets = convertToBuckets(droplets);
+    private static String format(final long droplets, final long bucketAmount) {
+        final double buckets = convertToBuckets(droplets, bucketAmount);
         return FORMATTER.format(buckets);
     }
 
-    private static double convertToBuckets(final long droplets) {
-        return droplets / (double) Platform.INSTANCE.getBucketAmount();
+    private static double convertToBuckets(final long droplets, final long bucketAmount) {
+        return droplets / (double) bucketAmount;
     }
 }

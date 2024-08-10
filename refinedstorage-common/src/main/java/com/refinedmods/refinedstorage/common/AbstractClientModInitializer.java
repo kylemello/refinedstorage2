@@ -87,7 +87,9 @@ public abstract class AbstractClientModInitializer {
 
     protected static void registerResourceRendering() {
         RefinedStorageApi.INSTANCE.registerResourceRendering(ItemResource.class, new ItemResourceRendering());
-        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering());
+        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering(
+            Platform.INSTANCE.getBucketAmount()
+        ));
     }
 
     protected static void handleInputEvents() {

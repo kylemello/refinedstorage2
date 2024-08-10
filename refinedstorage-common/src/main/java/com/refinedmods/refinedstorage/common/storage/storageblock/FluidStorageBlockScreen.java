@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.storage.storageblock;
 
-import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,7 +14,7 @@ public class FluidStorageBlockScreen extends AbstractStorageBlockScreen {
     }
 
     @Override
-    protected String formatQuantity(final long qty) {
-        return FluidResourceRendering.format(qty);
+    protected String formatAmount(final long amount) {
+        return RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(amount);
     }
 }

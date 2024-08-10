@@ -456,8 +456,8 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public ResourceRendering getResourceRendering(final ResourceKey resource) {
-        return resourceRenderingMap.get(resource.getClass());
+    public <T extends ResourceKey> ResourceRendering getResourceRendering(final Class<T> resourceClass) {
+        return resourceRenderingMap.get(resourceClass);
     }
 
     @Override

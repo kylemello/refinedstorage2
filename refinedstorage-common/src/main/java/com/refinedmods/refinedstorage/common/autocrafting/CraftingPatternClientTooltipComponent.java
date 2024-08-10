@@ -100,7 +100,7 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
         if (!inputs.isEmpty()) {
             final int idx = currentCycle % inputs.size();
             final PlatformResourceKey resource = inputs.get(idx);
-            RefinedStorageApi.INSTANCE.getResourceRendering(resource).render(
+            RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass()).render(
                 resource,
                 graphics,
                 x + sx * 18 + 1,

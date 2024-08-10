@@ -1,9 +1,9 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.Sprites;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -32,14 +32,12 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
         final int slotsY = y + 9 + 2;
         graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
-        RefinedStorageApi.INSTANCE.getResourceRendering(pattern.template())
-            .render(pattern.template(), graphics, x + 1, slotsY + 1);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        rendering.render(pattern.template(), graphics, x + 1, slotsY + 1);
         graphics.blitSprite(Sprites.SLOT, x + 18, slotsY, 18, 18);
-        RefinedStorageApi.INSTANCE.getResourceRendering(pattern.base())
-            .render(pattern.base(), graphics, x + 18 + 1, slotsY + 1);
+        rendering.render(pattern.base(), graphics, x + 18 + 1, slotsY + 1);
         graphics.blitSprite(Sprites.SLOT, x + 18 + 18, slotsY, 18, 18);
-        RefinedStorageApi.INSTANCE.getResourceRendering(pattern.addition())
-            .render(pattern.addition(), graphics, x + 18 + 18 + 1, slotsY + 1);
+        rendering.render(pattern.addition(), graphics, x + 18 + 18 + 1, slotsY + 1);
         graphics.blitSprite(
             LIGHT_ARROW,
             x + (18 * 3) + ARROW_SPACING,
@@ -49,8 +47,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         );
         final int lastSlotX = x + (18 * 3) + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING;
         graphics.blitSprite(Sprites.SLOT, lastSlotX, slotsY, 18, 18);
-        RefinedStorageApi.INSTANCE.getResourceRendering(pattern.output())
-            .render(pattern.output(), graphics, lastSlotX + 1, slotsY + 1);
+        rendering.render(pattern.output(), graphics, lastSlotX + 1, slotsY + 1);
     }
 
     @Override
@@ -66,10 +63,10 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         );
     }
 
-    private static Component getOutputText(final PlatformResourceKey resource) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+    private static Component getOutputText(final ItemResource output) {
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
         return Component.literal("1x ")
-            .append(rendering.getDisplayName(resource))
+            .append(rendering.getDisplayName(output))
             .withStyle(ChatFormatting.GRAY);
     }
 }

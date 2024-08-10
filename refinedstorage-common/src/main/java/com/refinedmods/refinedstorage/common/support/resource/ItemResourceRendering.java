@@ -32,12 +32,9 @@ public class ItemResourceRendering implements ResourceRendering {
     }
 
     @Override
-    public String getDisplayedAmount(final long amount, final boolean withUnits) {
+    public String formatAmount(final long amount, final boolean withUnits) {
         if (!withUnits) {
             return AmountFormatting.format(amount);
-        }
-        if (amount == 1) {
-            return "";
         }
         return AmountFormatting.formatWithUnits(amount);
     }

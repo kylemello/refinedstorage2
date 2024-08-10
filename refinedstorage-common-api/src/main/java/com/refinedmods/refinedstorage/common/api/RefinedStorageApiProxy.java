@@ -297,8 +297,8 @@ public class RefinedStorageApiProxy implements RefinedStorageApi {
     }
 
     @Override
-    public ResourceRendering getResourceRendering(final ResourceKey resource) {
-        return ensureLoaded().getResourceRendering(resource);
+    public <T extends ResourceKey> ResourceRendering getResourceRendering(final Class<T> resourceClass) {
+        return ensureLoaded().getResourceRendering(resourceClass);
     }
 
     @Override
