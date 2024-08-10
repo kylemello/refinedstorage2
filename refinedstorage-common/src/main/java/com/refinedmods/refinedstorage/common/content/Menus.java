@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.common.iface.InterfaceContainerMenu;
 import com.refinedmods.refinedstorage.common.importer.ImporterContainerMenu;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterContainerMenu;
 import com.refinedmods.refinedstorage.common.networking.RelayContainerMenu;
+import com.refinedmods.refinedstorage.common.networking.WirelessTransmitterContainerMenu;
 import com.refinedmods.refinedstorage.common.security.FallbackSecurityCardContainerMenu;
 import com.refinedmods.refinedstorage.common.security.SecurityCardContainerMenu;
 import com.refinedmods.refinedstorage.common.security.SecurityManagerContainerMenu;
@@ -25,7 +26,6 @@ import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBl
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockContainerMenu;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeContainerMenu;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterContainerMenu;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;

@@ -10,6 +10,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 -   Updated to Minecraft 1.21.1.
+-   The Network Transmitter and Wireless Transmitter GUI now has an inactive and active GUI animation.
+-   The Wireless Transmitter now shows whether it's inactive in GUI instead of always showing the range.
 
 ### Fixed
 

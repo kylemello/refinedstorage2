@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.wirelesstransmitter;
+package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.common.api.support.network.ConnectionSink;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;

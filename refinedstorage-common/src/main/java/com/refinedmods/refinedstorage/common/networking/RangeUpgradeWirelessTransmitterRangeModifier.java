@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.wirelesstransmitter;
+package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeState;

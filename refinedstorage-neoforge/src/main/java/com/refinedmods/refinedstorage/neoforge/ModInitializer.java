@@ -59,7 +59,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPack
 import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterDataPacket;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
@@ -597,9 +597,9 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler((packet, ctx) -> StorageInfoResponsePacket.handle(packet))
         );
         registrar.playToClient(
-            WirelessTransmitterRangePacket.PACKET_TYPE,
-            WirelessTransmitterRangePacket.STREAM_CODEC,
-            wrapHandler(WirelessTransmitterRangePacket::handle)
+            WirelessTransmitterDataPacket.PACKET_TYPE,
+            WirelessTransmitterDataPacket.STREAM_CODEC,
+            wrapHandler(WirelessTransmitterDataPacket::handle)
         );
         registrar.playToClient(
             NoPermissionPacket.PACKET_TYPE,

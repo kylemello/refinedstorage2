@@ -29,7 +29,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPack
 import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterDataPacket;
 import com.refinedmods.refinedstorage.common.support.tooltip.CompositeClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientTooltipComponent;
@@ -255,8 +255,8 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             wrapHandler(EnergyInfoPacket::handle)
         );
         ClientPlayNetworking.registerGlobalReceiver(
-            WirelessTransmitterRangePacket.PACKET_TYPE,
-            wrapHandler(WirelessTransmitterRangePacket::handle)
+            WirelessTransmitterDataPacket.PACKET_TYPE,
+            wrapHandler(WirelessTransmitterDataPacket::handle)
         );
         ClientPlayNetworking.registerGlobalReceiver(
             ResourceSlotUpdatePacket.PACKET_TYPE,

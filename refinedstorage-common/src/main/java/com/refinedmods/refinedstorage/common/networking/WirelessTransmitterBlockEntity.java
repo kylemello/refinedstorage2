@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.wirelesstransmitter;
+package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -95,7 +95,7 @@ public class WirelessTransmitterBlockEntity
 
     @Override
     public WirelessTransmitterData getMenuData() {
-        return new WirelessTransmitterData(getRange());
+        return new WirelessTransmitterData(getRange(), isActive());
     }
 
     @Override
@@ -126,5 +126,9 @@ public class WirelessTransmitterBlockEntity
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
         return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+    }
+
+    boolean isActive() {
+        return mainNetworkNode.isActive();
     }
 }
