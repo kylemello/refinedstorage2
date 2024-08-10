@@ -4,7 +4,6 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
-import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
@@ -20,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 
 public class FluidStorageDiskItem extends AbstractStorageContainerItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_fluid_storage_disk.help");
@@ -40,11 +40,7 @@ public class FluidStorageDiskItem extends AbstractStorageContainerItem {
         if (variant.getCapacityInBuckets() == null) {
             return CREATIVE_HELP;
         }
-        return createTranslation(
-            "item",
-            "fluid_storage_disk.help",
-            AmountFormatting.format(variant.getCapacityInBuckets())
-        );
+        return createTranslation("item", "fluid_storage_disk.help", format(variant.getCapacityInBuckets()));
     }
 
     @Override

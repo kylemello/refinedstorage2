@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.common.support.resource;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
+import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -76,7 +76,7 @@ public class FluidResourceRendering implements ResourceRendering {
     private static String formatWithUnits(final long droplets, final long bucketAmount) {
         final double buckets = convertToBuckets(droplets, bucketAmount);
         if (buckets >= 1) {
-            return AmountFormatting.formatWithUnits((long) Math.floor(buckets));
+            return IdentifierUtil.formatWithUnits((long) Math.floor(buckets));
         } else {
             return LESS_THAN_1_BUCKET_FORMATTER.format(buckets);
         }
