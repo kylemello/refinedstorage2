@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.common.util.PlatformUtil;
+import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +62,7 @@ class SmithingTablePatternGridRenderer implements PatternGridRenderer {
     @Override
     public void addWidgets(final Consumer<AbstractWidget> widgets,
                            final Consumer<AbstractWidget> renderables) {
-        final Level level = PlatformUtil.getClientLevel();
+        final Level level = ClientPlatformUtil.getClientLevel();
         if (level == null) {
             return;
         }

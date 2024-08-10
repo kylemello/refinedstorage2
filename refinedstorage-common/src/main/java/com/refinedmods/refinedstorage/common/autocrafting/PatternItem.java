@@ -10,7 +10,7 @@ import com.refinedmods.refinedstorage.common.content.DataComponents;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
-import com.refinedmods.refinedstorage.common.util.PlatformUtil;
+import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +86,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         if (state == null) {
             return Optional.of(new HelpTooltipComponent(HELP));
         }
-        final Level level = PlatformUtil.getClientLevel();
+        final Level level = ClientPlatformUtil.getClientLevel();
         return switch (state.type()) {
             case CRAFTING -> {
                 final CraftingPatternState craftingState = stack.get(DataComponents.INSTANCE.getCraftingPatternState());
