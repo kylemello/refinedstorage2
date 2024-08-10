@@ -2,10 +2,15 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerBlockItem;
+import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
+import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
+import com.refinedmods.refinedstorage.common.storage.StorageTypes;
+import com.refinedmods.refinedstorage.common.storage.StorageVariant;
+import com.refinedmods.refinedstorage.common.storage.UpgradeableStorageContainer;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -22,7 +27,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 
-public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
+public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
+    implements UpgradeableStorageContainer {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_storage_block.help");
 
     private final ItemStorageVariant variant;
@@ -44,14 +50,24 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
             : createTranslation("item", "storage_block.help", format(variant.getCapacity()));
     }
 
+    @Nullable
     @Override
-    protected boolean hasCapacity() {
-        return variant.hasCapacity();
+    protected Long getCapacity() {
+        return variant.getCapacity();
     }
 
     @Override
     protected String formatAmount(final long amount) {
         return format(amount);
+    }
+
+    @Override
+    protected SerializableStorage createStorage(final StorageRepository storageRepository) {
+        return createStorage(variant, storageRepository::markAsChanged);
+    }
+
+    static SerializableStorage createStorage(final ItemStorageVariant variant, final Runnable listener) {
+        return StorageTypes.ITEM.create(variant.getCapacity(), listener);
     }
 
     @Override
@@ -84,5 +100,15 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
         return Optional.of(new HelpTooltipComponent(helpText));
+    }
+
+    @Override
+    public StorageVariant getVariant() {
+        return variant;
+    }
+
+    @Override
+    public void transferTo(final ItemStack from, final ItemStack to) {
+        helper.markAsToTransfer(from, to);
     }
 }

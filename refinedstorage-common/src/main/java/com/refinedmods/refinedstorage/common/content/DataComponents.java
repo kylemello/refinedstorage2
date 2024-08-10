@@ -29,6 +29,8 @@ public final class DataComponents {
     @Nullable
     private Supplier<DataComponentType<UUID>> storageReference;
     @Nullable
+    private Supplier<DataComponentType<UUID>> storageReferenceToBeTransferred;
+    @Nullable
     private Supplier<DataComponentType<RegulatorUpgradeState>> regulatorUpgradeState;
     @Nullable
     private Supplier<DataComponentType<SecurityCardBoundPlayer>> securityCardBoundPlayer;
@@ -72,6 +74,14 @@ public final class DataComponents {
 
     public void setStorageReference(@Nullable final Supplier<DataComponentType<UUID>> supplier) {
         this.storageReference = supplier;
+    }
+
+    public DataComponentType<UUID> getStorageReferenceToBeTransferred() {
+        return requireNonNull(storageReferenceToBeTransferred).get();
+    }
+
+    public void setStorageReferenceToBeTransferred(@Nullable final Supplier<DataComponentType<UUID>> supplier) {
+        this.storageReferenceToBeTransferred = supplier;
     }
 
     public DataComponentType<RegulatorUpgradeState> getRegulatorUpgradeState() {

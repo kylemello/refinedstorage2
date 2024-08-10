@@ -95,6 +95,8 @@ import com.refinedmods.refinedstorage.common.security.SecurityManagerBlockEntity
 import com.refinedmods.refinedstorage.common.security.SecurityManagerContainerMenu;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
+import com.refinedmods.refinedstorage.common.storage.StorageContainerUpgradeRecipe;
+import com.refinedmods.refinedstorage.common.storage.StorageContainerUpgradeRecipeSerializer;
 import com.refinedmods.refinedstorage.common.storage.StorageTypes;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveBlock;
@@ -815,6 +817,42 @@ public abstract class AbstractModInitializer {
             createIdentifier("upgrade_with_enchanted_book"),
             UpgradeWithEnchantedBookRecipeSerializer::new
         );
+        callback.register(
+            createIdentifier("storage_disk_upgrade"),
+            () -> new StorageContainerUpgradeRecipeSerializer<>(
+                ItemStorageVariant.values(),
+                to -> new StorageContainerUpgradeRecipe<>(
+                    ItemStorageVariant.values(), to, Items.INSTANCE::getItemStorageDisk
+                )
+            )
+        );
+        callback.register(
+            createIdentifier("fluid_storage_disk_upgrade"),
+            () -> new StorageContainerUpgradeRecipeSerializer<>(
+                FluidStorageVariant.values(),
+                to -> new StorageContainerUpgradeRecipe<>(
+                    FluidStorageVariant.values(), to, Items.INSTANCE::getFluidStorageDisk
+                )
+            )
+        );
+        callback.register(
+            createIdentifier("storage_block_upgrade"),
+            () -> new StorageContainerUpgradeRecipeSerializer<>(
+                ItemStorageVariant.values(),
+                to -> new StorageContainerUpgradeRecipe<>(
+                    ItemStorageVariant.values(), to, Blocks.INSTANCE::getItemStorageBlock
+                )
+            )
+        );
+        callback.register(
+            createIdentifier("fluid_storage_block_upgrade"),
+            () -> new StorageContainerUpgradeRecipeSerializer<>(
+                FluidStorageVariant.values(),
+                to -> new StorageContainerUpgradeRecipe<>(
+                    FluidStorageVariant.values(), to, Blocks.INSTANCE::getFluidStorageBlock
+                )
+            )
+        );
     }
 
     protected final void registerDataComponents(final RegistryCallback<DataComponentType<?>> callback) {
@@ -833,6 +871,12 @@ public abstract class AbstractModInitializer {
                 .persistent(UUIDUtil.CODEC)
                 .networkSynchronized(UUIDUtil.STREAM_CODEC)
                 .build()));
+        DataComponents.INSTANCE.setStorageReferenceToBeTransferred(
+            callback.register(createIdentifier("storage_reference_to_be_transferred"),
+                () -> DataComponentType.<UUID>builder()
+                    .persistent(UUIDUtil.CODEC)
+                    .networkSynchronized(UUIDUtil.STREAM_CODEC)
+                    .build()));
         DataComponents.INSTANCE.setRegulatorUpgradeState(
             callback.register(createIdentifier("regulator_upgrade_state"),
                 () -> DataComponentType.<RegulatorUpgradeState>builder()
