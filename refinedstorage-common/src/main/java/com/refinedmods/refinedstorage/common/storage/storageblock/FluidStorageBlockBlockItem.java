@@ -2,12 +2,11 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerBlockItem;
-import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
-import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
+import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -22,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 
 public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_fluid_storage_block.help");
@@ -43,11 +43,7 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
         if (variant.getCapacityInBuckets() == null) {
             return CREATIVE_HELP;
         }
-        return createTranslation(
-            "item",
-            "fluid_storage_block.help",
-            AmountFormatting.format(variant.getCapacityInBuckets())
-        );
+        return createTranslation("item", "fluid_storage_block.help", format(variant.getCapacityInBuckets()));
     }
 
     @Override
@@ -57,7 +53,7 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
 
     @Override
     protected String formatAmount(final long amount) {
-        return FluidResourceRendering.format(amount);
+        return RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(amount);
     }
 
     @Override

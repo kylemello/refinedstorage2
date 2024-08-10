@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage.common.iface.InterfaceScreen;
 import com.refinedmods.refinedstorage.common.importer.ImporterScreen;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterScreen;
 import com.refinedmods.refinedstorage.common.networking.RelayScreen;
+import com.refinedmods.refinedstorage.common.networking.WirelessTransmitterScreen;
 import com.refinedmods.refinedstorage.common.security.FallbackSecurityCardScreen;
 import com.refinedmods.refinedstorage.common.security.SecurityCardScreen;
 import com.refinedmods.refinedstorage.common.security.SecurityManagerScreen;
@@ -36,7 +37,6 @@ import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRende
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResourceRendering;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeScreen;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterScreen;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -87,7 +87,9 @@ public abstract class AbstractClientModInitializer {
 
     protected static void registerResourceRendering() {
         RefinedStorageApi.INSTANCE.registerResourceRendering(ItemResource.class, new ItemResourceRendering());
-        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering());
+        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering(
+            Platform.INSTANCE.getBucketAmount()
+        ));
     }
 
     protected static void handleInputEvents() {

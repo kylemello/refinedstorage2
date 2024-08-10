@@ -7,8 +7,8 @@ import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 
 import java.util.List;
@@ -32,11 +32,11 @@ class RandomExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
     @Test
     void shouldTransfer(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage destination = new InMemoryStorageImpl();
+        final Storage destination = new StorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 5);
 
         sut.setTransferStrategy(strategy);
@@ -69,10 +69,10 @@ class RandomExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(B, 7, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage destination = new InMemoryStorageImpl();
+        final Storage destination = new StorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 10);
 
         sut.setTransferStrategy(strategy);

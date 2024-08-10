@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.wirelesstransmitter;
+package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.Menus;
@@ -22,10 +22,12 @@ import net.minecraft.world.entity.player.Player;
 public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu {
     private final RateLimiter rangeRateLimiter = RateLimiter.create(4);
 
-    private int range;
     @Nullable
     private final WirelessTransmitterBlockEntity wirelessTransmitter;
     private final Player player;
+
+    private int range;
+    private boolean active;
 
     public WirelessTransmitterContainerMenu(final int syncId,
                                             final Inventory playerInventory,
@@ -37,6 +39,7 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
         ));
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         this.range = data.range();
+        this.active = data.active();
         this.wirelessTransmitter = null;
         this.player = playerInventory.player;
     }
@@ -53,6 +56,7 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
             wirelessTransmitter::setRedstoneMode
         ));
         this.range = wirelessTransmitter.getRange();
+        this.active = wirelessTransmitter.isActive();
         this.wirelessTransmitter = wirelessTransmitter;
         this.player = playerInventory.player;
     }
@@ -72,10 +76,12 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
             return;
         }
         final int newRange = wirelessTransmitter.getRange();
-        final boolean changed = range != newRange;
+        final boolean newActive = wirelessTransmitter.isActive();
+        final boolean changed = range != newRange || active != newActive;
         if (changed && rangeRateLimiter.tryAcquire()) {
             this.range = newRange;
-            S2CPackets.sendWirelessTransmitterRange((ServerPlayer) player, range);
+            this.active = newActive;
+            S2CPackets.sendWirelessTransmitterData((ServerPlayer) player, range, active);
         }
     }
 
@@ -83,7 +89,15 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
         return range;
     }
 
+    boolean isActive() {
+        return active;
+    }
+
     public void setRange(final int range) {
         this.range = range;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 }

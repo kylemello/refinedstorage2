@@ -102,7 +102,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                                                   @Nullable final String amount) {
         return new MouseClientTooltipComponent(
             type,
-            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource)
+            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass())
                 .render(resource, graphics, x, y),
             amount
         );

@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerBlockItem;
-import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -21,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 
 public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_storage_block.help");
@@ -35,9 +35,13 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
             RefinedStorageApi.INSTANCE.getStorageContainerItemHelper()
         );
         this.variant = variant;
-        this.helpText = variant.getCapacity() == null
+        this.helpText = getHelpText(variant);
+    }
+
+    private static Component getHelpText(final ItemStorageVariant variant) {
+        return variant.getCapacity() == null
             ? CREATIVE_HELP
-            : createTranslation("item", "storage_block.help", AmountFormatting.format(variant.getCapacity()));
+            : createTranslation("item", "storage_block.help", format(variant.getCapacity()));
     }
 
     @Override
@@ -47,7 +51,7 @@ public class ItemStorageBlockBlockItem extends AbstractStorageContainerBlockItem
 
     @Override
     protected String formatAmount(final long amount) {
-        return AmountFormatting.format(amount);
+        return format(amount);
     }
 
     @Override

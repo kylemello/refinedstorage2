@@ -209,7 +209,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     private List<ClientTooltipComponent> getTooltipForResource(final ResourceKey resource,
                                                                final ResourceSlot resourceSlot) {
         final List<ClientTooltipComponent> tooltip = RefinedStorageApi.INSTANCE
-            .getResourceRendering(resource)
+            .getResourceRendering(resource.getClass())
             .getTooltip(resource)
             .stream()
             .map(Component::getVisualOrderText)

@@ -69,7 +69,7 @@ class ProcessingMatrixInputClientTooltipComponent implements ClientTooltipCompon
             final PlatformResourceKey resource = alternative.resources().get(
                 currentCycle % alternative.resources().size()
             );
-            final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+            final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
             rendering.render(resource, graphics, x, y + 9 + PADDING + i * 18);
             graphics.drawString(
                 font,

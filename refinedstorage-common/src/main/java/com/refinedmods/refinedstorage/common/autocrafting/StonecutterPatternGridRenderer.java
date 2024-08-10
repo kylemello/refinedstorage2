@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
-import com.refinedmods.refinedstorage.common.util.PlatformUtil;
+import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -125,7 +125,7 @@ class StonecutterPatternGridRenderer implements PatternGridRenderer {
             }
             graphics.blitSprite(buttonSprite, xx, yy, 16, 18);
             graphics.renderItem(
-                recipe.value().getResultItem(requireNonNull(PlatformUtil.getClientLevel()).registryAccess()),
+                recipe.value().getResultItem(requireNonNull(ClientPlatformUtil.getClientLevel()).registryAccess()),
                 xx,
                 yy + 1
             );
@@ -145,7 +145,7 @@ class StonecutterPatternGridRenderer implements PatternGridRenderer {
         for (int i = 0; i < menu.getStonecutterRecipes().size(); ++i) {
             final RecipeHolder<StonecutterRecipe> recipe = menu.getStonecutterRecipes().get(i);
             final ItemStack result = recipe.value().getResultItem(
-                requireNonNull(PlatformUtil.getClientLevel()).registryAccess()
+                requireNonNull(ClientPlatformUtil.getClientLevel()).registryAccess()
             );
             final int xx = getRecipeX(x, i);
             final int row = i / VanillaConstants.STONECUTTER_RECIPES_PER_ROW;

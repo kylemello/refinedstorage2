@@ -41,23 +41,23 @@ public final class ResourceSlotRendering {
                                final ResourceKey resource,
                                final long amount,
                                final boolean renderAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
         rendering.render(resource, graphics, x, y);
         if (renderAmount) {
-            render(graphics, x, y, amount, rendering);
+            renderAmount(graphics, x, y, amount, rendering);
         }
     }
 
-    public static void render(final GuiGraphics graphics,
-                              final int x,
-                              final int y,
-                              final long amount,
-                              final ResourceRendering rendering) {
+    public static void renderAmount(final GuiGraphics graphics,
+                                    final int x,
+                                    final int y,
+                                    final long amount,
+                                    final ResourceRendering rendering) {
         renderAmount(
             graphics,
             x,
             y,
-            rendering.getDisplayedAmount(amount, true),
+            rendering.formatAmount(amount, true),
             requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
             true
         );

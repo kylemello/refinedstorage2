@@ -14,6 +14,7 @@ import com.refinedmods.refinedstorage.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.RelayBlockEntity;
+import com.refinedmods.refinedstorage.common.networking.WirelessTransmitterBlockEntity;
 import com.refinedmods.refinedstorage.common.security.SecurityManagerBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
@@ -25,7 +26,6 @@ import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBl
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterBlockEntity;
 
 import java.util.EnumMap;
 import java.util.Map;

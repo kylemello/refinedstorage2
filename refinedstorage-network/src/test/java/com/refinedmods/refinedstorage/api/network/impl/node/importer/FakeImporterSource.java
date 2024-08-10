@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FakeImporterSource implements ImporterSource {
     private final List<ResourceKey> resources;
-    private final InMemoryStorageImpl storage = new InMemoryStorageImpl();
+    private final StorageImpl storage = new StorageImpl();
 
     public FakeImporterSource(final ResourceKey... resources) {
         this.resources = Arrays.stream(resources).toList();

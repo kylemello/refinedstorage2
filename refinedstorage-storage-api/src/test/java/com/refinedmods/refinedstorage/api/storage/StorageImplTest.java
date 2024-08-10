@@ -11,8 +11,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class InMemoryStorageImplTest {
-    private final Storage sut = new InMemoryStorageImpl();
+class StorageImplTest {
+    private final Storage sut = new StorageImpl();
 
     @ParameterizedTest
     @EnumSource(Action.class)

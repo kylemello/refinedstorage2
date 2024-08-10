@@ -10,8 +10,8 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
@@ -35,11 +35,11 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
     @Test
     void shouldTransfer(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
-        storage.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 1L));
+        storage.addSource(new TrackedStorageImpl(new StorageImpl(), () -> 1L));
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage destination = new InMemoryStorageImpl();
+        final Storage destination = new StorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 1);
 
         sut.setTransferStrategy(strategy);
@@ -68,10 +68,10 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(B, 7, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage destination = new InMemoryStorageImpl();
+        final Storage destination = new StorageImpl();
         final ExporterTransferStrategy strategy = createTransferStrategy(destination, 10);
 
         sut.setTransferStrategy(strategy);
@@ -92,12 +92,12 @@ class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeT
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(C, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage destination = new InMemoryStorageImpl() {
+        final Storage destination = new StorageImpl() {
             @Override
             public long insert(final ResourceKey resource, final long amount, final Action action, final Actor actor) {
                 if (A.equals(resource)) {

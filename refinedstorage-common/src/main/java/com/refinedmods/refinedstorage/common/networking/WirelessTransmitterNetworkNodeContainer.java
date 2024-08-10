@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.wirelesstransmitter;
+package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemPlayerValidator;

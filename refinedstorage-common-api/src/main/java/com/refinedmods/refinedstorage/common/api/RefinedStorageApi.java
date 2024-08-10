@@ -160,7 +160,7 @@ public interface RefinedStorageApi {
 
     <T extends ResourceKey> void registerResourceRendering(Class<T> resourceClass, ResourceRendering rendering);
 
-    ResourceRendering getResourceRendering(ResourceKey resource);
+    <T extends ResourceKey> ResourceRendering getResourceRendering(Class<T> resourceClass);
 
     void addIngredientConverter(RecipeModIngredientConverter converter);
 

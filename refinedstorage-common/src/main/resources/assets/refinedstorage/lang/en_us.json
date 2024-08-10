@@ -98,6 +98,7 @@
   "gui.refinedstorage.importer.filter_mode.allow.help": "Only allow resources into the storage network that are configured in the filters.",
   "gui.refinedstorage.importer.filter_mode.block.help": "Disallow resources into the storage network that are configured in the filters.",
   "gui.refinedstorage.wireless_transmitter.distance": "%d block(s)",
+  "gui.refinedstorage.wireless_transmitter.inactive": "Inactive",
   "gui.refinedstorage.storage_monitor.filter_help": "The resource to display.",
   "gui.refinedstorage.redstone_mode": "Redstone mode",
   "gui.refinedstorage.redstone_mode.ignore": "Ignore",

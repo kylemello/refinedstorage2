@@ -10,12 +10,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 -   Updated to Minecraft 1.21.1.
+-   The Network Transmitter and Wireless Transmitter GUI now has an inactive and active GUI animation.
+-   The Wireless Transmitter now shows whether it's inactive in GUI instead of always showing the range.
 
 ### Fixed
 
 -   Use new slimeballs convention tag for Processor Binding.
 -   Portable Grid search bar texture being positioned in the wrong way.
 -   External Storage screen unnecessarily showing upgrade slots.
+-   Grid setting changes not persisting after restarting Minecraft.
 
 ## [2.0.0-milestone.4.6] - 2024-08-08
 

@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
@@ -58,7 +58,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 2, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 10);
@@ -82,7 +82,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 1);
@@ -106,7 +106,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -136,7 +136,7 @@ class ExportToEmptySlotInterfaceNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent storage
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A_ALTERNATIVE, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(A_ALTERNATIVE2, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
