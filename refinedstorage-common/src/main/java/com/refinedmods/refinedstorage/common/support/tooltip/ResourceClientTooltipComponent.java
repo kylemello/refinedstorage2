@@ -52,11 +52,8 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
             resourceAmount.resource().getClass()
         );
-        final String amount = rendering.formatAmount(resourceAmount.amount(), true);
+        final String amount = rendering.formatAmount(resourceAmount.amount());
         final Component displayName = rendering.getDisplayName(resourceAmount.resource());
-        if (amount.isEmpty()) {
-            return displayName;
-        }
         return displayName.copy().append(" (").append(amount).append(")");
     }
 }

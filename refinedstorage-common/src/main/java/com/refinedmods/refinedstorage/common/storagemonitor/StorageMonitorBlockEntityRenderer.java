@@ -66,7 +66,7 @@ public class StorageMonitorBlockEntityRenderer implements BlockEntityRenderer<St
             poseStack,
             vertexConsumers,
             direction.getQuaternion(),
-            rendering.formatAmount(amount, false),
+            rendering.formatAmount(amount),
             level,
             rendering,
             resource
