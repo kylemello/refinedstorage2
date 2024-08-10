@@ -11,18 +11,18 @@ import java.util.Collection;
 import org.apiguardian.api.API;
 
 /**
- * An implementation of a {@link Storage} which has an in-memory resource list as a backing list.
+ * An implementation of a {@link Storage} which has a resource list as a backing list.
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
-public class InMemoryStorageImpl implements Storage {
+public class StorageImpl implements Storage {
     private final ResourceList list;
     private long stored;
 
-    public InMemoryStorageImpl(final ResourceList list) {
+    public StorageImpl(final ResourceList list) {
         this.list = list;
     }
 
-    public InMemoryStorageImpl() {
+    public StorageImpl() {
         this(ResourceListImpl.create());
     }
 

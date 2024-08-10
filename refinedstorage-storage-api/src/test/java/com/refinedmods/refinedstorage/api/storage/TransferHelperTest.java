@@ -199,7 +199,7 @@ class TransferHelperTest {
     @Test
     void shouldRefundLeftoversToFallbackWhenEventualExecutedInsertToDestinationFailedEvenIfFallbackDoesNotAcceptAll() {
         // Arrange
-        final InMemoryStorageImpl underlyingSource = new InMemoryStorageImpl();
+        final StorageImpl underlyingSource = new StorageImpl();
         final Storage source = new LimitedStorageImpl(underlyingSource, 100) {
             @Override
             public long insert(final ResourceKey resource, final long amount, final Action action, final Actor actor) {

@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkEnergyComponent;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
@@ -50,7 +50,7 @@ class InterfaceNetworkNodeTest {
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, Long.MAX_VALUE, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, Long.MAX_VALUE);
@@ -72,7 +72,7 @@ class InterfaceNetworkNodeTest {
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 1);
@@ -98,7 +98,7 @@ class InterfaceNetworkNodeTest {
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         exportState.setRequestedResource(1, A, 1);
@@ -124,7 +124,7 @@ class InterfaceNetworkNodeTest {
         @InjectNetworkEnergyComponent final EnergyNetworkComponent energy
     ) {
         // Arrange
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         sut.setExportState(null);

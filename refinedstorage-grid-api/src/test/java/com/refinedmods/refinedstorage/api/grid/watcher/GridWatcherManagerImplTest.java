@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.grid.watcher;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.storage.Actor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorageImpl;
 
@@ -30,7 +30,7 @@ class GridWatcherManagerImplTest {
     void setUp() {
         sut = new GridWatcherManagerImpl();
         rootStorage = new RootStorageImpl();
-        rootStorage.addSource(new InMemoryStorageImpl());
+        rootStorage.addSource(new StorageImpl());
     }
 
     @Test

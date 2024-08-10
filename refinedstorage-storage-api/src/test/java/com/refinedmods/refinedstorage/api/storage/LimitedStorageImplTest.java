@@ -20,7 +20,7 @@ class LimitedStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        backed = new ActorCapturingStorage(new InMemoryStorageImpl());
+        backed = new ActorCapturingStorage(new StorageImpl());
         sut = new LimitedStorageImpl(backed, 100);
     }
 

@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
@@ -55,7 +55,7 @@ class GridNetworkNodeTest {
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
         storage.insert(B, 200, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        otherStorage.addSource(new TrackedStorageImpl(new InMemoryStorageImpl(), () -> 3L));
+        otherStorage.addSource(new TrackedStorageImpl(new StorageImpl(), () -> 3L));
     }
 
     @Test
