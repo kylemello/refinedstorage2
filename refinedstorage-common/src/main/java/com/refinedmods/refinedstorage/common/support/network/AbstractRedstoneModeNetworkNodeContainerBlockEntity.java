@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage.common.support.network;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.RedstoneModeSettings;
@@ -20,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
-    extends BaseNetworkNodeContainerBlockEntity<T> implements PlayerAwareBlockEntity, ConfigurationCardTarget {
+    extends BaseNetworkNodeContainerBlockEntity<T> implements PlayerAwareBlockEntity {
     private static final String TAG_REDSTONE_MODE = "rm";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
 
@@ -45,7 +44,6 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        writeConfiguration(tag, provider);
         if (placedByPlayerId != null) {
             tag.putUUID(TAG_PLACED_BY_PLAYER_ID, placedByPlayerId);
         }
@@ -53,13 +51,13 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
 
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
         tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(getRedstoneMode()));
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        readConfiguration(tag, provider);
         if (tag.hasUUID(TAG_PLACED_BY_PLAYER_ID)) {
             placedByPlayerId = tag.getUUID(TAG_PLACED_BY_PLAYER_ID);
         }
@@ -67,6 +65,7 @@ public abstract class AbstractRedstoneModeNetworkNodeContainerBlockEntity<T exte
 
     @Override
     public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
         if (tag.contains(TAG_REDSTONE_MODE)) {
             redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
         }

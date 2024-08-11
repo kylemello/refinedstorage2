@@ -163,7 +163,7 @@ public class SecurityManagerBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.SECURITY_MANAGER;
+        return getName(ContentNames.SECURITY_MANAGER);
     }
 
     @Nullable

@@ -15,10 +15,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 class WirelessGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessGridData> {
+    @Nullable
+    private final Component name;
     private final Grid grid;
     private final SlotReference slotReference;
 
-    WirelessGridExtendedMenuProvider(final Grid grid, final SlotReference slotReference) {
+    WirelessGridExtendedMenuProvider(
+        @Nullable final Component name,
+        final Grid grid,
+        final SlotReference slotReference
+    ) {
+        this.name = name;
         this.grid = grid;
         this.slotReference = slotReference;
     }
@@ -38,7 +45,7 @@ class WirelessGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessG
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.WIRELESS_GRID;
+        return name == null ? ContentNames.WIRELESS_GRID : name;
     }
 
     @Nullable

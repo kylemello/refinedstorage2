@@ -53,6 +53,7 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
                 RegulatorUpgradeState.EMPTY
             );
             Platform.INSTANCE.getMenuOpener().openMenu(serverPlayer, new ExtendedMenuProviderImpl(
+                stack.get(net.minecraft.core.component.DataComponents.CUSTOM_NAME),
                 createResourceFilterContainer(stack, initialState),
                 initialState.amount(),
                 newAmount -> setAmount(stack, newAmount),
@@ -130,7 +131,8 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
         implements TooltipComponent {
     }
 
-    private record ExtendedMenuProviderImpl(ResourceContainer resourceContainer,
+    private record ExtendedMenuProviderImpl(@Nullable Component name,
+                                            ResourceContainer resourceContainer,
                                             double amount,
                                             Consumer<Double> amountAcceptor,
                                             SlotReference slotReference)
@@ -151,7 +153,7 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
 
         @Override
         public Component getDisplayName() {
-            return ContentNames.REGULATOR_UPGRADE;
+            return name == null ? ContentNames.REGULATOR_UPGRADE : name;
         }
 
         @Override

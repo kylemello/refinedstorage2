@@ -295,7 +295,7 @@ public class StorageMonitorBlockEntity extends AbstractRedstoneModeNetworkNodeCo
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.STORAGE_MONITOR;
+        return getName(ContentNames.STORAGE_MONITOR);
     }
 
     @Nullable

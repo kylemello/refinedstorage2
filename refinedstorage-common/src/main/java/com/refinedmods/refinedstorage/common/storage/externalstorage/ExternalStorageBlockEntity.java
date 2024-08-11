@@ -157,7 +157,7 @@ public class ExternalStorageBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.EXTERNAL_STORAGE;
+        return getName(ContentNames.EXTERNAL_STORAGE);
     }
 
     @Nullable

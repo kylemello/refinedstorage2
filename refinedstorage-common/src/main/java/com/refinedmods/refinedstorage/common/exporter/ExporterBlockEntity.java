@@ -80,7 +80,7 @@ public class ExporterBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.EXPORTER;
+        return getName(ContentNames.EXPORTER);
     }
 
     @Nullable

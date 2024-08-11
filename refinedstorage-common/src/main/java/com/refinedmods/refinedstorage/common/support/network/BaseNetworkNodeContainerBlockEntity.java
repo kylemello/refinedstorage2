@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
@@ -12,6 +13,13 @@ import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -19,10 +27,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
-    extends AbstractNetworkNodeContainerBlockEntity<T> implements NetworkItemTargetBlockEntity {
+    extends AbstractNetworkNodeContainerBlockEntity<T>
+    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget {
+    private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
+
+    @Nullable
+    private Component name;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
@@ -112,5 +125,47 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     @Override
     public Network getNetworkForItem() {
         return mainNetworkNode.getNetwork();
+    }
+
+    @Override
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        writeConfiguration(tag, provider);
+    }
+
+    @Override
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        readConfiguration(tag, provider);
+    }
+
+    @Override
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        if (name != null) {
+            tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(name, provider));
+        }
+    }
+
+    @Override
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        if (tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
+            this.name = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
+        }
+    }
+
+    @Override
+    protected void applyImplicitComponents(final BlockEntity.DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        this.name = componentInput.get(DataComponents.CUSTOM_NAME);
+    }
+
+    @Override
+    protected void collectImplicitComponents(final DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(DataComponents.CUSTOM_NAME, name);
+    }
+
+    protected final Component getName(final Component defaultName) {
+        return name == null ? defaultName : name;
     }
 }

@@ -12,6 +12,9 @@ import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotRefer
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.security.BuiltinPermission;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +36,8 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
     }
 
     @Override
-    protected void use(final ServerPlayer player,
+    protected void use(@Nullable final Component name,
+                       final ServerPlayer player,
                        final SlotReference slotReference,
                        final NetworkItemContext context) {
         final boolean isAllowed = context.resolveNetwork()
@@ -44,6 +48,7 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
             return;
         }
         final Grid grid = new WirelessGrid(context);
-        Platform.INSTANCE.getMenuOpener().openMenu(player, new WirelessGridExtendedMenuProvider(grid, slotReference));
+        final var provider = new WirelessGridExtendedMenuProvider(name, grid, slotReference);
+        Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
     }
 }

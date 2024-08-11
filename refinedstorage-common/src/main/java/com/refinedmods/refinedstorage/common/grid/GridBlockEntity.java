@@ -32,7 +32,7 @@ public class GridBlockEntity extends AbstractGridBlockEntity implements NetworkN
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.GRID;
+        return getName(ContentNames.GRID);
     }
 
     @Override

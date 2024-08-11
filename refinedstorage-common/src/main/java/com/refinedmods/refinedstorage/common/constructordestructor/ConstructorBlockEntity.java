@@ -129,7 +129,7 @@ public class ConstructorBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.CONSTRUCTOR;
+        return getName(ContentNames.CONSTRUCTOR);
     }
 
     @Nullable
