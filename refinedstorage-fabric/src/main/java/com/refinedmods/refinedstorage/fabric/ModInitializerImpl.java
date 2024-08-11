@@ -59,7 +59,7 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.NoPermissionPack
 import com.refinedmods.refinedstorage.common.support.packet.s2c.PatternGridAllowedAlternativesUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.ResourceSlotUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterRangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterDataPacket;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
@@ -400,8 +400,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     private void registerServerToClientPackets() {
         PayloadTypeRegistry.playS2C().register(EnergyInfoPacket.PACKET_TYPE, EnergyInfoPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(
-            WirelessTransmitterRangePacket.PACKET_TYPE,
-            WirelessTransmitterRangePacket.STREAM_CODEC
+            WirelessTransmitterDataPacket.PACKET_TYPE,
+            WirelessTransmitterDataPacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playS2C().register(GridActivePacket.PACKET_TYPE, GridActivePacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(GridClearPacket.PACKET_TYPE, GridClearPacket.STREAM_CODEC);

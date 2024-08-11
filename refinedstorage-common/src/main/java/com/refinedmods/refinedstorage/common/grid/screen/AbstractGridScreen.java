@@ -13,7 +13,7 @@ import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
-import com.refinedmods.refinedstorage.common.support.TextureIds;
+import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -45,7 +45,7 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.SEARCH_SIZE;
+import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static java.util.Objects.requireNonNullElse;
@@ -55,7 +55,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
-    private static final ResourceLocation ROW_TEXTURE = createIdentifier("grid_row");
+    private static final ResourceLocation ROW_SPRITE = createIdentifier("grid_row");
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
     private static final int COLUMNS = 9;
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
@@ -116,7 +116,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             .stream()
             .allMatch(synchronizer -> synchronizer == NoopGridSynchronizer.INSTANCE);
         if (!onlyHasNoopSynchronizer) {
-            addSideButton(new SynchronizationSideButtonWidget(getMenu()));
+            addSideButton(new SynchronizationModeSideButtonWidget(getMenu()));
             searchField.addListener(this::trySynchronizeFromGrid);
         }
     }
@@ -158,7 +158,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     @Override
     protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
         super.renderBg(graphics, delta, mouseX, mouseY);
-        graphics.blitSprite(TextureIds.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
+        graphics.blitSprite(Sprites.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
     }
 
     @Override
@@ -228,7 +228,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                            final int rowX,
                            final int rowY,
                            final int row) {
-        graphics.blitSprite(ROW_TEXTURE, rowX, rowY, 162, ROW_SIZE);
+        graphics.blitSprite(ROW_SPRITE, rowX, rowY, 162, ROW_SIZE);
         for (int column = 0; column < COLUMNS; ++column) {
             renderCell(graphics, mouseX, mouseY, rowX, rowY, (row * COLUMNS) + column, column);
         }
@@ -349,7 +349,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             addDetailedTooltip(view, platformResource, processedLines);
         }
         if (!platformResource.isZeroed()) {
-            processedLines.addAll(platformResource.getExtractionHints(getMenu().getView()));
+            processedLines.addAll(platformResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
     }
@@ -419,7 +419,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final ItemStack carriedStack = getMenu().getCarried();
         final PlatformGridResource resource = getCurrentGridResource();
 
-        if (resource != null && carriedStack.isEmpty()) {
+        if (resource != null && resource.canExtract(carriedStack, getMenu().getView())) {
             mouseClickedInGrid(clickedButton, resource);
             return true;
         }

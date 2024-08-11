@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -10,10 +11,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
 import static java.util.Objects.requireNonNullElse;
 
 class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent {
@@ -23,17 +24,18 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
     private final PlatformResourceKey input;
     private final PlatformResourceKey output;
 
-    StonecutterPatternClientTooltipComponent(final PlatformResourceKey input, final PlatformResourceKey output) {
-        this.outputText = getOutputText(output);
-        this.input = input;
-        this.output = output;
+    StonecutterPatternClientTooltipComponent(final StonecutterPattern pattern) {
+        this.outputText = getOutputText(pattern.output());
+        this.input = pattern.input();
+        this.output = pattern.output();
     }
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
         graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
         graphics.blitSprite(SLOT, x, y + 9 + 2, 18, 18);
-        RefinedStorageApi.INSTANCE.getResourceRendering(input).render(input, graphics, x + 1, y + 9 + 2 + 1);
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        rendering.render(input, graphics, x + 1, y + 9 + 2 + 1);
         graphics.blitSprite(
             LIGHT_ARROW,
             x + 18 + ARROW_SPACING,
@@ -48,7 +50,7 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
             16,
             18
         );
-        RefinedStorageApi.INSTANCE.getResourceRendering(output).render(
+        rendering.render(
             output,
             graphics,
             x + 18 + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING,
@@ -56,10 +58,10 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
         );
     }
 
-    private static Component getOutputText(final PlatformResourceKey resource) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource);
+    private static Component getOutputText(final ItemResource output) {
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
         return Component.literal("1x ")
-            .append(rendering.getDisplayName(resource))
+            .append(rendering.getDisplayName(output))
             .withStyle(ChatFormatting.GRAY);
     }
 

@@ -5,8 +5,8 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.FakeActors;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorage;
@@ -210,8 +210,8 @@ class CompositeStorageImplTest {
         // Arrange
         final AtomicLong clock = new AtomicLong(0L);
 
-        final TrackedStorage a = new TrackedStorageImpl(new InMemoryStorageImpl(), clock::get);
-        final TrackedStorage b = new TrackedStorageImpl(new InMemoryStorageImpl(), clock::get);
+        final TrackedStorage a = new TrackedStorageImpl(new StorageImpl(), clock::get);
+        final TrackedStorage b = new TrackedStorageImpl(new StorageImpl(), clock::get);
 
         // Test if it uses the latest across 2 different storages
         a.insert(A, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);

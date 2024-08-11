@@ -119,7 +119,10 @@ public class ConfigImpl implements Config {
 
     @Override
     public void setScreenSize(final ScreenSize screenSize) {
-        this.screenSize.set(screenSize);
+        if (screenSize != this.screenSize.get()) {
+            this.screenSize.set(screenSize);
+            this.spec.save();
+        }
     }
 
     @Override
@@ -427,7 +430,10 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setAutoSelected(final boolean autoSelected) {
-            this.autoSelected.set(autoSelected);
+            if (autoSelected != this.autoSelected.get()) {
+                this.autoSelected.set(autoSelected);
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
@@ -440,12 +446,18 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setSynchronizer(final ResourceLocation synchronizerId) {
-            this.synchronizer.set(synchronizerId.toString());
+            if (!synchronizerId.toString().equals(this.synchronizer.get())) {
+                this.synchronizer.set(synchronizerId.toString());
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
         public void clearSynchronizer() {
-            this.synchronizer.set("");
+            if (!synchronizer.get().isEmpty()) {
+                this.synchronizer.set("");
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
@@ -455,7 +467,10 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setSortingDirection(final GridSortingDirection sortingDirection) {
-            this.sortingDirection.set(sortingDirection);
+            if (sortingDirection != this.sortingDirection.get()) {
+                this.sortingDirection.set(sortingDirection);
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
@@ -465,7 +480,10 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setSortingType(final GridSortingTypes sortingType) {
-            this.sortingType.set(sortingType);
+            if (sortingType != this.sortingType.get()) {
+                this.sortingType.set(sortingType);
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
@@ -478,12 +496,18 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setResourceType(final ResourceLocation resourceTypeId) {
-            this.resourceType.set(resourceTypeId.toString());
+            if (!resourceTypeId.toString().equals(this.resourceType.get())) {
+                this.resourceType.set(resourceTypeId.toString());
+                ConfigImpl.this.spec.save();
+            }
         }
 
         @Override
         public void clearResourceType() {
-            this.resourceType.set("");
+            if (!resourceType.get().isEmpty()) {
+                this.resourceType.set("");
+                ConfigImpl.this.spec.save();
+            }
         }
     }
 

@@ -15,9 +15,9 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public class MouseClientTooltipComponent implements ClientTooltipComponent {
@@ -102,7 +102,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                                                   @Nullable final String amount) {
         return new MouseClientTooltipComponent(
             type,
-            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource)
+            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass())
                 .render(resource, graphics, x, y),
             amount
         );

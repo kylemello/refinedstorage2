@@ -7,8 +7,8 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.external.ExternalStorageProvider;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
@@ -68,7 +68,7 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void shouldInitialize(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
 
         // Act
@@ -84,10 +84,10 @@ class ExternalStorageNetworkNodeTest {
         @InjectNetworkStorageComponent final StorageNetworkComponent networkStorage
     ) {
         // Arrange
-        final Storage storage1 = new InMemoryStorageImpl();
+        final Storage storage1 = new StorageImpl();
         final ExternalStorageProvider provider1 = new StorageExternalStorageProvider(storage1);
 
-        final Storage storage2 = new InMemoryStorageImpl();
+        final Storage storage2 = new StorageImpl();
         final ExternalStorageProvider provider2 = new StorageExternalStorageProvider(storage2);
 
         // Act
@@ -113,7 +113,7 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void shouldInsert(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -134,7 +134,7 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void shouldExtract(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
@@ -160,7 +160,7 @@ class ExternalStorageNetworkNodeTest {
         sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
         sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -183,7 +183,7 @@ class ExternalStorageNetworkNodeTest {
         sut.getStorageConfiguration().setFilterMode(FilterMode.ALLOW);
         sut.getStorageConfiguration().setFilters(Set.of());
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -205,7 +205,7 @@ class ExternalStorageNetworkNodeTest {
         sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
         sut.getStorageConfiguration().setFilters(Set.of(A, B));
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -227,7 +227,7 @@ class ExternalStorageNetworkNodeTest {
         sut.getStorageConfiguration().setFilterMode(FilterMode.BLOCK);
         sut.getStorageConfiguration().setFilters(Set.of());
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -251,7 +251,7 @@ class ExternalStorageNetworkNodeTest {
         // Arrange
         sut.getStorageConfiguration().setAccessMode(accessMode);
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
@@ -274,7 +274,7 @@ class ExternalStorageNetworkNodeTest {
         // Arrange
         sut.getStorageConfiguration().setAccessMode(accessMode);
 
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         storage.insert(A, 20, Action.EXECUTE, EmptyActor.INSTANCE);
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
 
@@ -293,7 +293,7 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void shouldNotInsertWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
 
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
@@ -309,7 +309,7 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void shouldNotExtractWhenInactive(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Arrange
-        final Storage storage = new InMemoryStorageImpl();
+        final Storage storage = new StorageImpl();
         storage.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
         final ExternalStorageProvider provider = new StorageExternalStorageProvider(storage);
 

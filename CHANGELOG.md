@@ -7,6 +7,27 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.7] - 2024-08-11
+
+### Added
+
+-   You can now upgrade Storage Disks and Storage Blocks to a higher tier by combining with a higher tier Storage Part. The original Storage Part will be returned.
+
+### Changed
+
+-   Updated to Minecraft 1.21.1.
+-   The Network Transmitter and Wireless Transmitter GUI now has an inactive and active GUI animation.
+-   The Wireless Transmitter now shows whether it's inactive in GUI instead of always showing the range.
+
+### Fixed
+
+-   Use new slimeballs convention tag for Processor Binding.
+-   Portable Grid search bar texture being positioned in the wrong way.
+-   External Storage screen unnecessarily showing upgrade slots.
+-   Grid setting changes not persisting after restarting Minecraft.
+-   Fixed not being able to extract fluids from the Grid with an empty bucket or other empty fluid container.
+-   All blocks and items now correctly retain their custom name.
+
 ## [2.0.0-milestone.4.6] - 2024-08-08
 
 ### Added
@@ -20,6 +41,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   When a Pattern is created for a recipe, the Pattern will have a different texture and name to differentiate between empty patterns.
 -   The Pattern Grid now has additional support for encoding stonecutter and smithing table recipes.
 -   The Pattern output is now always rendered in the Pattern Grid result slot.
+-   You can now search in the Pattern Grid alternatives screen.
+-   In the Pattern Grid alternatives screen, all resources belonging to a tag or no longer shown at once. You can expand or collapse them.
+-   The tag names in the Pattern Grid alternatives screen will now be translated.
+-   "Exact mode" in the Pattern Grid has been replaced with "Fuzzy mode" (inverse).
 
 ### Fixed
 
@@ -712,7 +737,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...HEAD
+
+[2.0.0-milestone.4.7]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...v2.0.0-milestone.4.7
 
 [2.0.0-milestone.4.6]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.5...v2.0.0-milestone.4.6
 

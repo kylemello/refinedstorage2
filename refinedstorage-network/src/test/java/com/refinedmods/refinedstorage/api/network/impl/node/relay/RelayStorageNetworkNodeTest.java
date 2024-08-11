@@ -9,8 +9,8 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.composite.PriorityStorage;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
@@ -62,7 +62,7 @@ class RelayStorageNetworkNodeTest {
 
         addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Act
@@ -100,7 +100,7 @@ class RelayStorageNetworkNodeTest {
         input.setActive(true);
         input.setOutputNode(output);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
         inputStorage.insert(B, 5, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -136,7 +136,7 @@ class RelayStorageNetworkNodeTest {
         input.setActive(true);
         input.setOutputNode(output);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
 
@@ -165,7 +165,7 @@ class RelayStorageNetworkNodeTest {
         input.setOutputNode(output);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Act
@@ -195,7 +195,7 @@ class RelayStorageNetworkNodeTest {
         input.setOutputNode(output);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Act
@@ -224,7 +224,7 @@ class RelayStorageNetworkNodeTest {
         input.setAccessMode(AccessMode.EXTRACT);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Act
@@ -255,7 +255,7 @@ class RelayStorageNetworkNodeTest {
         input.setAccessMode(AccessMode.INSERT);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Act
@@ -287,14 +287,14 @@ class RelayStorageNetworkNodeTest {
         input.setOutputNode(output);
         input.setPriority(3);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage fallbackStorage1 = PriorityStorage.of(new InMemoryStorageImpl(), 2);
+        final Storage fallbackStorage1 = PriorityStorage.of(new StorageImpl(), 2);
         fallbackStorage1.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         outputStorage.addSource(fallbackStorage1);
 
-        final Storage fallbackStorage2 = PriorityStorage.of(new InMemoryStorageImpl(), 1);
+        final Storage fallbackStorage2 = PriorityStorage.of(new StorageImpl(), 1);
         fallbackStorage2.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         outputStorage.addSource(fallbackStorage2);
 
@@ -364,7 +364,7 @@ class RelayStorageNetworkNodeTest {
         input.setOutputNode(output);
         input.setFilters(Set.of(A, B));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 9, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -414,7 +414,7 @@ class RelayStorageNetworkNodeTest {
         input.setFilters(Set.of(A, B));
         input.setFilterMode(FilterMode.ALLOW);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 9, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -471,7 +471,7 @@ class RelayStorageNetworkNodeTest {
             return resource;
         });
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(A_ALTERNATIVE, 3, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 9, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -530,7 +530,7 @@ class RelayStorageNetworkNodeTest {
         input.setFilters(Set.of(A));
         input.setFilterMode(FilterMode.BLOCK);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 9, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -565,7 +565,7 @@ class RelayStorageNetworkNodeTest {
         input.setFilters(Set.of(A));
         input.setFilterMode(FilterMode.BLOCK);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 9, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(C, 8, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -609,7 +609,7 @@ class RelayStorageNetworkNodeTest {
         cycleOutputAlternative.setNetwork(inputAlternativeNetwork);
         inputAlternativeNetwork.addContainer(() -> cycleOutputAlternative);
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
 
         // Assert
         final long inserted1 = inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);

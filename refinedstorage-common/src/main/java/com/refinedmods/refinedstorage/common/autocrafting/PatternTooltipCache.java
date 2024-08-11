@@ -35,8 +35,7 @@ public final class PatternTooltipCache {
             CACHE.clear();
         }
         return CACHE.computeIfAbsent(key.id(), id -> new StonecutterPatternClientTooltipComponent(
-            key.stonecutterPattern().input(),
-            key.stonecutterPattern().output()
+            key.stonecutterPattern()
         ));
     }
 

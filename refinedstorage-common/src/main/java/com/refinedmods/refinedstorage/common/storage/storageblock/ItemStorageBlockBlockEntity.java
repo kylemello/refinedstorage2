@@ -6,7 +6,6 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
-import com.refinedmods.refinedstorage.common.storage.StorageTypes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -47,12 +46,12 @@ public class ItemStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity
 
     @Override
     protected SerializableStorage createStorage(final Runnable listener) {
-        return StorageTypes.ITEM.create(variant.getCapacity(), listener);
+        return ItemStorageBlockBlockItem.createStorage(variant, listener);
     }
 
     @Override
     public Component getDisplayName() {
-        return displayName;
+        return getName(displayName);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
-import com.refinedmods.refinedstorage.common.util.PlatformUtil;
+import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public final class PatternRendering {
     }
 
     public static Optional<ItemStack> getOutput(final ItemStack stack) {
-        final Level level = PlatformUtil.getClientLevel();
+        final Level level = ClientPlatformUtil.getClientLevel();
         if (level == null) {
             return Optional.empty();
         }

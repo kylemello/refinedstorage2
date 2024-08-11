@@ -3,22 +3,35 @@ package com.refinedmods.refinedstorage.common.support.widget;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.NO;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.YES;
 
 public abstract class AbstractYesNoSideButtonWidget extends AbstractSideButtonWidget {
-    protected final ClientProperty<Boolean> property;
+    private final ClientProperty<Boolean> property;
     private final MutableComponent title;
+    private final ResourceLocation yesSprite;
+    private final ResourceLocation noSprite;
 
-    protected AbstractYesNoSideButtonWidget(final ClientProperty<Boolean> property, final MutableComponent title) {
+    protected AbstractYesNoSideButtonWidget(final ClientProperty<Boolean> property,
+                                            final MutableComponent title,
+                                            final ResourceLocation yesSprite,
+                                            final ResourceLocation noSprite) {
         super(createPressAction(property));
         this.property = property;
         this.title = title;
+        this.yesSprite = yesSprite;
+        this.noSprite = noSprite;
     }
 
     private static OnPress createPressAction(final ClientProperty<Boolean> property) {
         return btn -> property.setValue(!property.getValue());
+    }
+
+    @Override
+    protected ResourceLocation getSprite() {
+        return Boolean.TRUE.equals(property.getValue()) ? yesSprite : noSprite;
     }
 
     @Override

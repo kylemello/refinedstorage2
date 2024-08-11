@@ -15,10 +15,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_HEIGHT;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.LIGHT_ARROW_WIDTH;
-import static com.refinedmods.refinedstorage.common.support.TextureIds.SLOT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
+import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
 import static java.util.Objects.requireNonNullElse;
 
 class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
@@ -77,12 +77,9 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
 
     private static Component getOutputText(final ResourceAmount resourceAmount) {
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
-            resourceAmount.resource()
+            resourceAmount.resource().getClass()
         );
-        final String displayAmount = rendering.getDisplayedAmount(
-            resourceAmount.amount(),
-            false
-        );
+        final String displayAmount = rendering.formatAmount(resourceAmount.amount());
         return Component.literal(String.format("%sx ", displayAmount))
             .append(rendering.getDisplayName(resourceAmount.resource()))
             .withStyle(ChatFormatting.GRAY);
@@ -152,10 +149,10 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
         }
         final ResourceAmount resourceAmount = possibilities.get(currentCycle % possibilities.size());
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
-            resourceAmount.resource()
+            resourceAmount.resource().getClass()
         );
         rendering.render(resourceAmount.resource(), graphics, slotX + 1, slotY + 1);
-        ResourceSlotRendering.render(graphics, slotX + 1, slotY + 1, resourceAmount.amount(), rendering);
+        ResourceSlotRendering.renderAmount(graphics, slotX + 1, slotY + 1, resourceAmount.amount(), rendering);
     }
 
     private void renderOutputText(final Font font, final int x, final int y, final GuiGraphics graphics) {

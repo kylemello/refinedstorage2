@@ -139,6 +139,7 @@ public class PortableGridBlockItem extends AbstractEnergyBlockItem implements Sl
         energyStorage.portableGrid = portableGrid;
         portableGrid.updateStorage();
         Platform.INSTANCE.getMenuOpener().openMenu(player, new PortableGridItemExtendedMenuProvider(
+            stack.get(DataComponents.CUSTOM_NAME),
             portableGrid,
             energyStorage,
             diskInventory,

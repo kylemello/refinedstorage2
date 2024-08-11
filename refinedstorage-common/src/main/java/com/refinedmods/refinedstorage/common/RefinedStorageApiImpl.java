@@ -56,6 +56,7 @@ import com.refinedmods.refinedstorage.common.grid.screen.hint.SingleItemGridInse
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridScrollingStrategy;
+import com.refinedmods.refinedstorage.common.networking.CompositeWirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage.common.storage.StorageRepositoryImpl;
@@ -80,7 +81,6 @@ import com.refinedmods.refinedstorage.common.support.slotreference.InventorySlot
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeRegistryImpl;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.CompositeWirelessTransmitterRangeModifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -456,8 +456,8 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public ResourceRendering getResourceRendering(final ResourceKey resource) {
-        return resourceRenderingMap.get(resource.getClass());
+    public <T extends ResourceKey> ResourceRendering getResourceRendering(final Class<T> resourceClass) {
+        return resourceRenderingMap.get(resourceClass);
     }
 
     @Override

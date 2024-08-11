@@ -8,9 +8,9 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.StateTrackedStorage;
 import com.refinedmods.refinedstorage.api.storage.Storage;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.StorageState;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
@@ -153,7 +153,7 @@ class StorageNetworkNodeTest {
         final Storage fullStorage = new LimitedStorageImpl(100);
         fullStorage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage unlimitedStorage = new InMemoryStorageImpl();
+        final Storage unlimitedStorage = new StorageImpl();
 
         provider.set(2, unlimitedStorage);
         provider.set(3, normalStorage);

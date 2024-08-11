@@ -6,6 +6,8 @@ import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
@@ -16,9 +18,9 @@ import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -129,7 +131,6 @@ public final class GameTestUtil {
                 throw new GameTestAssertException("Expected " + itemStack.getItem().getDescription().getString()
                     + " item at: " + blockpos + " with count: " + itemStack.getCount());
             }
-
             itemEntity = entityIterator.next();
         } while (!itemEntity.getItem().getItem().equals(itemStack.getItem())
             || itemEntity.getItem().getCount() != itemStack.getCount());
@@ -138,18 +139,17 @@ public final class GameTestUtil {
     public static Runnable assertInterfaceEmpty(final GameTestHelper helper,
                                                 final BlockPos pos) {
         final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
-
-        return assertResourceContainerEmpty(interfaceBlockEntity.getDisplayName(),
-            interfaceBlockEntity.getExportedResources());
+        return assertResourceContainerEmpty(
+            interfaceBlockEntity.getDisplayName(),
+            interfaceBlockEntity.getExportedResources()
+        );
     }
 
     private static Runnable assertResourceContainerEmpty(final Component displayName,
                                                          final ResourceContainer container) {
         return () -> {
-            for (int i = 0; i < container.size(); i++) {
-                if (!container.isEmpty(i)) {
-                    throw new GameTestAssertException(displayName.getString() + " should be empty");
-                }
+            if (!container.isEmpty()) {
+                throw new GameTestAssertException(displayName.getString() + " should be empty");
             }
         };
     }
@@ -158,41 +158,21 @@ public final class GameTestUtil {
                                                     final BlockPos pos,
                                                     final ResourceAmount... expected) {
         final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
-
-        return resourceContainerContainsExactly(helper, interfaceBlockEntity.getDisplayName(),
-            interfaceBlockEntity.getExportedResources(), expected);
+        return resourceContainerContainsExactly(interfaceBlockEntity.getExportedResources(), expected);
     }
 
-    private static Runnable resourceContainerContainsExactly(final GameTestHelper helper,
-                                                             final Component displayName,
-                                                             final ResourceContainer container,
+    private static Runnable resourceContainerContainsExactly(final ResourceContainer container,
                                                              final ResourceAmount... expected) {
+        final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            // todo: investigate issue with EnderIO integration
-            // TODO: This does not take duplicate ResourceAmount into account
-            for (final ResourceAmount expectedStack : expected) {
-                final boolean contains = IntStream.range(0, container.size())
-                    .mapToObj(container::get)
-                    .anyMatch(resource -> resource != null
-                        && resource.resource().equals(expectedStack.resource())
-                        && resource.amount() == expectedStack.amount());
-
-                helper.assertTrue(contains, "Expected resource is missing from " + displayName.getString() + ": "
-                    + expectedStack + " with count: " + expectedStack.amount());
-            }
-
+            final ResourceList given = ResourceListImpl.create();
             for (int i = 0; i < container.size(); i++) {
-                final ResourceAmount resource = container.get(i);
-                if (resource != null) {
-                    final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                        expectedResource -> expectedResource.resource().equals(resource.resource())
-                            && expectedResource.amount() == resource.amount()
-                    );
-
-                    helper.assertTrue(wasExpected, "Unexpected resource found in " + displayName.getString() + ": "
-                        + resource.resource() + " with count: " + resource.amount());
+                final ResourceAmount item = container.get(i);
+                if (item != null) {
+                    given.add(item);
                 }
             }
+            listContainsExactly(given, expectedList);
         };
     }
 
@@ -200,52 +180,58 @@ public final class GameTestUtil {
                                                     final BlockPos pos,
                                                     final ResourceAmount... expected) {
         final var containerBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
-
+        final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            // TODO: This does not take duplicate ResourceAmount into account
-            for (final ResourceAmount expectedStack : expected) {
-                final boolean contains = IntStream.range(0, containerBlockEntity.getContainerSize())
-                    .mapToObj(containerBlockEntity::getItem)
-                    .anyMatch(inContainer -> asResource(inContainer).equals(expectedStack.resource())
-                        && inContainer.getCount() == expectedStack.amount());
-                helper.assertTrue(contains, "Expected resource is missing from container: "
-                    + expectedStack + " with count: " + expectedStack.amount());
-            }
+            final ResourceList given = ResourceListImpl.create();
             for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
-                final ItemStack inContainer = containerBlockEntity.getItem(i);
-
-                if (!inContainer.isEmpty()) {
-                    final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                        expectedStack -> expectedStack.resource().equals(asResource(inContainer))
-                            && expectedStack.amount() == inContainer.getCount()
-                    );
-                    helper.assertTrue(wasExpected, "Unexpected resource found in container: "
-                        + inContainer.getDescriptionId() + " with count: " + inContainer.getCount());
+                final ItemStack itemStack = containerBlockEntity.getItem(i);
+                if (!itemStack.isEmpty()) {
+                    given.add(asResource(itemStack), itemStack.getCount());
                 }
             }
+            listContainsExactly(given, expectedList);
         };
     }
 
     public static Runnable storageContainsExactly(final GameTestHelper helper,
                                                   final BlockPos networkPos,
                                                   final ResourceAmount... expected) {
+        final ResourceList expectedList = toResourceList(expected);
         return networkIsAvailable(helper, networkPos, network -> {
             final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
-            for (final ResourceAmount expectedResource : expected) {
-                final boolean contains = storage.getAll()
-                    .stream()
-                    .anyMatch(inStorage -> inStorage.resource().equals(expectedResource.resource())
-                        && inStorage.amount() == expectedResource.amount());
-                helper.assertTrue(contains, "Expected resource is missing from storage: " + expectedResource);
-            }
-            for (final ResourceAmount inStorage : storage.getAll()) {
-                final boolean wasExpected = Arrays.stream(expected).anyMatch(
-                    expectedResource -> expectedResource.resource().equals(inStorage.resource())
-                        && expectedResource.amount() == inStorage.amount()
-                );
-                helper.assertTrue(wasExpected, "Unexpected resource found in storage: " + inStorage);
-            }
+            listContainsExactly(toResourceList(storage.getAll()), expectedList);
         });
+    }
+
+    private static ResourceList toResourceList(final ResourceAmount... resources) {
+        return toResourceList(Arrays.asList(resources));
+    }
+
+    private static ResourceList toResourceList(final Collection<ResourceAmount> resources) {
+        final ResourceList list = ResourceListImpl.create();
+        for (final ResourceAmount resource : resources) {
+            list.add(resource);
+        }
+        return list;
+    }
+
+    private static void listContainsExactly(final ResourceList given, final ResourceList expected) {
+        for (final ResourceAmount expectedItem : expected.copyState()) {
+            final long givenAmount = given.get(expectedItem.resource());
+            if (givenAmount != expectedItem.amount()) {
+                throw new GameTestAssertException(
+                    "Expected " + expectedItem.amount() + " of " + expectedItem.resource() + ", but was " + givenAmount
+                );
+            }
+        }
+        for (final ResourceAmount givenItem : given.copyState()) {
+            final long expectedAmount = expected.get(givenItem.resource());
+            if (expectedAmount != givenItem.amount()) {
+                throw new GameTestAssertException(
+                    "Expected " + expectedAmount + " of " + givenItem.resource() + ", but was " + givenItem.amount()
+                );
+            }
+        }
     }
 
     public static ItemResource asResource(final Item item) {

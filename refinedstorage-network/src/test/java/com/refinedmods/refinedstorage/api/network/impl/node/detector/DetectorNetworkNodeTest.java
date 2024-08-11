@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.api.network.impl.node.detector;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
@@ -34,7 +34,7 @@ class DetectorNetworkNodeTest {
 
     @BeforeEach
     void setUp(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         sut.setAmountStrategy(new DetectorAmountStrategyImpl());
     }
 

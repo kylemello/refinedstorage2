@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage.common.networking.CableBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlock;
 import com.refinedmods.refinedstorage.common.networking.RelayBlock;
+import com.refinedmods.refinedstorage.common.networking.WirelessTransmitterBlock;
 import com.refinedmods.refinedstorage.common.security.SecurityManagerBlock;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
@@ -32,7 +33,6 @@ import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlo
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlock;
 import com.refinedmods.refinedstorage.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage.common.support.SimpleBlock;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterBlock;
 
 import java.util.EnumMap;
 import java.util.Map;

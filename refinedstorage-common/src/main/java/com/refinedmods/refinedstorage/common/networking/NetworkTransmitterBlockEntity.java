@@ -44,6 +44,7 @@ public class NetworkTransmitterBlockEntity
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 
     private static final NetworkTransmitterData INACTIVE = NetworkTransmitterData.message(
+        false,
         createTranslation("gui", "network_transmitter.status.inactive")
     );
     private static final NetworkTransmitterData MISSING_NETWORK_CARD = NetworkTransmitterData.error(
@@ -138,7 +139,7 @@ public class NetworkTransmitterBlockEntity
             "gui",
             "network_transmitter.status.transmitting",
             receiverKey.getDistance(worldPosition)) : receiverKey.getDimensionName();
-        return NetworkTransmitterData.message(message);
+        return NetworkTransmitterData.message(true, message);
     }
 
     @Override
@@ -207,7 +208,7 @@ public class NetworkTransmitterBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.NETWORK_TRANSMITTER;
+        return getName(ContentNames.NETWORK_TRANSMITTER);
     }
 
     @Override

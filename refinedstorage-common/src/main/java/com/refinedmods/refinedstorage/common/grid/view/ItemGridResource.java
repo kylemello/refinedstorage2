@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.view.AbstractPlatformGridResource;
-import com.refinedmods.refinedstorage.common.api.support.AmountFormatting;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
@@ -27,6 +26,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.formatWithUnits;
 
 public class ItemGridResource extends AbstractPlatformGridResource<ItemResource> {
     private final int id;
@@ -65,7 +67,7 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     }
 
     @Override
-    public List<ClientTooltipComponent> getExtractionHints(final GridView view) {
+    public List<ClientTooltipComponent> getExtractionHints(final ItemStack carriedStack, final GridView view) {
         final long amount = getAmount(view);
         final long extractableAmount = Math.min(amount, itemStack.getMaxStackSize());
         final long halfExtractionAmount = extractableAmount == 1 ? 1 : extractableAmount / 2;
@@ -73,14 +75,19 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
             MouseClientTooltipComponent.itemWithDecorations(
                 MouseClientTooltipComponent.Type.LEFT,
                 itemStack,
-                extractableAmount == 1 ? null : AmountFormatting.format(extractableAmount)
+                extractableAmount == 1 ? null : format(extractableAmount)
             ),
             MouseClientTooltipComponent.itemWithDecorations(
                 MouseClientTooltipComponent.Type.RIGHT,
                 itemStack,
-                halfExtractionAmount == 1 ? null : AmountFormatting.format(halfExtractionAmount)
+                halfExtractionAmount == 1 ? null : format(halfExtractionAmount)
             )
         );
+    }
+
+    @Override
+    public boolean canExtract(final ItemStack carriedStack, final GridView view) {
+        return carriedStack.isEmpty();
     }
 
     @Override
@@ -104,12 +111,12 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
 
     @Override
     public String getDisplayedAmount(final GridView view) {
-        return AmountFormatting.formatWithUnits(getAmount(view));
+        return formatWithUnits(getAmount(view));
     }
 
     @Override
     public String getAmountInTooltip(final GridView view) {
-        return AmountFormatting.format(getAmount(view));
+        return format(getAmount(view));
     }
 
     @Override

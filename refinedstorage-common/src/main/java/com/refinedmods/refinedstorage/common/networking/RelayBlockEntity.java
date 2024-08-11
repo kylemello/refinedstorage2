@@ -203,7 +203,7 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.RELAY;
+        return getName(ContentNames.RELAY);
     }
 
     @Nullable

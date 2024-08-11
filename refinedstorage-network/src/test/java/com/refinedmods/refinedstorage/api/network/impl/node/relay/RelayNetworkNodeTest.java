@@ -10,7 +10,7 @@ import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponen
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.InMemoryStorageImpl;
+import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage.network.test.InjectNetwork;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkEnergyComponent;
@@ -259,12 +259,12 @@ class RelayNetworkNodeTest {
             RelayComponentType.STORAGE
         ));
 
-        inputStorage.addSource(new InMemoryStorageImpl());
+        inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.insert(B, 5, Action.EXECUTE, EmptyActor.INSTANCE);
         inputStorage.extract(B, 3, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        inputAlternativeStorage.addSource(new InMemoryStorageImpl());
+        inputAlternativeStorage.addSource(new StorageImpl());
         inputAlternativeStorage.insert(A, 33, Action.EXECUTE, EmptyActor.INSTANCE);
 
         addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
@@ -400,7 +400,7 @@ class RelayNetworkNodeTest {
     }
 
     static void addStorageSource(final StorageNetworkComponent storage) {
-        storage.addSource(new InMemoryStorageImpl());
+        storage.addSource(new StorageImpl());
         storage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
     }
 }

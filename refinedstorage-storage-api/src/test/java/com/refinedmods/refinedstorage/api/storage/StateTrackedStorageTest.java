@@ -51,7 +51,7 @@ class StateTrackedStorageTest {
     void shouldSetInitialState() {
         // Arrange
         final StateTrackedStorage.Listener listener = mock(StateTrackedStorage.Listener.class);
-        final Storage underlyingStorage = new InMemoryStorageImpl();
+        final Storage underlyingStorage = new StorageImpl();
         underlyingStorage.insert(TestResource.A, 75, Action.EXECUTE, EmptyActor.INSTANCE);
         final StateTrackedStorage sut = new StateTrackedStorage(underlyingStorage, listener);
 

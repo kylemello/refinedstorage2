@@ -9,8 +9,8 @@ import com.refinedmods.refinedstorage.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage.common.networking.CableBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlock;
+import com.refinedmods.refinedstorage.common.networking.WirelessTransmitterBlock;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlock;
-import com.refinedmods.refinedstorage.common.wirelesstransmitter.WirelessTransmitterBlock;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
