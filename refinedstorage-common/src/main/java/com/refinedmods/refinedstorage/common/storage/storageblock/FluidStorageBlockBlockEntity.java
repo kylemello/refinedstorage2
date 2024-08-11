@@ -6,7 +6,6 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
-import com.refinedmods.refinedstorage.common.storage.StorageTypes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -51,7 +50,7 @@ public class FluidStorageBlockBlockEntity extends AbstractStorageBlockBlockEntit
 
     @Override
     protected SerializableStorage createStorage(final Runnable listener) {
-        return StorageTypes.FLUID.create(variant.getCapacity(), listener);
+        return FluidStorageBlockBlockItem.createStorage(variant, listener);
     }
 
     @Override

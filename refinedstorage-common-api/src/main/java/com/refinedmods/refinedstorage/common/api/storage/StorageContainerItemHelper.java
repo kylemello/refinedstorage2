@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.LongFunction;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,9 +23,15 @@ import org.apiguardian.api.API;
 public interface StorageContainerItemHelper {
     Optional<SerializableStorage> resolveStorage(StorageRepository storageRepository, ItemStack stack);
 
-    void setStorage(StorageRepository storageRepository, ItemStack stack, SerializableStorage storage);
+    void loadStorageIfNecessary(ItemStack stack,
+                                Level level,
+                                Entity entity,
+                                Function<StorageRepository, SerializableStorage> factory);
 
-    boolean hasStorage(ItemStack stack);
+    void transferStorageIfNecessary(ItemStack stack,
+                                    Level level,
+                                    Entity entity,
+                                    Function<StorageRepository, SerializableStorage> factory);
 
     Optional<StorageInfo> getInfo(StorageRepository storageRepository, ItemStack stack);
 
@@ -38,7 +46,7 @@ public interface StorageContainerItemHelper {
                          List<Component> tooltip,
                          TooltipFlag context,
                          LongFunction<String> amountFormatter,
-                         boolean hasCapacity);
+                         @Nullable Long capacity);
 
     void transferToBlockEntity(ItemStack stack, StorageBlockEntity blockEntity);
 
@@ -49,4 +57,6 @@ public interface StorageContainerItemHelper {
     Set<ResourceLocation> getDiskModels();
 
     Map<Item, ResourceLocation> getDiskModelsByItem();
+
+    void markAsToTransfer(ItemStack from, ItemStack to);
 }

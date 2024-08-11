@@ -2,10 +2,15 @@ package com.refinedmods.refinedstorage.common.storage.storageblock;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerBlockItem;
+import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
+import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
+import com.refinedmods.refinedstorage.common.storage.StorageTypes;
+import com.refinedmods.refinedstorage.common.storage.StorageVariant;
+import com.refinedmods.refinedstorage.common.storage.UpgradeableStorageContainer;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import java.util.Optional;
@@ -23,7 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 
-public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockItem {
+public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockItem
+    implements UpgradeableStorageContainer {
     private static final Component CREATIVE_HELP = createTranslation("item", "creative_fluid_storage_block.help");
 
     private final FluidStorageVariant variant;
@@ -46,14 +52,24 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
         return createTranslation("item", "fluid_storage_block.help", format(variant.getCapacityInBuckets()));
     }
 
+    @Nullable
     @Override
-    protected boolean hasCapacity() {
-        return variant.hasCapacity();
+    protected Long getCapacity() {
+        return variant.getCapacity();
     }
 
     @Override
     protected String formatAmount(final long amount) {
         return RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(amount);
+    }
+
+    @Override
+    protected SerializableStorage createStorage(final StorageRepository storageRepository) {
+        return createStorage(variant, storageRepository::markAsChanged);
+    }
+
+    static SerializableStorage createStorage(final FluidStorageVariant variant, final Runnable listener) {
+        return StorageTypes.FLUID.create(variant.getCapacity(), listener);
     }
 
     @Override
@@ -85,5 +101,15 @@ public class FluidStorageBlockBlockItem extends AbstractStorageContainerBlockIte
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
         return Optional.of(new HelpTooltipComponent(helpText));
+    }
+
+    @Override
+    public StorageVariant getVariant() {
+        return variant;
+    }
+
+    @Override
+    public void transferTo(final ItemStack from, final ItemStack to) {
+        helper.markAsToTransfer(from, to);
     }
 }
