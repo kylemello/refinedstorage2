@@ -313,7 +313,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
-        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem(false) {
             @Override
             public boolean allowComponentsUpdateAnimation(final Player player,
                                                           final InteractionHand hand,
@@ -324,7 +324,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         }));
         Items.INSTANCE.setCreativeWirelessGrid(callback.register(
             CREATIVE_WIRELESS_GRID,
-            () -> new WirelessGridItem() {
+            () -> new WirelessGridItem(true) {
                 @Override
                 public boolean allowComponentsUpdateAnimation(final Player player,
                                                               final InteractionHand hand,

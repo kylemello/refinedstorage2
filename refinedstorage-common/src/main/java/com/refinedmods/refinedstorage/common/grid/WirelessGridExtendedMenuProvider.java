@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
-import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 
 import javax.annotation.Nullable;
@@ -15,16 +14,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 class WirelessGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessGridData> {
-    @Nullable
     private final Component name;
     private final Grid grid;
     private final SlotReference slotReference;
 
-    WirelessGridExtendedMenuProvider(
-        @Nullable final Component name,
-        final Grid grid,
-        final SlotReference slotReference
-    ) {
+    WirelessGridExtendedMenuProvider(final Component name, final Grid grid, final SlotReference slotReference) {
         this.name = name;
         this.grid = grid;
         this.slotReference = slotReference;
@@ -45,7 +39,7 @@ class WirelessGridExtendedMenuProvider implements ExtendedMenuProvider<WirelessG
 
     @Override
     public Component getDisplayName() {
-        return name == null ? ContentNames.WIRELESS_GRID : name;
+        return name;
     }
 
     @Nullable
