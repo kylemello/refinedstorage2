@@ -17,10 +17,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.6")
 public interface PlatformGridResource extends GridResource {
+    boolean canExtract(ItemStack carriedStack, GridView view);
+
     void onExtract(GridExtractMode extractMode,
                    boolean cursor,
                    GridExtractionStrategy extractionStrategy);
@@ -42,7 +45,7 @@ public interface PlatformGridResource extends GridResource {
 
     int getRegistryId();
 
-    List<ClientTooltipComponent> getExtractionHints(GridView view);
+    List<ClientTooltipComponent> getExtractionHints(ItemStack carriedStack, GridView view);
 
     @Nullable
     @API(status = API.Status.INTERNAL)

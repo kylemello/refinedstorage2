@@ -195,9 +195,8 @@ public final class PlatformImpl extends AbstractPlatform {
         }
     }
 
-    @Override
-    public Optional<ItemStack> getFilledBucket(final FluidResource fluidResource) {
-        final SimpleSingleStackStorage interceptingStorage = SimpleSingleStackStorage.forEmptyBucket();
+    private Optional<ItemStack> getFilledItemStack(final FluidResource fluidResource,
+                                                   final SimpleSingleStackStorage interceptingStorage) {
         final Storage<FluidVariant> destination = FluidStorage.ITEM.find(
             interceptingStorage.getStack(),
             ContainerItemContext.ofSingleSlot(interceptingStorage)

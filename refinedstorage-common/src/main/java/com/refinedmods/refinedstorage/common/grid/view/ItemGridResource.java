@@ -67,7 +67,7 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     }
 
     @Override
-    public List<ClientTooltipComponent> getExtractionHints(final GridView view) {
+    public List<ClientTooltipComponent> getExtractionHints(final ItemStack carriedStack, final GridView view) {
         final long amount = getAmount(view);
         final long extractableAmount = Math.min(amount, itemStack.getMaxStackSize());
         final long halfExtractionAmount = extractableAmount == 1 ? 1 : extractableAmount / 2;
@@ -83,6 +83,11 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
                 halfExtractionAmount == 1 ? null : format(halfExtractionAmount)
             )
         );
+    }
+
+    @Override
+    public boolean canExtract(final ItemStack carriedStack, final GridView view) {
+        return carriedStack.isEmpty();
     }
 
     @Override
