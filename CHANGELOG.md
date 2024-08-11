@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.7] - 2024-08-11
+
 ### Added
 
 -   You can now upgrade Storage Disks and Storage Blocks to a higher tier by combining with a higher tier Storage Part. The original Storage Part will be returned.
@@ -735,7 +737,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...HEAD
+
+[2.0.0-milestone.4.7]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...v2.0.0-milestone.4.7
 
 [2.0.0-milestone.4.6]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.5...v2.0.0-milestone.4.6
 
