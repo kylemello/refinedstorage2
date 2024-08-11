@@ -71,6 +71,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent e) {
         NeoForge.EVENT_BUS.addListener(ClientModInitializer::onKeyInput);
+        NeoForge.EVENT_BUS.addListener(ClientModInitializer::onMouseInput);
         e.enqueueWork(ClientModInitializer::registerModelPredicates);
         e.enqueueWork(ClientModInitializer::registerItemProperties);
         registerBlockEntityRenderer();
@@ -81,6 +82,11 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
 
     @SubscribeEvent
     public static void onKeyInput(final InputEvent.Key e) {
+        handleInputEvents();
+    }
+
+    @SubscribeEvent
+    public static void onMouseInput(final InputEvent.MouseButton.Pre e) {
         handleInputEvents();
     }
 
