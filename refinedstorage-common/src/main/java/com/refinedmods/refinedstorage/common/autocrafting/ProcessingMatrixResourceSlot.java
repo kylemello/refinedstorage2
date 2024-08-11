@@ -14,6 +14,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +44,7 @@ class ProcessingMatrixResourceSlot extends ResourceSlot {
                                  final int y,
                                  final boolean input,
                                  final Supplier<PatternType> patternTypeSupplier,
-                                 final int startY,
-                                 final int endY) {
+                                 final Pair<Integer, Integer> startEndY) {
         super(resourceContainer, index, input ? INPUT_HELP : OUTPUT_HELP, x, y, ResourceSlotType.FILTER_WITH_AMOUNT);
         this.patternTypeSupplier = patternTypeSupplier;
         this.cachedAllowedAlternatives =
@@ -52,8 +52,8 @@ class ProcessingMatrixResourceSlot extends ResourceSlot {
                 ? inputResourceContainer.getAllowedTagIds(index)
                 : Collections.emptySet();
         this.input = input;
-        this.startY = startY;
-        this.endY = endY;
+        this.startY = startEndY.getLeft();
+        this.endY = startEndY.getRight();
     }
 
     @Override

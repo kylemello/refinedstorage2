@@ -19,13 +19,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import static java.util.Objects.requireNonNullElse;
+
 public class WirelessGridItem extends AbstractNetworkEnergyItem {
-    public WirelessGridItem() {
+    private final boolean creative;
+
+    public WirelessGridItem(final boolean creative) {
         super(
             new Item.Properties().stacksTo(1),
             RefinedStorageApi.INSTANCE.getEnergyItemHelper(),
             RefinedStorageApi.INSTANCE.getNetworkItemHelper()
         );
+        this.creative = creative;
     }
 
     public EnergyStorage createEnergyStorage(final ItemStack stack) {
@@ -48,7 +53,9 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
             return;
         }
         final Grid grid = new WirelessGrid(context);
-        final var provider = new WirelessGridExtendedMenuProvider(name, grid, slotReference);
+        final Component correctedName = requireNonNullElse(name,
+            creative ? ContentNames.CREATIVE_WIRELESS_GRID : ContentNames.WIRELESS_GRID);
+        final var provider = new WirelessGridExtendedMenuProvider(correctedName, grid, slotReference);
         Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
     }
 }

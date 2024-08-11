@@ -279,7 +279,7 @@ public class ModInitializer extends AbstractModInitializer {
                 return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
-        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem(false) {
             @Override
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
@@ -289,7 +289,7 @@ public class ModInitializer extends AbstractModInitializer {
         }));
         Items.INSTANCE.setCreativeWirelessGrid(callback.register(
             CREATIVE_WIRELESS_GRID,
-            () -> new WirelessGridItem() {
+            () -> new WirelessGridItem(true) {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                            final ItemStack newStack,

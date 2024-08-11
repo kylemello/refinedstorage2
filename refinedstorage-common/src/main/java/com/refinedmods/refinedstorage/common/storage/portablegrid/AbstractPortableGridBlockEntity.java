@@ -35,6 +35,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -69,6 +70,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
     private final EnergyStorage energyStorage;
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
     private final PortableGrid grid;
+    private final PortableGridType type;
 
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
@@ -77,6 +79,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
         this.diskInventory = new DiskInventory((inventory, slot) -> onDiskChanged(), 1);
         this.energyStorage = createEnergyStorage(type, this);
         this.grid = new InWorldPortableGrid(energyStorage, diskInventory, diskStateListener, this);
+        this.type = type;
     }
 
     static void readDiskInventory(final CompoundTag tag,
@@ -242,7 +245,10 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
 
     @Override
     public Component getDisplayName() {
-        return name == null ? ContentNames.PORTABLE_GRID : name;
+        final MutableComponent defaultName = type == PortableGridType.CREATIVE
+            ? ContentNames.CREATIVE_PORTABLE_GRID
+            : ContentNames.PORTABLE_GRID;
+        return name == null ? defaultName : name;
     }
 
     @Override

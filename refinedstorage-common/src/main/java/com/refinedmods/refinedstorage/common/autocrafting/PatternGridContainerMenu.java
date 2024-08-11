@@ -33,6 +33,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apiguardian.api.API;
 
 public class PatternGridContainerMenu extends AbstractGridContainerMenu {
@@ -277,6 +278,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         int slotX = x;
         int slotY = y;
         for (int i = 0; i < resourceContainer.size(); ++i) {
+            //noinspection SuspiciousNameCombination
             addSlot(new ProcessingMatrixResourceSlot(
                 resourceContainer,
                 i,
@@ -284,8 +286,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
                 slotY,
                 input,
                 this::getPatternType,
-                startY,
-                endY
+                Pair.of(startY, endY)
             ));
             if ((i + 1) % 3 == 0) {
                 slotX = x;

@@ -47,14 +47,15 @@ class TransmittingIcon {
         }
         final int frame = cycle % 3;
         switch (frame) {
-            case 0:
-                graphics.blitSprite(TRANSMITTING_1, x3, y3 + 3, 14, 6);
-                break;
             case 1:
                 graphics.blitSprite(TRANSMITTING_2, x3, y3 + 1, 17, 10);
                 break;
             case 2:
                 graphics.blitSprite(TRANSMITTING_3, x3, y3, WIDTH_3, 12);
+                break;
+            case 0:
+            default:
+                graphics.blitSprite(TRANSMITTING_1, x3, y3 + 3, 14, 6);
                 break;
         }
     }

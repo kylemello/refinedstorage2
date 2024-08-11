@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed mouse keybindings not working on NeoForge.
+
 ## [2.0.0-milestone.4.7] - 2024-08-11
 
 ### Added
