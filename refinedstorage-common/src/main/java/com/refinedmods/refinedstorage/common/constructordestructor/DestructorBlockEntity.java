@@ -128,7 +128,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.DESTRUCTOR;
+        return getName(ContentNames.DESTRUCTOR);
     }
 
     @Nullable

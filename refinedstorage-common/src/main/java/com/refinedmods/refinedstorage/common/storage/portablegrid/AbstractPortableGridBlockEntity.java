@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -55,9 +57,12 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
     private static final String TAG_DISK_INVENTORY = "inv";
     private static final String TAG_DISKS = "disks";
     private static final String TAG_REDSTONE_MODE = "rm";
+    private static final String TAG_CUSTOM_NAME = "CustomName";
 
     @Nullable
     protected Disk disk;
+    @Nullable
+    private Component name;
 
     private final DiskInventory diskInventory;
     private final DiskStateChangeListener diskStateListener = new DiskStateChangeListener(this);
@@ -169,6 +174,9 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
         if (tag.contains(TAG_REDSTONE_MODE)) {
             redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
         }
+        if (tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
+            this.name = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
+        }
     }
 
     private void fromClientTag(final CompoundTag tag) {
@@ -194,6 +202,21 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(redstoneMode));
+        if (name != null) {
+            tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(name, provider));
+        }
+    }
+
+    @Override
+    protected void applyImplicitComponents(final BlockEntity.DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        this.name = componentInput.get(DataComponents.CUSTOM_NAME);
+    }
+
+    @Override
+    protected void collectImplicitComponents(final DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(DataComponents.CUSTOM_NAME, name);
     }
 
     @Override
@@ -219,7 +242,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.PORTABLE_GRID;
+        return name == null ? ContentNames.PORTABLE_GRID : name;
     }
 
     @Override

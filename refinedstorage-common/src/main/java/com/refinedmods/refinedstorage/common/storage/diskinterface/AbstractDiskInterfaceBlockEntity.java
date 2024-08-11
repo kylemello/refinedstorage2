@@ -137,7 +137,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.DISK_INTERFACE;
+        return getName(ContentNames.DISK_INTERFACE);
     }
 
     @Override

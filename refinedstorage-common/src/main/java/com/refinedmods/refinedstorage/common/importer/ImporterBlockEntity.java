@@ -138,7 +138,7 @@ public class ImporterBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.IMPORTER;
+        return getName(ContentNames.IMPORTER);
     }
 
     @Nullable

@@ -151,7 +151,7 @@ public class DetectorBlockEntity extends AbstractRedstoneModeNetworkNodeContaine
 
     @Override
     public Component getDisplayName() {
-        return ContentNames.DETECTOR;
+        return getName(ContentNames.DETECTOR);
     }
 
     @Nullable

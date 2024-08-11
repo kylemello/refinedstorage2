@@ -24,6 +24,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   External Storage screen unnecessarily showing upgrade slots.
 -   Grid setting changes not persisting after restarting Minecraft.
 -   Fixed not being able to extract fluids from the Grid with an empty bucket or other empty fluid container.
+-   All blocks and items now correctly retain their custom name.
 
 ## [2.0.0-milestone.4.6] - 2024-08-08
 

@@ -19,6 +19,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -95,7 +96,10 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
 
     @Override
     public Component getDisplayName() {
-        return type == ControllerType.CREATIVE ? ContentNames.CREATIVE_CONTROLLER : ContentNames.CONTROLLER;
+        final MutableComponent defaultName = type == ControllerType.CREATIVE
+            ? ContentNames.CREATIVE_CONTROLLER
+            : ContentNames.CONTROLLER;
+        return getName(defaultName);
     }
 
     @Override
