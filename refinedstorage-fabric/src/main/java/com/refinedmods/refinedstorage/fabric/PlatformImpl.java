@@ -195,21 +195,6 @@ public final class PlatformImpl extends AbstractPlatform {
         }
     }
 
-    private Optional<ItemStack> getFilledItemStack(final FluidResource fluidResource,
-                                                   final SimpleSingleStackStorage interceptingStorage) {
-        final Storage<FluidVariant> destination = FluidStorage.ITEM.find(
-            interceptingStorage.getStack(),
-            ContainerItemContext.ofSingleSlot(interceptingStorage)
-        );
-        if (destination == null) {
-            return Optional.empty();
-        }
-        try (Transaction tx = Transaction.openOuter()) {
-            destination.insert(toFluidVariant(fluidResource), FluidConstants.BUCKET, tx);
-            return Optional.of(interceptingStorage.getStack());
-        }
-    }
-
     @Override
     public TransferManager createTransferManager(final AbstractContainerMenu containerMenu) {
         return new TransferManager(containerMenu, ContainerTransferDestination::new);

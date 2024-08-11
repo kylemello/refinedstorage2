@@ -430,7 +430,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setAutoSelected(final boolean autoSelected) {
-            if (autoSelected != this.autoSelected.get()) {
+            if (autoSelected != Boolean.TRUE.equals(this.autoSelected.get())) {
                 this.autoSelected.set(autoSelected);
                 ConfigImpl.this.spec.save();
             }
