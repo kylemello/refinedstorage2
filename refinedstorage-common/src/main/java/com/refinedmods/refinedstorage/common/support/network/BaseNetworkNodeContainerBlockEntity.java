@@ -55,7 +55,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private UUID placedByPlayerId;
 
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
-    private int workTickRate = UpgradeContainer.DEFAULT_WORK_TICK_RATE;
+    private int workTickRate;
     private int workTicks;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
@@ -63,6 +63,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
                                                final BlockState state,
                                                final T networkNode) {
         super(type, pos, state, networkNode);
+        this.workTickRate = hasWorkTickRate() ? UpgradeContainer.DEFAULT_WORK_TICK_RATE : 0;
     }
 
     @Override
@@ -123,12 +124,19 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         }
     }
 
+    protected boolean hasWorkTickRate() {
+        return false;
+    }
+
     protected final void setWorkTickRate(final int workTickRate) {
+        if (!hasWorkTickRate()) {
+            throw new IllegalStateException("Block has no work tick rate!");
+        }
         this.workTickRate = workTickRate;
     }
 
     public void doWork() {
-        if (workTicks++ % workTickRate == 0) {
+        if (workTickRate == 0 || (workTicks++ % workTickRate == 0)) {
             mainNetworkNode.doWork();
             postDoWork();
         }
@@ -222,6 +230,10 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         }
     }
 
+    protected boolean hasRedstoneMode() {
+        return true;
+    }
+
     private void verifyHasRedstoneMode() {
         if (!hasRedstoneMode()) {
             throw new IllegalStateException("Block has no redstone mode!");
@@ -267,9 +279,5 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
 
     protected final boolean isPlacedBy(final UUID playerId) {
         return Objects.equals(placedByPlayerId, playerId);
-    }
-
-    protected boolean hasRedstoneMode() {
-        return true;
     }
 }

@@ -67,6 +67,11 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     @Override
+    protected boolean hasWorkTickRate() {
+        return true;
+    }
+
+    @Override
     protected void setFilters(final Set<ResourceKey> filters) {
         mainNetworkNode.setFilters(filters);
     }
@@ -136,7 +141,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = super.getDrops();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));

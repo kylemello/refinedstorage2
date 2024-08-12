@@ -104,7 +104,7 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
         }
         LOGGER.debug("Reconfiguring for upgrades");
         final int amountOfSpeedUpgrades = getAmount(Items.INSTANCE.getSpeedUpgrade());
-        final int workTickRate = 9 - (amountOfSpeedUpgrades * 2);
+        final int workTickRate = DEFAULT_WORK_TICK_RATE - (amountOfSpeedUpgrades * 2);
         listener.updateState(workTickRate, getEnergyUsage());
     }
 

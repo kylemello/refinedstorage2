@@ -212,7 +212,7 @@ public class NetworkTransmitterBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         return NonNullList.of(ItemStack.EMPTY, networkCardInventory.getNetworkCard());
     }
 }

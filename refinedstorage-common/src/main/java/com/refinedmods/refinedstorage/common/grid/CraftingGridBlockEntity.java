@@ -105,7 +105,7 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < craftingRecipe.getMatrix().getContainerSize(); ++i) {
             drops.add(craftingRecipe.getMatrix().getItem(i));

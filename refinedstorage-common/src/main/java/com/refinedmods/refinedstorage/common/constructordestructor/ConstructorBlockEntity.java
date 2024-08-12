@@ -14,8 +14,11 @@ import com.refinedmods.refinedstorage.common.api.constructordestructor.Construct
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.network.AbstractSchedulingNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,20 +28,26 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ConstructorBlockEntity
-    extends AbstractSchedulingNetworkNodeContainerBlockEntity<SimpleNetworkNode, ConstructorBlockEntity.TaskContext> {
+    extends AbstractSchedulingNetworkNodeContainerBlockEntity<SimpleNetworkNode, ConstructorBlockEntity.TaskContext>
+    implements BlockEntityWithDrops {
     private static final String TAG_DROP_ITEMS = "di";
+    private static final String TAG_UPGRADES = "upgr";
 
     private final Actor actor;
     private final List<TaskImpl> tasks = new ArrayList<>();
+    private final UpgradeContainer upgradeContainer;
 
     @Nullable
     private TaskExecutor<TaskContext> taskExecutor;
@@ -51,10 +60,33 @@ public class ConstructorBlockEntity
             BlockEntities.INSTANCE.getConstructor(),
             pos,
             state,
-            new SimpleNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage()),
-            UpgradeDestinations.CONSTRUCTOR
+            new SimpleNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())
         );
         this.actor = new NetworkNodeActor(mainNetworkNode);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CONSTRUCTOR, (rate, upgradeEnergyUsage) -> {
+            setWorkTickRate(rate);
+            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+            setChanged();
+            if (level instanceof ServerLevel serverLevel) {
+                initialize(serverLevel);
+            }
+        });
+    }
+
+    @Override
+    protected boolean hasWorkTickRate() {
+        return true;
+    }
+
+    @Override
+    public List<Item> getUpgradeItems() {
+        return upgradeContainer.getUpgradeItems();
+    }
+
+    @Override
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
@@ -103,6 +135,20 @@ public class ConstructorBlockEntity
     }
 
     @Override
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
+    }
+
+    @Override
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        if (tag.contains(TAG_UPGRADES)) {
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
+        }
+        super.loadAdditional(tag, provider);
+    }
+
+    @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.writeConfiguration(tag, provider);
         tag.putBoolean(TAG_DROP_ITEMS, dropItems);
@@ -114,6 +160,11 @@ public class ConstructorBlockEntity
         if (tag.contains(TAG_DROP_ITEMS)) {
             dropItems = tag.getBoolean(TAG_DROP_ITEMS);
         }
+    }
+
+    @Override
+    public final NonNullList<ItemStack> getDrops() {
+        return upgradeContainer.getDrops();
     }
 
     boolean isDropItems() {
@@ -137,12 +188,6 @@ public class ConstructorBlockEntity
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
         return new ConstructorContainerMenu(syncId, player, this, filter.getFilterContainer(), upgradeContainer);
-    }
-
-    @Override
-    protected void setEnergyUsage(final long upgradeEnergyUsage) {
-        final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
-        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override

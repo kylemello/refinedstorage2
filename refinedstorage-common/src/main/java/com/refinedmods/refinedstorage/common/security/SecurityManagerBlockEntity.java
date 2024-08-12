@@ -134,7 +134,7 @@ public class SecurityManagerBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < securityCards.getContainerSize(); ++i) {
             drops.add(securityCards.getItem(i));

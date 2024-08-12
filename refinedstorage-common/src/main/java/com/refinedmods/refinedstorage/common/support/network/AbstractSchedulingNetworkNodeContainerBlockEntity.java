@@ -9,7 +9,6 @@ import com.refinedmods.refinedstorage.common.support.SchedulingModeType;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
-import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractSchedulingNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode, C>
-    extends AbstractUpgradeableNetworkNodeContainerBlockEntity<T>
+    extends BaseNetworkNodeContainerBlockEntity<T>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     protected final FilterWithFuzzyMode filter;
     private final SchedulingMode<C> schedulingMode;
@@ -32,10 +31,9 @@ public abstract class AbstractSchedulingNetworkNodeContainerBlockEntity<T extend
         final BlockEntityType<?> type,
         final BlockPos pos,
         final BlockState state,
-        final T node,
-        final UpgradeDestinations destination
+        final T node
     ) {
-        super(type, pos, state, node, destination);
+        super(type, pos, state, node);
         this.schedulingMode = new SchedulingMode<>(this::setChanged, this::setTaskExecutor);
         this.filter = FilterWithFuzzyMode.createAndListenForFilters(
             ResourceContainerImpl.createForFilter(),

@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.networking;
 
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;

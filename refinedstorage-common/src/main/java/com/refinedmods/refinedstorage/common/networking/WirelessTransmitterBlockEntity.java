@@ -109,7 +109,7 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));

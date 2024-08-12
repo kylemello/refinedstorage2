@@ -177,7 +177,7 @@ public class InterfaceBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < exportedResourcesAsContainer.getContainerSize(); ++i) {
             drops.add(exportedResourcesAsContainer.getItem(i));
