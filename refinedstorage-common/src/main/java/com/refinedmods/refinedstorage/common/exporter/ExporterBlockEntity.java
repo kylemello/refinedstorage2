@@ -48,6 +48,7 @@ public class ExporterBlockEntity
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
+        super.initialize(level, direction);
         final ExporterTransferStrategy strategy = createStrategy(level, direction);
         LOGGER.debug("Initialized exporter at {} with strategy {}", worldPosition, strategy);
         mainNetworkNode.setTransferStrategy(strategy);

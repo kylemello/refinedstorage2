@@ -145,6 +145,7 @@ public class DestructorBlockEntity extends AbstractUpgradeableNetworkNodeContain
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
+        super.initialize(level, direction);
         final BlockPos pos = getBlockPos().relative(direction);
         final Direction incomingDirection = direction.getOpposite();
         final List<DestructorStrategy> strategies = RefinedStorageApi.INSTANCE.getDestructorStrategyFactories()

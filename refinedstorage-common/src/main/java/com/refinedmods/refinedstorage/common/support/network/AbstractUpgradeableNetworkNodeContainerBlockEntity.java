@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
-    extends AbstractLevelInteractingNetworkNodeContainerBlockEntity<T>
+    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<T>
     implements BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(
         AbstractUpgradeableNetworkNodeContainerBlockEntity.class

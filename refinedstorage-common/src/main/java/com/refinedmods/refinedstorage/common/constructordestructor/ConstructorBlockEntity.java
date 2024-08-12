@@ -65,6 +65,7 @@ public class ConstructorBlockEntity
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
+        super.initialize(level, direction);
         this.strategy = createStrategy(level, direction);
     }
 

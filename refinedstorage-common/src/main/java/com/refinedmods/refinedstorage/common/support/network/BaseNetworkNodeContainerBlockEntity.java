@@ -13,12 +13,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,11 +29,13 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
+
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
     implements NetworkItemTargetBlockEntity, ConfigurationCardTarget {
-    private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
+    private static final String TAG_CUSTOM_NAME = "CustomName";
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
@@ -115,10 +120,38 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     public void setBlockState(final BlockState newBlockState) {
         final BlockState oldBlockState = getBlockState();
         super.setBlockState(newBlockState);
+        if (level instanceof ServerLevel serverLevel) {
+            initialize(serverLevel);
+        }
         if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
             return;
         }
         containers.update(level);
+    }
+
+    @Override
+    public void setLevel(final Level level) {
+        super.setLevel(level);
+        if (level instanceof ServerLevel serverLevel) {
+            initialize(serverLevel);
+        }
+    }
+
+    protected final void initialize(final ServerLevel level) {
+        final Direction direction = tryExtractDirection(getBlockState());
+        if (direction == null) {
+            LOGGER.warn(
+                "Failed to initialize: could not extract direction from block at {}, state is {}",
+                worldPosition,
+                getBlockState()
+            );
+            return;
+        }
+        initialize(level, direction);
+    }
+
+    protected void initialize(final ServerLevel level, final Direction direction) {
+        // no op
     }
 
     @Nullable

@@ -67,6 +67,7 @@ public class ImporterBlockEntity
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
+        super.initialize(level, direction);
         final List<ImporterTransferStrategy> strategies = createStrategies(level, direction);
         LOGGER.debug("Initialized importer at {} with strategies {}", worldPosition, strategies);
         mainNetworkNode.setTransferStrategies(strategies);
