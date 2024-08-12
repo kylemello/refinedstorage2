@@ -2,7 +2,9 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlock;
+import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlock;
+import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
 import com.refinedmods.refinedstorage.common.controller.AbstractControllerBlock;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlock;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockEntityTicker;
@@ -10,12 +12,15 @@ import com.refinedmods.refinedstorage.common.controller.ControllerBlockItem;
 import com.refinedmods.refinedstorage.common.controller.CreativeControllerBlock;
 import com.refinedmods.refinedstorage.common.controller.CreativeControllerBlockItem;
 import com.refinedmods.refinedstorage.common.detector.DetectorBlock;
+import com.refinedmods.refinedstorage.common.exporter.AbstractExporterBlockEntity;
 import com.refinedmods.refinedstorage.common.exporter.ExporterBlock;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridBlock;
 import com.refinedmods.refinedstorage.common.grid.GridBlock;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlock;
 import com.refinedmods.refinedstorage.common.importer.ImporterBlock;
+import com.refinedmods.refinedstorage.common.importer.AbstractImporterBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.CableBlock;
+import com.refinedmods.refinedstorage.common.networking.AbstractCableBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlock;
 import com.refinedmods.refinedstorage.common.networking.RelayBlock;
@@ -27,6 +32,7 @@ import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveBlock;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterfaceBlock;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlock;
+import com.refinedmods.refinedstorage.common.storage.externalstorage.AbstractExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlock;
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlock;
@@ -36,13 +42,10 @@ import com.refinedmods.refinedstorage.common.support.SimpleBlock;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.block.state.BlockState;
 
 import static java.util.Objects.requireNonNull;
 
@@ -51,12 +54,8 @@ public final class Blocks {
     public static final DyeColor CABLE_LIKE_COLOR = DyeColor.GRAY;
     public static final Blocks INSTANCE = new Blocks();
 
-    private final BlockColorMap<CableBlock, BaseBlockItem> cable = new BlockColorMap<>(
-        CableBlock::new,
-        ContentIds.CABLE,
-        ContentNames.CABLE,
-        CABLE_LIKE_COLOR
-    );
+    @Nullable
+    private BlockColorMap<CableBlock, BaseBlockItem> cable;
     private final BlockColorMap<GridBlock, BaseBlockItem> grid = new BlockColorMap<>(
         GridBlock::new,
         ContentIds.GRID,
@@ -103,36 +102,16 @@ public final class Blocks {
             ContentNames.CREATIVE_CONTROLLER,
             COLOR
         );
-    private final BlockColorMap<ExporterBlock, BaseBlockItem> exporter = new BlockColorMap<>(
-        ExporterBlock::new,
-        ContentIds.EXPORTER,
-        ContentNames.EXPORTER,
-        CABLE_LIKE_COLOR
-    );
-    private final BlockColorMap<ImporterBlock, BaseBlockItem> importer = new BlockColorMap<>(
-        ImporterBlock::new,
-        ContentIds.IMPORTER,
-        ContentNames.IMPORTER,
-        CABLE_LIKE_COLOR
-    );
-    private final BlockColorMap<ExternalStorageBlock, BaseBlockItem> externalStorage = new BlockColorMap<>(
-        ExternalStorageBlock::new,
-        ContentIds.EXTERNAL_STORAGE,
-        ContentNames.EXTERNAL_STORAGE,
-        CABLE_LIKE_COLOR
-    );
-    private final BlockColorMap<DestructorBlock, BaseBlockItem> destructor = new BlockColorMap<>(
-        DestructorBlock::new,
-        ContentIds.DESTRUCTOR,
-        ContentNames.DESTRUCTOR,
-        CABLE_LIKE_COLOR
-    );
-    private final BlockColorMap<ConstructorBlock, BaseBlockItem> constructor = new BlockColorMap<>(
-        ConstructorBlock::new,
-        ContentIds.CONSTRUCTOR,
-        ContentNames.CONSTRUCTOR,
-        CABLE_LIKE_COLOR
-    );
+    @Nullable
+    private BlockColorMap<ExporterBlock, BaseBlockItem> exporter;
+    @Nullable
+    private BlockColorMap<ImporterBlock, BaseBlockItem> importer;
+    @Nullable
+    private BlockColorMap<ExternalStorageBlock, BaseBlockItem> externalStorage;
+    @Nullable
+    private BlockColorMap<DestructorBlock, BaseBlockItem> destructor;
+    @Nullable
+    private BlockColorMap<ConstructorBlock, BaseBlockItem> constructor;
     private final BlockColorMap<WirelessTransmitterBlock, BaseBlockItem> wirelessTransmitter = new BlockColorMap<>(
         WirelessTransmitterBlock::new,
         ContentIds.WIRELESS_TRANSMITTER,
@@ -190,8 +169,18 @@ public final class Blocks {
     private Blocks() {
     }
 
-    public BlockColorMap<CableBlock, BaseBlockItem> getCable() {
+    public BlockColorMap<CableBlock, BaseBlockItem> setCable(final BlockEntityProvider<AbstractCableBlockEntity> provider) {
+        cable = new BlockColorMap<>(
+            (color, name) -> new CableBlock(color, name, provider),
+            ContentIds.CABLE,
+            ContentNames.CABLE,
+            CABLE_LIKE_COLOR
+        );
         return cable;
+    }
+
+    public BlockColorMap<CableBlock, BaseBlockItem> getCable() {
+        return requireNonNull(cable);
     }
 
     public SimpleBlock getQuartzEnrichedIronBlock() {
@@ -265,12 +254,36 @@ public final class Blocks {
         return fluidStorageBlocks.get(variant).get();
     }
 
-    public BlockColorMap<ImporterBlock, BaseBlockItem> getImporter() {
+    public BlockColorMap<ImporterBlock, BaseBlockItem> setImporter(
+        final BlockEntityProvider<AbstractImporterBlockEntity> provider
+    ) {
+        importer = new BlockColorMap<>(
+            (pos, state) -> new ImporterBlock(pos, state, provider),
+            ContentIds.IMPORTER,
+            ContentNames.IMPORTER,
+            CABLE_LIKE_COLOR
+        );
         return importer;
     }
 
-    public BlockColorMap<ExporterBlock, BaseBlockItem> getExporter() {
+    public BlockColorMap<ImporterBlock, BaseBlockItem> getImporter() {
+        return requireNonNull(importer);
+    }
+
+    public BlockColorMap<ExporterBlock, BaseBlockItem> setExporter(
+        final BlockEntityProvider<AbstractExporterBlockEntity> provider
+    ) {
+        exporter = new BlockColorMap<>(
+            (color, name) -> new ExporterBlock(color, name, provider),
+            ContentIds.EXPORTER,
+            ContentNames.EXPORTER,
+            CABLE_LIKE_COLOR
+        );
         return exporter;
+    }
+
+    public BlockColorMap<ExporterBlock, BaseBlockItem> getExporter() {
+        return requireNonNull(exporter);
     }
 
     public void setInterface(final Supplier<InterfaceBlock> interfaceSupplier) {
@@ -281,6 +294,19 @@ public final class Blocks {
         return requireNonNull(iface).get();
     }
 
+    // generate setter for ext storage with block entity provider
+    public BlockColorMap<ExternalStorageBlock, BaseBlockItem> setExternalStorage(
+        final BlockEntityProvider<AbstractExternalStorageBlockEntity> provider
+    ) {
+        externalStorage = new BlockColorMap<>(
+            (color, name) -> new ExternalStorageBlock(color, name, provider),
+            ContentIds.EXTERNAL_STORAGE,
+            ContentNames.EXTERNAL_STORAGE,
+            CABLE_LIKE_COLOR
+        );
+        return externalStorage;
+    }
+
     public BlockColorMap<ExternalStorageBlock, BaseBlockItem> getExternalStorage() {
         return externalStorage;
     }
@@ -289,12 +315,36 @@ public final class Blocks {
         return detector;
     }
 
-    public BlockColorMap<DestructorBlock, BaseBlockItem> getDestructor() {
+    public BlockColorMap<DestructorBlock, BaseBlockItem> setDestructor(
+        final BlockEntityProvider<AbstractDestructorBlockEntity> provider
+    ) {
+        destructor = new BlockColorMap<>(
+            (color, name) -> new DestructorBlock(color, name, provider),
+            ContentIds.DESTRUCTOR,
+            ContentNames.DESTRUCTOR,
+            CABLE_LIKE_COLOR
+        );
         return destructor;
     }
 
-    public BlockColorMap<ConstructorBlock, BaseBlockItem> getConstructor() {
+    public BlockColorMap<DestructorBlock, BaseBlockItem> getDestructor() {
+        return requireNonNull(destructor);
+    }
+
+    public BlockColorMap<ConstructorBlock, BaseBlockItem> setConstructor(
+        final BlockEntityProvider<AbstractConstructorBlockEntity> provider
+    ) {
+        constructor = new BlockColorMap<>(
+            (color, name) -> new ConstructorBlock(color, name, provider),
+            ContentIds.CONSTRUCTOR,
+            ContentNames.CONSTRUCTOR,
+            CABLE_LIKE_COLOR
+        );
         return constructor;
+    }
+
+    public BlockColorMap<ConstructorBlock, BaseBlockItem> getConstructor() {
+        return requireNonNull(constructor);
     }
 
     public BlockColorMap<WirelessTransmitterBlock, BaseBlockItem> getWirelessTransmitter() {
@@ -342,13 +392,13 @@ public final class Blocks {
     }
 
     public BlockColorMap<DiskInterfaceBlock, BaseBlockItem> setDiskInterface(
-        final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> blockEntityFactory
+        final BlockEntityProvider<AbstractDiskInterfaceBlockEntity> provider
     ) {
         this.diskInterface = new BlockColorMap<>(
             (color, name) -> new DiskInterfaceBlock(
                 color,
                 name,
-                blockEntityFactory
+                provider
             ),
             ContentIds.DISK_INTERFACE,
             ContentNames.DISK_INTERFACE,

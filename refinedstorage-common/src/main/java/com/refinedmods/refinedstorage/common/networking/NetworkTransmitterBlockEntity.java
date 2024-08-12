@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public class NetworkTransmitterBlockEntity
-    extends BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<NetworkTransmitterData>, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 

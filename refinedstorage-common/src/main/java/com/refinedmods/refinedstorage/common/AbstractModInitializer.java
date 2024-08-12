@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage.common;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyNetworkComponentImpl;
 import com.refinedmods.refinedstorage.api.network.impl.node.GraphNetworkComponentImpl;
-import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.api.network.impl.security.SecurityNetworkComponentImpl;
 import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkComponent;
@@ -24,9 +23,7 @@ import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternStat
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.constructordestructor.BlockBreakDestructorStrategyFactory;
-import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
-import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.FluidBreakDestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.constructordestructor.ItemDropConstructorStrategyFactory;
@@ -35,6 +32,7 @@ import com.refinedmods.refinedstorage.common.constructordestructor.PlaceBlockCon
 import com.refinedmods.refinedstorage.common.constructordestructor.PlaceFireworksConstructorStrategy;
 import com.refinedmods.refinedstorage.common.constructordestructor.PlaceFluidConstructorStrategy;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ContentIds;
@@ -52,7 +50,6 @@ import com.refinedmods.refinedstorage.common.controller.ControllerData;
 import com.refinedmods.refinedstorage.common.controller.ControllerType;
 import com.refinedmods.refinedstorage.common.detector.DetectorBlockEntity;
 import com.refinedmods.refinedstorage.common.detector.DetectorContainerMenu;
-import com.refinedmods.refinedstorage.common.exporter.ExporterBlockEntity;
 import com.refinedmods.refinedstorage.common.exporter.ExporterContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridBlockEntity;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridContainerMenu;
@@ -66,7 +63,6 @@ import com.refinedmods.refinedstorage.common.iface.InterfaceBlock;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.iface.InterfaceContainerMenu;
 import com.refinedmods.refinedstorage.common.iface.InterfaceData;
-import com.refinedmods.refinedstorage.common.importer.ImporterBlockEntity;
 import com.refinedmods.refinedstorage.common.importer.ImporterContainerMenu;
 import com.refinedmods.refinedstorage.common.misc.ProcessorItem;
 import com.refinedmods.refinedstorage.common.misc.WrenchItem;
@@ -98,14 +94,10 @@ import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.StorageContainerUpgradeRecipe;
 import com.refinedmods.refinedstorage.common.storage.StorageContainerUpgradeRecipeSerializer;
 import com.refinedmods.refinedstorage.common.storage.StorageTypes;
-import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveBlock;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterfaceContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.portablegrid.AbstractPortableGridBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockContainerMenu;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridItemContainerMenu;
@@ -135,7 +127,6 @@ import com.refinedmods.refinedstorage.common.support.SimpleBlock;
 import com.refinedmods.refinedstorage.common.support.SimpleItem;
 import com.refinedmods.refinedstorage.common.support.containermenu.SingleAmountData;
 import com.refinedmods.refinedstorage.common.support.energy.EnergyLootItemFunction;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceFactory;
@@ -152,12 +143,10 @@ import com.refinedmods.refinedstorage.common.upgrade.UpgradeWithEnchantedBookRec
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
@@ -169,7 +158,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
@@ -291,20 +279,16 @@ public abstract class AbstractModInitializer {
         }
     }
 
-    protected final void registerBlocks(
-        final RegistryCallback<Block> callback,
-        final BiFunction<BlockPos, BlockState, AbstractDiskDriveBlockEntity> diskDriveBlockEntityFactory,
-        final BiFunction<BlockPos, BlockState, AbstractPortableGridBlockEntity> portableGridBlockEntityFactory,
-        final BiFunction<BlockPos, BlockState, AbstractPortableGridBlockEntity> creativePortableGridBlockEntityFactory,
-        final BiFunction<BlockPos, BlockState, AbstractDiskInterfaceBlockEntity> diskInterfaceBlockEntityFactory
-    ) {
+    protected final void registerBlocks(final RegistryCallback<Block> callback,
+                                        final BlockEntityProviders blockEntityProviders) {
         Blocks.INSTANCE.setQuartzEnrichedIronBlock(callback.register(
             ContentIds.QUARTZ_ENRICHED_IRON_BLOCK, SimpleBlock::new));
         Blocks.INSTANCE.setQuartzEnrichedCopperBlock(
             callback.register(ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK, SimpleBlock::new));
-        Blocks.INSTANCE.setDiskDrive(
-            callback.register(ContentIds.DISK_DRIVE, () -> new DiskDriveBlock(diskDriveBlockEntityFactory))
-        );
+        Blocks.INSTANCE.setDiskDrive(callback.register(
+            ContentIds.DISK_DRIVE,
+            () -> new DiskDriveBlock(blockEntityProviders.diskDrive())
+        ));
         Blocks.INSTANCE.setMachineCasing(callback.register(ContentIds.MACHINE_CASING, SimpleBlock::new));
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             Blocks.INSTANCE.setItemStorageBlock(variant, callback.register(
@@ -320,16 +304,16 @@ public abstract class AbstractModInitializer {
         }
         Blocks.INSTANCE.getController().registerBlocks(callback);
         Blocks.INSTANCE.getCreativeController().registerBlocks(callback);
-        Blocks.INSTANCE.getCable().registerBlocks(callback);
+        Blocks.INSTANCE.setCable(blockEntityProviders.cable()).registerBlocks(callback);
         Blocks.INSTANCE.getGrid().registerBlocks(callback);
         Blocks.INSTANCE.getCraftingGrid().registerBlocks(callback);
         Blocks.INSTANCE.getPatternGrid().registerBlocks(callback);
         Blocks.INSTANCE.getDetector().registerBlocks(callback);
-        Blocks.INSTANCE.getImporter().registerBlocks(callback);
-        Blocks.INSTANCE.getExporter().registerBlocks(callback);
-        Blocks.INSTANCE.getExternalStorage().registerBlocks(callback);
-        Blocks.INSTANCE.getConstructor().registerBlocks(callback);
-        Blocks.INSTANCE.getDestructor().registerBlocks(callback);
+        Blocks.INSTANCE.setImporter(blockEntityProviders.importer()).registerBlocks(callback);
+        Blocks.INSTANCE.setExporter(blockEntityProviders.exporter()).registerBlocks(callback);
+        Blocks.INSTANCE.setExternalStorage(blockEntityProviders.externalStorage()).registerBlocks(callback);
+        Blocks.INSTANCE.setConstructor(blockEntityProviders.constructor()).registerBlocks(callback);
+        Blocks.INSTANCE.setDestructor(blockEntityProviders.destructor()).registerBlocks(callback);
         Blocks.INSTANCE.setInterface(callback.register(ContentIds.INTERFACE, InterfaceBlock::new));
         Blocks.INSTANCE.getWirelessTransmitter().registerBlocks(callback);
         Blocks.INSTANCE.setStorageMonitor(callback.register(ContentIds.STORAGE_MONITOR, StorageMonitorBlock::new));
@@ -337,16 +321,16 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getNetworkTransmitter().registerBlocks(callback);
         Blocks.INSTANCE.setPortableGrid(callback.register(ContentIds.PORTABLE_GRID, () -> new PortableGridBlock(
             PortableGridType.NORMAL,
-            portableGridBlockEntityFactory
+            blockEntityProviders.portableGrid()
         )));
         Blocks.INSTANCE.setCreativePortableGrid(
             callback.register(ContentIds.CREATIVE_PORTABLE_GRID, () -> new PortableGridBlock(
                 PortableGridType.CREATIVE,
-                creativePortableGridBlockEntityFactory
+                blockEntityProviders.creativePortableGrid()
             )));
         Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
         Blocks.INSTANCE.getRelay().registerBlocks(callback);
-        Blocks.INSTANCE.setDiskInterface(diskInterfaceBlockEntityFactory).registerBlocks(callback);
+        Blocks.INSTANCE.setDiskInterface(blockEntityProviders.diskInterface()).registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -533,22 +517,11 @@ public abstract class AbstractModInitializer {
     protected final void registerBlockEntities(
         final RegistryCallback<BlockEntityType<?>> callback,
         final BlockEntityTypeFactory typeFactory,
-        final BlockEntityTypeFactory.BlockEntitySupplier<AbstractDiskDriveBlockEntity> diskDriveBlockEntitySupplier,
-        final BlockEntityTypeFactory.BlockEntitySupplier<? extends AbstractPortableGridBlockEntity>
-            portableGridBlockEntitySupplier,
-        final BlockEntityTypeFactory.BlockEntitySupplier<? extends AbstractPortableGridBlockEntity>
-            creativePortableGridBlockEntitySupplier,
-        final BlockEntityTypeFactory.BlockEntitySupplier<AbstractDiskInterfaceBlockEntity>
-            diskInterfaceBlockEntitySupplier
+        final BlockEntityProviders providers
     ) {
         BlockEntities.INSTANCE.setCable(callback.register(
             ContentIds.CABLE,
-            () -> typeFactory.create((pos, state) -> new BaseNetworkNodeContainerBlockEntity<>(
-                BlockEntities.INSTANCE.getCable(),
-                pos,
-                state,
-                new SimpleNetworkNode(Platform.INSTANCE.getConfig().getCable().getEnergyUsage())
-            ), Blocks.INSTANCE.getCable().toArray())
+            () -> typeFactory.create(providers.cable(), Blocks.INSTANCE.getCable().toArray())
         ));
         BlockEntities.INSTANCE.setController(callback.register(
             ContentIds.CONTROLLER,
@@ -566,7 +539,7 @@ public abstract class AbstractModInitializer {
         ));
         BlockEntities.INSTANCE.setDiskDrive(callback.register(
             ContentIds.DISK_DRIVE,
-            () -> typeFactory.create(diskDriveBlockEntitySupplier, Blocks.INSTANCE.getDiskDrive())
+            () -> typeFactory.create(providers.diskDrive(), Blocks.INSTANCE.getDiskDrive())
         ));
         BlockEntities.INSTANCE.setGrid(callback.register(
             ContentIds.GRID,
@@ -600,12 +573,11 @@ public abstract class AbstractModInitializer {
         }
         BlockEntities.INSTANCE.setImporter(callback.register(
             ContentIds.IMPORTER,
-            () -> typeFactory.create(ImporterBlockEntity::new, Blocks.INSTANCE.getImporter().toArray())
-
+            () -> typeFactory.create(providers.importer(), Blocks.INSTANCE.getImporter().toArray())
         ));
         BlockEntities.INSTANCE.setExporter(callback.register(
             ContentIds.EXPORTER,
-            () -> typeFactory.create(ExporterBlockEntity::new, Blocks.INSTANCE.getExporter().toArray())
+            () -> typeFactory.create(providers.exporter(), Blocks.INSTANCE.getExporter().toArray())
 
         ));
         BlockEntities.INSTANCE.setInterface(callback.register(
@@ -614,7 +586,7 @@ public abstract class AbstractModInitializer {
         ));
         BlockEntities.INSTANCE.setExternalStorage(callback.register(
             ContentIds.EXTERNAL_STORAGE,
-            () -> typeFactory.create(ExternalStorageBlockEntity::new, Blocks.INSTANCE.getExternalStorage().toArray())
+            () -> typeFactory.create(providers.externalStorage(), Blocks.INSTANCE.getExternalStorage().toArray())
         ));
         BlockEntities.INSTANCE.setDetector(callback.register(
             ContentIds.DETECTOR,
@@ -622,11 +594,11 @@ public abstract class AbstractModInitializer {
         ));
         BlockEntities.INSTANCE.setConstructor(callback.register(
             ContentIds.CONSTRUCTOR,
-            () -> typeFactory.create(ConstructorBlockEntity::new, Blocks.INSTANCE.getConstructor().toArray())
+            () -> typeFactory.create(providers.constructor(), Blocks.INSTANCE.getConstructor().toArray())
         ));
         BlockEntities.INSTANCE.setDestructor(callback.register(
             ContentIds.DESTRUCTOR,
-            () -> typeFactory.create(DestructorBlockEntity::new, Blocks.INSTANCE.getDestructor().toArray())
+            () -> typeFactory.create(providers.destructor(), Blocks.INSTANCE.getDestructor().toArray())
         ));
         BlockEntities.INSTANCE.setWirelessTransmitter(callback.register(
             ContentIds.WIRELESS_TRANSMITTER,
@@ -652,12 +624,12 @@ public abstract class AbstractModInitializer {
         ));
         BlockEntities.INSTANCE.setPortableGrid(callback.register(
             ContentIds.PORTABLE_GRID,
-            () -> typeFactory.create(portableGridBlockEntitySupplier::create, Blocks.INSTANCE.getPortableGrid())
+            () -> typeFactory.create(providers.portableGrid(), Blocks.INSTANCE.getPortableGrid())
         ));
         BlockEntities.INSTANCE.setCreativePortableGrid(callback.register(
             ContentIds.CREATIVE_PORTABLE_GRID,
             () -> typeFactory.create(
-                creativePortableGridBlockEntitySupplier::create,
+                providers.creativePortableGrid(),
                 Blocks.INSTANCE.getCreativePortableGrid()
             )
         ));
@@ -674,7 +646,7 @@ public abstract class AbstractModInitializer {
         ));
         BlockEntities.INSTANCE.setDiskInterface(callback.register(
             ContentIds.DISK_INTERFACE,
-            () -> typeFactory.create(diskInterfaceBlockEntitySupplier, Blocks.INSTANCE.getDiskInterface().toArray())
+            () -> typeFactory.create(providers.diskInterface(), Blocks.INSTANCE.getDiskInterface().toArray())
         ));
     }
 

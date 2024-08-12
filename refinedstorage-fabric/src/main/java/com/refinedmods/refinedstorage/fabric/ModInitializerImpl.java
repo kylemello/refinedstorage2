@@ -5,6 +5,8 @@ import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -67,15 +69,21 @@ import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApi;
 import com.refinedmods.refinedstorage.fabric.api.RefinedStorageFabricApiProxy;
 import com.refinedmods.refinedstorage.fabric.api.RefinedStoragePlugin;
+import com.refinedmods.refinedstorage.fabric.constructordestructor.FabricConstructorBlockEntity;
+import com.refinedmods.refinedstorage.fabric.constructordestructor.FabricDestructorBlockEntity;
+import com.refinedmods.refinedstorage.fabric.exporter.FabricExporterBlockEntity;
 import com.refinedmods.refinedstorage.fabric.exporter.FabricStorageExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.FluidGridExtractionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.FluidGridInsertionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.ItemGridExtractionStrategy;
 import com.refinedmods.refinedstorage.fabric.grid.strategy.ItemGridScrollingStrategy;
+import com.refinedmods.refinedstorage.fabric.importer.FabricImporterBlockEntity;
 import com.refinedmods.refinedstorage.fabric.importer.FabricStorageImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.fabric.networking.FabricCableBlockEntity;
 import com.refinedmods.refinedstorage.fabric.security.NetworkNodeBreakSecurityEventListener;
 import com.refinedmods.refinedstorage.fabric.storage.diskdrive.FabricDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.fabric.storage.diskinterface.FabricDiskInterfaceBlockEntity;
+import com.refinedmods.refinedstorage.fabric.storage.externalstorage.FabricExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.fabric.storage.externalstorage.FabricStoragePlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage.fabric.storage.portablegrid.FabricPortableGridBlockEntity;
 import com.refinedmods.refinedstorage.fabric.support.energy.EnergyStorageAdapter;
@@ -142,6 +150,18 @@ import static com.refinedmods.refinedstorage.fabric.support.resource.VariantUtil
 import static com.refinedmods.refinedstorage.fabric.support.resource.VariantUtil.toItemVariant;
 
 public class ModInitializerImpl extends AbstractModInitializer implements ModInitializer {
+    private static final BlockEntityProviders BLOCK_ENTITY_PROVIDERS = new BlockEntityProviders(
+        FabricDiskDriveBlockEntity::new,
+        (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
+        (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+        FabricDiskInterfaceBlockEntity::new,
+        FabricCableBlockEntity::new,
+        FabricExternalStorageBlockEntity::new,
+        FabricExporterBlockEntity::new,
+        FabricImporterBlockEntity::new,
+        FabricConstructorBlockEntity::new,
+        FabricDestructorBlockEntity::new
+    );
     private static final Logger LOGGER = LoggerFactory.getLogger(ModInitializerImpl.class);
     private static final String PLUGIN_ENTRYPOINT_KEY = "refinedstorage_plugin";
 
@@ -257,13 +277,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     }
 
     private void registerContent() {
-        registerBlocks(
-            new DirectRegistryCallback<>(BuiltInRegistries.BLOCK),
-            FabricDiskDriveBlockEntity::new,
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            FabricDiskInterfaceBlockEntity::new
-        );
+        registerBlocks(new DirectRegistryCallback<>(BuiltInRegistries.BLOCK), BLOCK_ENTITY_PROVIDERS);
         final DirectRegistryCallback<Item> itemRegistryCallback = new DirectRegistryCallback<>(BuiltInRegistries.ITEM);
         registerItems(itemRegistryCallback);
         registerCustomItems(itemRegistryCallback);
@@ -274,15 +288,12 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             new BlockEntityTypeFactory() {
                 @SuppressWarnings("DataFlowIssue") // data type can be null
                 @Override
-                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntitySupplier<T> factory,
+                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntityProvider<T> factory,
                                                                          final Block... allowedBlocks) {
                     return new BlockEntityType<>(factory::create, new HashSet<>(Arrays.asList(allowedBlocks)), null);
                 }
             },
-            FabricDiskDriveBlockEntity::new,
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new FabricPortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            FabricDiskInterfaceBlockEntity::new
+            BLOCK_ENTITY_PROVIDERS
         );
         registerMenus(new DirectRegistryCallback<>(BuiltInRegistries.MENU), new MenuTypeFactory() {
             @Override

@@ -7,12 +7,12 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
+import com.refinedmods.refinedstorage.common.support.AbstractCableLikeBlockEntity;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
@@ -39,7 +39,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class DestructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<DestructorNetworkNode>
+public abstract class AbstractDestructorBlockEntity
+    extends AbstractCableLikeBlockEntity<DestructorNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData>, BlockEntityWithDrops {
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_PICKUP_ITEMS = "pi";
@@ -50,7 +51,7 @@ public class DestructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<D
 
     private boolean pickupItems;
 
-    public DestructorBlockEntity(final BlockPos pos, final BlockState state) {
+    protected AbstractDestructorBlockEntity(final BlockPos pos, final BlockState state) {
         super(
             BlockEntities.INSTANCE.getDestructor(),
             pos,

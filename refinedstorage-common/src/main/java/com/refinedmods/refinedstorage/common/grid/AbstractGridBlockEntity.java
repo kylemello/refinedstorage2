@@ -17,7 +17,7 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridBlockEntity
-    extends BaseNetworkNodeContainerBlockEntity<GridNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<GridNetworkNode>
     implements Grid {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,

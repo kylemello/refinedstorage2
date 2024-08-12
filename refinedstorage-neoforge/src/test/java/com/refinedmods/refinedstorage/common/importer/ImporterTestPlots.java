@@ -25,7 +25,7 @@ final class ImporterTestPlots {
 
     static void preparePlot(final GameTestHelper helper,
                             final Direction direction,
-                            final TriConsumer<ImporterBlockEntity, BlockPos, GameTestSequence> consumer) {
+                            final TriConsumer<AbstractImporterBlockEntity, BlockPos, GameTestSequence> consumer) {
         helper.setBlock(ZERO.above(), RSBLOCKS.getCreativeController().getDefault());
         helper.setBlock(ZERO.above().above(), RSBLOCKS.getItemStorageBlock(ItemStorageVariant.ONE_K));
         helper.setBlock(
@@ -35,7 +35,7 @@ final class ImporterTestPlots {
         final BlockPos importerPos = ZERO.above().above().above();
         helper.setBlock(importerPos, RSBLOCKS.getImporter().getDefault().rotated(direction));
         consumer.accept(
-            requireBlockEntity(helper, importerPos, ImporterBlockEntity.class),
+            requireBlockEntity(helper, importerPos, AbstractImporterBlockEntity.class),
             importerPos,
             helper.startSequence()
         );

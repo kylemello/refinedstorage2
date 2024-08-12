@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.neoforge.datagen;
 
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.Blocks;
+import com.refinedmods.refinedstorage.common.content.ContentIds;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -71,6 +72,14 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             withExistingParent("block/cable/extension/" + color.getName(), extensionBase)
                 .texture("cable", texture)
                 .texture(PARTICLE_TEXTURE, texture);
+            getBuilder("block/cable/" + color.getName())
+                .customLoader((blockModelBuilder, existingFileHelper) -> new CableCustomLoaderBuilder(
+                    ContentIds.CABLE,
+                    blockModelBuilder,
+                    existingFileHelper,
+                    color
+                ) {
+                }).end();
         });
     }
 
@@ -273,6 +282,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     }
 
     private void registerDiskInterfaces() {
+        // TODO: add color as property and use single loader?
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getDiskInterface(), "disk_interface", "base_");
         Blocks.INSTANCE.getDiskInterface()
             .forEach((color, id, block) -> getBuilder("block/disk_interface/" + color.getName())

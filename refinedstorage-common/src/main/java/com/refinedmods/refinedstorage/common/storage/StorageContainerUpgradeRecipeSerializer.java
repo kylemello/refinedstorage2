@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import static com.refinedmods.refinedstorage.common.util.PacketUtil.enumStreamCodec;
+import static com.refinedmods.refinedstorage.common.util.PlatformUtil.enumStreamCodec;
 
 public class StorageContainerUpgradeRecipeSerializer<T extends Enum<T> & StorageVariant & StringRepresentable>
     implements RecipeSerializer<StorageContainerUpgradeRecipe<T>> {

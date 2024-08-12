@@ -38,10 +38,10 @@ import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 
-public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
+public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
     implements NetworkItemTargetBlockEntity, ConfigurationCardTarget, PlayerAwareBlockEntity {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBaseNetworkNodeContainerBlockEntity.class);
     private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
     private static final String TAG_REDSTONE_MODE = "rm";
@@ -56,10 +56,10 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private UUID placedByPlayerId;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
-    public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
-                                               final BlockPos pos,
-                                               final BlockState state,
-                                               final T networkNode) {
+    protected AbstractBaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
+                                                          final BlockPos pos,
+                                                          final BlockState state,
+                                                          final T networkNode) {
         super(type, pos, state, networkNode);
     }
 

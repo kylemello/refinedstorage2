@@ -15,10 +15,11 @@ import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import javax.annotation.Nullable;
 
@@ -38,12 +39,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StorageMonitorBlockEntity extends BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageMonitorBlockEntity.class);
 
@@ -328,8 +328,8 @@ public class StorageMonitorBlockEntity extends BaseNetworkNodeContainerBlockEnti
     private void sendDisplayUpdate(final Level level, final long amount, final boolean active) {
         currentAmount = amount;
         currentlyActive = active;
-        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         LOGGER.debug("Sending display update for storage monitor {} with amount {}", worldPosition, amount);
+        PlatformUtil.sendBlockUpdateToClient(level, worldPosition);
     }
 
     @Override
