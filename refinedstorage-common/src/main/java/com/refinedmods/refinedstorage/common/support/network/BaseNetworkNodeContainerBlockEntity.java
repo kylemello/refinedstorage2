@@ -10,6 +10,8 @@ import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetwork
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
 import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
+import com.refinedmods.refinedstorage.common.support.RedstoneMode;
+import com.refinedmods.refinedstorage.common.support.RedstoneModeSettings;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -42,6 +44,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
     private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
+    private static final String TAG_REDSTONE_MODE = "rm";
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
@@ -49,6 +52,8 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private Component name;
     @Nullable
     private UUID placedByPlayerId;
+
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
@@ -67,7 +72,10 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     protected boolean calculateActive() {
         final long energyUsage = mainNetworkNode.getEnergyUsage();
         final boolean hasLevel = level != null && level.isLoaded(worldPosition);
+        final boolean redstoneModeActive = !hasRedstoneMode()
+            || redstoneMode.isActive(hasLevel && level.hasNeighborSignal(worldPosition));
         return hasLevel
+            && redstoneModeActive
             && mainNetworkNode.getNetwork() != null
             && mainNetworkNode.getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
     }
@@ -148,11 +156,6 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     protected final void initialize(final ServerLevel level) {
         final Direction direction = tryExtractDirection(getBlockState());
         if (direction == null) {
-            LOGGER.warn(
-                "Failed to initialize: could not extract direction from block at {}, state is {}",
-                worldPosition,
-                getBlockState()
-            );
             return;
         }
         initialize(level, direction);
@@ -191,6 +194,9 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (name != null) {
             tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(name, provider));
         }
+        if (hasRedstoneMode()) {
+            tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(redstoneMode));
+        }
     }
 
     @Override
@@ -198,6 +204,26 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
             this.name = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
         }
+        if (hasRedstoneMode() && tag.contains(TAG_REDSTONE_MODE)) {
+            this.redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
+        }
+    }
+
+    private void verifyHasRedstoneMode() {
+        if (!hasRedstoneMode()) {
+            throw new IllegalStateException("Block has no redstone mode!");
+        }
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        verifyHasRedstoneMode();
+        return redstoneMode;
+    }
+
+    public void setRedstoneMode(final RedstoneMode redstoneMode) {
+        verifyHasRedstoneMode();
+        this.redstoneMode = redstoneMode;
+        setChanged();
     }
 
     @Override
@@ -228,5 +254,9 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
 
     protected final boolean isPlacedBy(final UUID playerId) {
         return Objects.equals(placedByPlayerId, playerId);
+    }
+
+    protected boolean hasRedstoneMode() {
+        return true;
     }
 }

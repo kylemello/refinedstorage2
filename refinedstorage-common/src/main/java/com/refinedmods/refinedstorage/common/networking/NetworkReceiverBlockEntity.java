@@ -32,6 +32,11 @@ public class NetworkReceiverBlockEntity extends BaseNetworkNodeContainerBlockEnt
             .build();
     }
 
+    @Override
+    protected boolean hasRedstoneMode() {
+        return false;
+    }
+
     private NetworkReceiverKey createKey() {
         return new NetworkReceiverKey(GlobalPos.of(requireNonNull(level).dimension(), getBlockPos()));
     }
