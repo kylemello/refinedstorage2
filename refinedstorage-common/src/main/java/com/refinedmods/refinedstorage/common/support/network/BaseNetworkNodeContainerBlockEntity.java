@@ -3,12 +3,16 @@ package com.refinedmods.refinedstorage.common.support.network;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
+import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
+import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
 
+import java.util.Objects;
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -21,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,14 +38,17 @@ import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalB
 
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
-    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget {
+    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget, PlayerAwareBlockEntity {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
     private static final String TAG_CUSTOM_NAME = "CustomName";
+    private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
     @Nullable
     private Component name;
+    @Nullable
+    private UUID placedByPlayerId;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
@@ -163,12 +171,18 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
+        if (placedByPlayerId != null) {
+            tag.putUUID(TAG_PLACED_BY_PLAYER_ID, placedByPlayerId);
+        }
         writeConfiguration(tag, provider);
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
+        if (tag.hasUUID(TAG_PLACED_BY_PLAYER_ID)) {
+            placedByPlayerId = tag.getUUID(TAG_PLACED_BY_PLAYER_ID);
+        }
         readConfiguration(tag, provider);
     }
 
@@ -200,5 +214,19 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
 
     protected final Component getName(final Component defaultName) {
         return name == null ? defaultName : name;
+    }
+
+    @Override
+    public void setPlacedBy(final UUID playerId) {
+        this.placedByPlayerId = playerId;
+        setChanged();
+    }
+
+    protected final Player getFakePlayer(final ServerLevel serverLevel) {
+        return Platform.INSTANCE.getFakePlayer(serverLevel, placedByPlayerId);
+    }
+
+    protected final boolean isPlacedBy(final UUID playerId) {
+        return Objects.equals(placedByPlayerId, playerId);
     }
 }
