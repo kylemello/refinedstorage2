@@ -36,16 +36,17 @@ public class WirelessTransmitterBlockEntity
     implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData>, BlockEntityWithDrops {
     private static final String TAG_UPGRADES = "upgr";
 
-    private final UpgradeContainer upgradeContainer = new UpgradeContainer(
-        UpgradeDestinations.WIRELESS_TRANSMITTER,
-        RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
-        this::upgradeContainerChanged
-    );
+    private final UpgradeContainer upgradeContainer;
 
     public WirelessTransmitterBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage()
         ));
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER, (rate, energyUsage) -> {
+            final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseUsage + energyUsage);
+            setChanged();
+        });
     }
 
     @Override
@@ -105,12 +106,6 @@ public class WirelessTransmitterBlockEntity
 
     int getRange() {
         return RefinedStorageApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
-    }
-
-    private void upgradeContainerChanged() {
-        final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
-        mainNetworkNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
-        setChanged();
     }
 
     @Override

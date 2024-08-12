@@ -1,8 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.network;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
@@ -19,21 +17,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends BaseNetworkNodeContainerBlockEntity<T>
     implements BlockEntityWithDrops {
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-        AbstractUpgradeableNetworkNodeContainerBlockEntity.class
-    );
-
     private static final String TAG_UPGRADES = "upgr";
 
     protected final UpgradeContainer upgradeContainer;
-    private int workTickRate = 9;
-    private int workTicks;
 
     protected AbstractUpgradeableNetworkNodeContainerBlockEntity(
         final BlockEntityType<?> type,
@@ -43,33 +33,14 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
         final UpgradeDestinations destination
     ) {
         super(type, pos, state, node);
-        this.upgradeContainer = new UpgradeContainer(
-            destination,
-            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
-            this::upgradeContainerChanged
-        );
-    }
-
-    @Override
-    public final void doWork() {
-        if (workTicks++ % workTickRate == 0) {
-            super.doWork();
-            postDoWork();
-        }
-    }
-
-    protected void postDoWork() {
-    }
-
-    private void upgradeContainerChanged() {
-        LOGGER.debug("Reconfiguring {} for upgrades", getBlockPos());
-        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
-        this.setEnergyUsage(upgradeContainer.getEnergyUsage());
-        setChanged();
-        if (level instanceof ServerLevel serverLevel) {
-            initialize(serverLevel);
-        }
+        this.upgradeContainer = new UpgradeContainer(destination, (rate, upgradeEnergyUsage) -> {
+            setWorkTickRate(rate);
+            setEnergyUsage(upgradeEnergyUsage);
+            setChanged();
+            if (level instanceof ServerLevel serverLevel) {
+                initialize(serverLevel);
+            }
+        });
     }
 
     @Override
@@ -96,14 +67,10 @@ public abstract class AbstractUpgradeableNetworkNodeContainerBlockEntity<T exten
         super.loadAdditional(tag, provider);
     }
 
-    protected abstract void setEnergyUsage(long upgradeEnergyUsage);
-
     @Override
     public final NonNullList<ItemStack> getDrops() {
-        final NonNullList<ItemStack> drops = NonNullList.create();
-        for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
-            drops.add(upgradeContainer.getItem(i));
-        }
-        return drops;
+        return upgradeContainer.getDrops();
     }
+
+    protected abstract void setEnergyUsage(long upgradeEnergyUsage);
 }

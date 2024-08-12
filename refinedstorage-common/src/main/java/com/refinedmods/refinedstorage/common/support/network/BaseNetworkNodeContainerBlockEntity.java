@@ -12,6 +12,7 @@ import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkIte
 import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.RedstoneModeSettings;
+import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -54,6 +55,8 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private UUID placedByPlayerId;
 
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
+    private int workTickRate = UpgradeContainer.DEFAULT_WORK_TICK_RATE;
+    private int workTicks;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
@@ -120,8 +123,18 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         }
     }
 
+    protected final void setWorkTickRate(final int workTickRate) {
+        this.workTickRate = workTickRate;
+    }
+
     public void doWork() {
-        mainNetworkNode.doWork();
+        if (workTicks++ % workTickRate == 0) {
+            mainNetworkNode.doWork();
+            postDoWork();
+        }
+    }
+
+    protected void postDoWork() {
     }
 
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(
