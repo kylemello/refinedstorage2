@@ -1,10 +1,10 @@
 package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlock;
-import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
-import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
+import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlock;
+import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlock;
 import com.refinedmods.refinedstorage.common.controller.AbstractControllerBlock;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlock;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockEntityTicker;
@@ -17,10 +17,10 @@ import com.refinedmods.refinedstorage.common.exporter.ExporterBlock;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridBlock;
 import com.refinedmods.refinedstorage.common.grid.GridBlock;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlock;
-import com.refinedmods.refinedstorage.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage.common.importer.AbstractImporterBlockEntity;
-import com.refinedmods.refinedstorage.common.networking.CableBlock;
+import com.refinedmods.refinedstorage.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage.common.networking.AbstractCableBlockEntity;
+import com.refinedmods.refinedstorage.common.networking.CableBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlock;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlock;
 import com.refinedmods.refinedstorage.common.networking.RelayBlock;
@@ -31,8 +31,8 @@ import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveBlock;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterfaceBlock;
-import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlock;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.AbstractExternalStorageBlockEntity;
+import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlock;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlock;
 import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlock;
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlock;
@@ -169,7 +169,8 @@ public final class Blocks {
     private Blocks() {
     }
 
-    public BlockColorMap<CableBlock, BaseBlockItem> setCable(final BlockEntityProvider<AbstractCableBlockEntity> provider) {
+    public BlockColorMap<CableBlock, BaseBlockItem> setCable(
+        final BlockEntityProvider<AbstractCableBlockEntity> provider) {
         cable = new BlockColorMap<>(
             (color, name) -> new CableBlock(color, name, provider),
             ContentIds.CABLE,

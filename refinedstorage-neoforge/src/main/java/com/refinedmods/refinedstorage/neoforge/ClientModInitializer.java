@@ -10,7 +10,6 @@ import com.refinedmods.refinedstorage.common.autocrafting.PatternItemColor;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternTooltipCache;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
-import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.content.KeyMappings;
@@ -62,6 +61,7 @@ import org.lwjgl.glfw.GLFW;
 
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CABLE;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.DISK_DRIVE;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.DISK_INTERFACE;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.PATTERN;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.PORTABLE_GRID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
@@ -106,9 +106,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         e.register(PATTERN, new PatternGeometryLoader());
         e.register(DISK_DRIVE, new DiskDriveGeometryLoader());
         e.register(PORTABLE_GRID, new PortableGridGeometryLoader());
-        Blocks.INSTANCE.getDiskInterface().forEach(
-            (color, id, supplier) -> e.register(id, new DiskInterfaceGeometryLoader(color))
-        );
+        e.register(DISK_INTERFACE, new DiskInterfaceGeometryLoader());
         e.register(CABLE, new CableGeometryLoader());
     }
 

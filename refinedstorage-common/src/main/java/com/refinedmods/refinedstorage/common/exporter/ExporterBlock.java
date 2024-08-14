@@ -36,9 +36,8 @@ public class ExporterBlock extends AbstractDirectionalCableBlock
     implements ColorableBlock<ExporterBlock, BaseBlockItem>, EntityBlock, BlockItemProvider<BaseBlockItem> {
     private static final Component HELP = createTranslation("item", "exporter.help");
     private static final Map<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE = new ConcurrentHashMap<>();
-    private static final AbstractBlockEntityTicker<AbstractExporterBlockEntity> TICKER = new NetworkNodeBlockEntityTicker<>(
-        BlockEntities.INSTANCE::getExporter
-    );
+    private static final AbstractBlockEntityTicker<AbstractExporterBlockEntity> TICKER =
+        new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getExporter);
 
     private final DyeColor color;
     private final MutableComponent name;

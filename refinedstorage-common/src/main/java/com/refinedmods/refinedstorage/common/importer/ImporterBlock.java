@@ -36,9 +36,8 @@ public class ImporterBlock extends AbstractDirectionalCableBlock implements
     ColorableBlock<ImporterBlock, BaseBlockItem>, EntityBlock, BlockItemProvider<BaseBlockItem> {
     private static final Component HELP = createTranslation("item", "importer.help");
     private static final Map<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE = new HashMap<>();
-    private static final AbstractBlockEntityTicker<AbstractImporterBlockEntity> TICKER = new NetworkNodeBlockEntityTicker<>(
-        BlockEntities.INSTANCE::getImporter
-    );
+    private static final AbstractBlockEntityTicker<AbstractImporterBlockEntity> TICKER =
+        new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getImporter);
 
     private final DyeColor color;
     private final MutableComponent name;
