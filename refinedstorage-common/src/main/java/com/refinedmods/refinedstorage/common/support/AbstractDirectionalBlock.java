@@ -46,7 +46,6 @@ public abstract class AbstractDirectionalBlock<T extends Enum<T> & StringReprese
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public BlockState rotate(final BlockState state, final Rotation rotation) {
         final EnumProperty<T> directionProperty = getDirectionType().getProperty();
         final T currentDirection = state.getValue(directionProperty);

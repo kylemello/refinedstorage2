@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+-   Optimized memory usage and startup time of cable models. After updating, cables will appear disconnected, but this is only visual. Cause a block update to fix this.
+
 ### Fixed
 
 -   Fixed mouse keybindings not working on NeoForge.

@@ -475,6 +475,27 @@ public final class PlatformImpl extends AbstractPlatform {
         slot.y = y;
     }
 
+    @Override
+    public void requestModelDataUpdateOnClient(final LevelAccessor level,
+                                               final BlockPos pos,
+                                               final boolean updateChunk) {
+        if (!level.isClientSide()) {
+            throw new IllegalArgumentException("Cannot request model data update on server");
+        }
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity == null) {
+            return;
+        }
+        if (updateChunk && level instanceof Level updatable) {
+            updatable.sendBlockUpdated(
+                blockEntity.getBlockPos(),
+                blockEntity.getBlockState(),
+                blockEntity.getBlockState(),
+                Block.UPDATE_ALL
+            );
+        }
+    }
+
     private void doSave(final CompoundTag compoundTag, final Path tempFile, final Path targetPath) throws IOException {
         // Write to temp file first.
         NbtIo.writeCompressed(compoundTag, tempFile);

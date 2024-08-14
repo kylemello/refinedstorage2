@@ -2,11 +2,11 @@ package com.refinedmods.refinedstorage.neoforge.datagen;
 
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.Blocks;
+import com.refinedmods.refinedstorage.common.content.ContentIds;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.MOD_ID;
@@ -71,6 +71,14 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             withExistingParent("block/cable/extension/" + color.getName(), extensionBase)
                 .texture("cable", texture)
                 .texture(PARTICLE_TEXTURE, texture);
+            getBuilder("block/cable/" + color.getName())
+                .customLoader((blockModelBuilder, existingFileHelper) -> new ColoredCustomLoaderBuilder<>(
+                    ContentIds.CABLE,
+                    blockModelBuilder,
+                    existingFileHelper,
+                    color
+                ) {
+                }).end();
         });
     }
 
@@ -276,11 +284,11 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getDiskInterface(), "disk_interface", "base_");
         Blocks.INSTANCE.getDiskInterface()
             .forEach((color, id, block) -> getBuilder("block/disk_interface/" + color.getName())
-                .customLoader((blockModelBuilder, existingFileHelper) -> new CustomLoaderBuilder<>(
-                    id,
+                .customLoader((blockModelBuilder, existingFileHelper) -> new ColoredCustomLoaderBuilder<>(
+                    ContentIds.DISK_INTERFACE,
                     blockModelBuilder,
                     existingFileHelper,
-                    true
+                    color
                 ) {
                 }).end());
     }

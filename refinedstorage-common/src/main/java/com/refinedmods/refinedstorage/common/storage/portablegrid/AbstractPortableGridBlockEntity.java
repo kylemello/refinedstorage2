@@ -22,6 +22,7 @@ import com.refinedmods.refinedstorage.common.support.energy.BlockEntityEnergySto
 import com.refinedmods.refinedstorage.common.support.energy.CreativeEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.ItemBlockEnergyStorage;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -146,7 +147,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
             return;
         }
         grid.updateStorage();
-        diskStateListener.immediateUpdate();
+        PlatformUtil.sendBlockUpdateToClient(level, worldPosition);
         setChanged();
     }
 
@@ -191,7 +192,10 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
     }
 
     protected void onClientDriveStateUpdated() {
-        diskStateListener.immediateUpdate();
+        if (level == null) {
+            return;
+        }
+        Platform.INSTANCE.requestModelDataUpdateOnClient(level, worldPosition, true);
     }
 
     @Override

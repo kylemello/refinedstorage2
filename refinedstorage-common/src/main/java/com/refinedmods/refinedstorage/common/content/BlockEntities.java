@@ -1,16 +1,16 @@
 package com.refinedmods.refinedstorage.common.content;
 
-import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
-import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlockEntity;
-import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlockEntity;
+import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
+import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockEntity;
 import com.refinedmods.refinedstorage.common.detector.DetectorBlockEntity;
-import com.refinedmods.refinedstorage.common.exporter.ExporterBlockEntity;
+import com.refinedmods.refinedstorage.common.exporter.AbstractExporterBlockEntity;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridBlockEntity;
 import com.refinedmods.refinedstorage.common.grid.GridBlockEntity;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlockEntity;
-import com.refinedmods.refinedstorage.common.importer.ImporterBlockEntity;
+import com.refinedmods.refinedstorage.common.importer.AbstractImporterBlockEntity;
+import com.refinedmods.refinedstorage.common.networking.AbstractCableBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.NetworkReceiverBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.NetworkTransmitterBlockEntity;
 import com.refinedmods.refinedstorage.common.networking.RelayBlockEntity;
@@ -20,12 +20,11 @@ import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
-import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlockEntity;
+import com.refinedmods.refinedstorage.common.storage.externalstorage.AbstractExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.AbstractPortableGridBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntity;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -40,7 +39,7 @@ public final class BlockEntities {
     public static final BlockEntities INSTANCE = new BlockEntities();
 
     @Nullable
-    private Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> cable;
+    private Supplier<BlockEntityType<AbstractCableBlockEntity>> cable;
     @Nullable
     private Supplier<BlockEntityType<AbstractDiskDriveBlockEntity>> diskDrive;
     @Nullable
@@ -58,19 +57,19 @@ public final class BlockEntities {
     private final Map<FluidStorageVariant, Supplier<BlockEntityType<FluidStorageBlockBlockEntity>>>
         fluidStorageBlocks = new EnumMap<>(FluidStorageVariant.class);
     @Nullable
-    private Supplier<BlockEntityType<ImporterBlockEntity>> importer;
+    private Supplier<BlockEntityType<AbstractImporterBlockEntity>> importer;
     @Nullable
-    private Supplier<BlockEntityType<ExporterBlockEntity>> exporter;
+    private Supplier<BlockEntityType<AbstractExporterBlockEntity>> exporter;
     @Nullable
     private Supplier<BlockEntityType<InterfaceBlockEntity>> iface;
     @Nullable
-    private Supplier<BlockEntityType<ExternalStorageBlockEntity>> externalStorage;
+    private Supplier<BlockEntityType<AbstractExternalStorageBlockEntity>> externalStorage;
     @Nullable
     private Supplier<BlockEntityType<DetectorBlockEntity>> detector;
     @Nullable
-    private Supplier<BlockEntityType<DestructorBlockEntity>> destructor;
+    private Supplier<BlockEntityType<AbstractDestructorBlockEntity>> destructor;
     @Nullable
-    private Supplier<BlockEntityType<ConstructorBlockEntity>> constructor;
+    private Supplier<BlockEntityType<AbstractConstructorBlockEntity>> constructor;
     @Nullable
     private Supplier<BlockEntityType<WirelessTransmitterBlockEntity>> wirelessTransmitter;
     @Nullable
@@ -93,13 +92,11 @@ public final class BlockEntities {
     private BlockEntities() {
     }
 
-    public BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>> getCable() {
+    public BlockEntityType<AbstractCableBlockEntity> getCable() {
         return requireNonNull(cable).get();
     }
 
-    public void setCable(
-        final Supplier<BlockEntityType<BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>>> supplier
-    ) {
+    public void setCable(final Supplier<BlockEntityType<AbstractCableBlockEntity>> supplier) {
         this.cable = supplier;
     }
 
@@ -169,19 +166,19 @@ public final class BlockEntities {
         return fluidStorageBlocks.get(variant).get();
     }
 
-    public BlockEntityType<ImporterBlockEntity> getImporter() {
+    public BlockEntityType<AbstractImporterBlockEntity> getImporter() {
         return requireNonNull(importer).get();
     }
 
-    public void setImporter(final Supplier<BlockEntityType<ImporterBlockEntity>> supplier) {
+    public void setImporter(final Supplier<BlockEntityType<AbstractImporterBlockEntity>> supplier) {
         this.importer = supplier;
     }
 
-    public BlockEntityType<ExporterBlockEntity> getExporter() {
+    public BlockEntityType<AbstractExporterBlockEntity> getExporter() {
         return requireNonNull(exporter).get();
     }
 
-    public void setExporter(final Supplier<BlockEntityType<ExporterBlockEntity>> supplier) {
+    public void setExporter(final Supplier<BlockEntityType<AbstractExporterBlockEntity>> supplier) {
         this.exporter = supplier;
     }
 
@@ -193,11 +190,11 @@ public final class BlockEntities {
         this.iface = supplier;
     }
 
-    public BlockEntityType<ExternalStorageBlockEntity> getExternalStorage() {
+    public BlockEntityType<AbstractExternalStorageBlockEntity> getExternalStorage() {
         return requireNonNull(externalStorage).get();
     }
 
-    public void setExternalStorage(final Supplier<BlockEntityType<ExternalStorageBlockEntity>> supplier) {
+    public void setExternalStorage(final Supplier<BlockEntityType<AbstractExternalStorageBlockEntity>> supplier) {
         this.externalStorage = supplier;
     }
 
@@ -209,19 +206,19 @@ public final class BlockEntities {
         this.detector = supplier;
     }
 
-    public BlockEntityType<DestructorBlockEntity> getDestructor() {
+    public BlockEntityType<AbstractDestructorBlockEntity> getDestructor() {
         return requireNonNull(destructor).get();
     }
 
-    public void setDestructor(final Supplier<BlockEntityType<DestructorBlockEntity>> supplier) {
+    public void setDestructor(final Supplier<BlockEntityType<AbstractDestructorBlockEntity>> supplier) {
         this.destructor = supplier;
     }
 
-    public BlockEntityType<ConstructorBlockEntity> getConstructor() {
+    public BlockEntityType<AbstractConstructorBlockEntity> getConstructor() {
         return requireNonNull(constructor).get();
     }
 
-    public void setConstructor(final Supplier<BlockEntityType<ConstructorBlockEntity>> supplier) {
+    public void setConstructor(final Supplier<BlockEntityType<AbstractConstructorBlockEntity>> supplier) {
         this.constructor = supplier;
     }
 

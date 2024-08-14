@@ -6,10 +6,10 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.storage.StorageConfigurationContainerImpl;
+import com.refinedmods.refinedstorage.common.support.AbstractCableLikeBlockEntity;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
@@ -33,10 +33,10 @@ import org.slf4j.LoggerFactory;
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 import static java.util.Objects.requireNonNull;
 
-public class ExternalStorageBlockEntity
-    extends BaseNetworkNodeContainerBlockEntity<ExternalStorageNetworkNode>
+public abstract class AbstractExternalStorageBlockEntity
+    extends AbstractCableLikeBlockEntity<ExternalStorageNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalStorageBlockEntity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExternalStorageBlockEntity.class);
     private static final String TAG_TRACKED_RESOURCES = "tr";
 
     private final FilterWithFuzzyMode filter;
@@ -46,7 +46,7 @@ public class ExternalStorageBlockEntity
     private final ExternalStorageWorkRate workRate = new ExternalStorageWorkRate();
     private boolean initialized;
 
-    public ExternalStorageBlockEntity(final BlockPos pos, final BlockState state) {
+    protected AbstractExternalStorageBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getExternalStorage(), pos, state, new ExternalStorageNetworkNode(
             Platform.INSTANCE.getConfig().getExternalStorage().getEnergyUsage(),
             System::currentTimeMillis

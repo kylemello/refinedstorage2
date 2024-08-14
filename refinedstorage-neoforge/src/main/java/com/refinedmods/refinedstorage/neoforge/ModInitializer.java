@@ -7,6 +7,8 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -65,17 +67,23 @@ import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApi;
 import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApiProxy;
+import com.refinedmods.refinedstorage.neoforge.constructordestructor.ForgeConstructorBlockEntity;
+import com.refinedmods.refinedstorage.neoforge.constructordestructor.ForgeDestructorBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.exporter.FluidHandlerExporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.exporter.ForgeExporterBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.exporter.ItemHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridExtractionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridInsertionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.ItemGridExtractionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.ItemGridScrollingStrategy;
 import com.refinedmods.refinedstorage.neoforge.importer.FluidHandlerImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.importer.ForgeImporterBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.importer.ItemHandlerImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.networking.ForgeCableBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.diskdrive.ForgeDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.diskinterface.ForgeDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.FluidHandlerPlatformExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.ForgeExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.ItemHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage.neoforge.storage.portablegrid.ForgePortableGridBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.support.energy.EnergyStorageAdapter;
@@ -145,6 +153,19 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 @Mod(IdentifierUtil.MOD_ID)
 public class ModInitializer extends AbstractModInitializer {
+    private static final BlockEntityProviders BLOCK_ENTITY_PROVIDERS = new BlockEntityProviders(
+        ForgeDiskDriveBlockEntity::new,
+        (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
+        (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+        ForgeDiskInterfaceBlockEntity::new,
+        ForgeCableBlockEntity::new,
+        ForgeExternalStorageBlockEntity::new,
+        ForgeExporterBlockEntity::new,
+        ForgeImporterBlockEntity::new,
+        ForgeConstructorBlockEntity::new,
+        ForgeDestructorBlockEntity::new
+    );
+
     private final DeferredRegister<Block> blockRegistry =
         DeferredRegister.create(BuiltInRegistries.BLOCK, IdentifierUtil.MOD_ID);
     private final DeferredRegister<Item> itemRegistry =
@@ -179,7 +200,7 @@ public class ModInitializer extends AbstractModInitializer {
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             eventBus.addListener(ClientModInitializer::onClientSetup);
-            eventBus.addListener(ClientModInitializer::onRegisterModelGeometry);
+            eventBus.addListener(ClientModInitializer::onRegisterCustomModels);
             eventBus.addListener(ClientModInitializer::onRegisterMenuScreens);
             eventBus.addListener(ClientModInitializer::onRegisterKeyMappings);
             eventBus.addListener(ClientModInitializer::onRegisterItemColors);
@@ -251,13 +272,7 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerBlocks(final IEventBus eventBus) {
-        registerBlocks(
-            new ForgeRegistryCallback<>(blockRegistry),
-            ForgeDiskDriveBlockEntity::new,
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            ForgeDiskInterfaceBlockEntity::new
-        );
+        registerBlocks(new ForgeRegistryCallback<>(blockRegistry), BLOCK_ENTITY_PROVIDERS);
         blockRegistry.register(eventBus);
     }
 
@@ -346,15 +361,12 @@ public class ModInitializer extends AbstractModInitializer {
             new BlockEntityTypeFactory() {
                 @SuppressWarnings("DataFlowIssue") // data type can be null
                 @Override
-                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntitySupplier<T> factory,
+                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntityProvider<T> factory,
                                                                          final Block... allowedBlocks) {
                     return new BlockEntityType<>(factory::create, new HashSet<>(Arrays.asList(allowedBlocks)), null);
                 }
             },
-            ForgeDiskDriveBlockEntity::new,
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            ForgeDiskInterfaceBlockEntity::new
+            BLOCK_ENTITY_PROVIDERS
         );
         blockEntityTypeRegistry.register(eventBus);
     }

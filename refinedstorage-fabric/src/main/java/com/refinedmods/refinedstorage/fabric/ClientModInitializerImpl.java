@@ -38,6 +38,7 @@ import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientToo
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.fabric.autocrafting.PatternUnbakedModel;
 import com.refinedmods.refinedstorage.fabric.mixin.ItemPropertiesAccessor;
+import com.refinedmods.refinedstorage.fabric.networking.CableUnbakedModel;
 import com.refinedmods.refinedstorage.fabric.storage.diskdrive.DiskDriveBlockEntityRendererImpl;
 import com.refinedmods.refinedstorage.fabric.storage.diskdrive.DiskDriveUnbakedModel;
 import com.refinedmods.refinedstorage.fabric.storage.diskinterface.DiskInterfaceBlockEntityRendererImpl;
@@ -309,10 +310,28 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         registerDiskModels();
         final QuadRotators quadRotators = new QuadRotators();
         ModelLoadingPlugin.register(pluginContext -> {
+            registerCustomCableModels(pluginContext, quadRotators);
             registerCustomDiskDriveModels(pluginContext, quadRotators);
             registerCustomDiskInterfaceModels(pluginContext, quadRotators);
             registerCustomPortableGridModels(pluginContext, quadRotators);
             registerCustomPatternModel(pluginContext);
+        });
+    }
+
+    private void registerCustomCableModels(final ModelLoadingPlugin.Context pluginContext,
+                                           final QuadRotators quadRotators) {
+        pluginContext.resolveModel().register(context -> {
+            if (context.id().getNamespace().equals(IdentifierUtil.MOD_ID)
+                && context.id().getPath().startsWith(BLOCK_PREFIX + "/cable/")
+                && !context.id().getPath().startsWith(BLOCK_PREFIX + "/cable/core")
+                && !context.id().getPath().startsWith(BLOCK_PREFIX + "/cable/extension")) {
+                final DyeColor color = DyeColor.byName(
+                    context.id().getPath().replace(BLOCK_PREFIX + "/cable/", ""),
+                    Blocks.INSTANCE.getCable().getDefault().getColor()
+                );
+                return new CableUnbakedModel(quadRotators, color);
+            }
+            return null;
         });
     }
 

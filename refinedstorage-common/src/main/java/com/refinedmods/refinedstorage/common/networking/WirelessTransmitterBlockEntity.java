@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
@@ -32,7 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
-    extends BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData>, BlockEntityWithDrops {
     private static final String TAG_UPGRADES = "upgr";
 

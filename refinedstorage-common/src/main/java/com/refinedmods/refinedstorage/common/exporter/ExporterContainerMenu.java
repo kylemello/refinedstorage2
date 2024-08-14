@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-public class ExporterContainerMenu extends AbstractSimpleFilterContainerMenu<ExporterBlockEntity> {
+public class ExporterContainerMenu extends AbstractSimpleFilterContainerMenu<AbstractExporterBlockEntity> {
     private static final MutableComponent FILTER_HELP = createTranslation("gui", "exporter.filter_help");
 
     public ExporterContainerMenu(final int syncId,
@@ -36,7 +36,7 @@ public class ExporterContainerMenu extends AbstractSimpleFilterContainerMenu<Exp
 
     ExporterContainerMenu(final int syncId,
                           final Player player,
-                          final ExporterBlockEntity exporter,
+                          final AbstractExporterBlockEntity exporter,
                           final ResourceContainer resourceContainer,
                           final UpgradeContainer upgradeContainer) {
         super(
@@ -58,7 +58,7 @@ public class ExporterContainerMenu extends AbstractSimpleFilterContainerMenu<Exp
     }
 
     @Override
-    protected void registerServerProperties(final ExporterBlockEntity blockEntity) {
+    protected void registerServerProperties(final AbstractExporterBlockEntity blockEntity) {
         registerProperty(new ServerProperty<>(
             PropertyTypes.FUZZY_MODE,
             blockEntity::isFuzzyMode,

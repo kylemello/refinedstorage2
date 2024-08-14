@@ -1,27 +1,32 @@
-package com.refinedmods.refinedstorage.common.constructordestructor;
+package com.refinedmods.refinedstorage.common.exporter;
 
+import com.refinedmods.refinedstorage.api.network.impl.node.exporter.CompositeExporterTransferStrategy;
+import com.refinedmods.refinedstorage.api.network.impl.node.exporter.ExporterNetworkNode;
+import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
+import com.refinedmods.refinedstorage.api.network.node.exporter.ExporterTransferStrategy;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
-import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.common.api.support.network.AmountOverride;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
+import com.refinedmods.refinedstorage.common.content.Items;
+import com.refinedmods.refinedstorage.common.support.AbstractCableLikeBlockEntity;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.SchedulingModeContainer;
 import com.refinedmods.refinedstorage.common.support.SchedulingModeType;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.function.LongSupplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -39,38 +44,36 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<ConstructorNetworkNode>
-    implements BlockEntityWithDrops, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
-    private static final String TAG_DROP_ITEMS = "di";
+public abstract class AbstractExporterBlockEntity
+    extends AbstractCableLikeBlockEntity<ExporterNetworkNode>
+    implements AmountOverride, BlockEntityWithDrops, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporterBlockEntity.class);
     private static final String TAG_UPGRADES = "upgr";
 
     private final UpgradeContainer upgradeContainer;
     private final FilterWithFuzzyMode filter;
     private final SchedulingModeContainer schedulingModeContainer;
 
-    private boolean dropItems;
-
-    public ConstructorBlockEntity(final BlockPos pos, final BlockState state) {
+    protected AbstractExporterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getConstructor(),
+            BlockEntities.INSTANCE.getExporter(),
             pos,
             state,
-            new ConstructorNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())
+            new ExporterNetworkNode(Platform.INSTANCE.getConfig().getExporter().getEnergyUsage())
         );
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CONSTRUCTOR, upgradeEnergyUsage -> {
-            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.EXPORTER, upgradeEnergyUsage -> {
+            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getExporter().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
             if (level instanceof ServerLevel serverLevel) {
                 initialize(serverLevel);
             }
-        }, ConstructorDestructorConstants.DEFAULT_WORK_TICK_RATE);
-        this.ticker = upgradeContainer.getTicker();
-        this.schedulingModeContainer = new SchedulingModeContainer(schedulingMode -> {
-            mainNetworkNode.setSchedulingMode(schedulingMode);
-            setChanged();
         });
+        this.ticker = upgradeContainer.getTicker();
+        this.schedulingModeContainer = new SchedulingModeContainer(this::schedulingModeChanged);
         this.filter = FilterWithFuzzyMode.createAndListenForFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
@@ -78,8 +81,9 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
         );
     }
 
-    void setFilters(final List<ResourceKey> filters) {
-        mainNetworkNode.setFilters(filters);
+    private void schedulingModeChanged(final SchedulingMode schedulingMode) {
+        mainNetworkNode.setSchedulingMode(schedulingMode);
+        setChanged();
     }
 
     @Override
@@ -95,26 +99,28 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         super.initialize(level, direction);
-        mainNetworkNode.setPlayerProvider(() -> getFakePlayer(level));
-        mainNetworkNode.setStrategy(createStrategy(level, direction));
+        final ExporterTransferStrategy strategy = createStrategy(level, direction);
+        LOGGER.debug("Initialized exporter at {} with strategy {}", worldPosition, strategy);
+        mainNetworkNode.setTransferStrategy(strategy);
     }
 
-    private ConstructorStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
+    private ExporterTransferStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
         final Direction incomingDirection = direction.getOpposite();
         final BlockPos sourcePosition = worldPosition.relative(direction);
-        final Collection<ConstructorStrategyFactory> factories = RefinedStorageApi.INSTANCE
-            .getConstructorStrategyFactories();
-        final List<ConstructorStrategy> strategies = factories
+        final List<ExporterTransferStrategyFactory> factories =
+            RefinedStorageApi.INSTANCE.getExporterTransferStrategyRegistry().getAll();
+        final List<ExporterTransferStrategy> strategies = factories
             .stream()
-            .flatMap(factory -> factory.create(
+            .map(factory -> factory.create(
                 serverLevel,
                 sourcePosition,
                 incomingDirection,
                 upgradeContainer,
-                dropItems
-            ).stream())
+                this,
+                filter.isFuzzyMode()
+            ))
             .toList();
-        return new CompositeConstructorStrategy(strategies);
+        return new CompositeExporterTransferStrategy(strategies);
     }
 
     @Override
@@ -134,7 +140,6 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.writeConfiguration(tag, provider);
-        tag.putBoolean(TAG_DROP_ITEMS, dropItems);
         schedulingModeContainer.writeToTag(tag);
         filter.save(tag, provider);
     }
@@ -142,9 +147,6 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     @Override
     public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.readConfiguration(tag, provider);
-        if (tag.contains(TAG_DROP_ITEMS)) {
-            dropItems = tag.getBoolean(TAG_DROP_ITEMS);
-        }
         schedulingModeContainer.loadFromTag(tag);
         filter.load(tag, provider);
     }
@@ -173,27 +175,15 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
         return upgradeContainer.getDrops();
     }
 
-    boolean isDropItems() {
-        return dropItems;
-    }
-
-    void setDropItems(final boolean dropItems) {
-        this.dropItems = dropItems;
-        setChanged();
-        if (level instanceof ServerLevel serverLevel) {
-            initialize(serverLevel);
-        }
-    }
-
     @Override
     public Component getDisplayName() {
-        return getName(ContentNames.CONSTRUCTOR);
+        return getName(ContentNames.EXPORTER);
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
-        return new ConstructorContainerMenu(syncId, player, this, filter.getFilterContainer(), upgradeContainer);
+        return new ExporterContainerMenu(syncId, player, this, filter.getFilterContainer(), upgradeContainer);
     }
 
     @Override
@@ -204,6 +194,32 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     @Override
     public StreamEncoder<RegistryFriendlyByteBuf, ResourceContainerData> getMenuCodec() {
         return ResourceContainerData.STREAM_CODEC;
+    }
+
+    void setFilters(final List<ResourceKey> filters) {
+        mainNetworkNode.setFilters(filters);
+    }
+
+    @Override
+    public long overrideAmount(final ResourceKey resource,
+                               final long amount,
+                               final LongSupplier currentAmountSupplier) {
+        if (!upgradeContainer.has(Items.INSTANCE.getRegulatorUpgrade())) {
+            return amount;
+        }
+        return upgradeContainer.getRegulatedAmount(resource)
+            .stream()
+            .map(desiredAmount -> getAmountStillNeeded(amount, currentAmountSupplier.getAsLong(), desiredAmount))
+            .findFirst()
+            .orElse(amount);
+    }
+
+    private long getAmountStillNeeded(final long amount, final long currentAmount, final long desiredAmount) {
+        final long stillNeeding = desiredAmount - currentAmount;
+        if (stillNeeding <= 0) {
+            return 0;
+        }
+        return Math.min(stillNeeding, amount);
     }
 
     @Override
