@@ -160,10 +160,9 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (level instanceof ServerLevel serverLevel) {
             initialize(serverLevel);
         }
-        if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
-            return;
+        if (doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
+            containers.update(level);
         }
-        containers.update(level);
     }
 
     @Override

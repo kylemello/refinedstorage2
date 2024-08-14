@@ -120,7 +120,7 @@ public class WirelessTransmitterBlockEntity
     @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
-        return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+        return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
     }
 
     boolean isActive() {
