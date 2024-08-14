@@ -141,9 +141,7 @@ abstract class AbstractExporterNetworkNodeTest {
     }
 
     @Test
-    void shouldNotTransferWithoutTaskExecutor(
-        @InjectNetworkStorageComponent final StorageNetworkComponent storage
-    ) {
+    void shouldNotTransferWithoutSchedulingMode(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         storage.addSource(new StorageImpl());
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);

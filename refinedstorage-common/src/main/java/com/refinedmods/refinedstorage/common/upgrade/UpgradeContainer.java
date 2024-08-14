@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.upgrade;
 
+import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeDestination;
@@ -8,6 +9,7 @@ import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeState;
 import com.refinedmods.refinedstorage.common.content.Items;
+import com.refinedmods.refinedstorage.common.support.network.NetworkNodeTicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UpgradeContainer extends SimpleContainer implements UpgradeState {
-    public static final int DEFAULT_WORK_TICK_RATE = 9;
+    private static final int DEFAULT_WORK_TICK_RATE = 9;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeContainer.class);
 
@@ -35,14 +37,28 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     private final Object2IntMap<UpgradeItem> index = new Object2IntOpenHashMap<>();
     @Nullable
     private final UpgradeContainerListener listener;
+    private final int defaultWorkTickRate;
+    private final ThrottledNetworkNodeTicker ticker;
 
     public UpgradeContainer(final UpgradeDestination destination, @Nullable final UpgradeContainerListener listener) {
+        this(destination, listener, DEFAULT_WORK_TICK_RATE);
+    }
+
+    public UpgradeContainer(final UpgradeDestination destination,
+                            @Nullable final UpgradeContainerListener listener,
+                            final int defaultWorkTickRate) {
         super(4);
         this.destination = destination;
         this.registry = RefinedStorageApi.INSTANCE.getUpgradeRegistry();
         this.addListener(container -> updateIndex());
         this.addListener(container -> notifyListener());
         this.listener = listener;
+        this.defaultWorkTickRate = defaultWorkTickRate;
+        this.ticker = new ThrottledNetworkNodeTicker(defaultWorkTickRate);
+    }
+
+    public NetworkNodeTicker getTicker() {
+        return ticker;
     }
 
     @Override
@@ -104,8 +120,8 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
         }
         LOGGER.debug("Reconfiguring for upgrades");
         final int amountOfSpeedUpgrades = getAmount(Items.INSTANCE.getSpeedUpgrade());
-        final int workTickRate = DEFAULT_WORK_TICK_RATE - (amountOfSpeedUpgrades * 2);
-        listener.updateState(workTickRate, getEnergyUsage());
+        ticker.workTickRate = defaultWorkTickRate - (amountOfSpeedUpgrades * 2);
+        listener.updateState(getEnergyUsage());
     }
 
     @Override
@@ -147,5 +163,21 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
             drops.add(getItem(i));
         }
         return drops;
+    }
+
+    private static class ThrottledNetworkNodeTicker implements NetworkNodeTicker {
+        private int workTickRate;
+        private int workTicks;
+
+        private ThrottledNetworkNodeTicker(final int workTickRate) {
+            this.workTickRate = workTickRate;
+        }
+
+        @Override
+        public void tick(final AbstractNetworkNode networkNode) {
+            if (workTicks++ % workTickRate == 0) {
+                networkNode.doWork();
+            }
+        }
     }
 }

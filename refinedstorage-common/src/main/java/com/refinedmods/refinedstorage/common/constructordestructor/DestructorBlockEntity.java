@@ -62,20 +62,15 @@ public class DestructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<D
             this::setChanged,
             this::setFilters
         );
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.DESTRUCTOR, (rate, upgradeEnergyUsage) -> {
-            setWorkTickRate(rate);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.DESTRUCTOR, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
             if (level instanceof ServerLevel serverLevel) {
                 initialize(serverLevel);
             }
-        });
-    }
-
-    @Override
-    protected boolean hasWorkTickRate() {
-        return true;
+        }, ConstructorDestructorConstants.DEFAULT_WORK_TICK_RATE);
+        this.ticker = upgradeContainer.getTicker();
     }
 
     @Override
@@ -182,7 +177,7 @@ public class DestructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<D
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         super.initialize(level, direction);
-        mainNetworkNode.setPlayer(getFakePlayer(level));
+        mainNetworkNode.setPlayerProvider(() -> getFakePlayer(level));
         mainNetworkNode.setStrategy(createStrategy(level, direction));
     }
 

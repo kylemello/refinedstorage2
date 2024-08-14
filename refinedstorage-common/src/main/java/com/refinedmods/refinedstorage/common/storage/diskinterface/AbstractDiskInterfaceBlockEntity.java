@@ -49,12 +49,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsagePerDisk(),
             AMOUNT_OF_DISKS
         ));
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, (rate, upgradeEnergyUsage) -> {
-            setWorkTickRate(rate);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
         });
+        this.ticker = upgradeContainer.getTicker();
         this.mainNetworkNode.setListener(this);
         this.mainNetworkNode.setTransferQuotaProvider(storage -> {
             if (storage instanceof SerializableStorage serializableStorage) {
@@ -64,11 +64,6 @@ public abstract class AbstractDiskInterfaceBlockEntity
             }
             return 1;
         });
-    }
-
-    @Override
-    protected boolean hasWorkTickRate() {
-        return true;
     }
 
     @Override

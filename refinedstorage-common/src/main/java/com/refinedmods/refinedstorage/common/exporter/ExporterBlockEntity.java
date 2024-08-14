@@ -64,8 +64,7 @@ public class ExporterBlockEntity
             state,
             new ExporterNetworkNode(Platform.INSTANCE.getConfig().getExporter().getEnergyUsage())
         );
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.EXPORTER, (rate, upgradeEnergyUsage) -> {
-            setWorkTickRate(rate);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.EXPORTER, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getExporter().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
@@ -73,6 +72,7 @@ public class ExporterBlockEntity
                 initialize(serverLevel);
             }
         });
+        this.ticker = upgradeContainer.getTicker();
         this.schedulingModeContainer = new SchedulingModeContainer(this::schedulingModeChanged);
         this.filter = FilterWithFuzzyMode.createAndListenForFilters(
             ResourceContainerImpl.createForFilter(),
@@ -84,11 +84,6 @@ public class ExporterBlockEntity
     private void schedulingModeChanged(final SchedulingMode schedulingMode) {
         mainNetworkNode.setSchedulingMode(schedulingMode);
         setChanged();
-    }
-
-    @Override
-    protected boolean hasWorkTickRate() {
-        return true;
     }
 
     @Override
@@ -201,7 +196,7 @@ public class ExporterBlockEntity
         return ResourceContainerData.STREAM_CODEC;
     }
 
-    private void setFilters(final List<ResourceKey> filters) {
+    void setFilters(final List<ResourceKey> filters) {
         mainNetworkNode.setFilters(filters);
     }
 

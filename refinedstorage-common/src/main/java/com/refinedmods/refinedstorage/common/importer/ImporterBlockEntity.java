@@ -69,8 +69,7 @@ public class ImporterBlockEntity
             this::setFilters
         );
         this.mainNetworkNode.setNormalizer(filter.createNormalizer());
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.IMPORTER, (rate, upgradeEnergyUsage) -> {
-            setWorkTickRate(rate);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.IMPORTER, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getImporter().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
@@ -78,11 +77,7 @@ public class ImporterBlockEntity
                 initialize(serverLevel);
             }
         });
-    }
-
-    @Override
-    protected boolean hasWorkTickRate() {
-        return true;
+        this.ticker = upgradeContainer.getTicker();
     }
 
     @Override

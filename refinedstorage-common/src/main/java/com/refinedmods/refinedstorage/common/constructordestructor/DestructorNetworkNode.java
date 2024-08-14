@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategy;
 
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +21,7 @@ public class DestructorNetworkNode extends SimpleNetworkNode {
     @Nullable
     private DestructorStrategy strategy;
     @Nullable
-    private Player player;
+    private Supplier<Player> playerProvider;
 
     DestructorNetworkNode(final long energyUsage) {
         super(energyUsage);
@@ -30,8 +31,8 @@ public class DestructorNetworkNode extends SimpleNetworkNode {
         this.strategy = strategy;
     }
 
-    void setPlayer(@Nullable final Player player) {
-        this.player = player;
+    void setPlayerProvider(@Nullable final Supplier<Player> playerProvider) {
+        this.playerProvider = playerProvider;
     }
 
     FilterMode getFilterMode() {
@@ -49,9 +50,10 @@ public class DestructorNetworkNode extends SimpleNetworkNode {
     @Override
     public void doWork() {
         super.doWork();
-        if (strategy == null || network == null || !isActive() || player == null) {
+        if (strategy == null || network == null || !isActive() || playerProvider == null) {
             return;
         }
+        final Player player = playerProvider.get();
         strategy.apply(filter, actor, this::getNetwork, player);
     }
 }

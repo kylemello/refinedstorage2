@@ -42,9 +42,9 @@ public class WirelessTransmitterBlockEntity
         super(BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage()
         ));
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER, (rate, energyUsage) -> {
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER, upgradeEnergyUsage -> {
             final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
-            mainNetworkNode.setEnergyUsage(baseUsage + energyUsage);
+            mainNetworkNode.setEnergyUsage(baseUsage + upgradeEnergyUsage);
             setChanged();
         });
     }

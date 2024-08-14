@@ -133,7 +133,7 @@ public final class ConstructorTest {
 
             // Assert
             sequence
-                .thenIdle(9)
+                .thenIdle(20)
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
                 .thenExecute(() -> assertItemEntityPresentExactly(
                     helper,
@@ -147,7 +147,7 @@ public final class ConstructorTest {
                     new ResourceAmount(asResource(DIRT), 1),
                     new ResourceAmount(asResource(STONE), 15)
                 ))
-                .thenIdle(9)
+                .thenIdle(20)
                 .thenExecute(storageContainsExactly(
                     helper,
                     pos,

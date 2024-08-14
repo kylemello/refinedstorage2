@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage.common.api.constructordestructor.Construct
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +19,7 @@ public class ConstructorNetworkNode extends SimpleNetworkNode {
     private final List<ConstructorTask> tasks = new ArrayList<>();
 
     @Nullable
-    private Player player;
+    private Supplier<Player> playerProvider;
     @Nullable
     private ConstructorStrategy strategy;
     @Nullable
@@ -37,8 +38,8 @@ public class ConstructorNetworkNode extends SimpleNetworkNode {
         schedulingMode.execute(tasks);
     }
 
-    void setPlayer(@Nullable final Player player) {
-        this.player = player;
+    void setPlayerProvider(@Nullable final Supplier<Player> playerSupplier) {
+        this.playerProvider = playerSupplier;
     }
 
     void setSchedulingMode(@Nullable final SchedulingMode schedulingMode) {
@@ -63,9 +64,10 @@ public class ConstructorNetworkNode extends SimpleNetworkNode {
 
         @Override
         public boolean run() {
-            if (strategy == null || network == null || player == null) {
+            if (strategy == null || network == null || playerProvider == null) {
                 return false;
             }
+            final Player player = playerProvider.get();
             strategy.apply(filter, actor, player, network);
             return true;
         }

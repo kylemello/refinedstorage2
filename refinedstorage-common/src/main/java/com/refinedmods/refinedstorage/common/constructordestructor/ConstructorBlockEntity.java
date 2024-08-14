@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.constructordestructor;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
@@ -57,15 +58,15 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
             state,
             new ConstructorNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())
         );
-        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CONSTRUCTOR, (rate, upgradeEnergyUsage) -> {
-            setWorkTickRate(rate);
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CONSTRUCTOR, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
             if (level instanceof ServerLevel serverLevel) {
                 initialize(serverLevel);
             }
-        });
+        }, ConstructorDestructorConstants.DEFAULT_WORK_TICK_RATE);
+        this.ticker = upgradeContainer.getTicker();
         this.schedulingModeContainer = new SchedulingModeContainer(schedulingMode -> {
             mainNetworkNode.setSchedulingMode(schedulingMode);
             setChanged();
@@ -73,13 +74,12 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
         this.filter = FilterWithFuzzyMode.createAndListenForFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            mainNetworkNode::setFilters
+            this::setFilters
         );
     }
 
-    @Override
-    protected boolean hasWorkTickRate() {
-        return true;
+    void setFilters(final List<ResourceKey> filters) {
+        mainNetworkNode.setFilters(filters);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         super.initialize(level, direction);
-        mainNetworkNode.setPlayer(getFakePlayer(level));
+        mainNetworkNode.setPlayerProvider(() -> getFakePlayer(level));
         mainNetworkNode.setStrategy(createStrategy(level, direction));
     }
 

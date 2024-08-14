@@ -12,7 +12,6 @@ import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkIte
 import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.RedstoneModeSettings;
-import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -47,23 +46,21 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
     private static final String TAG_REDSTONE_MODE = "rm";
 
+    protected NetworkNodeTicker ticker = NetworkNodeTicker.IMMEDIATE;
+
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
     @Nullable
     private Component name;
     @Nullable
     private UUID placedByPlayerId;
-
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
-    private int workTickRate;
-    private int workTicks;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
                                                final BlockState state,
                                                final T networkNode) {
         super(type, pos, state, networkNode);
-        this.workTickRate = hasWorkTickRate() ? UpgradeContainer.DEFAULT_WORK_TICK_RATE : 0;
     }
 
     @Override
@@ -124,21 +121,8 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         }
     }
 
-    protected boolean hasWorkTickRate() {
-        return false;
-    }
-
-    protected final void setWorkTickRate(final int workTickRate) {
-        if (!hasWorkTickRate()) {
-            throw new IllegalStateException("Block has no work tick rate!");
-        }
-        this.workTickRate = workTickRate;
-    }
-
     public void doWork() {
-        if (workTickRate == 0 || (workTicks++ % workTickRate == 0)) {
-            mainNetworkNode.doWork();
-        }
+        ticker.tick(mainNetworkNode);
     }
 
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(

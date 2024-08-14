@@ -26,6 +26,7 @@ public class SchedulingModeContainer {
             tasks -> Collections.shuffle(tasks, new Random()),
             this::notifyListener
         );
+        notifyListener();
     }
 
     public SchedulingModeType getType() {
