@@ -12,13 +12,16 @@ import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
+import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractUpgradeableNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
+import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
+import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +31,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -36,26 +40,28 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ImporterBlockEntity
-    extends AbstractUpgradeableNetworkNodeContainerBlockEntity<ImporterNetworkNode>
-    implements AmountOverride, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
+    extends BaseNetworkNodeContainerBlockEntity<ImporterNetworkNode>
+    implements AmountOverride, NetworkNodeExtendedMenuProvider<ResourceContainerData>, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImporterBlockEntity.class);
-
     private static final String TAG_FILTER_MODE = "fim";
+    private static final String TAG_UPGRADES = "upgr";
 
     private final FilterWithFuzzyMode filter;
+    private final UpgradeContainer upgradeContainer;
 
     public ImporterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
             BlockEntities.INSTANCE.getImporter(),
             pos,
             state,
-            new ImporterNetworkNode(0),
-            UpgradeDestinations.IMPORTER
+            new ImporterNetworkNode(Platform.INSTANCE.getConfig().getImporter().getEnergyUsage())
         );
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),
@@ -63,10 +69,30 @@ public class ImporterBlockEntity
             this::setFilters
         );
         this.mainNetworkNode.setNormalizer(filter.createNormalizer());
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.IMPORTER, upgradeEnergyUsage -> {
+            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getImporter().getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+            setChanged();
+            if (level instanceof ServerLevel serverLevel) {
+                initialize(serverLevel);
+            }
+        });
+        this.ticker = upgradeContainer.getTicker();
+    }
+
+    @Override
+    public List<Item> getUpgradeItems() {
+        return upgradeContainer.getUpgradeItems();
+    }
+
+    @Override
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
+        super.initialize(level, direction);
         final List<ImporterTransferStrategy> strategies = createStrategies(level, direction);
         LOGGER.debug("Initialized importer at {} with strategies {}", worldPosition, strategies);
         mainNetworkNode.setTransferStrategies(strategies);
@@ -81,6 +107,25 @@ public class ImporterBlockEntity
             .stream()
             .map(factory -> factory.create(serverLevel, sourcePosition, incomingDirection, upgradeContainer, this))
             .toList();
+    }
+
+    @Override
+    public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(TAG_UPGRADES, ContainerUtil.write(upgradeContainer, provider));
+    }
+
+    @Override
+    public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
+        if (tag.contains(TAG_UPGRADES)) {
+            ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
+        }
+        super.loadAdditional(tag, provider);
+    }
+
+    @Override
+    public final NonNullList<ItemStack> getDrops() {
+        return upgradeContainer.getDrops();
     }
 
     @Override
@@ -118,12 +163,6 @@ public class ImporterBlockEntity
     void setFilterMode(final FilterMode mode) {
         mainNetworkNode.setFilterMode(mode);
         setChanged();
-    }
-
-    @Override
-    protected void setEnergyUsage(final long upgradeEnergyUsage) {
-        final long baseEnergyUsage = Platform.INSTANCE.getConfig().getImporter().getEnergyUsage();
-        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
     }
 
     @Override
@@ -178,6 +217,6 @@ public class ImporterBlockEntity
     @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
-        return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+        return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
     }
 }

@@ -16,7 +16,7 @@ import com.refinedmods.refinedstorage.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 import static java.util.Objects.requireNonNull;
 
-public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
+public class RelayBlockEntity extends BaseNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_PASS_THROUGH = "passthrough";
     private static final String TAG_PASS_ENERGY = "passenergy";

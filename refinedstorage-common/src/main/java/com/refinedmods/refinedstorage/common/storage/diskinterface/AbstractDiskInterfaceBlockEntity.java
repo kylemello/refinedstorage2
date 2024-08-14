@@ -6,7 +6,6 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storagetransfer.Stor
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -43,8 +42,6 @@ public abstract class AbstractDiskInterfaceBlockEntity
     private static final String TAG_TRANSFER_MODE = "tm";
 
     private final UpgradeContainer upgradeContainer;
-    private int workTickRate = 9;
-    private int workTicks;
 
     protected AbstractDiskInterfaceBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getDiskInterface(), pos, state, new StorageTransferNetworkNode(
@@ -52,11 +49,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsagePerDisk(),
             AMOUNT_OF_DISKS
         ));
-        this.upgradeContainer = new UpgradeContainer(
-            UpgradeDestinations.DISK_INTERFACE,
-            RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
-            this::upgradeContainerChanged
-        );
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, upgradeEnergyUsage -> {
+            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+            setChanged();
+        });
+        this.ticker = upgradeContainer.getTicker();
         this.mainNetworkNode.setListener(this);
         this.mainNetworkNode.setTransferQuotaProvider(storage -> {
             if (storage instanceof SerializableStorage serializableStorage) {
@@ -66,21 +64,6 @@ public abstract class AbstractDiskInterfaceBlockEntity
             }
             return 1;
         });
-    }
-
-    private void upgradeContainerChanged() {
-        final int amountOfSpeedUpgrades = upgradeContainer.getAmount(Items.INSTANCE.getSpeedUpgrade());
-        this.workTickRate = 9 - (amountOfSpeedUpgrades * 2);
-        final long baseEnergyUsage = Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage();
-        mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeContainer.getEnergyUsage());
-        setChanged();
-    }
-
-    @Override
-    public final void doWork() {
-        if (workTicks++ % workTickRate == 0) {
-            super.doWork();
-        }
     }
 
     @Override
@@ -153,7 +136,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = super.getDrops();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));

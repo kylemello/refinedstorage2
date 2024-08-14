@@ -1,10 +1,10 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.exporter;
 
 import com.refinedmods.refinedstorage.api.core.Action;
-import com.refinedmods.refinedstorage.api.network.impl.node.task.DefaultTaskExecutor;
+import com.refinedmods.refinedstorage.api.network.impl.node.task.DefaultSchedulingMode;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNodeActor;
+import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
 import com.refinedmods.refinedstorage.api.network.node.exporter.ExporterTransferStrategy;
-import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
@@ -25,10 +25,10 @@ import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
 import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FirstAvailableExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
+class DefaultExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
     @Override
-    protected TaskExecutor<ExporterNetworkNode.TaskContext> createTaskExecutor() {
-        return new DefaultTaskExecutor<>();
+    protected SchedulingMode createSchedulingMode() {
+        return new DefaultSchedulingMode();
     }
 
     @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug

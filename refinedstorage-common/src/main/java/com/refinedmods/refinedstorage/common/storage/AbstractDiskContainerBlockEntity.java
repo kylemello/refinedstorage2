@@ -8,7 +8,7 @@ import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorageContainerNetworkNode>
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<T>
+    extends BaseNetworkNodeContainerBlockEntity<T>
     implements BlockEntityWithDrops, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_DISK_INVENTORY = "inv";
     private static final String TAG_DISKS = "disks";
@@ -222,6 +222,6 @@ public abstract class AbstractDiskContainerBlockEntity<T extends AbstractStorage
     @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
-        return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+        return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
     }
 }

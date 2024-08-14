@@ -1,26 +1,25 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.task;
 
-import com.refinedmods.refinedstorage.api.network.node.task.Task;
-import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
+import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
 
 import java.util.List;
 
-public class RoundRobinTaskExecutor<C> implements TaskExecutor<C> {
+public class RoundRobinSchedulingMode implements SchedulingMode {
     private final State state;
 
-    public RoundRobinTaskExecutor(final State state) {
+    public RoundRobinSchedulingMode(final State state) {
         this.state = state;
     }
 
     @Override
-    public void execute(final List<? extends Task<C>> tasks, final C context) {
+    public void execute(final List<? extends ScheduledTask> tasks) {
         if (tasks.isEmpty()) {
             return;
         }
         final int startIndex = state.getIndex() % tasks.size();
         for (int i = startIndex; i < tasks.size(); ++i) {
-            final Task<C> task = tasks.get(i);
-            if (task.run(context)) {
+            final ScheduledTask task = tasks.get(i);
+            if (task.run()) {
                 state.setIndex((state.getIndex() + 1) % tasks.size());
                 return;
             }

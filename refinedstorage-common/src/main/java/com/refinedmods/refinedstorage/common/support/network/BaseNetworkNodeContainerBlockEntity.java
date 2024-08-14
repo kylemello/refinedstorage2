@@ -3,22 +3,32 @@ package com.refinedmods.refinedstorage.common.support.network;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
+import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.configurationcard.ConfigurationCardTarget;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemTargetBlockEntity;
+import com.refinedmods.refinedstorage.common.support.PlayerAwareBlockEntity;
+import com.refinedmods.refinedstorage.common.support.RedstoneMode;
+import com.refinedmods.refinedstorage.common.support.RedstoneModeSettings;
 
+import java.util.Objects;
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,16 +36,25 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
+
 public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
-    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget {
-    private static final String TAG_CUSTOM_NAME = "CustomName";
+    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget, PlayerAwareBlockEntity {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNetworkNodeContainerBlockEntity.class);
+    private static final String TAG_CUSTOM_NAME = "CustomName";
+    private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
+    private static final String TAG_REDSTONE_MODE = "rm";
+
+    protected NetworkNodeTicker ticker = NetworkNodeTicker.IMMEDIATE;
 
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
     @Nullable
     private Component name;
+    @Nullable
+    private UUID placedByPlayerId;
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
 
     public BaseNetworkNodeContainerBlockEntity(final BlockEntityType<?> type,
                                                final BlockPos pos,
@@ -54,7 +73,10 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     protected boolean calculateActive() {
         final long energyUsage = mainNetworkNode.getEnergyUsage();
         final boolean hasLevel = level != null && level.isLoaded(worldPosition);
+        final boolean redstoneModeActive = !hasRedstoneMode()
+            || redstoneMode.isActive(hasLevel && level.hasNeighborSignal(worldPosition));
         return hasLevel
+            && redstoneModeActive
             && mainNetworkNode.getNetwork() != null
             && mainNetworkNode.getNetwork().getComponent(EnergyNetworkComponent.class).getStored() >= energyUsage;
     }
@@ -100,7 +122,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     }
 
     public void doWork() {
-        mainNetworkNode.doWork();
+        ticker.tick(mainNetworkNode);
     }
 
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(
@@ -115,10 +137,32 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     public void setBlockState(final BlockState newBlockState) {
         final BlockState oldBlockState = getBlockState();
         super.setBlockState(newBlockState);
-        if (!doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
+        if (level instanceof ServerLevel serverLevel) {
+            initialize(serverLevel);
+        }
+        if (doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState)) {
+            containers.update(level);
+        }
+    }
+
+    @Override
+    public void setLevel(final Level level) {
+        super.setLevel(level);
+        if (level instanceof ServerLevel serverLevel) {
+            initialize(serverLevel);
+        }
+    }
+
+    protected final void initialize(final ServerLevel level) {
+        final Direction direction = tryExtractDirection(getBlockState());
+        if (direction == null) {
             return;
         }
-        containers.update(level);
+        initialize(level, direction);
+    }
+
+    protected void initialize(final ServerLevel level, final Direction direction) {
+        // no op
     }
 
     @Nullable
@@ -130,12 +174,18 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     @Override
     public void saveAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
+        if (placedByPlayerId != null) {
+            tag.putUUID(TAG_PLACED_BY_PLAYER_ID, placedByPlayerId);
+        }
         writeConfiguration(tag, provider);
     }
 
     @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
+        if (tag.hasUUID(TAG_PLACED_BY_PLAYER_ID)) {
+            setPlacedBy(tag.getUUID(TAG_PLACED_BY_PLAYER_ID));
+        }
         readConfiguration(tag, provider);
     }
 
@@ -144,6 +194,9 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (name != null) {
             tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(name, provider));
         }
+        if (hasRedstoneMode()) {
+            tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(redstoneMode));
+        }
     }
 
     @Override
@@ -151,6 +204,30 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
         if (tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
             this.name = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
         }
+        if (hasRedstoneMode() && tag.contains(TAG_REDSTONE_MODE)) {
+            this.redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
+        }
+    }
+
+    protected boolean hasRedstoneMode() {
+        return true;
+    }
+
+    private void verifyHasRedstoneMode() {
+        if (!hasRedstoneMode()) {
+            throw new IllegalStateException("Block has no redstone mode!");
+        }
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        verifyHasRedstoneMode();
+        return redstoneMode;
+    }
+
+    public void setRedstoneMode(final RedstoneMode redstoneMode) {
+        verifyHasRedstoneMode();
+        this.redstoneMode = redstoneMode;
+        setChanged();
     }
 
     @Override
@@ -167,5 +244,19 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
 
     protected final Component getName(final Component defaultName) {
         return name == null ? defaultName : name;
+    }
+
+    @Override
+    public void setPlacedBy(final UUID playerId) {
+        this.placedByPlayerId = playerId;
+        setChanged();
+    }
+
+    protected final Player getFakePlayer(final ServerLevel serverLevel) {
+        return Platform.INSTANCE.getFakePlayer(serverLevel, placedByPlayerId);
+    }
+
+    protected final boolean isPlacedBy(final UUID playerId) {
+        return Objects.equals(placedByPlayerId, playerId);
     }
 }

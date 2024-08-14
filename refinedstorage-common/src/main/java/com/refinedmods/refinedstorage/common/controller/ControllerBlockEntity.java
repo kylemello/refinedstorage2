@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeEx
 import com.refinedmods.refinedstorage.common.support.energy.BlockEntityEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.CreativeEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.ItemBlockEnergyStorage;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.BaseNetworkNodeContainerBlockEntity;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
@@ -30,7 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ControllerNetworkNode>
+public class ControllerBlockEntity extends BaseNetworkNodeContainerBlockEntity<ControllerNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ControllerData>, TransferableBlockEntityEnergy {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerBlockEntity.class);
 
