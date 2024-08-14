@@ -1,11 +1,5 @@
 package com.refinedmods.refinedstorage.common.constructordestructor;
 
-import com.refinedmods.refinedstorage.api.network.Network;
-import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
-import com.refinedmods.refinedstorage.api.network.node.NetworkNodeActor;
-import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
-import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategy;
@@ -25,7 +19,6 @@ import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -46,19 +39,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<ConstructorNetworkNode>
     implements BlockEntityWithDrops, NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_DROP_ITEMS = "di";
     private static final String TAG_UPGRADES = "upgr";
 
-    private final Actor actor;
-    private final List<ConstructorTask> tasks = new ArrayList<>();
     private final UpgradeContainer upgradeContainer;
     private final FilterWithFuzzyMode filter;
     private final SchedulingModeContainer schedulingModeContainer;
 
-    @Nullable
-    private ConstructorStrategy strategy;
     private boolean dropItems;
 
     public ConstructorBlockEntity(final BlockPos pos, final BlockState state) {
@@ -66,9 +55,8 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
             BlockEntities.INSTANCE.getConstructor(),
             pos,
             state,
-            new SimpleNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())
+            new ConstructorNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())
         );
-        this.actor = new NetworkNodeActor(mainNetworkNode);
         this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CONSTRUCTOR, (rate, upgradeEnergyUsage) -> {
             setWorkTickRate(rate);
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage();
@@ -78,11 +66,14 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
                 initialize(serverLevel);
             }
         });
-        this.schedulingModeContainer = new SchedulingModeContainer(schedulingMode -> setChanged());
+        this.schedulingModeContainer = new SchedulingModeContainer(schedulingMode -> {
+            mainNetworkNode.setSchedulingMode(schedulingMode);
+            setChanged();
+        });
         this.filter = FilterWithFuzzyMode.createAndListenForFilters(
             ResourceContainerImpl.createForFilter(),
             this::setChanged,
-            this::setFilters
+            mainNetworkNode::setFilters
         );
     }
 
@@ -101,15 +92,11 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
         return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
-    private void setFilters(final List<ResourceKey> filters) {
-        this.tasks.clear();
-        this.tasks.addAll(filters.stream().map(ConstructorTask::new).toList());
-    }
-
     @Override
     protected void initialize(final ServerLevel level, final Direction direction) {
         super.initialize(level, direction);
-        this.strategy = createStrategy(level, direction);
+        mainNetworkNode.setPlayer(getFakePlayer(level));
+        mainNetworkNode.setStrategy(createStrategy(level, direction));
     }
 
     private ConstructorStrategy createStrategy(final ServerLevel serverLevel, final Direction direction) {
@@ -128,15 +115,6 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
             ).stream())
             .toList();
         return new CompositeConstructorStrategy(strategies);
-    }
-
-    // TODO: Move to own obj :)
-    @Override
-    public void postDoWork() {
-        if (mainNetworkNode.getNetwork() == null || !mainNetworkNode.isActive()) {
-            return;
-        }
-        schedulingModeContainer.execute(tasks);
     }
 
     @Override
@@ -232,24 +210,5 @@ public class ConstructorBlockEntity extends BaseNetworkNodeContainerBlockEntity<
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
         return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
-    }
-
-    private class ConstructorTask implements SchedulingMode.ScheduledTask {
-        private final ResourceKey filter;
-
-        private ConstructorTask(final ResourceKey filter) {
-            this.filter = filter;
-        }
-
-        @Override
-        public boolean run() {
-            final Network network = mainNetworkNode.getNetwork();
-            if (strategy == null || !(level instanceof ServerLevel serverLevel) || network == null) {
-                return false;
-            }
-            final Player player = getFakePlayer(serverLevel);
-            strategy.apply(filter, actor, player, network);
-            return true;
-        }
     }
 }

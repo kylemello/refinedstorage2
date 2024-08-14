@@ -61,7 +61,7 @@ public class ImporterBlockEntity
             BlockEntities.INSTANCE.getImporter(),
             pos,
             state,
-            new ImporterNetworkNode(0)
+            new ImporterNetworkNode(Platform.INSTANCE.getConfig().getImporter().getEnergyUsage())
         );
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
             ResourceContainerImpl.createForFilter(),

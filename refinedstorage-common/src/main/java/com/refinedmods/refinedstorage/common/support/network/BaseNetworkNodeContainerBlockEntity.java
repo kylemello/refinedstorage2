@@ -138,11 +138,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     public void doWork() {
         if (workTickRate == 0 || (workTicks++ % workTickRate == 0)) {
             mainNetworkNode.doWork();
-            postDoWork();
         }
-    }
-
-    protected void postDoWork() {
     }
 
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(
@@ -204,7 +200,7 @@ public class BaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         if (tag.hasUUID(TAG_PLACED_BY_PLAYER_ID)) {
-            placedByPlayerId = tag.getUUID(TAG_PLACED_BY_PLAYER_ID);
+            setPlacedBy(tag.getUUID(TAG_PLACED_BY_PLAYER_ID));
         }
         readConfiguration(tag, provider);
     }
