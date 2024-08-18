@@ -28,9 +28,7 @@ public class GridViewImpl implements GridView {
     private final GridResourceFactory resourceFactory;
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
 
-    private List<GridResource> viewList = new ArrayList<>();
-    private final Map<ResourceKey, GridResource> viewListIndex = new HashMap<>();
-
+    private ViewList viewList = new ViewList(new ArrayList<>(), new HashMap<>());
     private GridSortingType sortingType;
     private GridSortingDirection sortingDirection = GridSortingDirection.ASCENDING;
     private BiPredicate<GridView, GridResource> filter = (view, resource) -> true;
@@ -100,22 +98,35 @@ public class GridViewImpl implements GridView {
     @Override
     public void sort() {
         LOGGER.info("Sorting grid view");
-
-        viewListIndex.clear();
-
-        final List<GridResource> newViewList = new ArrayList<>();
-        for (final ResourceKey resource : backingList.getAll()) {
-            resourceFactory.apply(resource).ifPresent(gridResource -> {
-                if (filter.test(this, gridResource)) {
-                    newViewList.add(gridResource);
-                    viewListIndex.put(resource, gridResource);
-                }
-            });
-        }
-        newViewList.sort(getComparator());
-        viewList = newViewList;
-
+        viewList = createViewList();
         notifyListener();
+    }
+
+    private ViewList createViewList() {
+        final List<GridResource> list = new ArrayList<>();
+        final Map<ResourceKey, GridResource> index = new HashMap<>();
+        for (final ResourceKey resource : backingList.getAll()) {
+            final GridResource existingGridResource = viewList.index.get(resource);
+            if (existingGridResource != null) {
+                tryAddGridResourceIntoViewList(existingGridResource, list, index, resource);
+            } else {
+                resourceFactory.apply(resource).ifPresent(
+                    gridResource -> tryAddGridResourceIntoViewList(gridResource, list, index, resource)
+                );
+            }
+        }
+        list.sort(getComparator());
+        return new ViewList(list, index);
+    }
+
+    private void tryAddGridResourceIntoViewList(final GridResource gridResource,
+                                                final List<GridResource> list,
+                                                final Map<ResourceKey, GridResource> index,
+                                                final ResourceKey resource) {
+        if (filter.test(this, gridResource)) {
+            list.add(gridResource);
+            index.put(resource, gridResource);
+        }
     }
 
     @Override
@@ -126,7 +137,7 @@ public class GridViewImpl implements GridView {
 
         updateOrRemoveTrackedResource(resource, trackedResource);
 
-        final GridResource gridResource = viewListIndex.get(resource);
+        final GridResource gridResource = viewList.index.get(resource);
         if (gridResource != null) {
             LOGGER.debug("{} was already found in the view list", resource);
             if (gridResource.isZeroed()) {
@@ -162,12 +173,12 @@ public class GridViewImpl implements GridView {
                                                     final GridResource oldGridResource) {
         LOGGER.debug("{} was zeroed, unzeroing", resource);
         final GridResource newResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
-        viewListIndex.put(resource, newResource);
+        viewList.index.put(resource, newResource);
         final int index = CoreValidations.validateNotNegative(
-            viewList.indexOf(oldGridResource),
+            viewList.list.indexOf(oldGridResource),
             "Cannot reinsert previously zeroed resource, it was not found"
         );
-        viewList.set(index, newResource);
+        viewList.list.set(index, newResource);
     }
 
     private void handleChangeForExistingResource(final ResourceKey resource,
@@ -189,9 +200,9 @@ public class GridViewImpl implements GridView {
     private void updateExistingResourceInViewList(final ResourceKey resource,
                                                   final GridResource gridResource,
                                                   final boolean noLongerAvailable) {
-        viewList.remove(gridResource);
+        viewList.list.remove(gridResource);
         if (noLongerAvailable) {
-            viewListIndex.remove(resource);
+            viewList.index.remove(resource);
             notifyListener();
         } else {
             addIntoView(gridResource);
@@ -204,7 +215,7 @@ public class GridViewImpl implements GridView {
         final GridResource gridResource = resourceFactory.apply(operationResult.resource()).orElseThrow();
         if (filter.test(this, gridResource)) {
             LOGGER.debug("Filter allowed, actually adding {}", resource);
-            viewListIndex.put(resource, gridResource);
+            viewList.index.put(resource, gridResource);
             addIntoView(gridResource);
             notifyListener();
         }
@@ -212,11 +223,11 @@ public class GridViewImpl implements GridView {
 
     private void addIntoView(final GridResource resource) {
         // Calculate the position according to sorting rules.
-        final int wouldBePosition = Collections.binarySearch(viewList, resource, getComparator());
+        final int wouldBePosition = Collections.binarySearch(viewList.list, resource, getComparator());
         // Most of the time, the "would be" position is negative, indicating that the resource wasn't found yet in the
         // list, comparing with sorting rules. The absolute of this position would be the "real" position if sorted.
         if (wouldBePosition < 0) {
-            viewList.add(-wouldBePosition - 1, resource);
+            viewList.list.add(-wouldBePosition - 1, resource);
         } else {
             // If the "would-be" position is positive, this means that the resource is already contained in the list,
             // comparing with sorting rules.
@@ -225,7 +236,7 @@ public class GridViewImpl implements GridView {
             // For example: a resource with different identity but the same name (in Minecraft: an enchanted book
             // with different NBT).
             // In that case, just insert it after the "existing" resource.
-            viewList.add(wouldBePosition + 1, resource);
+            viewList.list.add(wouldBePosition + 1, resource);
         }
     }
 
@@ -247,7 +258,7 @@ public class GridViewImpl implements GridView {
 
     @Override
     public List<GridResource> getViewList() {
-        return viewList;
+        return viewList.list;
     }
 
     @Override
@@ -258,8 +269,11 @@ public class GridViewImpl implements GridView {
     @Override
     public void clear() {
         backingList.clear();
-        viewListIndex.clear();
+        viewList.index.clear();
         trackedResources.clear();
-        viewList.clear();
+        viewList.list.clear();
+    }
+
+    private record ViewList(List<GridResource> list, Map<ResourceKey, GridResource> index) {
     }
 }
