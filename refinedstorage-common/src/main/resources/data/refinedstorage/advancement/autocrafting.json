@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "id": "refinedstorage:crafter"
+    },
+    "title": {
+      "translate": "advancements.refinedstorage.autocrafting"
+    },
+    "description": {
+      "translate": "advancements.refinedstorage.autocrafting.description"
+    }
+  },
+  "parent": "refinedstorage:root",
+  "criteria": {
+    "crafter_in_inventory": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#refinedstorage:pattern_grids"
+          },
+          {
+            "items": "#refinedstorage:crafters"
+          },
+          {
+            "items": "refinedstorage:pattern"
+          }
+        ]
+      }
+    }
+  }
+}

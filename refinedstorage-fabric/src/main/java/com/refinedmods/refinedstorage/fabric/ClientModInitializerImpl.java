@@ -127,6 +127,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getSecurityManager());
         setCutout(Blocks.INSTANCE.getRelay());
         setCutout(Blocks.INSTANCE.getDiskInterface());
+        setCutout(Blocks.INSTANCE.getCrafter());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -154,9 +155,8 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         Blocks.INSTANCE.getSecurityManager().forEach(
             (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
         );
-        Blocks.INSTANCE.getRelay().forEach(
-            (color, id, block) -> registerEmissiveRelayModels(color, id)
-        );
+        Blocks.INSTANCE.getRelay().forEach((color, id, block) -> registerEmissiveRelayModels(color, id));
+        Blocks.INSTANCE.getCrafter().forEach((color, id, block) -> registerEmissiveCrafterModels(color, id));
     }
 
     private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
@@ -231,6 +231,19 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
             createIdentifier(BLOCK_PREFIX + "/relay/cutouts/in/" + color.getName()),
             createIdentifier(BLOCK_PREFIX + "/relay/cutouts/out/" + color.getName())
+        );
+    }
+
+    private void registerEmissiveCrafterModels(final DyeColor color, final ResourceLocation id) {
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier(BLOCK_PREFIX + "/crafter/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
+        );
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
         );
     }
 

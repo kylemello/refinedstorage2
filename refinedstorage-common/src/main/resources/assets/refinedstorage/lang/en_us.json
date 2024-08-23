@@ -37,6 +37,7 @@
   "block.refinedstorage.security_manager.help": "When this device is active, will protect the network by default and block all operations. Start adding Security Cards to permit or deny specific operations for a player.",
   "block.refinedstorage.relay": "Relay",
   "block.refinedstorage.disk_interface": "Disk Interface",
+  "block.refinedstorage.crafter": "Crafter",
   "gui.refinedstorage.controller.redstone_mode_help": "When this device is inactive, the storage network will not be able to use this device as an energy source.",
   "gui.refinedstorage.disk_drive.disks": "Disks",
   "gui.refinedstorage.storage.redstone_mode_help": "When this device is inactive, the contained storage will no longer be accessible from within the storage network.",
@@ -196,6 +197,7 @@
   "item.refinedstorage.constructor.help": "Places blocks from the storage network in the world.",
   "item.refinedstorage.destructor.help": "Destroys blocks from the world and puts them in the storage network.",
   "item.refinedstorage.relay.help": "Turn entire sections of a storage network on or off and create new branches of your network.",
+  "item.refinedstorage.crafter.help": "Accepts patterns to store autocraftable resources.",
   "item.refinedstorage.quartz_enriched_iron": "Quartz Enriched Iron",
   "item.refinedstorage.quartz_enriched_copper": "Quartz Enriched Copper",
   "item.refinedstorage.processor_binding": "Processor Binding",
@@ -361,6 +363,7 @@
   "tag.item.refinedstorage.storage_disks": "Storage Disks",
   "tag.item.refinedstorage.wireless_transmitters": "Wireless Transmitters",
   "tag.item.refinedstorage.disk_interfaces": "Disk Interfaces",
+  "tag.item.refinedstorage.crafters": "Crafters",
   "text.autoconfig.refinedstorage.title": "Refined Storage Configuration",
   "refinedstorage.configuration.title": "Refined Storage Configuration",
   "refinedstorage.configuration.section.refinedstorage.common.toml": "Refined Storage Configuration",
@@ -553,6 +556,10 @@
   "text.autoconfig.refinedstorage.option.relay.inputNetworkEnergyUsage.tooltip": "Input network energy usage.",
   "text.autoconfig.refinedstorage.option.relay.outputNetworkEnergyUsage": "Output network energy usage (if not in pass through mode)",
   "text.autoconfig.refinedstorage.option.relay.outputNetworkEnergyUsage.tooltip": "Output network energy usage (if not in pass through mode).",
+  "text.autoconfig.refinedstorage.option.crafter": "Crafter",
+  "text.autoconfig.refinedstorage.option.crafter.tooltip": "Configuration for the Crafter.",
+  "text.autoconfig.refinedstorage.option.crafter.energyUsage": "Energy usage",
+  "text.autoconfig.refinedstorage.option.crafter.energyUsage.tooltip": "The energy used by the Crafter.",
   "advancements.refinedstorage.root.description": "Use one or multiple Controllers in a storage network to provide your network with energy",
   "advancements.refinedstorage.connecting": "Connecting",
   "advancements.refinedstorage.connecting.description": "Use Cable to connect devices with each other, or place devices against each other",
@@ -595,5 +602,7 @@
   "advancements.refinedstorage.security": "Security",
   "advancements.refinedstorage.security.description": "Secure your storage network with a Security Manager and a Security Card",
   "advancements.refinedstorage.conditional_connecting": "Conditional connecting",
-  "advancements.refinedstorage.conditional_connecting.description": "Turn entire sections of a storage network on or off and create new branches of your network with a Relay"
+  "advancements.refinedstorage.conditional_connecting.description": "Turn entire sections of a storage network on or off and create new branches of your network with a Relay",
+  "advancements.refinedstorage.autocrafting": "Autocrafting",
+  "advancements.refinedstorage.autocrafting.description": "Automate crafting with a Crafter by using patterns created in a Pattern Grid"
 }

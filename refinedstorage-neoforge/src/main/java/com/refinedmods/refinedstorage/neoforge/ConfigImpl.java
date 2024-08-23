@@ -51,6 +51,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry fallbackSecurityCard;
     private final SimpleEnergyUsageEntry securityManager;
     private final RelayEntry relay;
+    private final SimpleEnergyUsageEntry crafter;
 
     public ConfigImpl() {
         screenSize = builder
@@ -95,6 +96,7 @@ public class ConfigImpl implements Config {
         );
         securityManager = new SimpleEnergyUsageEntryImpl("securityManager", DefaultEnergyUsage.SECURITY_MANAGER);
         relay = new RelayEntryImpl();
+        crafter = new SimpleEnergyUsageEntryImpl("crafter", DefaultEnergyUsage.CRAFTER);
         spec = builder.build();
     }
 
@@ -258,6 +260,11 @@ public class ConfigImpl implements Config {
     @Override
     public RelayEntry getRelay() {
         return relay;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getCrafter() {
+        return crafter;
     }
 
     private static String translationKey(final String value) {

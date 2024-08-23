@@ -65,6 +65,7 @@ public final class ContentIds {
     public static final ResourceLocation RELAY = createIdentifier("relay");
     public static final ResourceLocation DISK_INTERFACE = createIdentifier("disk_interface");
     public static final ResourceLocation PATTERN = createIdentifier("pattern");
+    public static final ResourceLocation CRAFTER = createIdentifier("crafter");
 
     private ContentIds() {
     }

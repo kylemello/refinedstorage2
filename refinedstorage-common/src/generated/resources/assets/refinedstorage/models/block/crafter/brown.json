@@ -1,0 +1,18 @@
+{
+  "parent": "refinedstorage:block/emissive_cutout",
+  "textures": {
+    "cutout_down": "refinedstorage:block/bottom",
+    "cutout_east": "refinedstorage:block/crafter/cutouts/side/brown",
+    "cutout_north": "refinedstorage:block/crafter/cutouts/side/brown",
+    "cutout_south": "refinedstorage:block/crafter/cutouts/side/brown",
+    "cutout_up": "refinedstorage:block/crafter/cutouts/top/brown",
+    "cutout_west": "refinedstorage:block/crafter/cutouts/side/brown",
+    "down": "refinedstorage:block/bottom",
+    "east": "refinedstorage:block/crafter/side",
+    "north": "refinedstorage:block/crafter/side",
+    "particle": "refinedstorage:block/crafter/side",
+    "south": "refinedstorage:block/crafter/side",
+    "up": "refinedstorage:block/crafter/top",
+    "west": "refinedstorage:block/crafter/side"
+  }
+}

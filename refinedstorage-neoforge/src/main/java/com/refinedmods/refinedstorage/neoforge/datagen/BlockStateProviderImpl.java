@@ -58,6 +58,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
+        registerCrafters();
     }
 
     private void registerCables() {
@@ -286,12 +287,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                     model.modelFile(inactive);
                 }
                 final Direction direction = blockState.getValue(DefaultDirectionType.FACE_PLAYER.getProperty());
-                final BiDirection biDirection;
-                if (direction.getAxis().isHorizontal()) {
-                    biDirection = BiDirection.forHorizontal(direction);
-                } else {
-                    biDirection = direction == Direction.UP ? BiDirection.UP_NORTH : BiDirection.DOWN_NORTH;
-                }
+                final BiDirection biDirection = BiDirection.forDirection(direction);
                 addRotationFrontFacingNorth(model, biDirection);
                 return model.build();
             });
@@ -310,6 +306,25 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         });
     }
 
+    private void registerCrafters() {
+        final ModelFile inactive = modelFile(createIdentifier(BLOCK_PREFIX + "/crafter/inactive"));
+        Blocks.INSTANCE.getCrafter().forEach((color, id, block) -> {
+            final ModelFile active = modelFile(createIdentifier(BLOCK_PREFIX + "/crafter/" + color.getName()));
+            final var builder = getVariantBuilder(block.get());
+            builder.forAllStates(blockState -> {
+                final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
+                if (Boolean.TRUE.equals(blockState.getValue(AbstractActiveColoredDirectionalBlock.ACTIVE))) {
+                    model.modelFile(active);
+                } else {
+                    model.modelFile(inactive);
+                }
+                final Direction direction = blockState.getValue(DefaultDirectionType.FACE_PLAYER.getProperty());
+                addCrafterRotation(model, direction);
+                return model.build();
+            });
+        });
+    }
+
     private void configureActiveColoredDirectionalBlock(final DyeColor color,
                                                         final Supplier<? extends Block> block,
                                                         final String name) {
@@ -323,7 +338,8 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             } else {
                 model.modelFile(inactive);
             }
-            addRotationFrontFacingNorth(model, blockState.getValue(BiDirectionType.INSTANCE.getProperty()));
+            final BiDirection direction = blockState.getValue(BiDirectionType.INSTANCE.getProperty());
+            addRotationFrontFacingNorth(model, direction);
             return model.build();
         });
     }
@@ -350,6 +366,15 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             case EAST, WEST -> model.rotationY(y + 180);
             case NORTH, SOUTH -> model.rotationY(y);
         }
+    }
+
+    private void addCrafterRotation(final ConfiguredModel.Builder<?> model, final Direction direction) {
+        if (direction.getAxis().isHorizontal()) {
+            model.rotationX(90);
+        } else if (direction == Direction.DOWN) {
+            model.rotationX(180);
+        }
+        model.rotationY(direction.getAxis().isVertical() ? 0 : (((int) direction.toYRot()) + 180) % 360);
     }
 
     private ModelFile modelFile(final ResourceLocation location) {
