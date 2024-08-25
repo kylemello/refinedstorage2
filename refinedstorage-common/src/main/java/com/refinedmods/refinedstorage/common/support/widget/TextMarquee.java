@@ -50,6 +50,10 @@ public class TextMarquee {
         }
     }
 
+    public Component getText() {
+        return text;
+    }
+
     enum State {
         MOVING_LEFT(2),
         MOVING_RIGHT(2),

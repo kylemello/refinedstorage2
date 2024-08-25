@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipCo
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeItemClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeSlot;
 
@@ -53,17 +54,24 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
 
     private final Inventory playerInventory;
     private final List<Rect2i> exclusionZones = new ArrayList<>();
+    private final TextMarquee titleMarquee;
+
     private int sideButtonY;
 
     @Nullable
     private List<ClientTooltipComponent> deferredTooltip;
 
-    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component text) {
-        super(menu, playerInventory, text);
+    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component title) {
+        this(menu, playerInventory, new TextMarquee(title, 162));
+    }
+
+    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final TextMarquee title) {
+        super(menu, playerInventory, title.getText());
         this.playerInventory = playerInventory;
         this.titleLabelX = 7;
         this.titleLabelY = 7;
         this.inventoryLabelX = 7;
+        this.titleMarquee = title;
     }
 
     protected int getSideButtonY() {
@@ -91,6 +99,23 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         final int y = (height - imageHeight) / 2;
         graphics.blit(getTexture(), x, y, 0, 0, imageWidth, imageHeight);
         renderResourceSlots(graphics);
+    }
+
+    @Override
+    protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+        graphics.pose().popPose();
+        final boolean hoveringOverTitle = isHovering(
+            7,
+            7,
+            titleMarquee.getEffectiveWidth(font),
+            font.lineHeight,
+            mouseX,
+            mouseY
+        );
+        titleMarquee.render(graphics, leftPos + titleLabelX, topPos + titleLabelY, font, hoveringOverTitle);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
     }
 
     @Override
