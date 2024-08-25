@@ -49,14 +49,13 @@ public class TextMarquee {
         } else {
             graphics.drawString(font, text, x, y, 4210752, false);
         }
-        renderTooltipHighlight(graphics, x, y, font, hovering);
     }
 
-    private void renderTooltipHighlight(final GuiGraphics graphics,
-                                        final int x,
-                                        final int y,
-                                        final Font font,
-                                        final boolean hovering) {
+    public void renderTooltipHighlight(final GuiGraphics graphics,
+                                       final int x,
+                                       final int y,
+                                       final Font font,
+                                       final boolean hovering) {
         if (hovering && tooltip != null) {
             renderTooltipHighlight(graphics, x, y, font);
         } else {

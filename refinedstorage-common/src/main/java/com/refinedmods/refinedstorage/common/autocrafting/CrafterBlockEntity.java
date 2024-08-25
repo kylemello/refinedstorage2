@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
+import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
@@ -18,22 +19,29 @@ import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
+
 public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements MenuProvider, BlockEntityWithDrops {
+    implements ExtendedMenuProvider<CrafterData>, BlockEntityWithDrops {
     static final int PATTERNS = 9;
 
+    private static final int MAX_CHAINED_CRAFTERS = 8;
     private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_PATTERNS = "patterns";
 
@@ -72,15 +80,77 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
         return upgradeContainer;
     }
 
+    private boolean isChained() {
+        return getChainingRoot() != this;
+    }
+
+    private CrafterBlockEntity getChainingRoot() {
+        return getChainingRoot(0, this);
+    }
+
+    private CrafterBlockEntity getChainingRoot(final int depth, final CrafterBlockEntity origin) {
+        final Direction direction = tryExtractDirection(getBlockState());
+        if (level == null || direction == null || depth >= MAX_CHAINED_CRAFTERS) {
+            return origin;
+        }
+        final BlockEntity neighbor = getConnectedMachine();
+        if (!(neighbor instanceof CrafterBlockEntity neighborCrafter)) {
+            return this;
+        }
+        return neighborCrafter.getChainingRoot(depth + 1, origin);
+    }
+
+    @Nullable
+    private BlockEntity getConnectedMachine() {
+        final Direction direction = tryExtractDirection(getBlockState());
+        if (level == null || direction == null) {
+            return null;
+        }
+        final BlockPos neighborPos = getBlockPos().relative(direction);
+        if (!level.isLoaded(neighborPos)) {
+            return null;
+        }
+        return level.getBlockEntity(neighborPos);
+    }
+
     @Override
-    public Component getDisplayName() {
-        return overrideName(ContentNames.CRAFTER);
+    public Component getName() {
+        final CrafterBlockEntity root = getChainingRoot();
+        if (root == this) {
+            return doGetName();
+        }
+        return root.getDisplayName();
+    }
+
+    private Component doGetName() {
+        final Component customName = getCustomName();
+        if (customName != null) {
+            return customName;
+        }
+        final BlockEntity connectedMachine = getConnectedMachine();
+        // We don't handle crafters here, as crafters are also nameable, and we could have infinite recursion.
+        if (connectedMachine instanceof Nameable nameable && !(connectedMachine instanceof CrafterBlockEntity)) {
+            return nameable.getName();
+        } else if (connectedMachine != null) {
+            return connectedMachine.getBlockState().getBlock().getName();
+        }
+        return ContentNames.CRAFTER;
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
         return new CrafterContainerMenu(syncId, inventory, this);
+    }
+
+    @Override
+    public CrafterData getMenuData() {
+        return new CrafterData(isChained());
+    }
+
+    @Override
+    public StreamEncoder<RegistryFriendlyByteBuf, CrafterData> getMenuCodec() {
+        return CrafterData.STREAM_CODEC;
     }
 
     @Override
@@ -112,7 +182,10 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     }
 
     void setCustomName(final String name) {
-        setName(name.trim().isBlank() ? null : Component.literal(name));
+        if (isChained()) {
+            return;
+        }
+        setCustomName(name.trim().isBlank() ? null : Component.literal(name));
         setChanged();
     }
 

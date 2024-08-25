@@ -32,6 +32,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     private static final int PATTERN_SLOT_Y = 20;
 
     private final Player player;
+    private final boolean chained;
     private final RateLimiter nameRateLimiter = RateLimiter.create(0.5);
 
     @Nullable
@@ -40,7 +41,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     private Listener listener;
     private Component name;
 
-    public CrafterContainerMenu(final int syncId, final Inventory playerInventory) {
+    public CrafterContainerMenu(final int syncId, final Inventory playerInventory, final CrafterData data) {
         super(Menus.INSTANCE.getCrafter(), syncId);
         this.player = playerInventory.player;
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
@@ -49,6 +50,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
             new UpgradeContainer(UpgradeDestinations.CRAFTER)
         );
         this.name = Component.empty();
+        this.chained = data.chained();
     }
 
     public CrafterContainerMenu(final int syncId, final Inventory playerInventory, final CrafterBlockEntity crafter) {
@@ -56,12 +58,17 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
         this.crafter = crafter;
         this.player = playerInventory.player;
         this.name = crafter.getDisplayName();
+        this.chained = false;
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             crafter::getRedstoneMode,
             crafter::setRedstoneMode
         ));
         addSlots(crafter.getPatternContainer(), crafter.getUpgradeContainer());
+    }
+
+    boolean canChangeName() {
+        return !chained;
     }
 
     void setListener(@Nullable final Listener listener) {
@@ -119,6 +126,9 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     }
 
     public void changeName(final String newName) {
+        if (chained) {
+            return;
+        }
         if (crafter != null) {
             crafter.setCustomName(newName);
             detectNameChange();

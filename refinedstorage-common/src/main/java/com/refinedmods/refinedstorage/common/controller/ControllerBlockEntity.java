@@ -19,7 +19,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -95,8 +94,8 @@ public class ControllerBlockEntity extends AbstractBaseNetworkNodeContainerBlock
     }
 
     @Override
-    public Component getDisplayName() {
-        final MutableComponent defaultName = type == ControllerType.CREATIVE
+    public Component getName() {
+        final Component defaultName = type == ControllerType.CREATIVE
             ? ContentNames.CREATIVE_CONTROLLER
             : ContentNames.CONTROLLER;
         return overrideName(defaultName);

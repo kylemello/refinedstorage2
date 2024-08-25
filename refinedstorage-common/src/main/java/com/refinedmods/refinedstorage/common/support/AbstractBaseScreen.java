@@ -122,7 +122,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         renderPlayerInventoryTitle(graphics);
     }
 
-    private boolean isHoveringOverTitle(final int mouseX, final int mouseY) {
+    protected final boolean isHoveringOverTitle(final int mouseX, final int mouseY) {
         return isHovering(
             titleLabelX,
             titleLabelY,

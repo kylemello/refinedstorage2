@@ -162,7 +162,7 @@ public class SecurityManagerBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
+    public Component getName() {
         return overrideName(ContentNames.SECURITY_MANAGER);
     }
 

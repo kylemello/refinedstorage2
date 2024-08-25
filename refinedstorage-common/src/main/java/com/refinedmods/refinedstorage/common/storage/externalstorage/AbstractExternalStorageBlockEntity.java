@@ -156,7 +156,7 @@ public abstract class AbstractExternalStorageBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
+    public Component getName() {
         return overrideName(ContentNames.EXTERNAL_STORAGE);
     }
 

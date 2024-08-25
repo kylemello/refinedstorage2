@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetwor
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.CrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.CrafterData;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
@@ -773,7 +774,7 @@ public abstract class AbstractModInitializer {
         ));
         Menus.INSTANCE.setCrafter(callback.register(
             ContentIds.CRAFTER,
-            () -> menuTypeFactory.create(CrafterContainerMenu::new)
+            () -> extendedMenuTypeFactory.create(CrafterContainerMenu::new, CrafterData.STREAM_CODEC)
         ));
     }
 

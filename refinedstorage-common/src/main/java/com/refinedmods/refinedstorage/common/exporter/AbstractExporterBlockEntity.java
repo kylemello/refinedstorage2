@@ -176,7 +176,7 @@ public abstract class AbstractExporterBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
+    public Component getName() {
         return overrideName(ContentNames.EXPORTER);
     }
 

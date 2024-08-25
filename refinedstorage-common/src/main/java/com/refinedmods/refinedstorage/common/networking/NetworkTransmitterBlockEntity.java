@@ -207,7 +207,7 @@ public class NetworkTransmitterBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
+    public Component getName() {
         return overrideName(ContentNames.NETWORK_TRANSMITTER);
     }
 

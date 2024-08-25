@@ -184,6 +184,7 @@
   "gui.refinedstorage.disk_interface.transfer_mode.extract_from_network.help": "Insert the resources from the storage network into the storage disks.",
   "gui.refinedstorage.crafter.empty_pattern_slot": "Empty pattern slot",
   "gui.refinedstorage.crafter.click_to_edit_name": "Click to edit name",
+  "gui.refinedstorage.crafter.name_cannot_be_changed_because_of_chaining": "The name cannot be changed because this crafter is part of a chain.",
   "item.refinedstorage.controller.help": "Provides the storage network with energy. Multiple are allowed in a single storage network.",
   "item.refinedstorage.creative_controller.help": "Provides the storage network with an infinite source of energy.",
   "item.refinedstorage.disk_drive.help": "Accepts storage disks to provide the storage network with storage space.",

@@ -150,7 +150,7 @@ public class DetectorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEn
     }
 
     @Override
-    public Component getDisplayName() {
+    public Component getName() {
         return overrideName(ContentNames.DETECTOR);
     }
 

@@ -30,6 +30,9 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
         createTranslationAsHeading("gui", "crafter.empty_pattern_slot").getVisualOrderText()
     );
     private static final Component CLICK_TO_EDIT_NAME = createTranslation("gui", "crafter.click_to_edit_name");
+    private static final Component NAME_CANNOT_BE_CHANGED_BECAUSE_OF_CHAINING = createTranslation(
+        "gui", "crafter.name_cannot_be_changed_because_of_chaining"
+    );
 
     private static final ResourceLocation CRAFTER_NAME_BACKGROUND = createIdentifier("widget/crafter_name");
     private static final List<String> CRAFTER_NAME_HISTORY = new ArrayList<>();
@@ -55,7 +58,7 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
 
     @Override
     public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
-        if (!editName && isHovering(
+        if (!editName && getMenu().canChangeName() && isHovering(
             titleLabelX, titleLabelY, titleMarquee.getEffectiveWidth(font), font.lineHeight, mouseX, mouseY
         )) {
             setEditName(true);
@@ -90,7 +93,10 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
 
     private void setEditName(final boolean editName) {
         this.editName = editName;
-        this.titleMarquee.setTooltip(editName ? null : CLICK_TO_EDIT_NAME);
+        final Component helpTooltip = getMenu().canChangeName()
+            ? CLICK_TO_EDIT_NAME
+            : NAME_CANNOT_BE_CHANGED_BECAUSE_OF_CHAINING;
+        this.titleMarquee.setTooltip(editName ? null : helpTooltip);
         if (nameField != null) {
             nameField.visible = editName;
             nameField.setFocused(editName);
@@ -117,6 +123,15 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
             renderPlayerInventoryTitle(graphics);
         } else {
             super.renderLabels(graphics, mouseX, mouseY);
+            if (getMenu().canChangeName()) {
+                titleMarquee.renderTooltipHighlight(
+                    graphics,
+                    titleLabelX,
+                    titleLabelY,
+                    font,
+                    isHoveringOverTitle(mouseX, mouseY)
+                );
+            }
         }
     }
 
@@ -128,15 +143,13 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
 
     @Override
     public boolean keyPressed(final int key, final int scanCode, final int modifiers) {
-        if (nameField != null
-            && (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER)
-            && nameField.isFocused()) {
-            getMenu().changeName(nameField.getValue());
-            setEditName(false);
-            return true;
-        }
-        if (nameField != null && editName && nameField.keyPressed(key, scanCode, modifiers)) {
-            return true;
+        if (nameField != null && editName) {
+            if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && nameField.isFocused()) {
+                getMenu().changeName(nameField.getValue());
+                setEditName(false);
+                return true;
+            }
+            return nameField.keyPressed(key, scanCode, modifiers);
         }
         return super.keyPressed(key, scanCode, modifiers);
     }
