@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.neoforge;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
@@ -20,7 +19,6 @@ import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockE
 import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.support.tooltip.CompositeClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
-import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage.neoforge.autocrafting.PatternGeometryLoader;
@@ -38,7 +36,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -214,7 +211,10 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
     public static void onRegisterTooltipFactories(final RegisterClientTooltipComponentFactoriesEvent e) {
         e.register(
             AbstractUpgradeItem.UpgradeDestinationTooltipComponent.class,
-            component -> new UpgradeDestinationClientTooltipComponent(component.destinations())
+            component -> new CompositeClientTooltipComponent(List.of(
+                new UpgradeDestinationClientTooltipComponent(component.destinations()),
+                HelpClientTooltipComponent.create(component.helpText())
+            ))
         );
         e.register(
             HelpTooltipComponent.class,
@@ -222,27 +222,16 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         );
         e.register(
             RegulatorUpgradeItem.RegulatorTooltipComponent.class,
-            component -> {
-                final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
-                return component.configuredResource() == null
-                    ? help
-                    : createRegulatorUpgradeClientTooltipComponent(component.configuredResource(), help);
-            }
+            component -> createRegulatorUpgradeClientTooltipComponent(
+                component.destinations(),
+                component.configuredResource(),
+                component.helpText()
+            )
         );
         e.register(PatternItem.CraftingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
         e.register(PatternItem.ProcessingPatternTooltipComponent.class, PatternTooltipCache::getComponent);
         e.register(PatternItem.StonecutterPatternTooltipComponent.class, PatternTooltipCache::getComponent);
         e.register(PatternItem.SmithingTablePatternTooltipComponent.class, PatternTooltipCache::getComponent);
-    }
-
-    private static CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(
-        final ResourceAmount configuredResource,
-        final ClientTooltipComponent help
-    ) {
-        return new CompositeClientTooltipComponent(List.of(
-            new ResourceClientTooltipComponent(configuredResource),
-            help
-        ));
     }
 
     private static void registerItemProperties() {

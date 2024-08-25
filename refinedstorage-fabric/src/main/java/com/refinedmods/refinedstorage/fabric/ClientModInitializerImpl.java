@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.fabric;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
@@ -32,7 +31,6 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoRespo
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterDataPacket;
 import com.refinedmods.refinedstorage.common.support.tooltip.CompositeClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
-import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
@@ -63,7 +61,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -421,7 +418,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     private void registerCustomTooltips() {
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof AbstractUpgradeItem.UpgradeDestinationTooltipComponent component) {
-                return new UpgradeDestinationClientTooltipComponent(component.destinations());
+                return new CompositeClientTooltipComponent(List.of(
+                    new UpgradeDestinationClientTooltipComponent(component.destinations()),
+                    HelpClientTooltipComponent.create(component.helpText())
+                ));
             }
             return null;
         });
@@ -433,10 +433,11 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof RegulatorUpgradeItem.RegulatorTooltipComponent component) {
-                final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
-                return component.configuredResource() == null
-                    ? help
-                    : createRegulatorUpgradeClientTooltipComponent(component.configuredResource(), help);
+                return createRegulatorUpgradeClientTooltipComponent(
+                    component.destinations(),
+                    component.configuredResource(),
+                    component.helpText()
+                );
             }
             return null;
         });
@@ -449,16 +450,6 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                 PatternTooltipCache.getComponent(component);
             case null, default -> null;
         });
-    }
-
-    private CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(
-        final ResourceAmount configuredResource,
-        final ClientTooltipComponent help
-    ) {
-        return new CompositeClientTooltipComponent(List.of(
-            new ResourceClientTooltipComponent(configuredResource),
-            help
-        ));
     }
 
     private void registerKeyBindings() {

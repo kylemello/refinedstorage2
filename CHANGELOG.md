@@ -16,6 +16,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 -   Fixed mouse keybindings not working on NeoForge.
+-   Fixed upgrade destinations not being shown on upgrades.
 
 ## [2.0.0-milestone.4.7] - 2024-08-11
 
