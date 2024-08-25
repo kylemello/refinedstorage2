@@ -51,6 +51,9 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     private static final ClientTooltipComponent EMPTY_FILTER = ClientTooltipComponent.create(
         createTranslationAsHeading("gui", "filter_slot.empty_filter").getVisualOrderText()
     );
+    private static final ClientTooltipComponent EMPTY_UPGRADE_SLOT = ClientTooltipComponent.create(
+        createTranslationAsHeading("gui", "empty_upgrade_slot").getVisualOrderText()
+    );
 
     private final Inventory playerInventory;
     private final List<Rect2i> exclusionZones = new ArrayList<>();
@@ -178,9 +181,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             return Collections.emptyList();
         }
         final List<ClientTooltipComponent> lines = new ArrayList<>();
-        lines.add(ClientTooltipComponent.create(
-            createTranslationAsHeading("gui", "upgrade_slot").getVisualOrderText()
-        ));
+        lines.add(EMPTY_UPGRADE_SLOT);
         for (final UpgradeMapping upgrade : upgradeSlot.getAllowedUpgrades()) {
             lines.add(new UpgradeItemClientTooltipComponent(upgrade));
         }

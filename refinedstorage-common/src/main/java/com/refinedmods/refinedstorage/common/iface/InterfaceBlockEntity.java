@@ -173,7 +173,7 @@ public class InterfaceBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return getName(ContentNames.INTERFACE);
+        return overrideName(ContentNames.INTERFACE);
     }
 
     @Override

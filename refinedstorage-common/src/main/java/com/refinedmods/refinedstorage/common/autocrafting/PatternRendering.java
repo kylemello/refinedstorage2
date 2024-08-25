@@ -28,6 +28,9 @@ public final class PatternRendering {
             return patternGridScreen.getMenu().getPatternOutputSlot() != null
                 && patternGridScreen.getMenu().getPatternOutputSlot().getItem() == stack;
         }
+        if (screen instanceof CrafterScreen crafterScreen) {
+            return crafterScreen.getMenu().containsPattern(stack);
+        }
         return false;
     }
 

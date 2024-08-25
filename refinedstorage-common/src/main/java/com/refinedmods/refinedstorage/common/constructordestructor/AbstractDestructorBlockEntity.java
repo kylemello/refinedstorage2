@@ -160,7 +160,7 @@ public abstract class AbstractDestructorBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return getName(ContentNames.DESTRUCTOR);
+        return overrideName(ContentNames.DESTRUCTOR);
     }
 
     @Nullable

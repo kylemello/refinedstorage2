@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.autocrafting.CrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorScreen;
@@ -79,6 +80,7 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getSecurityManager(), SecurityManagerScreen::new);
         registration.register(Menus.INSTANCE.getRelay(), RelayScreen::new);
         registration.register(Menus.INSTANCE.getDiskInterface(), DiskInterfaceScreen::new);
+        registration.register(Menus.INSTANCE.getCrafter(), CrafterScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {

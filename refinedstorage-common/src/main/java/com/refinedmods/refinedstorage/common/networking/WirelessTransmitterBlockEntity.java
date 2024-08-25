@@ -85,7 +85,7 @@ public class WirelessTransmitterBlockEntity
 
     @Override
     public Component getDisplayName() {
-        return getName(ContentNames.WIRELESS_TRANSMITTER);
+        return overrideName(ContentNames.WIRELESS_TRANSMITTER);
     }
 
     @Nullable

@@ -242,7 +242,7 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
         components.set(DataComponents.CUSTOM_NAME, name);
     }
 
-    protected final Component getName(final Component defaultName) {
+    protected final Component overrideName(final Component defaultName) {
         return name == null ? defaultName : name;
     }
 

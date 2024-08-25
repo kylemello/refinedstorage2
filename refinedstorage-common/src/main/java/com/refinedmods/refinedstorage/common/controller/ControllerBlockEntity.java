@@ -99,7 +99,7 @@ public class ControllerBlockEntity extends AbstractBaseNetworkNodeContainerBlock
         final MutableComponent defaultName = type == ControllerType.CREATIVE
             ? ContentNames.CREATIVE_CONTROLLER
             : ContentNames.CONTROLLER;
-        return getName(defaultName);
+        return overrideName(defaultName);
     }
 
     @Override

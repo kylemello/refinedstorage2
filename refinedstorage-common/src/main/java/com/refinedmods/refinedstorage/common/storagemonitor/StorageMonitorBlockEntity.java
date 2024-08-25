@@ -295,7 +295,7 @@ public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerB
 
     @Override
     public Component getDisplayName() {
-        return getName(ContentNames.STORAGE_MONITOR);
+        return overrideName(ContentNames.STORAGE_MONITOR);
     }
 
     @Nullable

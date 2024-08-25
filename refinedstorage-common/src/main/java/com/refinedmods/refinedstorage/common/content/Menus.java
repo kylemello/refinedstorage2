@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.autocrafting.CrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
@@ -89,6 +90,8 @@ public final class Menus {
     private Supplier<MenuType<RelayContainerMenu>> relay;
     @Nullable
     private Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface;
+    @Nullable
+    private Supplier<MenuType<CrafterContainerMenu>> crafter;
 
     private Menus() {
     }
@@ -301,5 +304,13 @@ public final class Menus {
 
     public void setDiskInterface(final Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface) {
         this.diskInterface = diskInterface;
+    }
+
+    public MenuType<CrafterContainerMenu> getCrafter() {
+        return requireNonNull(crafter).get();
+    }
+
+    public void setCrafter(final Supplier<MenuType<CrafterContainerMenu>> crafter) {
+        this.crafter = crafter;
     }
 }
