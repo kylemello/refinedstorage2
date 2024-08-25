@@ -38,6 +38,8 @@ import org.apiguardian.api.API;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 
 public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
+    protected static final int TITLE_MAX_WIDTH = 162;
+
     private static final SmallTextClientTooltipComponent CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("gui", "filter_slot.click_to_clear")
     );
@@ -55,9 +57,10 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         createTranslationAsHeading("gui", "empty_upgrade_slot").getVisualOrderText()
     );
 
+    protected final TextMarquee titleMarquee;
+
     private final Inventory playerInventory;
     private final List<Rect2i> exclusionZones = new ArrayList<>();
-    private final TextMarquee titleMarquee;
 
     private int sideButtonY;
 
@@ -65,7 +68,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     private List<ClientTooltipComponent> deferredTooltip;
 
     protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component title) {
-        this(menu, playerInventory, new TextMarquee(title, 162));
+        this(menu, playerInventory, new TextMarquee(title, TITLE_MAX_WIDTH));
     }
 
     protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final TextMarquee title) {
@@ -107,17 +110,30 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     @Override
     protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         graphics.pose().popPose();
-        final boolean hoveringOverTitle = isHovering(
-            7,
-            7,
+        titleMarquee.render(
+            graphics,
+            leftPos + titleLabelX,
+            topPos + titleLabelY,
+            font,
+            isHoveringOverTitle(mouseX, mouseY)
+        );
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        renderPlayerInventoryTitle(graphics);
+    }
+
+    private boolean isHoveringOverTitle(final int mouseX, final int mouseY) {
+        return isHovering(
+            titleLabelX,
+            titleLabelY,
             titleMarquee.getEffectiveWidth(font),
             font.lineHeight,
             mouseX,
             mouseY
         );
-        titleMarquee.render(graphics, leftPos + titleLabelX, topPos + titleLabelY, font, hoveringOverTitle);
-        graphics.pose().pushPose();
-        graphics.pose().translate(leftPos, topPos, 0.0F);
+    }
+
+    protected final void renderPlayerInventoryTitle(final GuiGraphics graphics) {
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
     }
 
@@ -151,6 +167,11 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
 
     @Override
     protected void renderTooltip(final GuiGraphics graphics, final int x, final int y) {
+        final Component titleTooltip = titleMarquee.getTooltip();
+        if (titleTooltip != null && isHoveringOverTitle(x, y)) {
+            graphics.renderTooltip(font, titleTooltip, x, y);
+            return;
+        }
         if (hoveredSlot instanceof UpgradeSlot upgradeSlot) {
             final List<ClientTooltipComponent> tooltip = getUpgradeTooltip(menu.getCarried(), upgradeSlot);
             if (!tooltip.isEmpty()) {

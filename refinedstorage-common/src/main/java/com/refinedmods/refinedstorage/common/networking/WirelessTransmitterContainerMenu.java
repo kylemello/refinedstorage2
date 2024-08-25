@@ -32,7 +32,7 @@ public class WirelessTransmitterContainerMenu extends AbstractBaseContainerMenu 
                                             final Inventory playerInventory,
                                             final WirelessTransmitterData data) {
         super(Menus.INSTANCE.getWirelessTransmitter(), syncId);
-        addSlots(playerInventory, new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER, null));
+        addSlots(playerInventory, new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER));
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         this.range = data.range();
         this.active = data.active();

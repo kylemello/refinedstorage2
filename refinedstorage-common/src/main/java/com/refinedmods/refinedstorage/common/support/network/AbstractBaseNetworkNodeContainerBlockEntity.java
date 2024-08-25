@@ -246,6 +246,10 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
         return name == null ? defaultName : name;
     }
 
+    protected final void setName(@Nullable final Component name) {
+        this.name = name;
+    }
+
     @Override
     public void setPlacedBy(final UUID playerId) {
         this.placedByPlayerId = playerId;

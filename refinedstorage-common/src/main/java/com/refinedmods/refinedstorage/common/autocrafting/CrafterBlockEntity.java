@@ -111,6 +111,11 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
         return drops;
     }
 
+    void setCustomName(final String name) {
+        setName(name.trim().isBlank() ? null : Component.literal(name));
+        setChanged();
+    }
+
     @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {

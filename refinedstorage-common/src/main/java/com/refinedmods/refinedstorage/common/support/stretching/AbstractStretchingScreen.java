@@ -28,14 +28,14 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
 
     protected AbstractStretchingScreen(final T menu,
                                        final Inventory playerInventory,
-                                       final TextMarquee text) {
-        super(menu, playerInventory, text);
+                                       final TextMarquee title) {
+        super(menu, playerInventory, title);
     }
 
     protected AbstractStretchingScreen(final T menu,
                                        final Inventory playerInventory,
-                                       final Component text) {
-        super(menu, playerInventory, text);
+                                       final Component title) {
+        super(menu, playerInventory, title);
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
@@ -52,6 +53,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -437,6 +439,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
             PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC
         );
+        PayloadTypeRegistry.playS2C().register(
+            CrafterNameUpdatePacket.PACKET_TYPE,
+            CrafterNameUpdatePacket.STREAM_CODEC
+        );
     }
 
     private void registerClientToServerPackets() {
@@ -519,6 +525,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playC2S().register(
             PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
             PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            CrafterNameChangePacket.PACKET_TYPE,
+            CrafterNameChangePacket.STREAM_CODEC
         );
     }
 
@@ -614,6 +624,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerPlayNetworking.registerGlobalReceiver(
             PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
             wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            CrafterNameChangePacket.PACKET_TYPE,
+            wrapHandler(CrafterNameChangePacket::handle)
         );
     }
 

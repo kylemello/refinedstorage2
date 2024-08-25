@@ -228,9 +228,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         transferManager.addTransfer(patternOutput, playerInventory);
     }
 
-    @Nullable
-    Slot getPatternOutputSlot() {
-        return patternOutputSlot;
+    boolean isPatternInOutput(final ItemStack stack) {
+        return patternOutputSlot != null && patternOutputSlot.getItem() == stack;
     }
 
     private void addCraftingMatrixSlots(final int playerInventoryY) {

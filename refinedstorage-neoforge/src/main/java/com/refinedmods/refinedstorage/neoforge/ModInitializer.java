@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
@@ -52,6 +53,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -624,6 +626,11 @@ public class ModInitializer extends AbstractModInitializer {
             PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC,
             wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
         );
+        registrar.playToClient(
+            CrafterNameUpdatePacket.PACKET_TYPE,
+            CrafterNameUpdatePacket.STREAM_CODEC,
+            wrapHandler(CrafterNameUpdatePacket::handle)
+        );
     }
 
     private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
@@ -741,6 +748,11 @@ public class ModInitializer extends AbstractModInitializer {
             PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
             PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC,
             wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            CrafterNameChangePacket.PACKET_TYPE,
+            CrafterNameChangePacket.STREAM_CODEC,
+            wrapHandler(CrafterNameChangePacket::handle)
         );
     }
 

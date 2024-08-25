@@ -32,8 +32,8 @@ public abstract class AbstractSecurityCardScreen<T extends AbstractSecurityCardC
 
     private final List<Permission> permissions = new ArrayList<>();
 
-    protected AbstractSecurityCardScreen(final T menu, final Inventory playerInventory, final Component text) {
-        super(menu, playerInventory, text);
+    protected AbstractSecurityCardScreen(final T menu, final Inventory playerInventory, final Component title) {
+        super(menu, playerInventory, title);
         this.inventoryLabelY = 97;
         this.imageWidth = 193;
         this.imageHeight = 176;

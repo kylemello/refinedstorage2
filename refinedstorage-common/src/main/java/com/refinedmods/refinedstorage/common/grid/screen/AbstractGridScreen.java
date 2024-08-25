@@ -71,9 +71,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     protected AbstractGridScreen(final T menu,
                                  final Inventory playerInventory,
-                                 final Component text,
+                                 final Component title,
                                  final int bottomHeight) {
-        super(menu, playerInventory, new TextMarquee(text, 70));
+        super(menu, playerInventory, new TextMarquee(title, 70));
         this.bottomHeight = bottomHeight;
     }
 

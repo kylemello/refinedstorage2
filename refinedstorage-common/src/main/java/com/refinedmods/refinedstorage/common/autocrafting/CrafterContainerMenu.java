@@ -7,12 +7,17 @@ import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeSlot;
 
 import javax.annotation.Nullable;
 
+import com.google.common.util.concurrent.RateLimiter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -26,37 +31,66 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     private static final int PATTERN_SLOT_X = 8;
     private static final int PATTERN_SLOT_Y = 20;
 
+    private final Player player;
+    private final RateLimiter nameRateLimiter = RateLimiter.create(0.5);
+
     @Nullable
     private CrafterBlockEntity crafter;
+    @Nullable
+    private Listener listener;
+    private Component name;
 
     public CrafterContainerMenu(final int syncId, final Inventory playerInventory) {
         super(Menus.INSTANCE.getCrafter(), syncId);
+        this.player = playerInventory.player;
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         addSlots(
             new FilteredContainer(PATTERNS, stack -> isValidPattern(stack, playerInventory.player.level())),
-            new UpgradeContainer(UpgradeDestinations.CRAFTER, null),
-            playerInventory.player
+            new UpgradeContainer(UpgradeDestinations.CRAFTER)
         );
+        this.name = Component.empty();
     }
 
     public CrafterContainerMenu(final int syncId, final Inventory playerInventory, final CrafterBlockEntity crafter) {
         super(Menus.INSTANCE.getCrafter(), syncId);
         this.crafter = crafter;
+        this.player = playerInventory.player;
+        this.name = crafter.getDisplayName();
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             crafter::getRedstoneMode,
             crafter::setRedstoneMode
         ));
-        addSlots(
-            crafter.getPatternContainer(),
-            crafter.getUpgradeContainer(),
-            playerInventory.player
-        );
+        addSlots(crafter.getPatternContainer(), crafter.getUpgradeContainer());
     }
 
-    private void addSlots(final FilteredContainer patternContainer,
-                          final UpgradeContainer upgradeContainer,
-                          final Player player) {
+    void setListener(@Nullable final Listener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        if (crafter == null) {
+            return;
+        }
+        if (nameRateLimiter.tryAcquire()) {
+            detectNameChange();
+        }
+    }
+
+    private void detectNameChange() {
+        if (crafter == null) {
+            return;
+        }
+        final Component newName = crafter.getDisplayName();
+        if (!newName.equals(name)) {
+            this.name = newName;
+            S2CPackets.sendCrafterNameUpdate((ServerPlayer) player, newName);
+        }
+    }
+
+    private void addSlots(final FilteredContainer patternContainer, final UpgradeContainer upgradeContainer) {
         for (int i = 0; i < patternContainer.getContainerSize(); ++i) {
             addSlot(createPatternSlot(patternContainer, i, player.level()));
         }
@@ -82,5 +116,25 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
             }
         }
         return false;
+    }
+
+    public void changeName(final String newName) {
+        if (crafter != null) {
+            crafter.setCustomName(newName);
+            detectNameChange();
+        } else {
+            C2SPackets.sendCrafterNameChange(newName);
+        }
+    }
+
+    public void nameChanged(final Component newName) {
+        if (listener != null) {
+            listener.nameChanged(newName);
+        }
+    }
+
+    @FunctionalInterface
+    public interface Listener {
+        void nameChanged(Component name);
     }
 }

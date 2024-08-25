@@ -45,8 +45,8 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
     @Nullable
     private AbstractSideButtonWidget priorityButton;
 
-    public RelayScreen(final RelayContainerMenu menu, final Inventory playerInventory, final Component text) {
-        super(menu, playerInventory, text);
+    public RelayScreen(final RelayContainerMenu menu, final Inventory playerInventory, final Component title) {
+        super(menu, playerInventory, title);
         this.playerInventory = playerInventory;
         menu.setPassThroughListener(this);
     }
