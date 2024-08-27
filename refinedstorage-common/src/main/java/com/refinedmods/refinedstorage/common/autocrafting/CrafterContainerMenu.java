@@ -3,9 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
-import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
-import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
@@ -45,6 +43,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
         super(Menus.INSTANCE.getCrafter(), syncId);
         this.player = playerInventory.player;
         registerProperty(new ClientProperty<>(CrafterPropertyTypes.LOCK_MODE, LockMode.NEVER));
+        registerProperty(new ClientProperty<>(CrafterPropertyTypes.PRIORITY, 0));
         addSlots(
             new FilteredContainer(PATTERNS, stack -> isValidPattern(stack, playerInventory.player.level())),
             new UpgradeContainer(UpgradeDestinations.CRAFTER)
@@ -63,6 +62,11 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
             CrafterPropertyTypes.LOCK_MODE,
             crafter::getLockMode,
             crafter::setLockMode
+        ));
+        registerProperty(new ServerProperty<>(
+            CrafterPropertyTypes.PRIORITY,
+            crafter::getPriority,
+            crafter::setPriority
         ));
         addSlots(crafter.getPatternContainer(), crafter.getUpgradeContainer());
     }

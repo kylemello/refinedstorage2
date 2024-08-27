@@ -47,6 +47,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_PATTERNS = "patterns";
     private static final String TAG_LOCK_MODE = "lm";
+    private static final String TAG_PRIORITY = "pri";
 
     private final FilteredContainer patternContainer = new FilteredContainer(
         PATTERNS,
@@ -54,6 +55,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     );
     private final UpgradeContainer upgradeContainer;
     private LockMode lockMode = LockMode.NEVER;
+    private int priority;
 
     public CrafterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
@@ -168,6 +170,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         super.writeConfiguration(tag, provider);
         tag.putInt(TAG_LOCK_MODE, LockModeSettings.getLockMode(lockMode));
+        tag.putInt(TAG_PRIORITY, priority);
     }
 
     @Override
@@ -186,6 +189,9 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
         super.readConfiguration(tag, provider);
         if (tag.contains(TAG_LOCK_MODE)) {
             lockMode = LockModeSettings.getLockMode(tag.getInt(TAG_LOCK_MODE));
+        }
+        if (tag.contains(TAG_PRIORITY)) {
+            priority = tag.getInt(TAG_PRIORITY);
         }
     }
 
@@ -228,6 +234,15 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
 
     void setLockMode(final LockMode lockMode) {
         this.lockMode = lockMode;
+        setChanged();
+    }
+
+    int getPriority() {
+        return priority;
+    }
+
+    void setPriority(final int priority) {
+        this.priority = priority;
         setChanged();
     }
 

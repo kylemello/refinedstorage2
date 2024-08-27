@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
 import com.refinedmods.refinedstorage.common.support.widget.History;
+import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
@@ -36,6 +37,8 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     private static final ResourceLocation CRAFTER_NAME_BACKGROUND = createIdentifier("widget/crafter_name");
     private static final List<String> CRAFTER_NAME_HISTORY = new ArrayList<>();
 
+    private final Inventory playerInventory;
+
     @Nullable
     private EditBox nameField;
     private boolean editName;
@@ -45,6 +48,7 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
         this.inventoryLabelY = 42;
         this.imageWidth = 210;
         this.imageHeight = 137;
+        this.playerInventory = playerInventory;
     }
 
     @Override
@@ -76,6 +80,11 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
             }
         });
         addSideButton(new LockModeSideButtonWidget(getMenu().getProperty(CrafterPropertyTypes.LOCK_MODE)));
+        addSideButton(PrioritySideButtonWidget.forCrafter(
+            getMenu().getProperty(CrafterPropertyTypes.PRIORITY),
+            playerInventory,
+            this
+        ));
         nameField = new SearchFieldWidget(
             font,
             leftPos + 8 + 1,
