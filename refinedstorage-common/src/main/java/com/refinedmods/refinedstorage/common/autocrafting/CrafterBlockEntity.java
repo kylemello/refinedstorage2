@@ -16,6 +16,7 @@ import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -30,6 +31,7 @@ import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -44,12 +46,14 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     private static final int MAX_CHAINED_CRAFTERS = 8;
     private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_PATTERNS = "patterns";
+    private static final String TAG_LOCK_MODE = "lm";
 
     private final FilteredContainer patternContainer = new FilteredContainer(
         PATTERNS,
         stack -> level != null && isValidPattern(stack, level)
     );
     private final UpgradeContainer upgradeContainer;
+    private LockMode lockMode = LockMode.NEVER;
 
     public CrafterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
@@ -119,7 +123,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
         if (root == this) {
             return doGetName();
         }
-        return root.getDisplayName();
+        return root.getName();
     }
 
     private Component doGetName() {
@@ -161,6 +165,12 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     }
 
     @Override
+    public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.writeConfiguration(tag, provider);
+        tag.putInt(TAG_LOCK_MODE, LockModeSettings.getLockMode(lockMode));
+    }
+
+    @Override
     public void loadAdditional(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_PATTERNS)) {
             ContainerUtil.read(tag.getCompound(TAG_PATTERNS), patternContainer, provider);
@@ -169,6 +179,29 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
             ContainerUtil.read(tag.getCompound(TAG_UPGRADES), upgradeContainer, provider);
         }
         super.loadAdditional(tag, provider);
+    }
+
+    @Override
+    public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
+        super.readConfiguration(tag, provider);
+        if (tag.contains(TAG_LOCK_MODE)) {
+            lockMode = LockModeSettings.getLockMode(tag.getInt(TAG_LOCK_MODE));
+        }
+    }
+
+    @Override
+    protected boolean hasRedstoneMode() {
+        return false;
+    }
+
+    @Override
+    public List<Item> getUpgradeItems() {
+        return upgradeContainer.getUpgradeItems();
+    }
+
+    @Override
+    public boolean addUpgradeItem(final Item upgradeItem) {
+        return upgradeContainer.addUpgradeItem(upgradeItem);
     }
 
     @Override
@@ -186,6 +219,15 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
             return;
         }
         setCustomName(name.trim().isBlank() ? null : Component.literal(name));
+        setChanged();
+    }
+
+    LockMode getLockMode() {
+        return lockMode;
+    }
+
+    void setLockMode(final LockMode lockMode) {
+        this.lockMode = lockMode;
         setChanged();
     }
 

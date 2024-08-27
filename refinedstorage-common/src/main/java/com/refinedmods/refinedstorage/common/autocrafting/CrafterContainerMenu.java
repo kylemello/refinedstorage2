@@ -44,7 +44,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     public CrafterContainerMenu(final int syncId, final Inventory playerInventory, final CrafterData data) {
         super(Menus.INSTANCE.getCrafter(), syncId);
         this.player = playerInventory.player;
-        registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
+        registerProperty(new ClientProperty<>(CrafterPropertyTypes.LOCK_MODE, LockMode.NEVER));
         addSlots(
             new FilteredContainer(PATTERNS, stack -> isValidPattern(stack, playerInventory.player.level())),
             new UpgradeContainer(UpgradeDestinations.CRAFTER)
@@ -60,9 +60,9 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
         this.name = crafter.getDisplayName();
         this.chained = false;
         registerProperty(new ServerProperty<>(
-            PropertyTypes.REDSTONE_MODE,
-            crafter::getRedstoneMode,
-            crafter::setRedstoneMode
+            CrafterPropertyTypes.LOCK_MODE,
+            crafter::getLockMode,
+            crafter::setLockMode
         ));
         addSlots(crafter.getPatternContainer(), crafter.getUpgradeContainer());
     }

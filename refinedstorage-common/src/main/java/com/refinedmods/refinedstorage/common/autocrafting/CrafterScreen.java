@@ -3,9 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
-import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.widget.History;
-import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
@@ -24,6 +22,7 @@ import org.lwjgl.glfw.GLFW;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
+import static java.util.Objects.requireNonNull;
 
 public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     private static final ClientTooltipComponent EMPTY_PATTERN_SLOT = ClientTooltipComponent.create(
@@ -76,7 +75,7 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
                 nameField.setValue(name.getString());
             }
         });
-        addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
+        addSideButton(new LockModeSideButtonWidget(getMenu().getProperty(CrafterPropertyTypes.LOCK_MODE)));
         nameField = new SearchFieldWidget(
             font,
             leftPos + 8 + 1,
@@ -144,14 +143,25 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     @Override
     public boolean keyPressed(final int key, final int scanCode, final int modifiers) {
         if (nameField != null && editName) {
-            if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && nameField.isFocused()) {
-                getMenu().changeName(nameField.getValue());
-                setEditName(false);
+            if (nameField.isFocused() && saveOrCancel(key)) {
                 return true;
             }
             return nameField.keyPressed(key, scanCode, modifiers);
         }
         return super.keyPressed(key, scanCode, modifiers);
+    }
+
+    private boolean saveOrCancel(final int key) {
+        if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER)) {
+            getMenu().changeName(requireNonNull(nameField).getValue());
+            setEditName(false);
+            return true;
+        } else if (key == GLFW.GLFW_KEY_ESCAPE) {
+            setEditName(false);
+            requireNonNull(nameField).setValue(titleMarquee.getText().getString());
+            return true;
+        }
+        return false;
     }
 
     @Override
