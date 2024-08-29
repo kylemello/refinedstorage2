@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.api.autocrafting;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
+
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;

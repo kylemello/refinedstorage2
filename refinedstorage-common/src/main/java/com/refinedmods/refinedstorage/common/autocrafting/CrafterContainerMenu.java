@@ -22,9 +22,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity.PATTERNS;
-import static com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity.isValidPattern;
-
 public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     private static final int PATTERN_SLOT_X = 8;
     private static final int PATTERN_SLOT_Y = 20;
@@ -46,7 +43,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
         registerProperty(new ClientProperty<>(CrafterPropertyTypes.LOCK_MODE, LockMode.NEVER));
         registerProperty(new ClientProperty<>(CrafterPropertyTypes.PRIORITY, 0));
         addSlots(
-            new FilteredContainer(PATTERNS, stack -> isValidPattern(stack, playerInventory.player.level())),
+            new PatternInventory(playerInventory.player::level),
             new UpgradeContainer(UpgradeDestinations.CRAFTER)
         );
         this.name = Component.empty();

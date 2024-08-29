@@ -16,6 +16,7 @@ refinedarchitect {
     compileWithProject(project(":refinedstorage-network-api"))
     compileWithProject(project(":refinedstorage-network"))
     compileWithProject(project(":refinedstorage-grid-api"))
+    compileWithProject(project(":refinedstorage-autocrafting-api"))
     compileWithProject(project(":refinedstorage-query-parser"))
     publishing {
         maven = true

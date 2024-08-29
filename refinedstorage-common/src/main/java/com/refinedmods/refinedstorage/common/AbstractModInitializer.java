@@ -1,6 +1,9 @@
 package com.refinedmods.refinedstorage.common;
 
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.impl.autocrafting.AutocraftingNetworkComponentImpl;
 import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyNetworkComponentImpl;
 import com.refinedmods.refinedstorage.api.network.impl.node.GraphNetworkComponentImpl;
 import com.refinedmods.refinedstorage.api.network.impl.security.SecurityNetworkComponentImpl;
@@ -263,6 +266,10 @@ public abstract class AbstractModInitializer {
         RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             SecurityNetworkComponent.class,
             network -> new SecurityNetworkComponentImpl(RefinedStorageApi.INSTANCE.createDefaultSecurityPolicy())
+        );
+        RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
+            AutocraftingNetworkComponent.class,
+            network -> new AutocraftingNetworkComponentImpl(new PatternRepositoryImpl())
         );
     }
 

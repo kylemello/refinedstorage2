@@ -25,6 +25,7 @@ refinedarchitect {
     addProject(project(":refinedstorage-network-api"))
     addProject(project(":refinedstorage-network"))
     addProject(project(":refinedstorage-grid-api"))
+    addProject(project(":refinedstorage-autocrafting-api"))
     addProject(project(":refinedstorage-query-parser"))
     publishing {
         maven = true

@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
