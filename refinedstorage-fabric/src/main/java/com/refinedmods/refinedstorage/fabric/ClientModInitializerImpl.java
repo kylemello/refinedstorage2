@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.fabric;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
@@ -20,6 +19,7 @@ import com.refinedmods.refinedstorage.common.security.SecurityCardItemPropertyFu
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -32,7 +32,6 @@ import com.refinedmods.refinedstorage.common.support.packet.s2c.StorageInfoRespo
 import com.refinedmods.refinedstorage.common.support.packet.s2c.WirelessTransmitterDataPacket;
 import com.refinedmods.refinedstorage.common.support.tooltip.CompositeClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
-import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
@@ -63,7 +62,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -127,6 +125,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getSecurityManager());
         setCutout(Blocks.INSTANCE.getRelay());
         setCutout(Blocks.INSTANCE.getDiskInterface());
+        setCutout(Blocks.INSTANCE.getCrafter());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -154,9 +153,8 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         Blocks.INSTANCE.getSecurityManager().forEach(
             (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
         );
-        Blocks.INSTANCE.getRelay().forEach(
-            (color, id, block) -> registerEmissiveRelayModels(color, id)
-        );
+        Blocks.INSTANCE.getRelay().forEach((color, id, block) -> registerEmissiveRelayModels(color, id));
+        Blocks.INSTANCE.getCrafter().forEach((color, id, block) -> registerEmissiveCrafterModels(color, id));
     }
 
     private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
@@ -234,6 +232,19 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
     }
 
+    private void registerEmissiveCrafterModels(final DyeColor color, final ResourceLocation id) {
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier(BLOCK_PREFIX + "/crafter/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
+        );
+        EmissiveModelRegistry.INSTANCE.register(
+            createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
+        );
+    }
+
     private void registerPacketHandlers() {
         ClientPlayNetworking.registerGlobalReceiver(
             StorageInfoResponsePacket.PACKET_TYPE,
@@ -274,6 +285,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         ClientPlayNetworking.registerGlobalReceiver(
             PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
             wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            CrafterNameUpdatePacket.PACKET_TYPE,
+            wrapHandler(CrafterNameUpdatePacket::handle)
         );
     }
 
@@ -408,7 +423,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     private void registerCustomTooltips() {
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof AbstractUpgradeItem.UpgradeDestinationTooltipComponent component) {
-                return new UpgradeDestinationClientTooltipComponent(component.destinations());
+                return new CompositeClientTooltipComponent(List.of(
+                    new UpgradeDestinationClientTooltipComponent(component.destinations()),
+                    HelpClientTooltipComponent.create(component.helpText())
+                ));
             }
             return null;
         });
@@ -420,10 +438,11 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
         TooltipComponentCallback.EVENT.register(data -> {
             if (data instanceof RegulatorUpgradeItem.RegulatorTooltipComponent component) {
-                final ClientTooltipComponent help = HelpClientTooltipComponent.create(component.helpText());
-                return component.configuredResource() == null
-                    ? help
-                    : createRegulatorUpgradeClientTooltipComponent(component.configuredResource(), help);
+                return createRegulatorUpgradeClientTooltipComponent(
+                    component.destinations(),
+                    component.configuredResource(),
+                    component.helpText()
+                );
             }
             return null;
         });
@@ -436,16 +455,6 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                 PatternTooltipCache.getComponent(component);
             case null, default -> null;
         });
-    }
-
-    private CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(
-        final ResourceAmount configuredResource,
-        final ClientTooltipComponent help
-    ) {
-        return new CompositeClientTooltipComponent(List.of(
-            new ResourceClientTooltipComponent(configuredResource),
-            help
-        ));
     }
 
     private void registerKeyBindings() {

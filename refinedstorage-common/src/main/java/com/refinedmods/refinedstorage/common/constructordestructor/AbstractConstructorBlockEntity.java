@@ -187,8 +187,8 @@ public abstract class AbstractConstructorBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.CONSTRUCTOR);
+    public Component getName() {
+        return overrideName(ContentNames.CONSTRUCTOR);
     }
 
     @Nullable

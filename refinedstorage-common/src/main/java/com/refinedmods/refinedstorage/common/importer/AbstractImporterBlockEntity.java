@@ -176,8 +176,8 @@ public abstract class AbstractImporterBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.IMPORTER);
+    public Component getName() {
+        return overrideName(ContentNames.IMPORTER);
     }
 
     @Nullable

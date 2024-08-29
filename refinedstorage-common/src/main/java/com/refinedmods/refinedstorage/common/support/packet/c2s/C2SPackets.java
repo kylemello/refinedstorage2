@@ -127,4 +127,8 @@ public final class C2SPackets {
             new PatternGridSmithingTableRecipeTransferPacket(template, base, addition)
         );
     }
+
+    public static void sendCrafterNameChange(final String name) {
+        Platform.INSTANCE.sendPacketToServer(new CrafterNameChangePacket(name));
+    }
 }

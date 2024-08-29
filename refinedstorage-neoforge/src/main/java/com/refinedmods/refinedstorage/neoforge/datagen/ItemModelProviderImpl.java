@@ -51,6 +51,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
+        registerCrafters();
     }
 
     private void registerCables() {
@@ -216,6 +217,14 @@ public class ItemModelProviderImpl extends ItemModelProvider {
                 color
             ) {
             }).end());
+    }
+
+    private void registerCrafters() {
+        final var blocks = Blocks.INSTANCE.getCrafter();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/crafter/" + color.getName())
+        ));
     }
 
     private ModelFile modelFile(final ResourceLocation location) {

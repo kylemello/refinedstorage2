@@ -23,12 +23,16 @@ public final class PatternRendering {
         if (Screen.hasShiftDown()) {
             return true;
         }
+        return canDisplayOutputInScreen(stack);
+    }
+
+    private static boolean canDisplayOutputInScreen(final ItemStack stack) {
         final Screen screen = Minecraft.getInstance().screen;
-        if (screen instanceof PatternGridScreen patternGridScreen) {
-            return patternGridScreen.getMenu().getPatternOutputSlot() != null
-                && patternGridScreen.getMenu().getPatternOutputSlot().getItem() == stack;
-        }
-        return false;
+        return switch (screen) {
+            case PatternGridScreen patternGridScreen -> patternGridScreen.getMenu().isPatternInOutput(stack);
+            case CrafterScreen crafterScreen -> crafterScreen.getMenu().containsPattern(stack);
+            case null, default -> false;
+        };
     }
 
     public static Optional<ItemStack> getOutput(final ItemStack stack) {

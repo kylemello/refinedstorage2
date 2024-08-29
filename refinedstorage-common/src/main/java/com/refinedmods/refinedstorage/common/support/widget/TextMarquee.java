@@ -5,11 +5,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class TextMarquee {
-    private final Component text;
     private final int maxWidth;
 
+    private Component text;
     private int offset;
-    private int ticks;
+    private int stateTicks;
     private State state = State.MOVING_LEFT;
 
     public TextMarquee(final Component text, final int maxWidth) {
@@ -25,7 +25,7 @@ public class TextMarquee {
         if (!hovering) {
             offset = 0;
             state = State.MOVING_LEFT;
-            ticks = 0;
+            stateTicks = 0;
         }
         final int width = font.width(text);
         if (width > maxWidth) {
@@ -42,12 +42,20 @@ public class TextMarquee {
     }
 
     private void updateMarquee(final int overflow) {
-        ticks++;
-        if (ticks % state.ticks == 0) {
+        stateTicks++;
+        if (stateTicks % state.ticks == 0) {
             offset = state.updateOffset(offset);
             state = state.nextState(offset, overflow);
-            ticks = 0;
+            stateTicks = 0;
         }
+    }
+
+    public Component getText() {
+        return text;
+    }
+
+    public void setText(final Component text) {
+        this.text = text;
     }
 
     enum State {

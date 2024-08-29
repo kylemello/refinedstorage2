@@ -7,14 +7,29 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Crafter
+
 ### Changed
 
 -   Optimized memory usage and startup time of cable models. After updating, cables will appear disconnected, but this is only visual. Cause a block update to fix this.
 -   Optimized performance of searching in the Grid.
+-   Custom titles that overflow will now have a marquee effect instead, for every GUI.
+-   You can now define a priority in the Crafter.
+-   You can now change the name of a Crafter in the GUI.
+-   Changed "Crafter mode" to "Locking mode" with following options:
+    - Never
+    - Lock until redstone pulse is received
+    - Lock until connected machine is empty (new, facilitates easier "blocking mode" without redstone)
+    - Lock until all outputs are received (new, facilitates easier "blocking mode" without redstone)
+    - Lock until low redstone signal
+    - Lock until high redstone signal
 
 ### Fixed
 
 -   Fixed mouse keybindings not working on NeoForge.
+-   Fixed upgrade destinations not being shown on upgrades.
 
 ## [2.0.0-milestone.4.7] - 2024-08-11
 

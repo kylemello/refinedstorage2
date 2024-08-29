@@ -272,7 +272,6 @@ class ProcessingPatternGridRenderer implements PatternGridRenderer {
         final int yy = y - topPos - 1 + INSET_PADDING;
         graphics.drawString(font, INPUTS, xx, yy, 4210752, false);
         graphics.drawString(font, OUTPUTS, xx + 56, yy, 4210752, false);
-
     }
 
     @Override

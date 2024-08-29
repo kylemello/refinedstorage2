@@ -82,9 +82,13 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
 
     public static ClientTooltipComponent create(final Component text) {
         if (hasShiftDown()) {
-            return new HelpClientTooltipComponent(text);
+            return createAlwaysDisplayed(text);
         } else {
             return PRESS_SHIFT_FOR_HELP;
         }
+    }
+
+    public static ClientTooltipComponent createAlwaysDisplayed(final Component text) {
+        return new HelpClientTooltipComponent(text);
     }
 }

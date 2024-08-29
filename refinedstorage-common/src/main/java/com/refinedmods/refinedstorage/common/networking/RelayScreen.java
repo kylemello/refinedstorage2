@@ -2,12 +2,12 @@ package com.refinedmods.refinedstorage.common.networking;
 
 import com.refinedmods.refinedstorage.common.storage.AccessModeSideButtonWidget;
 import com.refinedmods.refinedstorage.common.storage.FilterModeSideButtonWidget;
-import com.refinedmods.refinedstorage.common.storage.PrioritySideButtonWidget;
 import com.refinedmods.refinedstorage.common.storage.StoragePropertyTypes;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.FuzzyModeSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
 
 import javax.annotation.Nullable;
 
@@ -45,8 +45,8 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
     @Nullable
     private AbstractSideButtonWidget priorityButton;
 
-    public RelayScreen(final RelayContainerMenu menu, final Inventory playerInventory, final Component text) {
-        super(menu, playerInventory, text);
+    public RelayScreen(final RelayContainerMenu menu, final Inventory playerInventory, final Component title) {
+        super(menu, playerInventory, title);
         this.playerInventory = playerInventory;
         menu.setPassThroughListener(this);
     }
@@ -103,7 +103,7 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         accessModeButton.visible = visible;
         addSideButton(accessModeButton);
 
-        priorityButton = new PrioritySideButtonWidget(
+        priorityButton = PrioritySideButtonWidget.forStorage(
             getMenu().getProperty(StoragePropertyTypes.PRIORITY),
             playerInventory,
             this

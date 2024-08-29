@@ -27,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,7 +41,7 @@ import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalB
 
 public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends AbstractNetworkNode>
     extends AbstractNetworkNodeContainerBlockEntity<T>
-    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget, PlayerAwareBlockEntity {
+    implements NetworkItemTargetBlockEntity, ConfigurationCardTarget, PlayerAwareBlockEntity, Nameable {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBaseNetworkNodeContainerBlockEntity.class);
     private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
@@ -51,7 +52,7 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
     private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
 
     @Nullable
-    private Component name;
+    private Component customName;
     @Nullable
     private UUID placedByPlayerId;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORE;
@@ -191,8 +192,8 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
 
     @Override
     public void writeConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
-        if (name != null) {
-            tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(name, provider));
+        if (customName != null) {
+            tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(customName, provider));
         }
         if (hasRedstoneMode()) {
             tag.putInt(TAG_REDSTONE_MODE, RedstoneModeSettings.getRedstoneMode(redstoneMode));
@@ -202,7 +203,7 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
     @Override
     public void readConfiguration(final CompoundTag tag, final HolderLookup.Provider provider) {
         if (tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
-            this.name = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
+            this.customName = parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), provider);
         }
         if (hasRedstoneMode() && tag.contains(TAG_REDSTONE_MODE)) {
             this.redstoneMode = RedstoneModeSettings.getRedstoneMode(tag.getInt(TAG_REDSTONE_MODE));
@@ -233,17 +234,32 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
     @Override
     protected void applyImplicitComponents(final BlockEntity.DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
-        this.name = componentInput.get(DataComponents.CUSTOM_NAME);
+        this.customName = componentInput.get(DataComponents.CUSTOM_NAME);
     }
 
     @Override
     protected void collectImplicitComponents(final DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        components.set(DataComponents.CUSTOM_NAME, name);
+        components.set(DataComponents.CUSTOM_NAME, customName);
     }
 
-    protected final Component getName(final Component defaultName) {
-        return name == null ? defaultName : name;
+    protected final void setCustomName(@Nullable final Component customName) {
+        this.customName = customName;
+    }
+
+    @Nullable
+    @Override
+    public final Component getCustomName() {
+        return customName;
+    }
+
+    protected final Component overrideName(final Component defaultName) {
+        return customName == null ? defaultName : customName;
+    }
+
+    @Override
+    public final Component getDisplayName() {
+        return getName();
     }
 
     @Override

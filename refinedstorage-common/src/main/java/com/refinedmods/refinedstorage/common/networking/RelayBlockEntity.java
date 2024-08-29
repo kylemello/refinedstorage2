@@ -202,8 +202,8 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.RELAY);
+    public Component getName() {
+        return overrideName(ContentNames.RELAY);
     }
 
     @Nullable

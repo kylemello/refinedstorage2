@@ -20,8 +20,8 @@ public class NetworkTransmitterScreen extends AbstractBaseScreen<NetworkTransmit
 
     public NetworkTransmitterScreen(final NetworkTransmitterContainerMenu menu,
                                     final Inventory playerInventory,
-                                    final Component text) {
-        super(menu, playerInventory, text);
+                                    final Component title) {
+        super(menu, playerInventory, title);
         this.inventoryLabelY = 42;
         this.imageWidth = 176;
         this.imageHeight = 137;

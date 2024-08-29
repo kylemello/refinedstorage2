@@ -46,7 +46,7 @@ public abstract class AbstractSimpleFilterContainerMenu<T extends BlockEntity> e
         addSlots(
             player,
             ResourceContainerImpl.createForFilter(resourceContainerData),
-            upgradeDestination == null ? null : new UpgradeContainer(upgradeDestination, null)
+            upgradeDestination == null ? null : new UpgradeContainer(upgradeDestination)
         );
     }
 

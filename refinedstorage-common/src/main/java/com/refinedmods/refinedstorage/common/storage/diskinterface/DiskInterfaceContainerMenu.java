@@ -76,7 +76,7 @@ public class DiskInterfaceContainerMenu extends AbstractResourceContainerMenu {
                 StorageContainerItem.stackValidator()
             ),
             ResourceContainerImpl.createForFilter(resourceContainerData),
-            new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE, null)
+            new UpgradeContainer(UpgradeDestinations.DISK_INTERFACE)
         );
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));

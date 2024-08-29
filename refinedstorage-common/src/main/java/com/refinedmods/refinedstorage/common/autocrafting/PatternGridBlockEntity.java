@@ -214,8 +214,8 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.PATTERN_GRID);
+    public Component getName() {
+        return overrideName(ContentNames.PATTERN_GRID);
     }
 
     @Override

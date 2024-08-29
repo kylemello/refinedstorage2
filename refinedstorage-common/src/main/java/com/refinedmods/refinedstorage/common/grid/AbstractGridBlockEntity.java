@@ -29,8 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractGridBlockEntity
-    extends AbstractBaseNetworkNodeContainerBlockEntity<GridNetworkNode>
+public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<GridNetworkNode>
     implements Grid {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,

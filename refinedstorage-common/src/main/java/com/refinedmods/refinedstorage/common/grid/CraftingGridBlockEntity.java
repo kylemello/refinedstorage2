@@ -74,8 +74,8 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity implements 
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.CRAFTING_GRID);
+    public Component getName() {
+        return overrideName(ContentNames.CRAFTING_GRID);
     }
 
     @Override

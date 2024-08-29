@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipCo
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeItemClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeSlot;
 
@@ -37,6 +38,8 @@ import org.apiguardian.api.API;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 
 public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
+    protected static final int TITLE_MAX_WIDTH = 162;
+
     private static final SmallTextClientTooltipComponent CLICK_TO_CLEAR = new SmallTextClientTooltipComponent(
         createTranslationAsHeading("gui", "filter_slot.click_to_clear")
     );
@@ -50,20 +53,31 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     private static final ClientTooltipComponent EMPTY_FILTER = ClientTooltipComponent.create(
         createTranslationAsHeading("gui", "filter_slot.empty_filter").getVisualOrderText()
     );
+    private static final ClientTooltipComponent EMPTY_UPGRADE_SLOT = ClientTooltipComponent.create(
+        createTranslationAsHeading("gui", "empty_upgrade_slot").getVisualOrderText()
+    );
+
+    protected final TextMarquee titleMarquee;
 
     private final Inventory playerInventory;
     private final List<Rect2i> exclusionZones = new ArrayList<>();
+
     private int sideButtonY;
 
     @Nullable
     private List<ClientTooltipComponent> deferredTooltip;
 
-    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component text) {
-        super(menu, playerInventory, text);
+    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final Component title) {
+        this(menu, playerInventory, new TextMarquee(title, TITLE_MAX_WIDTH));
+    }
+
+    protected AbstractBaseScreen(final T menu, final Inventory playerInventory, final TextMarquee title) {
+        super(menu, playerInventory, title.getText());
         this.playerInventory = playerInventory;
         this.titleLabelX = 7;
         this.titleLabelY = 7;
         this.inventoryLabelX = 7;
+        this.titleMarquee = title;
     }
 
     protected int getSideButtonY() {
@@ -91,6 +105,27 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         final int y = (height - imageHeight) / 2;
         graphics.blit(getTexture(), x, y, 0, 0, imageWidth, imageHeight);
         renderResourceSlots(graphics);
+    }
+
+    @Override
+    protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+        graphics.pose().popPose();
+        final boolean hoveringOverTitle = isHovering(
+            titleLabelX,
+            titleLabelY,
+            titleMarquee.getEffectiveWidth(font),
+            font.lineHeight,
+            mouseX,
+            mouseY
+        );
+        titleMarquee.render(graphics, leftPos + titleLabelX, topPos + titleLabelY, font, hoveringOverTitle);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        renderPlayerInventoryTitle(graphics);
+    }
+
+    protected final void renderPlayerInventoryTitle(final GuiGraphics graphics) {
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
     }
 
     @Override
@@ -153,9 +188,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             return Collections.emptyList();
         }
         final List<ClientTooltipComponent> lines = new ArrayList<>();
-        lines.add(ClientTooltipComponent.create(
-            createTranslationAsHeading("gui", "upgrade_slot").getVisualOrderText()
-        ));
+        lines.add(EMPTY_UPGRADE_SLOT);
         for (final UpgradeMapping upgrade : upgradeSlot.getAllowedUpgrades()) {
             lines.add(new UpgradeItemClientTooltipComponent(upgrade));
         }

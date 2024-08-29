@@ -5,11 +5,13 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
+import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static java.util.Objects.requireNonNull;
@@ -39,5 +41,10 @@ public class NetworkReceiverBlockEntity extends AbstractBaseNetworkNodeContainer
 
     private NetworkReceiverKey createKey() {
         return new NetworkReceiverKey(GlobalPos.of(requireNonNull(level).dimension(), getBlockPos()));
+    }
+
+    @Override
+    public Component getName() {
+        return overrideName(ContentNames.NETWORK_RECEIVER);
     }
 }

@@ -50,8 +50,8 @@ public class ItemStorageBlockBlockEntity extends AbstractStorageBlockBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(displayName);
+    public Component getName() {
+        return overrideName(displayName);
     }
 
     @Override

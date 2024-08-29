@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_crafters": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#refinedstorage:crafters"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "refinedstorage:coloring/purple_crafter"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_crafters"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "refinedstorage:coloring/purple_crafter"
+    ]
+  }
+}

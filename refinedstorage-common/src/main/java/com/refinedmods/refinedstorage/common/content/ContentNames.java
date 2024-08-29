@@ -39,6 +39,7 @@ public final class ContentNames {
     public static final MutableComponent SECURITY_MANAGER = name("security_manager");
     public static final MutableComponent RELAY = name("relay");
     public static final MutableComponent DISK_INTERFACE = name("disk_interface");
+    public static final MutableComponent CRAFTER = name("crafter");
 
     public static final String CLEAR_CRAFTING_MATRIX_TO_NETWORK_TRANSLATION_KEY =
         createTranslationKey("key", "clear_crafting_grid_matrix_to_network");

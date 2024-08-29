@@ -58,6 +58,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
+        registerCrafters();
     }
 
     private void registerCables() {
@@ -291,5 +292,44 @@ public class BlockModelProviderImpl extends BlockModelProvider {
                     color
                 ) {
                 }).end());
+    }
+
+    private void registerCrafters() {
+        final ResourceLocation side = createIdentifier("block/crafter/side");
+        final ResourceLocation top = createIdentifier("block/crafter/top");
+        Blocks.INSTANCE.getCrafter().forEach((color, id, crafter) -> {
+            final ResourceLocation cutoutSide = createIdentifier("block/crafter/cutouts/side/" + color.getName());
+            final ResourceLocation cutoutTop = createIdentifier("block/crafter/cutouts/top/" + color.getName());
+            withExistingParent("block/crafter/" + color.getName(), EMISSIVE_CUTOUT)
+                .texture(PARTICLE_TEXTURE, side)
+                .texture(NORTH, side)
+                .texture(EAST, side)
+                .texture(SOUTH, side)
+                .texture(WEST, side)
+                .texture(UP, top)
+                .texture(DOWN, BOTTOM_TEXTURE)
+                .texture(CUTOUT_NORTH, cutoutSide)
+                .texture(CUTOUT_EAST, cutoutSide)
+                .texture(CUTOUT_SOUTH, cutoutSide)
+                .texture(CUTOUT_WEST, cutoutSide)
+                .texture(CUTOUT_UP, cutoutTop)
+                .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
+        });
+        final ResourceLocation cutoutSide = createIdentifier("block/crafter/cutouts/side/inactive");
+        final ResourceLocation cutoutTop = createIdentifier("block/crafter/cutouts/top/inactive");
+        withExistingParent("block/crafter/inactive", CUTOUT)
+            .texture(PARTICLE_TEXTURE, side)
+            .texture(NORTH, side)
+            .texture(EAST, side)
+            .texture(SOUTH, side)
+            .texture(WEST, side)
+            .texture(UP, top)
+            .texture(DOWN, BOTTOM_TEXTURE)
+            .texture(CUTOUT_NORTH, cutoutSide)
+            .texture(CUTOUT_EAST, cutoutSide)
+            .texture(CUTOUT_SOUTH, cutoutSide)
+            .texture(CUTOUT_WEST, cutoutSide)
+            .texture(CUTOUT_UP, cutoutTop)
+            .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
     }
 }
