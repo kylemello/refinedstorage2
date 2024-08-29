@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
+import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
@@ -12,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,13 +27,16 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 import static java.util.Objects.requireNonNull;
 
 public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
-    private static final ClientTooltipComponent EMPTY_PATTERN_SLOT = ClientTooltipComponent.create(
-        createTranslationAsHeading("gui", "crafter.empty_pattern_slot").getVisualOrderText()
+    private static final Component EMPTY_PATTERN_SLOT = createTranslationAsHeading(
+        "gui", "crafter.empty_pattern_slot"
     );
     private static final Component CLICK_TO_EDIT_NAME = createTranslation("gui", "crafter.click_to_edit_name");
-    private static final Component NAME_CANNOT_BE_CHANGED_BECAUSE_OF_CHAINING = createTranslation(
-        "gui", "crafter.name_cannot_be_changed_because_of_chaining"
-    );
+
+    private static final Component CHAINED = createTranslation("gui", "crafter.chained");
+    private static final Component CHAINED_HELP = createTranslation("gui", "crafter.chained.help");
+    private static final Component CHAINED_HEAD_HELP = createTranslation("gui", "crafter.chained.head_help");
+    private static final Component NOT_CHAINED = createTranslation("gui", "crafter.not_chained");
+    private static final Component NOT_CHAINED_HELP = createTranslation("gui", "crafter.not_chained.help");
 
     private static final ResourceLocation CRAFTER_NAME_BACKGROUND = createIdentifier("widget/crafter_name");
     private static final List<String> CRAFTER_NAME_HISTORY = new ArrayList<>();
@@ -44,11 +48,27 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     private boolean editName;
 
     public CrafterScreen(final CrafterContainerMenu menu, final Inventory playerInventory, final Component title) {
-        super(menu, playerInventory, new TextMarquee(title, TITLE_MAX_WIDTH));
+        super(menu, playerInventory, new TextMarquee(title, getTitleMaxWidth(menu)));
         this.inventoryLabelY = 42;
         this.imageWidth = 210;
         this.imageHeight = 137;
         this.playerInventory = playerInventory;
+    }
+
+    private static int getTitleMaxWidth(final CrafterContainerMenu menu) {
+        final Component title = getChainingTitle(menu);
+        return TITLE_MAX_WIDTH - Minecraft.getInstance().font.width(title) - 10;
+    }
+
+    private static Component getChainingTitle(final CrafterContainerMenu menu) {
+        return (menu.isPartOfChain() || menu.isHeadOfChain()) ? CHAINED : NOT_CHAINED;
+    }
+
+    private Component getChainingTooltip() {
+        if (!getMenu().isPartOfChain() && !getMenu().isHeadOfChain()) {
+            return NOT_CHAINED_HELP;
+        }
+        return getMenu().isHeadOfChain() ? CHAINED_HEAD_HELP : CHAINED_HELP;
     }
 
     @Override
@@ -101,10 +121,7 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
 
     private void setEditName(final boolean editName) {
         this.editName = editName;
-        final Component helpTooltip = getMenu().canChangeName()
-            ? CLICK_TO_EDIT_NAME
-            : NAME_CANNOT_BE_CHANGED_BECAUSE_OF_CHAINING;
-        this.titleMarquee.setTooltip(editName ? null : helpTooltip);
+        this.titleMarquee.setTooltip(getMenu().canChangeName() ? CLICK_TO_EDIT_NAME : null);
         if (nameField != null) {
             nameField.visible = editName;
             nameField.setFocused(editName);
@@ -129,18 +146,24 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         if (editName) {
             renderPlayerInventoryTitle(graphics);
-        } else {
-            super.renderLabels(graphics, mouseX, mouseY);
-            if (getMenu().canChangeName()) {
-                titleMarquee.renderTooltipHighlight(
-                    graphics,
-                    titleLabelX,
-                    titleLabelY,
-                    font,
-                    isHoveringOverTitle(mouseX, mouseY)
-                );
-            }
+            return;
         }
+        super.renderLabels(graphics, mouseX, mouseY);
+        if (getMenu().canChangeName()) {
+            titleMarquee.renderTooltipHighlight(
+                graphics,
+                titleLabelX,
+                titleLabelY,
+                font,
+                isHoveringOverTitle(mouseX, mouseY)
+            );
+        }
+        final Component title = getChainingTitle(menu);
+        graphics.drawString(font, title, getChainingTitleX(title), titleLabelY, 4210752, false);
+    }
+
+    private int getChainingTitleX(final Component title) {
+        return imageWidth - 41 - font.width(title);
     }
 
     @Override
@@ -178,8 +201,19 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
         if (hoveredSlot instanceof PatternSlot patternSlot
             && !patternSlot.hasItem()
             && getMenu().getCarried().isEmpty()) {
-            Platform.INSTANCE.renderTooltip(graphics, List.of(EMPTY_PATTERN_SLOT), x, y);
+            graphics.renderTooltip(font, EMPTY_PATTERN_SLOT, x, y);
             return;
+        }
+        final Component chainingTitle = getChainingTitle(getMenu());
+        final int chainingTitleX = getChainingTitleX(chainingTitle);
+        if (isHovering(chainingTitleX, titleLabelY, font.width(chainingTitle), font.lineHeight, x, y)) {
+            final Component chainingTooltip = getChainingTooltip();
+            Platform.INSTANCE.renderTooltip(
+                graphics,
+                List.of(HelpClientTooltipComponent.createAlwaysDisplayed(chainingTooltip)),
+                x,
+                y
+            );
         }
         super.renderTooltip(graphics, x, y);
     }

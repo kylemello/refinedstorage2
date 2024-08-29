@@ -30,7 +30,8 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     private static final int PATTERN_SLOT_Y = 20;
 
     private final Player player;
-    private final boolean chained;
+    private final boolean partOfChain;
+    private final boolean headOfChain;
     private final RateLimiter nameRateLimiter = RateLimiter.create(0.5);
 
     @Nullable
@@ -49,7 +50,8 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
             new UpgradeContainer(UpgradeDestinations.CRAFTER)
         );
         this.name = Component.empty();
-        this.chained = data.chained();
+        this.partOfChain = data.partOfChain();
+        this.headOfChain = data.headOfChain();
     }
 
     public CrafterContainerMenu(final int syncId, final Inventory playerInventory, final CrafterBlockEntity crafter) {
@@ -57,7 +59,8 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
         this.crafter = crafter;
         this.player = playerInventory.player;
         this.name = crafter.getDisplayName();
-        this.chained = false;
+        this.partOfChain = false;
+        this.headOfChain = false;
         registerProperty(new ServerProperty<>(
             CrafterPropertyTypes.LOCK_MODE,
             crafter::getLockMode,
@@ -72,7 +75,15 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     }
 
     boolean canChangeName() {
-        return !chained;
+        return !partOfChain;
+    }
+
+    boolean isPartOfChain() {
+        return partOfChain;
+    }
+
+    boolean isHeadOfChain() {
+        return headOfChain;
     }
 
     void setListener(@Nullable final Listener listener) {
@@ -130,7 +141,7 @@ public class CrafterContainerMenu extends AbstractBaseContainerMenu {
     }
 
     public void changeName(final String newName) {
-        if (chained) {
+        if (partOfChain) {
             return;
         }
         if (crafter != null) {

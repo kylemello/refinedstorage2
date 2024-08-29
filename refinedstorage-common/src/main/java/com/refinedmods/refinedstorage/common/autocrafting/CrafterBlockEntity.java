@@ -86,8 +86,30 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
         return upgradeContainer;
     }
 
-    private boolean isChained() {
+    private boolean isPartOfChain() {
         return getChainingRoot() != this;
+    }
+
+    // if there is another crafter next to us, that is pointing in our direction,
+    // and we are not part of a chain, we are the head of the chain
+    private boolean isHeadOfChain() {
+        if (level == null || isPartOfChain()) {
+            return false;
+        }
+        for (final Direction direction : Direction.values()) {
+            final BlockPos pos = getBlockPos().relative(direction);
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
+            final BlockEntity neighbor = level.getBlockEntity(pos);
+            if (neighbor instanceof CrafterBlockEntity neighborCrafter) {
+                final Direction neighborDirection = tryExtractDirection(neighborCrafter.getBlockState());
+                if (neighborDirection == direction.getOpposite()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private CrafterBlockEntity getChainingRoot() {
@@ -151,7 +173,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
 
     @Override
     public CrafterData getMenuData() {
-        return new CrafterData(isChained());
+        return new CrafterData(isPartOfChain(), isHeadOfChain());
     }
 
     @Override
@@ -221,7 +243,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     }
 
     void setCustomName(final String name) {
-        if (isChained()) {
+        if (isPartOfChain()) {
             return;
         }
         setCustomName(name.trim().isBlank() ? null : Component.literal(name));
