@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,13 +31,13 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     private static final Component EMPTY_PATTERN_SLOT = createTranslationAsHeading(
         "gui", "crafter.empty_pattern_slot"
     );
-    private static final Component CLICK_TO_EDIT_NAME = createTranslation("gui", "crafter.click_to_edit_name");
 
     private static final Component CHAINED = createTranslation("gui", "crafter.chained");
     private static final Component CHAINED_HELP = createTranslation("gui", "crafter.chained.help");
     private static final Component CHAINED_HEAD_HELP = createTranslation("gui", "crafter.chained.head_help");
     private static final Component NOT_CHAINED = createTranslation("gui", "crafter.not_chained");
     private static final Component NOT_CHAINED_HELP = createTranslation("gui", "crafter.not_chained.help");
+    private static final Component EDIT = createTranslation("gui", "crafter.edit_name");
 
     private static final ResourceLocation CRAFTER_NAME_BACKGROUND = createIdentifier("widget/crafter_name");
     private static final List<String> CRAFTER_NAME_HISTORY = new ArrayList<>();
@@ -45,6 +46,8 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
 
     @Nullable
     private EditBox nameField;
+    @Nullable
+    private Button editButton;
     private boolean editName;
 
     public CrafterScreen(final CrafterContainerMenu menu, final Inventory playerInventory, final Component title) {
@@ -56,8 +59,17 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
     }
 
     private static int getTitleMaxWidth(final CrafterContainerMenu menu) {
-        final Component title = getChainingTitle(menu);
-        return TITLE_MAX_WIDTH - Minecraft.getInstance().font.width(title) - 10;
+        final int chainingTitleWidth = Minecraft.getInstance().font.width(getChainingTitle(menu));
+        final int editButtonWidth = getEditButtonWidth();
+        return TITLE_MAX_WIDTH - chainingTitleWidth - editButtonWidth - 10;
+    }
+
+    private int getEditButtonX() {
+        return leftPos + titleLabelX + titleMarquee.getEffectiveWidth(font) + 2;
+    }
+
+    private static int getEditButtonWidth() {
+        return Minecraft.getInstance().font.width(EDIT) + 8;
     }
 
     private static Component getChainingTitle(final CrafterContainerMenu menu) {
@@ -98,13 +110,18 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
             if (nameField != null) {
                 nameField.setValue(name.getString());
             }
+            if (editButton != null) {
+                editButton.setX(getEditButtonX());
+            }
         });
+
         addSideButton(new LockModeSideButtonWidget(getMenu().getProperty(CrafterPropertyTypes.LOCK_MODE)));
         addSideButton(PrioritySideButtonWidget.forCrafter(
             getMenu().getProperty(CrafterPropertyTypes.PRIORITY),
             playerInventory,
             this
         ));
+
         nameField = new SearchFieldWidget(
             font,
             leftPos + 8 + 1,
@@ -116,12 +133,18 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
         nameField.setBordered(false);
         nameField.setCanLoseFocus(false);
         addWidget(nameField);
+
+        editButton = addRenderableWidget(Button.builder(EDIT, button -> setEditName(true))
+            .pos(getEditButtonX(), topPos + titleLabelY - 3)
+            .size(getEditButtonWidth(), 14)
+            .build());
+        editButton.active = getMenu().canChangeName();
+
         setEditName(false);
     }
 
     private void setEditName(final boolean editName) {
         this.editName = editName;
-        this.titleMarquee.setTooltip(getMenu().canChangeName() ? CLICK_TO_EDIT_NAME : null);
         if (nameField != null) {
             nameField.visible = editName;
             nameField.setFocused(editName);
@@ -131,6 +154,9 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
             } else {
                 setFocused(null);
             }
+        }
+        if (editButton != null) {
+            editButton.visible = !editName;
         }
     }
 
@@ -149,15 +175,6 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
             return;
         }
         super.renderLabels(graphics, mouseX, mouseY);
-        if (getMenu().canChangeName()) {
-            titleMarquee.renderTooltipHighlight(
-                graphics,
-                titleLabelX,
-                titleLabelY,
-                font,
-                isHoveringOverTitle(mouseX, mouseY)
-            );
-        }
         final Component title = getChainingTitle(menu);
         graphics.drawString(font, title, getChainingTitleX(title), titleLabelY, 4210752, false);
     }
@@ -214,6 +231,7 @@ public class CrafterScreen extends AbstractBaseScreen<CrafterContainerMenu> {
                 x,
                 y
             );
+            return;
         }
         super.renderTooltip(graphics, x, y);
     }

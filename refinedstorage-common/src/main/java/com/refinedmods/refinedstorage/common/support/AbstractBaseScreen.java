@@ -110,20 +110,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     @Override
     protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         graphics.pose().popPose();
-        titleMarquee.render(
-            graphics,
-            leftPos + titleLabelX,
-            topPos + titleLabelY,
-            font,
-            isHoveringOverTitle(mouseX, mouseY)
-        );
-        graphics.pose().pushPose();
-        graphics.pose().translate(leftPos, topPos, 0.0F);
-        renderPlayerInventoryTitle(graphics);
-    }
-
-    protected final boolean isHoveringOverTitle(final int mouseX, final int mouseY) {
-        return isHovering(
+        final boolean hoveringOverTitle = isHovering(
             titleLabelX,
             titleLabelY,
             titleMarquee.getEffectiveWidth(font),
@@ -131,6 +118,10 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             mouseX,
             mouseY
         );
+        titleMarquee.render(graphics, leftPos + titleLabelX, topPos + titleLabelY, font, hoveringOverTitle);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0.0F);
+        renderPlayerInventoryTitle(graphics);
     }
 
     protected final void renderPlayerInventoryTitle(final GuiGraphics graphics) {
@@ -167,11 +158,6 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
 
     @Override
     protected void renderTooltip(final GuiGraphics graphics, final int x, final int y) {
-        final Component titleTooltip = titleMarquee.getTooltip();
-        if (titleTooltip != null && isHoveringOverTitle(x, y)) {
-            graphics.renderTooltip(font, titleTooltip, x, y);
-            return;
-        }
         if (hoveredSlot instanceof UpgradeSlot upgradeSlot) {
             final List<ClientTooltipComponent> tooltip = getUpgradeTooltip(menu.getCarried(), upgradeSlot);
             if (!tooltip.isEmpty()) {
