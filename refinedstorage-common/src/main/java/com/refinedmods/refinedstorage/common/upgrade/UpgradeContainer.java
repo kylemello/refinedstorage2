@@ -41,7 +41,7 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     private final ThrottledNetworkNodeTicker ticker;
     
     public UpgradeContainer(final UpgradeDestination destination) {
-        this(destination, null, DEFAULT_WORK_TICK_RATE);
+        this(destination, null);
     }
 
     public UpgradeContainer(final UpgradeDestination destination, @Nullable final UpgradeContainerListener listener) {
