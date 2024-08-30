@@ -30,8 +30,8 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationAsHeading;
 import static java.util.Objects.requireNonNull;
 
-public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMenu> implements
-    PatternGridContainerMenu.PatternGridListener {
+public class PatternGridScreen extends AbstractGridScreen<PatternGridContainerMenu>
+    implements PatternGridContainerMenu.PatternGridListener {
     static final int INSET_PADDING = 4;
     static final int INSET_WIDTH = 138;
     static final int INSET_HEIGHT = 71;
