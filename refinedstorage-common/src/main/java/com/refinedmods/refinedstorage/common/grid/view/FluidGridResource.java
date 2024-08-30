@@ -41,13 +41,14 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
                              final String modId,
                              final String modName,
                              final Set<String> tags,
-                             final String tooltip) {
+                             final String tooltip,
+                             final boolean craftable) {
         super(resource, name, Map.of(
             GridResourceAttributeKeys.MOD_ID, Set.of(modId),
             GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
             GridResourceAttributeKeys.TAGS, tags,
             GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
-        ));
+        ), craftable);
         this.id = BuiltInRegistries.FLUID.getId(resource.fluid());
         this.rendering = RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class);
     }

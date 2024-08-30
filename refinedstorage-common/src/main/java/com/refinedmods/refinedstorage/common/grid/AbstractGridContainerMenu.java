@@ -106,6 +106,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
             resource.resourceAmount().amount(),
             resource.trackedResource().orElse(null)
         ));
+        gridData.craftableResources().forEach(viewBuilder::withCraftableResource);
 
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());

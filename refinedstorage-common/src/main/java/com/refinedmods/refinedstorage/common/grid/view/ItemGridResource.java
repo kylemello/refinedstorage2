@@ -41,13 +41,14 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
                             final String modId,
                             final String modName,
                             final Set<String> tags,
-                            final String tooltip) {
+                            final String tooltip,
+                            final boolean craftable) {
         super(resource, name, Map.of(
             GridResourceAttributeKeys.MOD_ID, Set.of(modId),
             GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
             GridResourceAttributeKeys.TAGS, tags,
             GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
-        ));
+        ), craftable);
         this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
         this.itemResource = resource;

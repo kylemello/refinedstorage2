@@ -35,6 +35,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationKey;
 import static java.util.Objects.requireNonNullElse;
 
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
@@ -273,13 +275,30 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (!(resource instanceof PlatformGridResource platformResource)) {
             return;
         }
-        final String text = resource.isZeroed() ? "0" : platformResource.getDisplayedAmount(getMenu().getView());
-        final int color = resource.isZeroed()
-            ? requireNonNullElse(ChatFormatting.RED.getColor(), 15)
-            : requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
+        final long amount = platformResource.getAmount(getMenu().getView());
+        final String text = getAmountText(resource, platformResource, amount);
+        final int color = getAmountColor(resource, amount);
         final boolean large = (minecraft != null && minecraft.isEnforceUnicode())
             || Platform.INSTANCE.getConfig().getGrid().isLargeFont();
         ResourceSlotRendering.renderAmount(graphics, slotX, slotY, text, color, large);
+    }
+
+    private int getAmountColor(final GridResource resource, final long amount) {
+        if (amount == 0 && resource.isCraftable()) {
+            return requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
+        } else if (resource.isZeroed()) {
+            return requireNonNullElse(ChatFormatting.RED.getColor(), 15);
+        }
+        return requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
+    }
+
+    private String getAmountText(final GridResource resource,
+                                 final PlatformGridResource platformResource,
+                                 final long amount) {
+        if (amount == 0 && resource.isCraftable()) {
+            return I18n.get(createTranslationKey("gui", "grid.craft"));
+        }
+        return platformResource.getDisplayedAmount(getMenu().getView());
     }
 
     private void renderDisabledSlot(final GuiGraphics graphics, final int slotX, final int slotY) {
@@ -326,10 +345,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             platformResource.getTooltipImage(),
             lines
         );
-        if (Platform.INSTANCE.getConfig().getGrid().isDetailedTooltip()) {
-            addDetailedTooltip(view, platformResource, processedLines);
-        }
-        if (!platformResource.isZeroed()) {
+        final long amount = platformResource.getAmount(getMenu().getView());
+        if (amount > 0) {
+            if (Platform.INSTANCE.getConfig().getGrid().isDetailedTooltip()) {
+                addDetailedTooltip(view, platformResource, processedLines);
+            }
             processedLines.addAll(platformResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
@@ -338,9 +358,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private void addDetailedTooltip(final GridView view,
                                     final PlatformGridResource platformResource,
                                     final List<ClientTooltipComponent> lines) {
-        final String amountInTooltip = platformResource.isZeroed()
-            ? "0"
-            : platformResource.getAmountInTooltip(getMenu().getView());
+        final String amountInTooltip = platformResource.getAmountInTooltip(getMenu().getView());
         lines.add(new SmallTextClientTooltipComponent(
             createTranslation("misc", "total", amountInTooltip).withStyle(ChatFormatting.GRAY)
         ));

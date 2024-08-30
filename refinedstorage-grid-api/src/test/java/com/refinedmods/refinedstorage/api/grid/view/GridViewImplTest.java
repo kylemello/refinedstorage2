@@ -28,7 +28,7 @@ class GridViewImplTest {
 
     @BeforeEach
     void setUp() {
-        viewBuilder = getViewBuilder(resource -> Optional.of(new GridResourceImpl(resource)));
+        viewBuilder = getViewBuilder((resource, craftable) -> Optional.of(new GridResourceImpl(resource, craftable)));
     }
 
     private static GridViewBuilderImpl getViewBuilder(final GridResourceFactory resourceFactory) {
@@ -47,7 +47,7 @@ class GridViewImplTest {
 
         // Arrange
         final GridViewBuilder builder = getViewBuilder(
-            resourceAmount -> Optional.of(new GridResourceWithMetadata(resourceAmount))
+            (resource, craftable) -> Optional.of(new GridResourceWithMetadata(resource))
         );
         final GridView view = builder.build();
 
@@ -654,6 +654,101 @@ class GridViewImplTest {
         assertThat(view.getAmount(A)).isZero();
         assertThat(view.getAmount(B)).isZero();
         assertThat(view.getAmount(D)).isZero();
+    }
+
+    @Test
+    void shouldIncludeCraftableResourceInViewList() {
+        // Arrange
+        final GridView view = viewBuilder
+            .withResource(A, 15, null)
+            .withCraftableResource(B)
+            .build();
+
+        // Act
+        view.sort();
+
+        // Assert
+        assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            new GridResourceImpl(A),
+            new GridResourceImpl(B).craftable()
+        );
+        assertThat(view.getAmount(A)).isEqualTo(15);
+        assertThat(view.getAmount(B)).isZero();
+        assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(new ResourceAmount(A, 15));
+    }
+
+    @Test
+    void shouldIncludeCraftableResourceInViewListEvenIfItIsInTheBackingList() {
+        // Arrange
+        final GridView view = viewBuilder
+            .withResource(A, 15, null)
+            .withCraftableResource(A)
+            .build();
+
+        // Act
+        view.sort();
+
+        // Assert
+        assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new GridResourceImpl(A).craftable()
+        );
+        assertThat(view.getAmount(A)).isEqualTo(15);
+        assertThat(view.copyBackingList().copyState())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(new ResourceAmount(A, 15));
+    }
+
+    @Test
+    void shouldNotRemoveCraftableResource() {
+        // Arrange
+        final GridView view = viewBuilder
+            .withResource(A, 15, null)
+            .withCraftableResource(A)
+            .build();
+
+        view.sort();
+
+        // Act
+        view.onChange(A, -15, null);
+
+        // Assert
+        assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new GridResourceImpl(A).craftable()
+        );
+        assertThat(view.getAmount(A)).isZero();
+        assertThat(view.copyBackingList().copyState()).isEmpty();
+    }
+
+    @Test
+    void shouldNotRemoveCraftableResourceEvenWhenPreventingSorting() {
+        // Arrange
+        final GridView view = viewBuilder
+            .withResource(A, 15, null)
+            .withCraftableResource(A)
+            .build();
+
+        view.sort();
+        view.setPreventSorting(true);
+
+        // Act & assert
+        view.onChange(A, -15, null);
+
+        assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new GridResourceImpl(A).zeroed().craftable()
+        );
+        assertThat(view.getAmount(A)).isZero();
+        assertThat(view.copyBackingList().copyState()).isEmpty();
+
+        view.onChange(A, 1, null);
+
+        assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new GridResourceImpl(A).craftable()
+        );
+        assertThat(view.getAmount(A)).isEqualTo(1);
+        assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 1)
+        );
     }
 
     private record ResourceWithMetadata(ResourceKey resource, int metadata) implements ResourceKey {

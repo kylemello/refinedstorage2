@@ -66,7 +66,7 @@ public final class ResourceSlotRendering {
     public static void renderAmount(final GuiGraphics graphics,
                                     final int x,
                                     final int y,
-                                    final String amount,
+                                    final String text,
                                     final int color,
                                     final boolean large) {
         final Font font = Minecraft.getInstance().font;
@@ -77,7 +77,7 @@ public final class ResourceSlotRendering {
         if (!large) {
             poseStack.scale(0.5F, 0.5F, 1);
         }
-        graphics.drawString(font, amount, (large ? 16 : 30) - font.width(amount), large ? 8 : 22, color, true);
+        graphics.drawString(font, text, (large ? 16 : 30) - font.width(text), large ? 8 : 22, color, true);
         poseStack.popPose();
     }
 }

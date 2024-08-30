@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.grid;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.container.NetworkNodeContainerPriorities;
 import com.refinedmods.refinedstorage.api.network.impl.node.grid.GridNetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
@@ -15,12 +16,15 @@ import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,6 +55,17 @@ public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeCon
         return requireNonNull(mainNetworkNode.getNetwork())
             .getComponent(StorageNetworkComponent.class)
             .getResources(actorType);
+    }
+
+    @Override
+    public Set<PlatformResourceKey> getCraftableResources() {
+        return requireNonNull(mainNetworkNode.getNetwork())
+            .getComponent(AutocraftingNetworkComponent.class)
+            .getOutputs()
+            .stream()
+            .filter(PlatformResourceKey.class::isInstance)
+            .map(PlatformResourceKey.class::cast)
+            .collect(Collectors.toSet());
     }
 
     @Override

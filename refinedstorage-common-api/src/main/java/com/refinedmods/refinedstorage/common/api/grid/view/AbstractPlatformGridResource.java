@@ -18,14 +18,17 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
     protected final T resource;
     private final String name;
     private final Map<GridResourceAttributeKey, Set<String>> attributes;
+    private final boolean craftable;
     private boolean zeroed;
 
     protected AbstractPlatformGridResource(final T resource,
                                            final String name,
-                                           final Map<GridResourceAttributeKey, Set<String>> attributes) {
+                                           final Map<GridResourceAttributeKey, Set<String>> attributes,
+                                           final boolean craftable) {
         this.resource = resource;
         this.name = name;
         this.attributes = attributes;
+        this.craftable = craftable;
     }
 
     @Override
@@ -58,6 +61,11 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
         this.zeroed = zeroed;
     }
 
+    @Override
+    public boolean isCraftable() {
+        return craftable;
+    }
+
     @Nullable
     @Override
     public PlatformResourceKey getResourceForRecipeMods() {
@@ -70,6 +78,7 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
             + "resource=" + resource
             + ", name='" + name + '\''
             + ", attributes=" + attributes
+            + ", craftable=" + craftable
             + ", zeroed=" + zeroed
             + '}';
     }

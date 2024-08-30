@@ -5,9 +5,11 @@ import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.server.level.ServerPlayer;
 import org.apiguardian.api.API;
@@ -23,6 +25,8 @@ public interface Grid {
     boolean isGridActive();
 
     List<TrackedResourceAmount> getResources(Class<? extends Actor> actorType);
+
+    Set<PlatformResourceKey> getCraftableResources();
 
     GridOperations createOperations(ResourceType resourceType, ServerPlayer player);
 }

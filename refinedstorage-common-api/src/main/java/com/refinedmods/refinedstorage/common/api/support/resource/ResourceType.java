@@ -29,7 +29,7 @@ public interface ResourceType {
 
     double getDisplayAmount(long amount);
 
-    Optional<GridResource> toGridResource(ResourceKey resource);
+    Optional<GridResource> toGridResource(ResourceKey resource, boolean craftable);
 
     long getInterfaceExportLimit();
 

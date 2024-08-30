@@ -23,4 +23,6 @@ public interface GridResource {
     boolean isZeroed();
 
     void setZeroed(boolean zeroed);
+
+    boolean isCraftable();
 }
