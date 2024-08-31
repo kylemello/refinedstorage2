@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-// TODO: help tooltip for fuzzy mode tooltip
-// TODO: help tooltip offset -2
 class CraftingPattern extends AbstractPattern {
     private final List<List<PlatformResourceKey>> inputs;
     private final ResourceAmount output;
