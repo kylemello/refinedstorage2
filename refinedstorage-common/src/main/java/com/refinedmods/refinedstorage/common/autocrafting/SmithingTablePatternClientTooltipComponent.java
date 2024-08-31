@@ -23,7 +23,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
     private final SmithingTablePattern pattern;
 
     SmithingTablePatternClientTooltipComponent(final SmithingTablePattern pattern) {
-        this.outputText = getOutputText(pattern.output());
+        this.outputText = getOutputText(pattern.getOutput());
         this.pattern = pattern;
     }
 
@@ -33,11 +33,11 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         final int slotsY = y + 9 + 2;
         graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
-        rendering.render(pattern.template(), graphics, x + 1, slotsY + 1);
+        rendering.render(pattern.getTemplate(), graphics, x + 1, slotsY + 1);
         graphics.blitSprite(Sprites.SLOT, x + 18, slotsY, 18, 18);
-        rendering.render(pattern.base(), graphics, x + 18 + 1, slotsY + 1);
+        rendering.render(pattern.getBase(), graphics, x + 18 + 1, slotsY + 1);
         graphics.blitSprite(Sprites.SLOT, x + 18 + 18, slotsY, 18, 18);
-        rendering.render(pattern.addition(), graphics, x + 18 + 18 + 1, slotsY + 1);
+        rendering.render(pattern.getAddition(), graphics, x + 18 + 18 + 1, slotsY + 1);
         graphics.blitSprite(
             LIGHT_ARROW,
             x + (18 * 3) + ARROW_SPACING,
@@ -47,7 +47,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         );
         final int lastSlotX = x + (18 * 3) + ARROW_SPACING + LIGHT_ARROW_WIDTH + ARROW_SPACING;
         graphics.blitSprite(Sprites.SLOT, lastSlotX, slotsY, 18, 18);
-        rendering.render(pattern.output(), graphics, lastSlotX + 1, slotsY + 1);
+        rendering.render(pattern.getOutput(), graphics, lastSlotX + 1, slotsY + 1);
     }
 
     @Override

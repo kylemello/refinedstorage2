@@ -45,14 +45,14 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
         this.width = width;
         this.height = height;
         this.craftingPattern = craftingPattern;
-        final ItemResource outputResource = craftingPattern.output().resource() instanceof ItemResource itemResource
+        final ItemResource outputResource = craftingPattern.getOutput().resource() instanceof ItemResource itemResource
             ? itemResource
             : null;
         this.outputStack = outputResource != null
-            ? outputResource.toItemStack(craftingPattern.output().amount())
+            ? outputResource.toItemStack(craftingPattern.getOutput().amount())
             : null;
         this.outputText = outputResource != null
-            ? Component.literal(String.format("%dx ", craftingPattern.output().amount()))
+            ? Component.literal(String.format("%dx ", craftingPattern.getOutput().amount()))
             .append(outputResource.toItemStack().getHoverName())
             .withStyle(ChatFormatting.GRAY) : null;
     }
@@ -96,7 +96,7 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
     private void renderInputSlot(final int x, final int y, final GuiGraphics graphics, final int sx, final int sy) {
         graphics.blitSprite(SLOT, x + sx * 18, y + sy * 18, 18, 18);
         final int index = sy * width + sx;
-        final List<PlatformResourceKey> inputs = craftingPattern.inputs().get(index);
+        final List<PlatformResourceKey> inputs = craftingPattern.getInputs().get(index);
         if (!inputs.isEmpty()) {
             final int idx = currentCycle % inputs.size();
             final PlatformResourceKey resource = inputs.get(idx);

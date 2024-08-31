@@ -12,15 +12,15 @@ public class PatternRepositoryImpl implements PatternRepository {
     @Override
     public void add(final Pattern pattern) {
         patterns.add(pattern);
-        outputs.addAll(pattern.getOutputs());
+        outputs.addAll(pattern.getOutputResources());
     }
 
     @Override
     public void remove(final Pattern pattern) {
         patterns.remove(pattern);
-        for (final ResourceKey output : pattern.getOutputs()) {
+        for (final ResourceKey output : pattern.getOutputResources()) {
             final boolean noOtherPatternHasThisOutput = patterns.stream()
-                .noneMatch(otherPattern -> otherPattern.getOutputs().contains(output));
+                .noneMatch(otherPattern -> otherPattern.getOutputResources().contains(output));
             if (noOtherPatternHasThisOutput) {
                 outputs.remove(output);
             }

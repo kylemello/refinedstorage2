@@ -12,7 +12,7 @@ public class SimplePattern implements Pattern {
     }
 
     @Override
-    public Set<ResourceKey> getOutputs() {
+    public Set<ResourceKey> getOutputResources() {
         return outputs;
     }
 }
