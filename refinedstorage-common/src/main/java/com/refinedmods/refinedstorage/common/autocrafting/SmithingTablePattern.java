@@ -1,13 +1,15 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AbstractPattern;
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-class SmithingTablePattern extends AbstractPattern {
+class SmithingTablePattern implements Pattern {
+    private final UUID id;
     private final ItemResource template;
     private final ItemResource base;
     private final ItemResource addition;
@@ -19,7 +21,7 @@ class SmithingTablePattern extends AbstractPattern {
                          final ItemResource base,
                          final ItemResource addition,
                          final ItemResource output) {
-        super(id);
+        this.id = id;
         this.template = template;
         this.base = base;
         this.addition = addition;
@@ -46,5 +48,22 @@ class SmithingTablePattern extends AbstractPattern {
 
     ItemResource getOutput() {
         return output;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final SmithingTablePattern that = (SmithingTablePattern) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

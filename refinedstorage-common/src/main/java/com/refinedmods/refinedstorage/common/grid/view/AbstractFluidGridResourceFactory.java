@@ -3,8 +3,10 @@ package com.refinedmods.refinedstorage.common.grid.view;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceFactory;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,10 +29,12 @@ public abstract class AbstractFluidGridResourceFactory implements GridResourceFa
         return Optional.of(new FluidGridResource(
             fluidResource,
             name,
-            modId,
-            modName,
-            tags,
-            tooltip,
+            Map.of(
+                GridResourceAttributeKeys.MOD_ID, Set.of(modId),
+                GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
+                GridResourceAttributeKeys.TAGS, tags,
+                GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
+            ),
             craftable
         ));
     }
