@@ -3,11 +3,9 @@ package com.refinedmods.refinedstorage.common.support.amount;
 import com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -26,7 +24,6 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N extends Number>
     extends AbstractBaseScreen<T> {
-    private static final MutableComponent SET_TEXT = createTranslation("gui", "configure_amount.set");
     private static final MutableComponent RESET_TEXT = createTranslation("gui", "configure_amount.reset");
     private static final MutableComponent CANCEL_TEXT = Component.translatable("gui.cancel");
 
@@ -35,14 +32,14 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     private static final int ACTION_BUTTON_HEIGHT = 20;
 
     @Nullable
+    protected Button confirmButton;
+    @Nullable
+    protected EditBox amountField;
+
+    @Nullable
     private final Screen parent;
     private final AmountScreenConfiguration<N> configuration;
     private final AmountOperations<N> amountOperations;
-
-    @Nullable
-    private EditBox amountField;
-    @Nullable
-    private Button confirmButton;
 
     protected AbstractAmountScreen(final T containerMenu,
                                    @Nullable final Screen parent,
@@ -89,10 +86,11 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     }
 
     private void addConfirmButton(final int x, final int y) {
-        confirmButton = addRenderableWidget(Button.builder(SET_TEXT, btn -> tryConfirmAndCloseToParent())
-            .pos(leftPos + x, topPos + y)
-            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
-            .build());
+        confirmButton = addRenderableWidget(
+            Button.builder(configuration.getConfirmButtonText(), btn -> tryConfirmAndCloseToParent())
+                .pos(leftPos + x, topPos + y)
+                .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
+                .build());
     }
 
     private void addCancelButton(final int x, final int y) {
@@ -119,22 +117,24 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         amountField.setVisible(true);
         amountField.setCanLoseFocus(this instanceof AlternativesScreen);
         amountField.setFocused(true);
-        amountField.setResponder(value -> {
-            final boolean valid = getAndValidateAmount().isPresent();
-            if (confirmButton != null) {
-                confirmButton.active = valid;
-            } else {
-                tryConfirm();
-            }
-            amountField.setTextColor(valid
-                ? Objects.requireNonNullElse(ChatFormatting.WHITE.getColor(), 15)
-                : Objects.requireNonNullElse(ChatFormatting.RED.getColor(), 15)
-            );
-        });
-        amountField.setTextColor(Objects.requireNonNullElse(ChatFormatting.WHITE.getColor(), 15));
+        amountField.setResponder(value -> onAmountFieldChanged());
+        amountField.setTextColor(0xFFFFFF);
         setFocused(amountField);
 
         addRenderableWidget(amountField);
+    }
+
+    protected void onAmountFieldChanged() {
+        if (amountField == null) {
+            return;
+        }
+        final boolean valid = getAndValidateAmount().isPresent();
+        if (confirmButton != null) {
+            confirmButton.active = valid;
+        } else {
+            tryConfirm();
+        }
+        amountField.setTextColor(valid ? 0xFFFFFF : 0xFF5555);
     }
 
     private void addIncrementButtons() {
@@ -160,7 +160,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         }
     }
 
-    protected abstract void accept(N amount);
+    protected abstract boolean confirm(N amount);
 
     private Button createIncrementButton(final int x, final int y, final int increment) {
         final Component text = Component.literal((increment > 0 ? "+" : "") + increment);
@@ -252,13 +252,14 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     }
 
     private void tryConfirm() {
-        getAndValidateAmount().ifPresent(this::accept);
+        getAndValidateAmount().ifPresent(this::confirm);
     }
 
     private void tryConfirmAndCloseToParent() {
         getAndValidateAmount().ifPresent(value -> {
-            accept(value);
-            tryCloseToParent();
+            if (confirm(value)) {
+                tryCloseToParent();
+            }
         });
     }
 
@@ -270,7 +271,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         return false;
     }
 
-    private Optional<N> getAndValidateAmount() {
+    protected final Optional<N> getAndValidateAmount() {
         if (amountField == null) {
             return Optional.empty();
         }

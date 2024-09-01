@@ -85,9 +85,6 @@ class GridSearchBoxWidget extends SearchFieldWidget implements GridSearchBox {
     @Override
     public void setValid(final boolean valid) {
         this.valid = valid;
-        setTextColor(valid
-            ? Objects.requireNonNullElse(ChatFormatting.WHITE.getColor(), 15)
-            : Objects.requireNonNullElse(ChatFormatting.RED.getColor(), 15)
-        );
+        setTextColor(valid ? 0xFFFFFF : 0xFF5555);
     }
 }

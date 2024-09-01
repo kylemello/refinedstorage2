@@ -29,7 +29,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+        graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         final int slotsY = y + 9 + 2;
         graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);

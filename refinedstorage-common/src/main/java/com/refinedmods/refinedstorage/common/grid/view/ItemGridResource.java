@@ -80,7 +80,7 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
 
     @Override
     public boolean canExtract(final ItemStack carriedStack, final GridView view) {
-        return carriedStack.isEmpty();
+        return getAmount(view) > 0 && carriedStack.isEmpty();
     }
 
     @Override

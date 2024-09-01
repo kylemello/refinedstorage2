@@ -58,7 +58,7 @@ public final class ResourceSlotRendering {
             x,
             y,
             rendering.formatAmount(amount, true),
-            requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
+            0xFFFFFF,
             true
         );
     }

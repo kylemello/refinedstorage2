@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -493,9 +494,17 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final ItemStack carriedStack = getMenu().getCarried();
         final PlatformGridResource resource = getCurrentGridResource();
 
-        if (resource != null && resource.canExtract(carriedStack, getMenu().getView())) {
-            mouseClickedInGrid(clickedButton, resource);
-            return true;
+        if (resource != null) {
+            if (resource.canExtract(carriedStack, getMenu().getView()) && !hasControlDown()) {
+                mouseClickedInGrid(clickedButton, resource);
+                return true;
+            } else if (resource.isCraftable()) {
+                RefinedStorageApi.INSTANCE.openCraftingPreview(List.of(new ResourceAmount(
+                    resource.getResourceForRecipeMods(),
+                    1
+                )));
+                return true;
+            }
         }
 
         if (isOverStorageArea((int) mouseX, (int) mouseY)

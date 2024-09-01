@@ -78,7 +78,7 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
             cycleStart = now;
         }
         if (outputText != null) {
-            graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+            graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         }
         renderInputSlots(x, y + 9 + 2, graphics);
         renderArrow(x, y + 9 + 2, graphics);

@@ -162,7 +162,7 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
                 outputTexts.get(i),
                 x,
                 y + (i * 9),
-                requireNonNullElse(ChatFormatting.GRAY.getColor(), 15)
+                0xAAAAAA
             );
         }
     }

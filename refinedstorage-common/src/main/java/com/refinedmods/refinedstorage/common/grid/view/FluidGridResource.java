@@ -70,6 +70,9 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
 
     @Override
     public boolean canExtract(final ItemStack carriedStack, final GridView view) {
+        if (getAmount(view) == 0) {
+            return false;
+        }
         if (carriedStack.isEmpty()) {
             return true;
         }

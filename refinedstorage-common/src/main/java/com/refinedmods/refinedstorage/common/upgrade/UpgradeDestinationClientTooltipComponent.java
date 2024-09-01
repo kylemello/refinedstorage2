@@ -45,7 +45,7 @@ public class UpgradeDestinationClientTooltipComponent implements ClientTooltipCo
             mapping.destinationDisplayName().copy().withStyle(ChatFormatting.GRAY),
             x + 16 + 4,
             y + 4,
-            Objects.requireNonNullElse(ChatFormatting.GRAY.getColor(), 7)
+            0xAAAAAA
         );
     }
 
