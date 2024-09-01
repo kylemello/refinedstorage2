@@ -48,10 +48,8 @@ public final class PatternRendering {
                 when processingPattern.getOutputs().size() == 1
                 && processingPattern.getOutputs().getFirst().resource() instanceof ItemResource itemResource ->
                 itemResource.toItemStack();
-            case StonecutterPattern stonecutterPattern
-                when stonecutterPattern.getOutput() instanceof ItemResource itemResource -> itemResource.toItemStack();
-            case SmithingTablePattern smithingTablePattern
-                when smithingTablePattern.getOutput() instanceof ItemResource itemResource -> itemResource.toItemStack();
+            case StonecutterPattern stonecutterPattern -> stonecutterPattern.getOutput().toItemStack();
+            case SmithingTablePattern smithingTablePattern -> smithingTablePattern.getOutput().toItemStack();
             default -> null;
         });
     }

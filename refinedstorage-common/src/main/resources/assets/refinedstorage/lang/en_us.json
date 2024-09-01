@@ -71,6 +71,7 @@
   "gui.refinedstorage.grid.ctrl_click_to_autocraft": "CTRL + click to autocraft",
   "gui.refinedstorage.crafting_grid.move.network": "Move items to network",
   "gui.refinedstorage.crafting_grid.move.inventory": "Move items to inventory",
+  "gui.refinedstorage.crafting_grid.press_shift_ctrl_to_only_show_items_used_in_crafting": "Press SHIFT + CTRL to only show items used in the recipe.",
   "gui.refinedstorage.pattern_grid.create_pattern": "Create pattern",
   "gui.refinedstorage.pattern_grid.clear": "Clear",
   "gui.refinedstorage.pattern_grid.fuzzy_mode": "Fuzzy mode",

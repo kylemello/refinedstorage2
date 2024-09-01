@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.neoforge;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
-import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
