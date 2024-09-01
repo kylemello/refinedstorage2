@@ -111,7 +111,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
         this.view.setSortingType(Platform.INSTANCE.getConfig().getGrid().getSortingType());
-        this.view.setFilterAndSort(filterResourceType());
+        this.view.setFilterAndSort(createBaseFilter());
 
         this.synchronizer = loadSynchronizer();
         this.resourceTypeFilter = loadResourceType();
@@ -139,7 +139,11 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private BiPredicate<GridView, GridResource> filterResourceType() {
+    private BiPredicate<GridView, GridResource> createBaseFilter() {
+        return createResourceTypeFilter().and(createViewTypeFilter());
+    }
+
+    private BiPredicate<GridView, GridResource> createResourceTypeFilter() {
         return (v, resource) -> resource instanceof PlatformGridResource platformResource
             && Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
             RefinedStorageApi.INSTANCE
@@ -147,6 +151,10 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
                 .get(resourceTypeId)
                 .map(platformResource::belongsToResourceType)
         ).orElse(true);
+    }
+
+    private BiPredicate<GridView, GridResource> createViewTypeFilter() {
+        return (v, resource) -> Platform.INSTANCE.getConfig().getGrid().getViewType().accepts(resource.isCraftable());
     }
 
     private static GridViewBuilder createViewBuilder() {
@@ -184,6 +192,15 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         view.sort();
     }
 
+    public GridViewType getViewType() {
+        return Platform.INSTANCE.getConfig().getGrid().getViewType();
+    }
+
+    public void setViewType(final GridViewType viewType) {
+        Platform.INSTANCE.getConfig().getGrid().setViewType(viewType);
+        view.sort();
+    }
+
     public void setSearchBox(final GridSearchBox searchBox) {
         this.searchBox = searchBox;
         registerViewUpdatingListener(searchBox);
@@ -199,7 +216,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     private boolean onSearchTextChanged(final String text) {
         try {
-            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
+            view.setFilterAndSort(QUERY_PARSER.parse(text).and(createBaseFilter()));
             return true;
         } catch (GridQueryParserException e) {
             view.setFilterAndSort((v, resource) -> false);

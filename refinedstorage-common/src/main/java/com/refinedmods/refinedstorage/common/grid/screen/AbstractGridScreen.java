@@ -56,6 +56,7 @@ import static java.util.Objects.requireNonNullElse;
 
 // TODO: help tooltip to enable focus mode
 // TODO: help tooltips for the rest of grid??
+// TODO: remove zeroed system
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
     protected static final int CLEAR_BUTTON_SIZE = 7;
 
@@ -110,10 +111,11 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (getMenu().hasProperty(PropertyTypes.REDSTONE_MODE)) {
             addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
         }
+        addSideButton(new ViewTypeSideButtonWidget(getMenu()));
+        addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
         addSideButton(new SortingDirectionSideButtonWidget(getMenu()));
         addSideButton(new SortingTypeSideButtonWidget(getMenu()));
         addSideButton(new AutoSelectedSideButtonWidget(getMenu()));
-        addSideButton(new ResourceTypeSideButtonWidget(getMenu()));
 
         final boolean onlyHasNoopSynchronizer = RefinedStorageApi.INSTANCE.getGridSynchronizerRegistry()
             .getAll()
@@ -243,7 +245,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final List<ClientTooltipComponent> tooltip = super.getResourceSlotTooltip(resource, slot);
         final ResourceKey craftableResource = getMenu().getCraftableResource(slot);
         if (craftableResource != null && getMenu().getView().isCraftable(craftableResource)) {
-            tooltip.add(CraftableClientTooltipComponent.craftable());
+            tooltip.add(AutocraftableClientTooltipComponent.autocraftable());
         }
         return tooltip;
     }
@@ -366,7 +368,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                     item.getTooltipImage(),
                     lines
                 );
-                processedLines.add(CraftableClientTooltipComponent.craftable());
+                processedLines.add(AutocraftableClientTooltipComponent.autocraftable());
                 Platform.INSTANCE.renderTooltip(graphics, processedLines, x, y);
                 return;
             }
@@ -410,8 +412,8 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
         if (gridResource.isCraftable()) {
             processedLines.add(amount == 0
-                ? CraftableClientTooltipComponent.empty()
-                : CraftableClientTooltipComponent.existing());
+                ? AutocraftableClientTooltipComponent.empty()
+                : AutocraftableClientTooltipComponent.existing());
         }
         if (amount > 0) {
             processedLines.addAll(gridResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));

@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
@@ -309,6 +310,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
         private GridSortingTypes sortingType = GridSortingTypes.QUANTITY;
 
+        private GridViewType viewType = GridViewType.ALL;
+
         @Override
         public boolean isLargeFont() {
             return largeFont;
@@ -384,6 +387,17 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public void setSortingType(final GridSortingTypes sortingType) {
             this.sortingType = sortingType;
+            save();
+        }
+
+        @Override
+        public GridViewType getViewType() {
+            return viewType;
+        }
+
+        @Override
+        public void setViewType(final GridViewType viewType) {
+            this.viewType = viewType;
             save();
         }
 

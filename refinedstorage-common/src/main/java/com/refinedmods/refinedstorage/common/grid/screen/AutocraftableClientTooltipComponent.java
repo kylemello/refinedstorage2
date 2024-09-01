@@ -13,31 +13,31 @@ import org.joml.Matrix4f;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-class CraftableClientTooltipComponent implements ClientTooltipComponent {
+class AutocraftableClientTooltipComponent implements ClientTooltipComponent {
     private static final ResourceLocation ICON = createIdentifier("grid/craftable");
     private static final int ICON_SIZE = 9;
     private static final int ICON_MARGIN = 4;
 
-    private static final Component CRAFTABLE = createTranslation("gui", "grid.craft.craftable");
-    private static final Component EMPTY = createTranslation("gui", "grid.craft.click_to_craft");
-    private static final Component EXISTING = createTranslation("gui", "grid.craft.ctrl_click_to_craft");
+    private static final Component AUTOCRAFTABLE = createTranslation("gui", "grid.autocraftable");
+    private static final Component EMPTY = createTranslation("gui", "grid.click_to_autocraft");
+    private static final Component EXISTING = createTranslation("gui", "grid.ctrl_click_to_autocraft");
 
     private final Component text;
 
-    private CraftableClientTooltipComponent(final Component text) {
+    private AutocraftableClientTooltipComponent(final Component text) {
         this.text = text;
     }
 
-    static CraftableClientTooltipComponent craftable() {
-        return new CraftableClientTooltipComponent(CRAFTABLE);
+    static AutocraftableClientTooltipComponent autocraftable() {
+        return new AutocraftableClientTooltipComponent(AUTOCRAFTABLE);
     }
 
-    static CraftableClientTooltipComponent empty() {
-        return new CraftableClientTooltipComponent(EMPTY);
+    static AutocraftableClientTooltipComponent empty() {
+        return new AutocraftableClientTooltipComponent(EMPTY);
     }
 
-    static CraftableClientTooltipComponent existing() {
-        return new CraftableClientTooltipComponent(EXISTING);
+    static AutocraftableClientTooltipComponent existing() {
+        return new AutocraftableClientTooltipComponent(EXISTING);
     }
 
     @Override
