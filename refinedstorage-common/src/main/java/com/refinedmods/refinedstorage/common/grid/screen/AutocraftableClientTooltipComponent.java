@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid.screen;
 
+import com.refinedmods.refinedstorage.common.grid.AutocraftableResourceHint;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
 
 import net.minecraft.client.gui.Font;
@@ -19,6 +20,7 @@ class AutocraftableClientTooltipComponent implements ClientTooltipComponent {
     private static final int ICON_MARGIN = 4;
 
     private static final Component AUTOCRAFTABLE = createTranslation("gui", "grid.autocraftable");
+    private static final Component PATTERN_IN_INVENTORY = createTranslation("gui", "grid.pattern_in_inventory");
     private static final Component EMPTY = createTranslation("gui", "grid.click_to_autocraft");
     private static final Component EXISTING = createTranslation("gui", "grid.ctrl_click_to_autocraft");
 
@@ -28,8 +30,10 @@ class AutocraftableClientTooltipComponent implements ClientTooltipComponent {
         this.text = text;
     }
 
-    static AutocraftableClientTooltipComponent autocraftable() {
-        return new AutocraftableClientTooltipComponent(AUTOCRAFTABLE);
+    static AutocraftableClientTooltipComponent autocraftable(final AutocraftableResourceHint hint) {
+        return new AutocraftableClientTooltipComponent(hint == AutocraftableResourceHint.AUTOCRAFTABLE
+            ? AUTOCRAFTABLE
+            : PATTERN_IN_INVENTORY);
     }
 
     static AutocraftableClientTooltipComponent empty() {

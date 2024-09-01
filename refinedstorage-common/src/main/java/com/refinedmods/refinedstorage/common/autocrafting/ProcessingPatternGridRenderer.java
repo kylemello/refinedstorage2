@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.grid.AutocraftableResourceHint;
 import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
@@ -255,7 +256,8 @@ class ProcessingPatternGridRenderer implements PatternGridRenderer {
                 graphics,
                 resourceSlot.x + leftPos,
                 resourceSlot.y + topPos,
-                false
+                false,
+                AutocraftableResourceHint.AUTOCRAFTABLE.getColor()
             );
         }
         ResourceSlotRendering.render(graphics, resourceSlot, leftPos, topPos);

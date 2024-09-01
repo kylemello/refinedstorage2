@@ -178,11 +178,11 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
 
     @Nullable
     @Override
-    public ResourceKey getCraftableResource(final Slot slot) {
+    protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
         if (slot.container == craftingGrid.getCraftingMatrix() || slot.container == craftingGrid.getCraftingResult()) {
             return ItemResource.ofItemStack(slot.getItem());
         }
-        return super.getCraftableResource(slot);
+        return super.getResourceForAutocraftableHint(slot);
     }
 
     @Override

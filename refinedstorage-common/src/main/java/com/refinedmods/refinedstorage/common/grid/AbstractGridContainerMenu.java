@@ -1,5 +1,8 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.query.GridQueryParserException;
@@ -72,6 +75,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     protected final Inventory playerInventory;
 
     private final GridView view;
+    private final PatternRepository playerInventoryPatterns = new PatternRepositoryImpl();
     @Nullable
     private Grid grid;
     @Nullable
@@ -247,7 +251,18 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     @Override
     public void onScreenReady(final int playerInventoryY) {
         resetSlots();
-        addPlayerInventory(playerInventory, 8, playerInventoryY);
+        addPlayerInventory(playerInventory, 8, playerInventoryY, (before, after) -> {
+            final Pattern beforePattern = RefinedStorageApi.INSTANCE.getPattern(before, playerInventory.player.level())
+                .orElse(null);
+            final Pattern afterPattern = RefinedStorageApi.INSTANCE.getPattern(after, playerInventory.player.level())
+                .orElse(null);
+            if (beforePattern != null) {
+                playerInventoryPatterns.remove(beforePattern);
+            }
+            if (afterPattern != null) {
+                playerInventoryPatterns.add(afterPattern);
+            }
+        });
     }
 
     public GridView getView() {
@@ -444,7 +459,27 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Nullable
-    public ResourceKey getCraftableResource(final Slot slot) {
+    public final AutocraftableResourceHint getAutocraftableResourceHint(final Slot slot) {
+        final ResourceKey resource = getResourceForAutocraftableHint(slot);
+        if (resource == null) {
+            return null;
+        }
+        return getAutocraftableResourceHint(resource);
+    }
+
+    @Nullable
+    private AutocraftableResourceHint getAutocraftableResourceHint(final ResourceKey resource) {
+        if (view.isCraftable(resource)) {
+            return AutocraftableResourceHint.AUTOCRAFTABLE;
+        }
+        if (playerInventoryPatterns.getOutputs().contains(resource)) {
+            return AutocraftableResourceHint.PATTERN_IN_INVENTORY;
+        }
+        return null;
+    }
+
+    @Nullable
+    protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
         return null;
     }
 

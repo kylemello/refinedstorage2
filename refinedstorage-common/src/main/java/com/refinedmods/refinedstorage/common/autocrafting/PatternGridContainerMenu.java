@@ -235,7 +235,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
     @Nullable
     @Override
-    public ResourceKey getCraftableResource(final Slot slot) {
+    protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
         final boolean isInputItem = slot.container == craftingMatrix
             || slot.container == stonecutterInput
             || slot.container == smithingTableMatrix;
@@ -246,7 +246,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         } else if (slot instanceof ProcessingMatrixResourceSlot processingMatrixSlot) {
             return processingMatrixSlot.getResource();
         }
-        return super.getCraftableResource(slot);
+        return super.getResourceForAutocraftableHint(slot);
     }
 
     @Override

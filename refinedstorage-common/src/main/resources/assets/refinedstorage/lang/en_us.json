@@ -66,6 +66,7 @@
   "gui.refinedstorage.grid.resource_type.all": "All",
   "gui.refinedstorage.grid.craft": "Craft",
   "gui.refinedstorage.grid.autocraftable": "This resource is autocraftable",
+  "gui.refinedstorage.grid.pattern_in_inventory": "This resource has a pattern in your inventory.",
   "gui.refinedstorage.grid.click_to_autocraft": "Click to autocraft",
   "gui.refinedstorage.grid.ctrl_click_to_autocraft": "CTRL + click to autocraft",
   "gui.refinedstorage.crafting_grid.move.network": "Move items to network",
