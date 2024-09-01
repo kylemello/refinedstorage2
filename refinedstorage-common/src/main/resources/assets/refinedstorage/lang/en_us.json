@@ -64,7 +64,6 @@
   "gui.refinedstorage.grid.synchronization_mode.off.help": "Don't sync the search box text.",
   "gui.refinedstorage.grid.resource_type": "Resource type",
   "gui.refinedstorage.grid.resource_type.all": "All",
-  "gui.refinedstorage.grid.resource_type.help": "Filter specific resource types.",
   "gui.refinedstorage.grid.craft": "Craft",
   "gui.refinedstorage.grid.autocraftable": "This resource is autocraftable",
   "gui.refinedstorage.grid.click_to_autocraft": "Click to autocraft",
