@@ -29,14 +29,12 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
     private static final int HELP_ICON_MARGIN = 4;
 
     private final List<FormattedCharSequence> lines;
-    private final float scale;
     private final int paddingTop;
 
     private HelpClientTooltipComponent(final Component text, final int paddingTop) {
         this.lines = Language.getInstance().getVisualOrder(
             Minecraft.getInstance().font.getSplitter().splitLines(text, MAX_CHARS, STYLE)
         );
-        this.scale = SmallText.getScale();
         this.paddingTop = paddingTop;
     }
 
@@ -49,7 +47,7 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
     public int getWidth(final Font font) {
         int width = 0;
         for (final FormattedCharSequence line : lines) {
-            final int lineWidth = HELP_ICON_SIZE + HELP_ICON_MARGIN + (int) (font.width(line) * scale);
+            final int lineWidth = HELP_ICON_SIZE + HELP_ICON_MARGIN + (int) (font.width(line) * SmallText.getScale());
             if (lineWidth > width) {
                 width = lineWidth;
             }
@@ -66,7 +64,7 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
         final int xx = x + HELP_ICON_SIZE + HELP_ICON_MARGIN;
         int yy = y + paddingTop;
         for (final FormattedCharSequence line : lines) {
-            SmallText.render(font, line, xx, yy, scale, pose, buffer);
+            SmallText.render(font, line, xx, yy, pose, buffer);
             yy += 9;
         }
     }
@@ -78,7 +76,7 @@ public class HelpClientTooltipComponent implements ClientTooltipComponent {
 
     public static ClientTooltipComponent create(final Component text) {
         if (hasShiftDown()) {
-            return new HelpClientTooltipComponent(text, 4);
+            return new HelpClientTooltipComponent(text, SmallText.isSmall() ? 4 : 0);
         } else {
             return PRESS_SHIFT_FOR_HELP;
         }

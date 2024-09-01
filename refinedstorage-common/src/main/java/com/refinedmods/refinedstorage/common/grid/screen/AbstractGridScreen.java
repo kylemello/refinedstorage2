@@ -52,12 +52,14 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationKey;
 import static java.util.Objects.requireNonNullElse;
 
+// TODO: help tooltip to enable focus mode
+// TODO: help tooltips for the rest of grid??
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
     protected static final int CLEAR_BUTTON_SIZE = 7;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridScreen.class);
 
-    private static final ResourceLocation ROW_SPRITE = createIdentifier("grid_row");
+    private static final ResourceLocation ROW_SPRITE = createIdentifier("grid/row");
     private static final int MODIFIED_JUST_NOW_MAX_SECONDS = 10;
     private static final int COLUMNS = 9;
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
@@ -262,6 +264,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                           final int slotX,
                                           final int slotY,
                                           final GridResource resource) {
+        if (resource.isCraftable()) {
+            graphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0xBF9F7F50);
+        }
         if (resource instanceof PlatformGridResource platformResource) {
             platformResource.render(graphics, slotX, slotY);
         }
@@ -316,9 +321,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     private void renderOverStorageAreaTooltip(final GuiGraphics graphics, final int x, final int y) {
-        final PlatformGridResource resource = getCurrentGridResource();
-        if (resource != null) {
-            renderHoveredResourceTooltip(graphics, x, y, menu.getView(), resource);
+        final PlatformGridResource gridResource = getCurrentGridResource();
+        if (gridResource != null) {
+            renderHoveredResourceTooltip(graphics, x, y, menu.getView(), gridResource);
             return;
         }
         final ItemStack carried = getMenu().getCarried();
@@ -333,24 +338,27 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                               final int mouseX,
                                               final int mouseY,
                                               final GridView view,
-                                              final PlatformGridResource platformResource) {
-        final ItemStack stackContext = platformResource instanceof ItemGridResource itemGridResource
+                                              final PlatformGridResource gridResource) {
+        final ItemStack stackContext = gridResource instanceof ItemGridResource itemGridResource
             ? itemGridResource.getItemStack()
             : ItemStack.EMPTY;
-        final List<Component> lines = platformResource.getTooltip();
+        final List<Component> lines = gridResource.getTooltip();
         final List<ClientTooltipComponent> processedLines = Platform.INSTANCE.processTooltipComponents(
             stackContext,
             graphics,
             mouseX,
-            platformResource.getTooltipImage(),
+            gridResource.getTooltipImage(),
             lines
         );
-        final long amount = platformResource.getAmount(getMenu().getView());
+        final long amount = gridResource.getAmount(getMenu().getView());
+        if (amount > 0 && Platform.INSTANCE.getConfig().getGrid().isDetailedTooltip()) {
+            addDetailedTooltip(view, gridResource, processedLines);
+        }
+        if (gridResource.isCraftable()) {
+            processedLines.add(new CraftableClientTooltipComponent(amount == 0));
+        }
         if (amount > 0) {
-            if (Platform.INSTANCE.getConfig().getGrid().isDetailedTooltip()) {
-                addDetailedTooltip(view, platformResource, processedLines);
-            }
-            processedLines.addAll(platformResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));
+            processedLines.addAll(gridResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));
         }
         Platform.INSTANCE.renderTooltip(graphics, processedLines, mouseX, mouseY);
     }

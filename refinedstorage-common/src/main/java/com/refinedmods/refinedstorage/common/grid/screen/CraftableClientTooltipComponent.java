@@ -1,0 +1,62 @@
+package com.refinedmods.refinedstorage.common.grid.screen;
+
+import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
+
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
+
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
+
+class CraftableClientTooltipComponent implements ClientTooltipComponent {
+    private static final ResourceLocation ICON = createIdentifier("grid/craftable");
+    private static final int ICON_SIZE = 9;
+    private static final int ICON_MARGIN = 4;
+
+    private static final Component EMPTY = createTranslation("gui", "grid.craftable.click_to_craft");
+    private static final Component EXISTING = createTranslation("gui", "grid.craftable.ctrl_click_to_craft");
+
+    private final Component text;
+
+    CraftableClientTooltipComponent(final boolean empty) {
+        this.text = empty ? EMPTY : EXISTING;
+    }
+
+    @Override
+    public int getHeight() {
+        return ICON_SIZE + 2;
+    }
+
+    @Override
+    public int getWidth(final Font font) {
+        return ICON_SIZE + ICON_MARGIN + (int) (font.width(text) * SmallText.getScale());
+    }
+
+    @Override
+    public void renderText(final Font font,
+                           final int x,
+                           final int y,
+                           final Matrix4f matrix,
+                           final MultiBufferSource.BufferSource bufferSource) {
+        final int yOffset = SmallText.isSmall() ? 2 : 0;
+        SmallText.render(
+            font,
+            text.getVisualOrderText(),
+            x + ICON_SIZE + ICON_MARGIN,
+            y + yOffset,
+            0x9F7F50,
+            matrix,
+            bufferSource
+        );
+    }
+
+    @Override
+    public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
+        graphics.blitSprite(ICON, x, y, ICON_SIZE, ICON_SIZE);
+    }
+}

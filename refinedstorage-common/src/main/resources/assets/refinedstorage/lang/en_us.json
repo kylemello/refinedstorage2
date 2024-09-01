@@ -62,6 +62,8 @@
   "gui.refinedstorage.grid.resource_type.all": "All",
   "gui.refinedstorage.grid.resource_type.help": "Filter specific resource types.",
   "gui.refinedstorage.grid.craft": "Craft",
+  "gui.refinedstorage.grid.craft.click_to_craft": "Click to craft",
+  "gui.refinedstorage.grid.craft.ctrl_click_to_craft": "CTRL + click to craft",
   "gui.refinedstorage.crafting_grid.move.network": "Move items to network",
   "gui.refinedstorage.crafting_grid.move.inventory": "Move items to inventory",
   "gui.refinedstorage.pattern_grid.create_pattern": "Create pattern",
