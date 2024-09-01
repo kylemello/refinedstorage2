@@ -4,7 +4,6 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -14,7 +13,6 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 class ResourceTypeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "grid.resource_type");
     private static final MutableComponent SUBTEXT_ALL = createTranslation("gui", "grid.resource_type.all");
-    private static final Component HELP = createTranslation("gui", "grid.resource_type.help");
     private static final ResourceLocation ALL = createIdentifier("widget/side_button/resource_type/all");
 
     private final AbstractGridContainerMenu menu;
@@ -49,10 +47,5 @@ class ResourceTypeSideButtonWidget extends AbstractSideButtonWidget {
             return SUBTEXT_ALL;
         }
         return resourceType.getTitle();
-    }
-
-    @Override
-    protected Component getHelpText() {
-        return HELP;
     }
 }

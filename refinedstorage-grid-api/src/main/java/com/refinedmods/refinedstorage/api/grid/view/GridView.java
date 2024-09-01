@@ -71,6 +71,12 @@ public interface GridView {
     long getAmount(ResourceKey resource);
 
     /**
+     * @param resource the resource
+     * @return whether its craftable
+     */
+    boolean isCraftable(ResourceKey resource);
+
+    /**
      * Sorts the view list.
      * Applies sorting and filtering rules.
      */

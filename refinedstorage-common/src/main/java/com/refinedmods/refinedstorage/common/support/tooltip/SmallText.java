@@ -10,24 +10,38 @@ public final class SmallText {
     private SmallText() {
     }
 
-    static float getScale() {
-        return Minecraft.getInstance().isEnforceUnicode() ? 1F : 0.7F;
+    public static float getScale() {
+        return isSmall() ? 0.7F : 1F;
     }
 
-    static void render(final Font font,
-                       final FormattedCharSequence text,
-                       final int x,
-                       final int y,
-                       final float scale,
-                       final Matrix4f pose,
-                       final MultiBufferSource.BufferSource buffer) {
+    public static boolean isSmall() {
+        return !Minecraft.getInstance().isEnforceUnicode();
+    }
+
+    public static void render(final Font font,
+                              final FormattedCharSequence text,
+                              final int x,
+                              final int y,
+                              final Matrix4f pose,
+                              final MultiBufferSource.BufferSource buffer) {
+        render(font, text, x, y, -1, pose, buffer);
+    }
+
+    public static void render(final Font font,
+                              final FormattedCharSequence text,
+                              final int x,
+                              final int y,
+                              final int color,
+                              final Matrix4f pose,
+                              final MultiBufferSource.BufferSource buffer) {
+        final float scale = getScale();
         final Matrix4f scaled = new Matrix4f(pose);
         scaled.scale(scale, scale, 1);
         font.drawInBatch(
             text,
             x / scale,
             (y / scale) + 1,
-            -1,
+            color,
             true,
             scaled,
             buffer,

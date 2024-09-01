@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
+import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
-import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
@@ -38,16 +38,9 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     public ItemGridResource(final ItemResource resource,
                             final ItemStack itemStack,
                             final String name,
-                            final String modId,
-                            final String modName,
-                            final Set<String> tags,
-                            final String tooltip) {
-        super(resource, name, Map.of(
-            GridResourceAttributeKeys.MOD_ID, Set.of(modId),
-            GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
-            GridResourceAttributeKeys.TAGS, tags,
-            GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
-        ));
+                            final Map<GridResourceAttributeKey, Set<String>> attributes,
+                            final boolean craftable) {
+        super(resource, name, attributes, craftable);
         this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
         this.itemResource = resource;

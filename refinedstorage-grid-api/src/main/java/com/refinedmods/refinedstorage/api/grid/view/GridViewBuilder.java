@@ -23,6 +23,14 @@ public interface GridViewBuilder {
     GridViewBuilder withResource(ResourceKey resource, long amount, @Nullable TrackedResource trackedResource);
 
     /**
+     * Adds a resource into the view and marks it as craftable.
+     *
+     * @param resource the resource
+     * @return this builder
+     */
+    GridViewBuilder withCraftableResource(ResourceKey resource);
+
+    /**
      * @return a {@link GridView} with the specified resources
      */
     GridView build();

@@ -25,9 +25,9 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
     private final PlatformResourceKey output;
 
     StonecutterPatternClientTooltipComponent(final StonecutterPattern pattern) {
-        this.outputText = getOutputText(pattern.output());
-        this.input = pattern.input();
-        this.output = pattern.output();
+        this.outputText = getOutputText(pattern.getOutput());
+        this.input = pattern.getInput();
+        this.output = pattern.getOutput();
     }
 
     @Override

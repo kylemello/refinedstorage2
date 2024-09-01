@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 
 import java.util.Optional;
@@ -369,6 +370,7 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.ConfigValue<String> resourceType;
         private final ModConfigSpec.EnumValue<GridSortingDirection> sortingDirection;
         private final ModConfigSpec.EnumValue<GridSortingTypes> sortingType;
+        private final ModConfigSpec.EnumValue<GridViewType> viewType;
 
         GridEntryImpl() {
             builder.translation(translationKey("grid")).push("grid");
@@ -402,6 +404,9 @@ public class ConfigImpl implements Config {
             sortingType = builder
                 .translation(translationKey("grid.sortingType"))
                 .defineEnum("sortingType", GridSortingTypes.QUANTITY);
+            viewType = builder
+                .translation(translationKey("grid.viewType"))
+                .defineEnum("viewType", GridViewType.ALL);
             builder.pop();
         }
 
@@ -489,6 +494,19 @@ public class ConfigImpl implements Config {
         public void setSortingType(final GridSortingTypes sortingType) {
             if (sortingType != this.sortingType.get()) {
                 this.sortingType.set(sortingType);
+                ConfigImpl.this.spec.save();
+            }
+        }
+
+        @Override
+        public GridViewType getViewType() {
+            return viewType.get();
+        }
+
+        @Override
+        public void setViewType(final GridViewType viewType) {
+            if (viewType != this.viewType.get()) {
+                this.viewType.set(viewType);
                 ConfigImpl.this.spec.save();
             }
         }

@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,9 +34,10 @@ class GridQueryParserImplTest {
     );
 
     private final GridView view = new GridViewImpl(
-        resource -> Optional.of(new GridResourceImpl(resource)),
+        (resource, craftable) -> Optional.of(new GridResourceImpl(resource)),
         ResourceListImpl.create(),
         new HashMap<>(),
+        new HashSet<>(),
         v -> Comparator.comparing(GridResource::getName),
         v -> Comparator.comparingLong(resource -> resource.getAmount(v))
     );
@@ -322,13 +324,8 @@ class GridQueryParserImplTest {
         }
 
         @Override
-        public boolean isZeroed() {
+        public boolean isCraftable() {
             return false;
-        }
-
-        @Override
-        public void setZeroed(final boolean zeroed) {
-            throw new UnsupportedOperationException();
         }
     }
 }

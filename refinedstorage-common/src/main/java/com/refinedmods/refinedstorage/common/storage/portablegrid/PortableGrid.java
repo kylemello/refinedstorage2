@@ -17,11 +17,13 @@ import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.storage.DiskInventory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -108,6 +110,11 @@ class PortableGrid implements Grid {
             resource,
             rootStorage.findTrackedResourceByActorType(resource.resource(), actorType).orElse(null)
         )).toList();
+    }
+
+    @Override
+    public Set<PlatformResourceKey> getCraftableResources() {
+        return Collections.emptySet();
     }
 
     @Override

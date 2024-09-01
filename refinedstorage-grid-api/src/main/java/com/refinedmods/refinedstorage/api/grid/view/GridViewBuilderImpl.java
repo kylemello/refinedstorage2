@@ -6,7 +6,9 @@ import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -15,6 +17,7 @@ import org.apiguardian.api.API;
 public class GridViewBuilderImpl implements GridViewBuilder {
     private final GridResourceFactory resourceFactory;
     private final ResourceList backingList = ResourceListImpl.create();
+    private final Set<ResourceKey> craftableResources = new HashSet<>();
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
     private final GridSortingType identitySortingType;
     private final GridSortingType defaultSortingType;
@@ -37,11 +40,18 @@ public class GridViewBuilderImpl implements GridViewBuilder {
     }
 
     @Override
+    public GridViewBuilder withCraftableResource(final ResourceKey resource) {
+        craftableResources.add(resource);
+        return this;
+    }
+
+    @Override
     public GridView build() {
         return new GridViewImpl(
             resourceFactory,
             backingList,
             trackedResources,
+            craftableResources,
             identitySortingType,
             defaultSortingType
         );

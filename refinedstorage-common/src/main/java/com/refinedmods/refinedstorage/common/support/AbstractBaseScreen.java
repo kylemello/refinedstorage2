@@ -166,7 +166,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             }
         }
         if (hoveredSlot instanceof ResourceSlot resourceSlot && canInteractWithResourceSlot(resourceSlot, x, y)) {
-            final List<ClientTooltipComponent> tooltip = getResourceTooltip(menu.getCarried(), resourceSlot);
+            final List<ClientTooltipComponent> tooltip = getResourceSlotTooltip(menu.getCarried(), resourceSlot);
             if (!tooltip.isEmpty()) {
                 Platform.INSTANCE.renderTooltip(graphics, tooltip, x, y);
                 return;
@@ -195,23 +195,49 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         return lines;
     }
 
-    public List<ClientTooltipComponent> getResourceTooltip(final ItemStack carried, final ResourceSlot resourceSlot) {
-        final ResourceKey resource = resourceSlot.getResource();
+    public final List<ClientTooltipComponent> getResourceSlotTooltip(final ItemStack carried, final ResourceSlot slot) {
+        final ResourceKey resource = slot.getResource();
         if (resource == null) {
-            return getTooltipForEmptySlot(carried, resourceSlot);
+            return getTooltipForEmptyResourceSlot(carried, slot);
         }
-        return getTooltipForResource(resource, resourceSlot);
+        return getResourceSlotTooltip(resource, slot);
     }
 
-    private List<ClientTooltipComponent> getTooltipForEmptySlot(final ItemStack carried,
-                                                                final ResourceSlot resourceSlot) {
-        if (resourceSlot.isDisabled() || resourceSlot.supportsItemSlotInteractions()) {
+    protected List<ClientTooltipComponent> getResourceSlotTooltip(final ResourceKey resource, final ResourceSlot slot) {
+        final List<ClientTooltipComponent> tooltip = RefinedStorageApi.INSTANCE
+            .getResourceRendering(resource.getClass())
+            .getTooltip(resource)
+            .stream()
+            .map(Component::getVisualOrderText)
+            .map(ClientTooltipComponent::create)
+            .collect(Collectors.toList());
+        if (!slot.isDisabled() && !slot.supportsItemSlotInteractions()) {
+            addResourceSlotTooltips(slot, tooltip);
+        }
+        if (slot.supportsItemSlotInteractions()) {
+            RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies()
+                .stream()
+                .flatMap(strategy -> strategy.getConversionInfo(resource, getMenu().getCarried()).stream())
+                .map(conversionInfo -> MouseClientTooltipComponent.itemConversion(
+                    MouseClientTooltipComponent.Type.LEFT,
+                    conversionInfo.from(),
+                    conversionInfo.to(),
+                    null
+                ))
+                .forEach(tooltip::add);
+        }
+        return tooltip;
+    }
+
+    private List<ClientTooltipComponent> getTooltipForEmptyResourceSlot(final ItemStack carried,
+                                                                        final ResourceSlot slot) {
+        if (slot.isDisabled() || slot.supportsItemSlotInteractions()) {
             return Collections.emptyList();
         }
         final List<ClientTooltipComponent> tooltip = new ArrayList<>();
         tooltip.add(EMPTY_FILTER);
-        tooltip.addAll(getResourceSlotHelpTooltip(carried, resourceSlot));
-        tooltip.add(HelpClientTooltipComponent.create(resourceSlot.getHelpText()));
+        tooltip.addAll(getResourceSlotHelpTooltip(carried, slot));
+        tooltip.add(HelpClientTooltipComponent.create(slot.getHelpText()));
         return tooltip;
     }
 
@@ -237,33 +263,6 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             )));
         }
         return lines;
-    }
-
-    private List<ClientTooltipComponent> getTooltipForResource(final ResourceKey resource,
-                                                               final ResourceSlot resourceSlot) {
-        final List<ClientTooltipComponent> tooltip = RefinedStorageApi.INSTANCE
-            .getResourceRendering(resource.getClass())
-            .getTooltip(resource)
-            .stream()
-            .map(Component::getVisualOrderText)
-            .map(ClientTooltipComponent::create)
-            .collect(Collectors.toList());
-        if (!resourceSlot.isDisabled() && !resourceSlot.supportsItemSlotInteractions()) {
-            addResourceSlotTooltips(resourceSlot, tooltip);
-        }
-        if (resourceSlot.supportsItemSlotInteractions()) {
-            RefinedStorageApi.INSTANCE.getResourceContainerInsertStrategies()
-                .stream()
-                .flatMap(strategy -> strategy.getConversionInfo(resource, getMenu().getCarried()).stream())
-                .map(conversionInfo -> MouseClientTooltipComponent.itemConversion(
-                    MouseClientTooltipComponent.Type.LEFT,
-                    conversionInfo.from(),
-                    conversionInfo.to(),
-                    null
-                ))
-                .forEach(tooltip::add);
-        }
-        return tooltip;
     }
 
     protected void addResourceSlotTooltips(final ResourceSlot slot, final List<ClientTooltipComponent> tooltip) {

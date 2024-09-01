@@ -25,6 +25,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     - Lock until all outputs are received (new, facilitates easier "blocking mode" without redstone)
     - Lock until low redstone signal
     - Lock until high redstone signal
+-   Resources in the Grid that are autocraftable now display an orange backdrop and tooltip to indicate whether the resource is autocraftable at a glance.
+-   Slots used in the Pattern Grid for pattern encoding and Crafting Grid crafting matrix slots now display an orange backdrop and tooltip to indicate whether the item is autocraftable at a glance. This checks patterns from your network and from your inventory.
+-   Added help tooltip for filtering based on recipe items in the Crafting Grid.
 
 ### Fixed
 

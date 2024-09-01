@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
+import com.refinedmods.refinedstorage.api.network.impl.node.patternprovider.PatternProviderNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
@@ -39,8 +40,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 
-public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements ExtendedMenuProvider<CrafterData>, BlockEntityWithDrops {
+public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<PatternProviderNetworkNode>
+    implements ExtendedMenuProvider<CrafterData>, BlockEntityWithDrops, PatternInventory.Listener {
     static final int PATTERNS = 9;
 
     private static final int MAX_CHAINED_CRAFTERS = 8;
@@ -49,10 +50,7 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     private static final String TAG_LOCK_MODE = "lm";
     private static final String TAG_PRIORITY = "pri";
 
-    private final FilteredContainer patternContainer = new FilteredContainer(
-        PATTERNS,
-        stack -> level != null && isValidPattern(stack, level)
-    );
+    private final PatternInventory patternContainer = new PatternInventory(this::getLevel);
     private final UpgradeContainer upgradeContainer;
     private LockMode lockMode = LockMode.NEVER;
     private int priority;
@@ -62,17 +60,19 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
             BlockEntities.INSTANCE.getCrafter(),
             pos,
             state,
-            new SimpleNetworkNode(Platform.INSTANCE.getConfig().getCrafter().getEnergyUsage())
+            new PatternProviderNetworkNode(Platform.INSTANCE.getConfig().getCrafter().getEnergyUsage(), PATTERNS)
         );
         this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.CRAFTER, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getCrafter().getEnergyUsage();
             mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
             setChanged();
         });
+        patternContainer.addListener(container -> setChanged());
+        patternContainer.setListener(this);
     }
 
     @Override
-    protected InWorldNetworkNodeContainer createMainContainer(final SimpleNetworkNode networkNode) {
+    protected InWorldNetworkNodeContainer createMainContainer(final PatternProviderNetworkNode networkNode) {
         return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
             .connectionStrategy(new CrafterConnectionStrategy(this::getBlockState, getBlockPos()))
             .build();
@@ -266,6 +266,27 @@ public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEnt
     void setPriority(final int priority) {
         this.priority = priority;
         setChanged();
+    }
+
+    @Override
+    public void setLevel(final Level level) {
+        super.setLevel(level);
+        if (level.isClientSide()) {
+            return;
+        }
+        for (int i = 0; i < patternContainer.getContainerSize(); ++i) {
+            patternChanged(i);
+        }
+    }
+
+    @Override
+    public void patternChanged(final int slot) {
+        if (level == null) {
+            return;
+        }
+        final Pattern pattern = RefinedStorageApi.INSTANCE.getPattern(patternContainer.getItem(slot), level)
+            .orElse(null);
+        mainNetworkNode.setPattern(slot, pattern);
     }
 
     @Override

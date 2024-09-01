@@ -4,8 +4,10 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.content.KeyMappings;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
+import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -13,12 +15,14 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
@@ -190,5 +194,30 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
     @Override
     protected ResourceLocation getTexture() {
         return TEXTURE;
+    }
+
+    @Override
+    protected void renderTooltip(final GuiGraphics graphics, final int x, final int y) {
+        final boolean hoveredSlotValidForHelp = hoveredSlot != null
+            && hoveredSlot.container instanceof ResultContainer
+            && hoveredSlot.hasItem();
+        if (getMenu().getCarried().isEmpty() && hoveredSlotValidForHelp && !filteringBasedOnCraftingMatrixItems) {
+            final ItemStack stack = hoveredSlot.getItem();
+            final List<Component> lines = getTooltipFromContainerItem(stack);
+            final List<ClientTooltipComponent> processedLines = Platform.INSTANCE.processTooltipComponents(
+                stack,
+                graphics,
+                x,
+                stack.getTooltipImage(),
+                lines
+            );
+            processedLines.add(HelpClientTooltipComponent.create(createTranslation(
+                "gui",
+                "crafting_grid.press_shift_ctrl_to_only_show_items_used_in_crafting"
+            )));
+            Platform.INSTANCE.renderTooltip(graphics, processedLines, x, y);
+            return;
+        }
+        super.renderTooltip(graphics, x, y);
     }
 }

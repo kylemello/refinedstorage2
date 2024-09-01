@@ -42,16 +42,14 @@ public final class PatternRendering {
         }
         return RefinedStorageApi.INSTANCE.getPattern(stack, level).map(pattern -> switch (pattern) {
             case CraftingPattern craftingPattern
-                when craftingPattern.output().resource() instanceof ItemResource itemResource ->
+                when craftingPattern.getOutput().resource() instanceof ItemResource itemResource ->
                 itemResource.toItemStack();
             case ProcessingPattern processingPattern
-                when processingPattern.outputs().size() == 1
-                && processingPattern.outputs().getFirst().resource() instanceof ItemResource itemResource ->
+                when processingPattern.getOutputs().size() == 1
+                && processingPattern.getOutputs().getFirst().resource() instanceof ItemResource itemResource ->
                 itemResource.toItemStack();
-            case StonecutterPattern stonecutterPattern
-                when stonecutterPattern.output() instanceof ItemResource itemResource -> itemResource.toItemStack();
-            case SmithingTablePattern smithingTablePattern
-                when smithingTablePattern.output() instanceof ItemResource itemResource -> itemResource.toItemStack();
+            case StonecutterPattern stonecutterPattern -> stonecutterPattern.getOutput().toItemStack();
+            case SmithingTablePattern smithingTablePattern -> smithingTablePattern.getOutput().toItemStack();
             default -> null;
         });
     }

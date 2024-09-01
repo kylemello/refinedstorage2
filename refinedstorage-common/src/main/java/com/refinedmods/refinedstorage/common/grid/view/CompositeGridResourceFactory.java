@@ -16,10 +16,10 @@ public class CompositeGridResourceFactory implements GridResourceFactory {
     }
 
     @Override
-    public Optional<GridResource> apply(final ResourceKey resource) {
+    public Optional<GridResource> apply(final ResourceKey resource, final boolean craftable) {
         return resourceTypeRegistry.getAll()
             .stream()
-            .flatMap(type -> type.toGridResource(resource).stream())
+            .flatMap(type -> type.toGridResource(resource, craftable).stream())
             .findFirst();
     }
 }
