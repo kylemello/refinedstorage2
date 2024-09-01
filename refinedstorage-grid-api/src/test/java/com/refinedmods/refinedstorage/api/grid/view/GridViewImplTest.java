@@ -556,7 +556,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(D),
             new GridResourceImpl(A),
-            new GridResourceImpl(B).zeroed()
+            new GridResourceImpl(B)
         );
         assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
@@ -609,7 +609,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(D),
             new GridResourceImpl(A),
-            new GridResourceImpl(B).zeroed()
+            new GridResourceImpl(B)
         );
 
         // Re-insert the item
@@ -739,7 +739,7 @@ class GridViewImplTest {
         view.onChange(A, -15, null);
 
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new GridResourceImpl(A).zeroed().craftable()
+            new GridResourceImpl(A).craftable()
         );
         assertThat(view.isCraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isZero();

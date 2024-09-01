@@ -155,15 +155,14 @@ public class GridViewImpl implements GridView {
     public void onChange(final ResourceKey resource,
                          final long amount,
                          @Nullable final TrackedResource trackedResource) {
+        final boolean wasAvailable = backingList.contains(resource);
         final ResourceList.OperationResult operationResult = updateBackingList(resource, amount);
-
         updateOrRemoveTrackedResource(resource, trackedResource);
-
         final GridResource gridResource = viewList.index.get(resource);
         if (gridResource != null) {
             LOGGER.debug("{} was already found in the view list", resource);
-            if (gridResource.isZeroed()) {
-                reinsertZeroedResourceIntoViewList(resource, gridResource);
+            if (!wasAvailable) {
+                reinsertIntoViewList(resource, gridResource);
             } else {
                 handleChangeForExistingResource(resource, operationResult, gridResource);
             }
@@ -190,8 +189,8 @@ public class GridViewImpl implements GridView {
         }
     }
 
-    private void reinsertZeroedResourceIntoViewList(final ResourceKey resource, final GridResource oldGridResource) {
-        LOGGER.debug("{} was zeroed, unzeroing", resource);
+    private void reinsertIntoViewList(final ResourceKey resource, final GridResource oldGridResource) {
+        LOGGER.debug("{} was removed from backing list, reinserting now into the view list", resource);
         final GridResource newResource = resourceFactory.apply(
             resource,
             craftableResources.contains(resource)
@@ -199,7 +198,7 @@ public class GridViewImpl implements GridView {
         viewList.index.put(resource, newResource);
         final int index = CoreValidations.validateNotNegative(
             viewList.list.indexOf(oldGridResource),
-            "Cannot reinsert previously zeroed resource, it was not found"
+            "Failed to reinsert resource into view list, even though it was still present in the view index"
         );
         viewList.list.set(index, newResource);
     }
@@ -213,8 +212,7 @@ public class GridViewImpl implements GridView {
             LOGGER.debug("Actually updating {} resource in the view list", resource);
             updateExistingResourceInViewList(resource, gridResource, noLongerAvailable);
         } else if (noLongerAvailable) {
-            LOGGER.debug("{} is no longer available, zeroing", resource);
-            gridResource.setZeroed(true);
+            LOGGER.debug("{} is no longer available", resource);
         } else {
             LOGGER.debug("{} can't be sorted, preventing sorting is on", resource);
         }

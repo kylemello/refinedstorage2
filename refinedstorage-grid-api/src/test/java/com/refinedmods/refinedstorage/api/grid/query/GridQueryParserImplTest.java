@@ -324,16 +324,6 @@ class GridQueryParserImplTest {
         }
 
         @Override
-        public boolean isZeroed() {
-            return false;
-        }
-
-        @Override
-        public void setZeroed(final boolean zeroed) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public boolean isCraftable() {
             return false;
         }

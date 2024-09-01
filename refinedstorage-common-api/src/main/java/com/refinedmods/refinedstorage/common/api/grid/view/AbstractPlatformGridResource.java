@@ -19,7 +19,6 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
     private final String name;
     private final Map<GridResourceAttributeKey, Set<String>> attributes;
     private final boolean craftable;
-    private boolean zeroed;
 
     protected AbstractPlatformGridResource(final T resource,
                                            final String name,
@@ -52,16 +51,6 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
     }
 
     @Override
-    public boolean isZeroed() {
-        return zeroed;
-    }
-
-    @Override
-    public void setZeroed(final boolean zeroed) {
-        this.zeroed = zeroed;
-    }
-
-    @Override
     public boolean isCraftable() {
         return craftable;
     }
@@ -79,7 +68,6 @@ public abstract class AbstractPlatformGridResource<T extends PlatformResourceKey
             + ", name='" + name + '\''
             + ", attributes=" + attributes
             + ", craftable=" + craftable
-            + ", zeroed=" + zeroed
             + '}';
     }
 }

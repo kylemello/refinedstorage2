@@ -12,7 +12,6 @@ public class GridResourceImpl implements GridResource {
     private final ResourceKey resource;
     private final Map<GridResourceAttributeKey, Set<String>> attributes;
     private boolean craftable;
-    private boolean zeroed;
 
     public GridResourceImpl(final ResourceKey resource) {
         this(resource, false);
@@ -25,11 +24,6 @@ public class GridResourceImpl implements GridResource {
             FakeGridResourceAttributeKeys.MOD_NAME, Set.of(resource.toString())
         );
         this.craftable = craftable;
-    }
-
-    public GridResourceImpl zeroed() {
-        setZeroed(true);
-        return this;
     }
 
     public GridResourceImpl craftable() {
@@ -55,16 +49,6 @@ public class GridResourceImpl implements GridResource {
     @Override
     public Set<String> getAttribute(final GridResourceAttributeKey key) {
         return attributes.getOrDefault(key, Collections.emptySet());
-    }
-
-    @Override
-    public boolean isZeroed() {
-        return zeroed;
-    }
-
-    @Override
-    public void setZeroed(final boolean zeroed) {
-        this.zeroed = zeroed;
     }
 
     @Override

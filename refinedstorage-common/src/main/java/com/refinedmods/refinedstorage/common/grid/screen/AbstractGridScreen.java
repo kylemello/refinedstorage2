@@ -53,11 +53,9 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationKey;
-import static java.util.Objects.requireNonNullElse;
 
 // TODO: help tooltip to enable focus mode
 // TODO: help tooltips for the rest of grid??
-// TODO: remove zeroed system
 public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> extends AbstractStretchingScreen<T> {
     protected static final int CLEAR_BUTTON_SIZE = 7;
 
@@ -331,12 +329,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     private int getAmountColor(final GridResource resource, final long amount) {
-        if (amount == 0 && resource.isCraftable()) {
-            return requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
-        } else if (resource.isZeroed()) {
-            return requireNonNullElse(ChatFormatting.RED.getColor(), 15);
+        if (amount == 0) {
+            if (resource.isCraftable()) {
+                return 0xFFFFFF;
+            }
+            return 0xFF5555;
         }
-        return requireNonNullElse(ChatFormatting.WHITE.getColor(), 15);
+        return 0xFFFFFF;
     }
 
     private String getAmountText(final GridResource resource,
