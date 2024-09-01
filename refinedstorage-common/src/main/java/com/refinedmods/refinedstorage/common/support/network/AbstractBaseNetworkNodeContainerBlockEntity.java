@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -46,10 +45,11 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
     private static final String TAG_CUSTOM_NAME = "CustomName";
     private static final String TAG_PLACED_BY_PLAYER_ID = "pbpid";
     private static final String TAG_REDSTONE_MODE = "rm";
+    private static final int ACTIVENESS_CHANGE_TICK_RATE = 20;
 
     protected NetworkNodeTicker ticker = NetworkNodeTicker.IMMEDIATE;
 
-    private final RateLimiter activenessChangeRateLimiter = RateLimiter.create(1);
+    private int activenessChangeTicks;
 
     @Nullable
     private Component customName;
@@ -88,7 +88,7 @@ public abstract class AbstractBaseNetworkNodeContainerBlockEntity<T extends Abst
         final boolean blockStateActivenessNeedsUpdate = activenessProperty != null
             && state.getValue(activenessProperty) != newActive;
         final boolean activenessNeedsUpdate = nodeActivenessNeedsUpdate || blockStateActivenessNeedsUpdate;
-        if (activenessNeedsUpdate && activenessChangeRateLimiter.tryAcquire()) {
+        if (activenessNeedsUpdate && activenessChangeTicks++ % ACTIVENESS_CHANGE_TICK_RATE == 0) {
             if (nodeActivenessNeedsUpdate) {
                 activenessChanged(newActive);
             }

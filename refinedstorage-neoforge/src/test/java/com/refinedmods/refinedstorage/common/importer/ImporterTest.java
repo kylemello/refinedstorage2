@@ -20,12 +20,13 @@ import static com.refinedmods.refinedstorage.common.GameTestUtil.RSITEMS;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.asResource;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.assertInterfaceEmpty;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.containerContainsExactly;
+import static com.refinedmods.refinedstorage.common.GameTestUtil.getItemAsDamaged;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.interfaceContainsExactly;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.networkIsAvailable;
+import static com.refinedmods.refinedstorage.common.GameTestUtil.prepareChest;
+import static com.refinedmods.refinedstorage.common.GameTestUtil.prepareInterface;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.storageContainsExactly;
-import static com.refinedmods.refinedstorage.common.importer.ImporterTestPlots.prepareChest;
-import static com.refinedmods.refinedstorage.common.importer.ImporterTestPlots.prepareInterface;
 import static com.refinedmods.refinedstorage.common.importer.ImporterTestPlots.preparePlot;
 import static net.minecraft.world.item.Items.COBBLESTONE;
 import static net.minecraft.world.item.Items.DIAMOND_CHESTPLATE;
@@ -87,6 +88,7 @@ public final class ImporterTest {
                 COBBLESTONE.getDefaultInstance().copyWithCount(64),
                 DIRT.getDefaultInstance()
             );
+
             importer.addUpgradeItem(RSITEMS.getStackUpgrade());
 
             // Assert
@@ -126,13 +128,13 @@ public final class ImporterTest {
             }));
 
             // Act
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             prepareChest(
                 helper,
                 pos.east(),
                 DIRT.getDefaultInstance(),
-                DIAMOND_CHESTPLATE.getDefaultInstance(), damagedDiamondChestplate
+                DIAMOND_CHESTPLATE.getDefaultInstance(),
+                damagedDiamondChestplate
             );
 
             importer.setFuzzyMode(false);
@@ -167,13 +169,13 @@ public final class ImporterTest {
             }));
 
             // Act
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             prepareChest(
                 helper,
                 pos.east(),
                 DIRT.getDefaultInstance(),
-                DIAMOND_CHESTPLATE.getDefaultInstance(), damagedDiamondChestplate
+                DIAMOND_CHESTPLATE.getDefaultInstance(),
+                damagedDiamondChestplate
             );
 
             importer.setFuzzyMode(true);
@@ -209,13 +211,13 @@ public final class ImporterTest {
             }));
 
             // Act
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             prepareChest(
                 helper,
                 pos.east(),
                 DIRT.getDefaultInstance(),
-                DIAMOND_CHESTPLATE.getDefaultInstance(), damagedDiamondChestplate
+                DIAMOND_CHESTPLATE.getDefaultInstance(),
+                damagedDiamondChestplate
             );
 
             importer.setFuzzyMode(false);
@@ -252,13 +254,13 @@ public final class ImporterTest {
             }));
 
             // Act
-            final ItemStack damagedDiamondChestplate = DIAMOND_CHESTPLATE.getDefaultInstance();
-            damagedDiamondChestplate.setDamageValue(500);
+            final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             prepareChest(
                 helper,
                 pos.east(),
                 DIRT.getDefaultInstance(),
-                DIAMOND_CHESTPLATE.getDefaultInstance(), damagedDiamondChestplate
+                DIAMOND_CHESTPLATE.getDefaultInstance(),
+                damagedDiamondChestplate
             );
 
             importer.setFuzzyMode(true);

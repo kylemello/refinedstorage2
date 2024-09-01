@@ -1,6 +1,9 @@
 package com.refinedmods.refinedstorage.common.storage.externalstorage;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.externalstorage.ExternalStorageNetworkNode;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
+import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
@@ -13,6 +16,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeEx
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -143,6 +147,31 @@ public abstract class AbstractExternalStorageBlockEntity
         super.readConfiguration(tag, provider);
         filter.load(tag, provider);
         configContainer.load(tag);
+    }
+
+    void setFilters(final Set<ResourceKey> filters) {
+        mainNetworkNode.getStorageConfiguration().setFilters(filters);
+    }
+
+    void setFilterMode(final FilterMode mode) {
+        mainNetworkNode.getStorageConfiguration().setFilterMode(mode);
+        setChanged();
+    }
+
+    void setFuzzyMode(final boolean fuzzyMode) {
+        filter.setFuzzyMode(fuzzyMode);
+    }
+
+    void setAccessMode(final AccessMode accessMode) {
+        mainNetworkNode.getStorageConfiguration().setAccessMode(accessMode);
+    }
+
+    void setPriority(final int priority) {
+        mainNetworkNode.getStorageConfiguration().setPriority(priority);
+    }
+
+    void setVoidExcess(final boolean voidExcess) {
+        mainNetworkNode.getStorageConfiguration().setVoidExcess(voidExcess);
     }
 
     @Override
