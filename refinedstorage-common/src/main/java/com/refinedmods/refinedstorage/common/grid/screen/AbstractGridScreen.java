@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
@@ -16,6 +17,7 @@ import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
+import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.stretching.AbstractStretchingScreen;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTooltipComponent;
@@ -236,6 +238,22 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
     }
 
+    @Override
+    protected List<ClientTooltipComponent> getResourceSlotTooltip(final ResourceKey resource, final ResourceSlot slot) {
+        final List<ClientTooltipComponent> tooltip = super.getResourceSlotTooltip(resource, slot);
+        final ResourceKey craftableResource = getMenu().getCraftableResource(slot);
+        if (craftableResource != null && getMenu().getView().isCraftable(craftableResource)) {
+            tooltip.add(CraftableClientTooltipComponent.craftable());
+        }
+        return tooltip;
+    }
+
+    @Override
+    protected void renderSlot(final GuiGraphics guiGraphics, final Slot slot) {
+        tryRenderCraftableBackground(guiGraphics, slot);
+        super.renderSlot(guiGraphics, slot);
+    }
+
     private void renderSlot(final GuiGraphics graphics,
                             final int mouseX,
                             final int mouseY,
@@ -260,17 +278,35 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
     }
 
+    private void tryRenderCraftableBackground(final GuiGraphics guiGraphics, final Slot slot) {
+        if (!slot.isHighlightable() || !slot.isActive()) {
+            return;
+        }
+        final ResourceKey craftableResource = getMenu().getCraftableResource(slot);
+        if (craftableResource != null && getMenu().getView().isCraftable(craftableResource)) {
+            renderCraftableBackground(guiGraphics, slot.x, slot.y, getMenu().isLargeSlot(slot));
+        }
+    }
+
     private void renderResourceWithAmount(final GuiGraphics graphics,
                                           final int slotX,
                                           final int slotY,
                                           final GridResource resource) {
         if (resource.isCraftable()) {
-            graphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0xBF9F7F50);
+            renderCraftableBackground(graphics, slotX, slotY, false);
         }
         if (resource instanceof PlatformGridResource platformResource) {
             platformResource.render(graphics, slotX, slotY);
         }
         renderAmount(graphics, slotX, slotY, resource);
+    }
+
+    public static void renderCraftableBackground(final GuiGraphics graphics,
+                                                 final int slotX,
+                                                 final int slotY,
+                                                 final boolean large) {
+        final int offset = large ? 4 : 0;
+        graphics.fill(slotX - offset, slotY - offset, slotX + 16 + offset, slotY + 16 + offset, 0xBF9F7F50);
     }
 
     private void renderAmount(final GuiGraphics graphics,
@@ -314,10 +350,28 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     @Override
     protected void renderTooltip(final GuiGraphics graphics, final int x, final int y) {
-        super.renderTooltip(graphics, x, y);
         if (isOverStorageArea(x, y)) {
             renderOverStorageAreaTooltip(graphics, x, y);
+            return;
         }
+        if (getMenu().getCarried().isEmpty() && hoveredSlot != null && hoveredSlot.hasItem()) {
+            final ResourceKey craftableResource = getMenu().getCraftableResource(hoveredSlot);
+            if (craftableResource != null && getMenu().getView().isCraftable(craftableResource)) {
+                final ItemStack item = hoveredSlot.getItem();
+                final List<Component> lines = getTooltipFromContainerItem(item);
+                final List<ClientTooltipComponent> processedLines = Platform.INSTANCE.processTooltipComponents(
+                    item,
+                    graphics,
+                    x,
+                    item.getTooltipImage(),
+                    lines
+                );
+                processedLines.add(CraftableClientTooltipComponent.craftable());
+                Platform.INSTANCE.renderTooltip(graphics, processedLines, x, y);
+                return;
+            }
+        }
+        super.renderTooltip(graphics, x, y);
     }
 
     private void renderOverStorageAreaTooltip(final GuiGraphics graphics, final int x, final int y) {
@@ -355,7 +409,9 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             addDetailedTooltip(view, gridResource, processedLines);
         }
         if (gridResource.isCraftable()) {
-            processedLines.add(new CraftableClientTooltipComponent(amount == 0));
+            processedLines.add(amount == 0
+                ? CraftableClientTooltipComponent.empty()
+                : CraftableClientTooltipComponent.existing());
         }
         if (amount > 0) {
             processedLines.addAll(gridResource.getExtractionHints(getMenu().getCarried(), getMenu().getView()));

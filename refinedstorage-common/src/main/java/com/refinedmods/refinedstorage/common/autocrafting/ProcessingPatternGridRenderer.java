@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.grid.screen.AbstractGridScreen;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
@@ -239,15 +240,31 @@ class ProcessingPatternGridRenderer implements PatternGridRenderer {
             if (resourceSlot.isActive()
                 && resourceSlot instanceof ProcessingMatrixResourceSlot matrixSlot
                 && matrixSlot.isInput() == input) {
-                ResourceSlotRendering.render(graphics, resourceSlot, leftPos, topPos);
-                final boolean hovering = mouseX >= resourceSlot.x + leftPos
-                    && mouseX < resourceSlot.x + leftPos + 16
-                    && mouseY >= resourceSlot.y + topPos
-                    && mouseY < resourceSlot.y + topPos + 16;
-                if (hovering && canInteractWithResourceSlot(resourceSlot, mouseX, mouseY)) {
-                    renderSlotHighlight(graphics, leftPos + resourceSlot.x, topPos + resourceSlot.y, 0);
-                }
+                renderMatrixSlot(graphics, mouseX, mouseY, resourceSlot, matrixSlot);
             }
+        }
+    }
+
+    private void renderMatrixSlot(final GuiGraphics graphics,
+                                  final int mouseX,
+                                  final int mouseY,
+                                  final ResourceSlot resourceSlot,
+                                  final ProcessingMatrixResourceSlot matrixSlot) {
+        if (matrixSlot.getResource() != null && menu.getView().isCraftable(matrixSlot.getResource())) {
+            AbstractGridScreen.renderCraftableBackground(
+                graphics,
+                resourceSlot.x + leftPos,
+                resourceSlot.y + topPos,
+                false
+            );
+        }
+        ResourceSlotRendering.render(graphics, resourceSlot, leftPos, topPos);
+        final boolean hovering = mouseX >= resourceSlot.x + leftPos
+            && mouseX < resourceSlot.x + leftPos + 16
+            && mouseY >= resourceSlot.y + topPos
+            && mouseY < resourceSlot.y + topPos + 16;
+        if (hovering && canInteractWithResourceSlot(resourceSlot, mouseX, mouseY)) {
+            renderSlotHighlight(graphics, leftPos + resourceSlot.x, topPos + resourceSlot.y, 0);
         }
     }
 

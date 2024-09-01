@@ -672,6 +672,8 @@ class GridViewImplTest {
             new GridResourceImpl(A),
             new GridResourceImpl(B).craftable()
         );
+        assertThat(view.isCraftable(A)).isFalse();
+        assertThat(view.isCraftable(B)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(15);
         assertThat(view.getAmount(B)).isZero();
         assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator()
@@ -693,6 +695,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(A).craftable()
         );
+        assertThat(view.isCraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(15);
         assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
@@ -716,6 +719,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(A).craftable()
         );
+        assertThat(view.isCraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isZero();
         assertThat(view.copyBackingList().copyState()).isEmpty();
     }
@@ -737,6 +741,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(A).zeroed().craftable()
         );
+        assertThat(view.isCraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isZero();
         assertThat(view.copyBackingList().copyState()).isEmpty();
 
@@ -745,6 +750,7 @@ class GridViewImplTest {
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new GridResourceImpl(A).craftable()
         );
+        assertThat(view.isCraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(1);
         assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)

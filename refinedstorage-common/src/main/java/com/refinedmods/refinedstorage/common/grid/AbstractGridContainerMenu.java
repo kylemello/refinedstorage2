@@ -425,4 +425,13 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     public void onClear() {
         view.clear();
     }
+
+    @Nullable
+    public ResourceKey getCraftableResource(final Slot slot) {
+        return null;
+    }
+
+    public boolean isLargeSlot(final Slot slot) {
+        return false;
+    }
 }

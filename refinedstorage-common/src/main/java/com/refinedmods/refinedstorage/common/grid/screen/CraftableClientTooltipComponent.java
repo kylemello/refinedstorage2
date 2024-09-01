@@ -18,13 +18,26 @@ class CraftableClientTooltipComponent implements ClientTooltipComponent {
     private static final int ICON_SIZE = 9;
     private static final int ICON_MARGIN = 4;
 
-    private static final Component EMPTY = createTranslation("gui", "grid.craftable.click_to_craft");
-    private static final Component EXISTING = createTranslation("gui", "grid.craftable.ctrl_click_to_craft");
+    private static final Component CRAFTABLE = createTranslation("gui", "grid.craft.craftable");
+    private static final Component EMPTY = createTranslation("gui", "grid.craft.click_to_craft");
+    private static final Component EXISTING = createTranslation("gui", "grid.craft.ctrl_click_to_craft");
 
     private final Component text;
 
-    CraftableClientTooltipComponent(final boolean empty) {
-        this.text = empty ? EMPTY : EXISTING;
+    private CraftableClientTooltipComponent(final Component text) {
+        this.text = text;
+    }
+
+    static CraftableClientTooltipComponent craftable() {
+        return new CraftableClientTooltipComponent(CRAFTABLE);
+    }
+
+    static CraftableClientTooltipComponent empty() {
+        return new CraftableClientTooltipComponent(EMPTY);
+    }
+
+    static CraftableClientTooltipComponent existing() {
+        return new CraftableClientTooltipComponent(EXISTING);
     }
 
     @Override

@@ -101,6 +101,11 @@ public class GridViewImpl implements GridView {
     }
 
     @Override
+    public boolean isCraftable(final ResourceKey resource) {
+        return craftableResources.contains(resource);
+    }
+
+    @Override
     public void sort() {
         LOGGER.info("Sorting grid view");
         viewList = createViewList();

@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
@@ -173,5 +174,19 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
         }
         getView().setFilterAndSort(filterBeforeFilteringBasedOnCraftingMatrixItems);
         filterBeforeFilteringBasedOnCraftingMatrixItems = null;
+    }
+
+    @Nullable
+    @Override
+    public ResourceKey getCraftableResource(final Slot slot) {
+        if (slot.container == craftingGrid.getCraftingMatrix() || slot.container == craftingGrid.getCraftingResult()) {
+            return ItemResource.ofItemStack(slot.getItem());
+        }
+        return super.getCraftableResource(slot);
+    }
+
+    @Override
+    public boolean isLargeSlot(final Slot slot) {
+        return slot.container == craftingGrid.getCraftingResult() || super.isLargeSlot(slot);
     }
 }

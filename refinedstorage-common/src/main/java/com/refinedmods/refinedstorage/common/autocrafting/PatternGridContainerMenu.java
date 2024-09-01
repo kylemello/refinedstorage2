@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
@@ -80,8 +81,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.stonecutterInput = new StonecutterInputContainer(playerInventory.player::level);
         this.smithingTableMatrix = new RecipeMatrixContainer(null, 3, 1);
         this.smithingTableResult = new ResultContainer();
-        this.smithingTableRecipes =
-            playerInventory.player.level().getRecipeManager().getAllRecipesFor(RecipeType.SMITHING);
+        this.smithingTableRecipes = playerInventory.player.level().getRecipeManager()
+            .getAllRecipesFor(RecipeType.SMITHING);
         onScreenReady(0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PatternGridPropertyTypes.PATTERN_TYPE, patternGridData.patternType()) {
@@ -183,7 +184,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     public void onScreenReady(final int playerInventoryY) {
         super.onScreenReady(playerInventoryY);
         transferManager.clear();
-        addSmithingTableSlots(playerInventoryY);
+        addSmithingTableSlots(playerInventoryY); // these must be always first for the smithing table helpers
         addPatternSlots(playerInventoryY);
         addCraftingMatrixSlots(playerInventoryY);
         addProcessingMatrixSlots(playerInventoryY);
@@ -230,6 +231,27 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
 
     boolean isPatternInOutput(final ItemStack stack) {
         return patternOutputSlot != null && patternOutputSlot.getItem() == stack;
+    }
+
+    @Nullable
+    @Override
+    public ResourceKey getCraftableResource(final Slot slot) {
+        final boolean isInputItem = slot.container == craftingMatrix
+            || slot.container == stonecutterInput
+            || slot.container == smithingTableMatrix;
+        final boolean isResultItem = slot.container == craftingResult
+            || slot.container == smithingTableResult;
+        if (isInputItem || isResultItem) {
+            return ItemResource.ofItemStack(slot.getItem());
+        } else if (slot instanceof ProcessingMatrixResourceSlot processingMatrixSlot) {
+            return processingMatrixSlot.getResource();
+        }
+        return super.getCraftableResource(slot);
+    }
+
+    @Override
+    public boolean isLargeSlot(final Slot slot) {
+        return slot.container == craftingResult || super.isLargeSlot(slot);
     }
 
     private void addCraftingMatrixSlots(final int playerInventoryY) {
