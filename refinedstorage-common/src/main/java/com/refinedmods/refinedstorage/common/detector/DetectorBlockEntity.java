@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorAmo
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorAmountStrategyImpl;
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorMode;
 import com.refinedmods.refinedstorage.api.network.impl.node.detector.DetectorNetworkNode;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
@@ -22,7 +23,6 @@ import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerI
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -40,12 +40,13 @@ import org.slf4j.LoggerFactory;
 public class DetectorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<DetectorNetworkNode>
     implements NetworkNodeExtendedMenuProvider<SingleAmountData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectorBlockEntity.class);
+    private static final int POWERED_CHANGE_TICK_RATE = 20;
 
     private static final String TAG_AMOUNT = "amount";
     private static final String TAG_MODE = "mode";
 
     private final FilterWithFuzzyMode filter;
-    private final RateLimiter poweredChangeRateLimiter = RateLimiter.create(1);
+    private int poweredChangeTicks;
 
     private double amount;
 
@@ -109,6 +110,10 @@ public class DetectorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEn
         mainNetworkNode.setAmount(normalizedAmount);
     }
 
+    void setConfiguredResource(final ResourceKey configuredResource) {
+        mainNetworkNode.setConfiguredResource(configuredResource);
+    }
+
     boolean isFuzzyMode() {
         return filter.isFuzzyMode();
     }
@@ -165,8 +170,9 @@ public class DetectorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEn
         super.updateActiveness(state, activenessProperty);
         final boolean powered = mainNetworkNode.isActive() && mainNetworkNode.isActivated();
         final boolean needToUpdatePowered = state.getValue(DetectorBlock.POWERED) != powered;
-        if (level != null && needToUpdatePowered && poweredChangeRateLimiter.tryAcquire()) {
+        if (level != null && needToUpdatePowered && poweredChangeTicks++ % POWERED_CHANGE_TICK_RATE == 0) {
             level.setBlockAndUpdate(getBlockPos(), state.setValue(DetectorBlock.POWERED, powered));
+            poweredChangeTicks = 0;
         }
     }
 
