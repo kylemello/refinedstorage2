@@ -3,8 +3,9 @@ package com.refinedmods.refinedstorage.common.support.network;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Comparator;
@@ -25,19 +26,20 @@ public final class ResourceSorters {
     public static <T> Comparator<T> create(@Nullable final Network network,
                                            final Inventory playerInventory,
                                            final Function<T, ResourceKey> resourceExtractor) {
-        final ResourceList available = ResourceListImpl.create();
+        final MutableResourceList available = MutableResourceListImpl.create();
         addNetworkItemsIntoList(network, available);
         addPlayerInventoryItemsIntoList(playerInventory, available);
         return sortByHighestAvailableFirst(available, resourceExtractor);
     }
 
-    private static void addNetworkItemsIntoList(@Nullable final Network network, final ResourceList list) {
+    private static void addNetworkItemsIntoList(@Nullable final Network network, final MutableResourceList list) {
         if (network != null) {
             network.getComponent(StorageNetworkComponent.class).getAll().forEach(list::add);
         }
     }
 
-    private static void addPlayerInventoryItemsIntoList(final Inventory playerInventory, final ResourceList list) {
+    private static void addPlayerInventoryItemsIntoList(final Inventory playerInventory,
+                                                        final MutableResourceList list) {
         for (int i = 0; i < playerInventory.getContainerSize(); ++i) {
             final ItemStack playerInventoryStack = playerInventory.getItem(i);
             if (playerInventoryStack.isEmpty()) {

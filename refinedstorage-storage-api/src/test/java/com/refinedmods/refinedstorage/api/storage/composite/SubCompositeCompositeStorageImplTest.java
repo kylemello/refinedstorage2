@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.storage.composite;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.StorageImpl;
@@ -19,13 +19,13 @@ class SubCompositeCompositeStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CompositeStorageImpl(ResourceListImpl.create());
+        sut = new CompositeStorageImpl(MutableResourceListImpl.create());
     }
 
     @Test
     void testAddingSubCompositeShouldAddAllResourcesToParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
+        final CompositeStorage subComposite = new CompositeStorageImpl(MutableResourceListImpl.create());
         subComposite.addSource(new StorageImpl());
         subComposite.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -41,7 +41,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testRemovingSubCompositeShouldRemoveAllResourcesFromParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
+        final CompositeStorage subComposite = new CompositeStorageImpl(MutableResourceListImpl.create());
         subComposite.addSource(new StorageImpl());
         subComposite.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -62,7 +62,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testAddingSourceToSubCompositeShouldNotifyParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
+        final CompositeStorage subComposite = new CompositeStorageImpl(MutableResourceListImpl.create());
         final Storage subStorage = new StorageImpl();
         subStorage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
@@ -89,7 +89,7 @@ class SubCompositeCompositeStorageImplTest {
     @Test
     void testRemovingSourceFromSubCompositeShouldNotifyParent() {
         // Arrange
-        final CompositeStorage subComposite = new CompositeStorageImpl(ResourceListImpl.create());
+        final CompositeStorage subComposite = new CompositeStorageImpl(MutableResourceListImpl.create());
         final Storage subStorage = new StorageImpl();
         subStorage.insert(B, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 

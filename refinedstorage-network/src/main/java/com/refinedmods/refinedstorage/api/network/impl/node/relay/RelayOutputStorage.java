@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.filter.Filter;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage.api.storage.AccessMode;
 import com.refinedmods.refinedstorage.api.storage.Actor;
@@ -159,7 +159,7 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
     }
 
     @Override
-    public void onChanged(final ResourceList.OperationResult change) {
+    public void onChanged(final MutableResourceList.OperationResult change) {
         if (delegate != null && delegate.contains(delegate)) {
             return;
         }

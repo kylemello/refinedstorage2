@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storage.StorageNetwo
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
@@ -37,7 +37,7 @@ class StorageNetworkComponentImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new StorageNetworkComponentImpl(ResourceListImpl.create());
+        sut = new StorageNetworkComponentImpl(MutableResourceListImpl.create());
 
         storage1 = new StorageNetworkNode(0, 0, 1);
         storage1.setNetwork(new NetworkImpl(NetworkTestFixtures.NETWORK_COMPONENT_MAP_FACTORY));

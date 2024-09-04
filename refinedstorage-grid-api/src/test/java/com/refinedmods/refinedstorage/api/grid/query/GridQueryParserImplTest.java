@@ -6,7 +6,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceImpl;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.grid.view.GridViewImpl;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
@@ -35,7 +35,7 @@ class GridQueryParserImplTest {
 
     private final GridView view = new GridViewImpl(
         (resource, craftable) -> Optional.of(new GridResourceImpl(resource)),
-        ResourceListImpl.create(),
+        MutableResourceListImpl.create(),
         new HashMap<>(),
         new HashSet<>(),
         v -> Comparator.comparing(GridResource::getName),

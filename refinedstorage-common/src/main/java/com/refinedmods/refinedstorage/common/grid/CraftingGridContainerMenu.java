@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.grid;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
@@ -128,13 +129,13 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
 
     @API(status = API.Status.INTERNAL)
     public ResourceList getAvailableListForRecipeTransfer() {
-        final ResourceList available = getView().copyBackingList();
+        final MutableResourceList available = getView().copyBackingList();
         addContainerToList(craftingGrid.getCraftingMatrix(), available);
         addContainerToList(gridPlayer.getInventory(), available);
         return available;
     }
 
-    private void addContainerToList(final Container container, final ResourceList available) {
+    private void addContainerToList(final Container container, final MutableResourceList available) {
         for (int i = 0; i < container.getContainerSize(); ++i) {
             final ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) {

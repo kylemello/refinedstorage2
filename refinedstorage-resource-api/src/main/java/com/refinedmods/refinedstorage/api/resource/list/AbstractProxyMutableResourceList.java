@@ -10,13 +10,13 @@ import java.util.Set;
 import org.apiguardian.api.API;
 
 /**
- * This is a utility class to easily decorate a {@link ResourceList}.
+ * This is a utility class to easily decorate a {@link MutableResourceListImpl}.
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
-public abstract class AbstractProxyResourceList implements ResourceList {
-    private final ResourceList delegate;
+public abstract class AbstractProxyMutableResourceList implements MutableResourceList {
+    private final MutableResourceList delegate;
 
-    protected AbstractProxyResourceList(final ResourceList delegate) {
+    protected AbstractProxyMutableResourceList(final MutableResourceList delegate) {
         this.delegate = delegate;
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractProxyResourceList implements ResourceList {
     }
 
     @Override
-    public ResourceList copy() {
+    public MutableResourceList copy() {
         return delegate.copy();
     }
 

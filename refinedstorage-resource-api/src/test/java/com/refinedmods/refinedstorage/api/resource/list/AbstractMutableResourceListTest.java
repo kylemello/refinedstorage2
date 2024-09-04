@@ -14,20 +14,20 @@ import org.junit.jupiter.api.function.Executable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-abstract class AbstractResourceListTest {
-    private ResourceList list;
+abstract class AbstractMutableResourceListTest {
+    private MutableResourceList list;
 
     @BeforeEach
     void setUp() {
         list = createList();
     }
 
-    protected abstract ResourceList createList();
+    protected abstract MutableResourceList createList();
 
     @Test
     void shouldAddNewResource() {
         // Act
-        final ResourceList.OperationResult result = list.add(TestResource.A, 10);
+        final MutableResourceList.OperationResult result = list.add(TestResource.A, 10);
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
@@ -47,7 +47,7 @@ abstract class AbstractResourceListTest {
     @Test
     void shouldAddNewResourceWithResourceAmountDirectly() {
         // Act
-        final ResourceList.OperationResult result = list.add(new ResourceAmount(TestResource.A, 10));
+        final MutableResourceList.OperationResult result = list.add(new ResourceAmount(TestResource.A, 10));
 
         // Assert
         assertThat(result.change()).isEqualTo(10);
@@ -67,8 +67,8 @@ abstract class AbstractResourceListTest {
     @Test
     void shouldAddMultipleOfSameResource() {
         // Act
-        final ResourceList.OperationResult result1 = list.add(TestResource.A, 10);
-        final ResourceList.OperationResult result2 = list.add(TestResource.A, 5);
+        final MutableResourceList.OperationResult result1 = list.add(TestResource.A, 10);
+        final MutableResourceList.OperationResult result2 = list.add(TestResource.A, 5);
 
         // Assert
         assertThat(result1.change()).isEqualTo(10);
@@ -93,9 +93,9 @@ abstract class AbstractResourceListTest {
     @Test
     void shouldAddMultipleOfDifferentResources() {
         // Act
-        final ResourceList.OperationResult result1 = list.add(TestResource.A, 10);
-        final ResourceList.OperationResult result2 = list.add(TestResource.A, 5);
-        final ResourceList.OperationResult result3 = list.add(TestResource.B, 3);
+        final MutableResourceList.OperationResult result1 = list.add(TestResource.A, 10);
+        final MutableResourceList.OperationResult result2 = list.add(TestResource.A, 5);
+        final MutableResourceList.OperationResult result3 = list.add(TestResource.B, 3);
 
         // Assert
         assertThat(result1.change()).isEqualTo(10);
@@ -142,7 +142,7 @@ abstract class AbstractResourceListTest {
     @Test
     void shouldNotRemoveResourceWhenItIsNotAvailable() {
         // Act
-        final Optional<ResourceList.OperationResult> result = list.remove(TestResource.A, 10);
+        final Optional<MutableResourceList.OperationResult> result = list.remove(TestResource.A, 10);
 
         // Assert
         assertThat(result).isEmpty();
@@ -155,7 +155,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result2 = list.remove(TestResource.A, 5);
+        final Optional<MutableResourceList.OperationResult> result2 = list.remove(TestResource.A, 5);
 
         // Assert
         assertThat(result2).isPresent();
@@ -184,7 +184,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result2 = list.remove(new ResourceAmount(
+        final Optional<MutableResourceList.OperationResult> result2 = list.remove(new ResourceAmount(
             TestResource.A,
             5
         ));
@@ -216,7 +216,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result = list.remove(TestResource.A, 20);
+        final Optional<MutableResourceList.OperationResult> result = list.remove(TestResource.A, 20);
 
         // Assert
         assertThat(result).isPresent();
@@ -244,7 +244,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result2 = list.remove(new ResourceAmount(
+        final Optional<MutableResourceList.OperationResult> result2 = list.remove(new ResourceAmount(
             TestResource.A,
             20
         ));
@@ -275,7 +275,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 6);
 
         // Act
-        final Optional<ResourceList.OperationResult> result = list.remove(TestResource.A, 21);
+        final Optional<MutableResourceList.OperationResult> result = list.remove(TestResource.A, 21);
 
         // Assert
         assertThat(result).isPresent();
@@ -340,7 +340,7 @@ abstract class AbstractResourceListTest {
         list.add(TestResource.B, 5);
 
         // Act
-        final ResourceList copy = list.copy();
+        final MutableResourceList copy = list.copy();
 
         list.add(TestResource.A, 1);
         list.add(TestResource.C, 3);

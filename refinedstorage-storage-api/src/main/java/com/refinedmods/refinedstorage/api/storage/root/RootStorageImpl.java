@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.api.storage.root;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ListenableResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage.api.storage.Actor;
@@ -24,10 +24,10 @@ public class RootStorageImpl implements RootStorage {
     private final ListenableResourceList list;
 
     public RootStorageImpl() {
-        this(ResourceListImpl.create());
+        this(MutableResourceListImpl.create());
     }
 
-    public RootStorageImpl(final ResourceList list) {
+    public RootStorageImpl(final MutableResourceList list) {
         this.list = new ListenableResourceList(list);
         this.storage = new CompositeStorageImpl(this.list);
     }

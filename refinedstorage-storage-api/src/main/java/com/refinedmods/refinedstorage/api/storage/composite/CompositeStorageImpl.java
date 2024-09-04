@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.api.storage.composite;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
@@ -26,13 +26,13 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
 public class CompositeStorageImpl implements CompositeStorage, CompositeAwareChild, ParentComposite {
     private final List<Storage> sources = new ArrayList<>();
-    private final ResourceList list;
+    private final MutableResourceList list;
     private final Set<ParentComposite> parentComposites = new HashSet<>();
 
     /**
      * @param list the backing list of this composite storage, used to retrieve a view of the sources
      */
-    public CompositeStorageImpl(final ResourceList list) {
+    public CompositeStorageImpl(final MutableResourceList list) {
         this.list = list;
     }
 
