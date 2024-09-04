@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceCodecs;
 
 import java.util.ArrayList;
@@ -35,13 +35,13 @@ public record ProcessingPatternState(
         );
 
     List<ResourceAmount> getFlatInputs() {
-        final ResourceList list = ResourceListImpl.orderPreserving();
+        final MutableResourceList list = MutableResourceListImpl.orderPreserving();
         inputs.forEach(input -> input.map(Input::input).ifPresent(list::add));
         return new ArrayList<>(list.copyState());
     }
 
     List<ResourceAmount> getFlatOutputs() {
-        final ResourceList list = ResourceListImpl.orderPreserving();
+        final MutableResourceList list = MutableResourceListImpl.orderPreserving();
         outputs.forEach(output -> output.ifPresent(list::add));
         return new ArrayList<>(list.copyState());
     }

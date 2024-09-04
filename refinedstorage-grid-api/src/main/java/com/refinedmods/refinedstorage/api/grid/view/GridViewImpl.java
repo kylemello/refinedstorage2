@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.grid.view;
 
 import com.refinedmods.refinedstorage.api.core.CoreValidations;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class GridViewImpl implements GridView {
     private static final Logger LOGGER = LoggerFactory.getLogger(GridViewImpl.class);
 
-    private final ResourceList backingList;
+    private final MutableResourceList backingList;
     private final Comparator<GridResource> identitySort;
     private final GridResourceFactory resourceFactory;
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
@@ -47,7 +47,7 @@ public class GridViewImpl implements GridView {
      * @param craftableResources      resources which are craftable and must stay in the view list
      */
     public GridViewImpl(final GridResourceFactory resourceFactory,
-                        final ResourceList backingList,
+                        final MutableResourceList backingList,
                         final Map<ResourceKey, TrackedResource> initialTrackedResources,
                         final Set<ResourceKey> craftableResources,
                         final GridSortingType identitySortingType,
@@ -156,7 +156,7 @@ public class GridViewImpl implements GridView {
                          final long amount,
                          @Nullable final TrackedResource trackedResource) {
         final boolean wasAvailable = backingList.contains(resource);
-        final ResourceList.OperationResult operationResult = updateBackingList(resource, amount);
+        final MutableResourceList.OperationResult operationResult = updateBackingList(resource, amount);
         updateOrRemoveTrackedResource(resource, trackedResource);
         final GridResource gridResource = viewList.index.get(resource);
         if (gridResource != null) {
@@ -172,7 +172,7 @@ public class GridViewImpl implements GridView {
         }
     }
 
-    private ResourceList.OperationResult updateBackingList(final ResourceKey resource, final long amount) {
+    private MutableResourceList.OperationResult updateBackingList(final ResourceKey resource, final long amount) {
         if (amount < 0) {
             return backingList.remove(resource, Math.abs(amount)).orElseThrow(RuntimeException::new);
         } else {
@@ -204,7 +204,7 @@ public class GridViewImpl implements GridView {
     }
 
     private void handleChangeForExistingResource(final ResourceKey resource,
-                                                 final ResourceList.OperationResult operationResult,
+                                                 final MutableResourceList.OperationResult operationResult,
                                                  final GridResource gridResource) {
         final boolean noLongerAvailable = !operationResult.available();
         final boolean canBeSorted = !preventSorting;
@@ -283,7 +283,7 @@ public class GridViewImpl implements GridView {
     }
 
     @Override
-    public ResourceList copyBackingList() {
+    public MutableResourceList copyBackingList() {
         return backingList.copy();
     }
 

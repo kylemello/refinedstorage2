@@ -17,19 +17,19 @@ import org.apiguardian.api.API;
  * An implementation of a {@link ResourceList} that stores the resource entries in memory.
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
-public class ResourceListImpl implements ResourceList {
+public class MutableResourceListImpl implements MutableResourceList {
     private final Map<ResourceKey, Entry> entries;
 
-    private ResourceListImpl(final Map<ResourceKey, Entry> entries) {
+    private MutableResourceListImpl(final Map<ResourceKey, Entry> entries) {
         this.entries = entries;
     }
 
-    public static ResourceListImpl create() {
-        return new ResourceListImpl(new HashMap<>());
+    public static MutableResourceListImpl create() {
+        return new MutableResourceListImpl(new HashMap<>());
     }
 
-    public static ResourceListImpl orderPreserving() {
-        return new ResourceListImpl(new LinkedHashMap<>());
+    public static MutableResourceListImpl orderPreserving() {
+        return new MutableResourceListImpl(new LinkedHashMap<>());
     }
 
     @Override
@@ -110,8 +110,8 @@ public class ResourceListImpl implements ResourceList {
     }
 
     @Override
-    public ResourceList copy() {
-        final ResourceList copy = ResourceListImpl.create();
+    public MutableResourceList copy() {
+        final MutableResourceList copy = MutableResourceListImpl.create();
         entries.forEach((key, entry) -> copy.add(key, entry.amount));
         return copy;
     }

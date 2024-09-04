@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.api.resource.list.listenable;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.AbstractProxyResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.AbstractProxyMutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,10 +17,10 @@ import org.apiguardian.api.API;
  * is being performed through this list, not the delegate list.
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.2")
-public class ListenableResourceList extends AbstractProxyResourceList {
+public class ListenableResourceList extends AbstractProxyMutableResourceList {
     private final Set<ResourceListListener> listeners = new HashSet<>();
 
-    public ListenableResourceList(final ResourceList delegate) {
+    public ListenableResourceList(final MutableResourceList delegate) {
         super(delegate);
     }
 

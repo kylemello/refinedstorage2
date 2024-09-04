@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.storage.root;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.listenable.ResourceListListener;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
@@ -104,7 +104,7 @@ class RootStorageImplTest {
         final ResourceListListener listener = mock(ResourceListListener.class);
         sut.addListener(listener);
 
-        final var changedResource = ArgumentCaptor.forClass(ResourceList.OperationResult.class);
+        final var changedResource = ArgumentCaptor.forClass(MutableResourceList.OperationResult.class);
 
         // Act
         sut.insert(A, 8, action, EmptyActor.INSTANCE);
@@ -134,7 +134,7 @@ class RootStorageImplTest {
         final ResourceListListener listener = mock(ResourceListListener.class);
         sut.addListener(listener);
 
-        final var changedResource = ArgumentCaptor.forClass(ResourceList.OperationResult.class);
+        final var changedResource = ArgumentCaptor.forClass(MutableResourceList.OperationResult.class);
 
         // Act
         sut.extract(A, 5, action, EmptyActor.INSTANCE);

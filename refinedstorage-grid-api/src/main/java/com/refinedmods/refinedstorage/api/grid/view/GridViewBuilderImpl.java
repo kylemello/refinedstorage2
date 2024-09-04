@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.api.grid.view;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import org.apiguardian.api.API;
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.2.4")
 public class GridViewBuilderImpl implements GridViewBuilder {
     private final GridResourceFactory resourceFactory;
-    private final ResourceList backingList = ResourceListImpl.create();
+    private final MutableResourceList backingList = MutableResourceListImpl.create();
     private final Set<ResourceKey> craftableResources = new HashSet<>();
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
     private final GridSortingType identitySortingType;

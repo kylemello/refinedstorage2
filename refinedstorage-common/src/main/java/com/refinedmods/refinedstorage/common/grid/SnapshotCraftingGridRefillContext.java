@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.common.grid;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
@@ -15,8 +15,8 @@ import net.minecraft.world.item.ItemStack;
 class SnapshotCraftingGridRefillContext implements CraftingGridRefillContext {
     private final PlayerActor playerActor;
     private final CraftingGridBlockEntity blockEntity;
-    private final ResourceList available = ResourceListImpl.create();
-    private final ResourceList used = ResourceListImpl.create();
+    private final MutableResourceList available = MutableResourceListImpl.create();
+    private final MutableResourceList used = MutableResourceListImpl.create();
 
     SnapshotCraftingGridRefillContext(
         final Player player,

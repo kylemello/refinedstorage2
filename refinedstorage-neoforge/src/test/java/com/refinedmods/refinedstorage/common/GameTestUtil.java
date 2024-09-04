@@ -6,8 +6,9 @@ import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
@@ -238,7 +239,7 @@ public final class GameTestUtil {
                                                              final ResourceAmount... expected) {
         final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            final ResourceList given = ResourceListImpl.create();
+            final MutableResourceList given = MutableResourceListImpl.create();
             for (int i = 0; i < container.size(); i++) {
                 final ResourceAmount item = container.get(i);
                 if (item != null) {
@@ -255,7 +256,7 @@ public final class GameTestUtil {
         final var containerBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
         final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            final ResourceList given = ResourceListImpl.create();
+            final MutableResourceList given = MutableResourceListImpl.create();
             for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
                 final ItemStack itemStack = containerBlockEntity.getItem(i);
                 if (!itemStack.isEmpty()) {
@@ -281,7 +282,7 @@ public final class GameTestUtil {
     }
 
     private static ResourceList toResourceList(final Collection<ResourceAmount> resources) {
-        final ResourceList list = ResourceListImpl.create();
+        final MutableResourceList list = MutableResourceListImpl.create();
         for (final ResourceAmount resource : resources) {
             list.add(resource);
         }

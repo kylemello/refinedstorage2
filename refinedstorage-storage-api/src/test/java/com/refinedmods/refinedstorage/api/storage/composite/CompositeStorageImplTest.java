@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.api.storage.composite;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.FakeActors;
 import com.refinedmods.refinedstorage.api.storage.Storage;
@@ -27,7 +27,7 @@ class CompositeStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CompositeStorageImpl(ResourceListImpl.create());
+        sut = new CompositeStorageImpl(MutableResourceListImpl.create());
     }
 
     @Test

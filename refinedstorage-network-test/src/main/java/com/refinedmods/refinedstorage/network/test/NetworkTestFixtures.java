@@ -15,7 +15,7 @@ import com.refinedmods.refinedstorage.api.network.node.GraphNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.network.test.fake.FakePermissions;
 
 public final class NetworkTestFixtures {
@@ -33,7 +33,7 @@ public final class NetworkTestFixtures {
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             StorageNetworkComponent.class,
-            network -> new StorageNetworkComponentImpl(ResourceListImpl.orderPreserving())
+            network -> new StorageNetworkComponentImpl(MutableResourceListImpl.orderPreserving())
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             SecurityNetworkComponent.class,
