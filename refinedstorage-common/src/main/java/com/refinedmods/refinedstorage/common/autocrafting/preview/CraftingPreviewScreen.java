@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
@@ -9,12 +8,14 @@ import com.refinedmods.refinedstorage.common.support.amount.DoubleAmountOperatio
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -25,12 +26,16 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createId
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewContainerMenu, Double> {
+    static final int REQUEST_BUTTON_HEIGHT = 96 / 4;
+    static final int REQUEST_BUTTON_WIDTH = 64;
+
     private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/crafting_preview.png");
     private static final MutableComponent TITLE = Component.translatable("container.crafting");
     private static final MutableComponent START = createTranslation("gui", "crafting_preview.start");
     private static final MutableComponent MISSING_RESOURCES
         = createTranslation("gui", "crafting_preview.start.missing_resources");
     private static final ResourceLocation ROW = createIdentifier("crafting_preview/row");
+    private static final ResourceLocation CRAFTING_REQUESTS = createIdentifier("crafting_preview/crafting_requests");
 
     private static final int ROWS_VISIBLE = 4;
     private static final int COLUMNS = 3;
@@ -39,12 +44,25 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
     private static final int ROW_HEIGHT = 30;
     private static final int ROW_WIDTH = 221;
 
-    @Nullable
-    private ScrollbarWidget scrollbar;
+    private static final int REQUESTS_WIDTH = 91;
+    private static final int REQUESTS_HEIGHT = 111;
+    private static final int REQUESTS_INNER_WIDTH = 64;
+    private static final int REQUESTS_INNER_HEIGHT = 96;
+    private static final int REQUESTS_VISIBLE = 4;
 
-    public CraftingPreviewScreen(final Screen parent, final Inventory playerInventory, final ResourceKey resource) {
+    @Nullable
+    private ScrollbarWidget previewItemsScrollbar;
+    @Nullable
+    private ScrollbarWidget requestButtonsScrollbar;
+
+    private final List<CraftingRequestButton> requestButtons = new ArrayList<>();
+    private final boolean requestsButtonsVisible;
+
+    public CraftingPreviewScreen(final Screen parent,
+                                 final Inventory playerInventory,
+                                 final List<CraftingRequest> requests) {
         super(
-            new CraftingPreviewContainerMenu(resource),
+            new CraftingPreviewContainerMenu(requests),
             parent,
             playerInventory,
             TITLE,
@@ -65,39 +83,107 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
         );
         this.imageWidth = 254;
         this.imageHeight = 249;
+        this.requestsButtonsVisible = getMenu().getRequests().size() > 1;
     }
 
     @Override
     protected void init() {
         super.init();
-        scrollbar = new ScrollbarWidget(
+        previewItemsScrollbar = new ScrollbarWidget(
             leftPos + 235,
             topPos + 98,
             ScrollbarWidget.Type.NORMAL,
             PREVIEW_AREA_HEIGHT
         );
-        scrollbar.setEnabled(false);
+        previewItemsScrollbar.setEnabled(false);
+        if (requestsButtonsVisible) {
+            initRequestButtons();
+        }
         if (confirmButton != null) {
             confirmButton.active = false;
         }
-        updatePreview();
+        updateCurrentRequest();
+        getExclusionZones().add(new Rect2i(
+            leftPos - REQUESTS_WIDTH + 4,
+            topPos,
+            REQUESTS_WIDTH,
+            REQUESTS_HEIGHT
+        ));
     }
 
-    private void updatePreview() {
-        if (scrollbar == null || confirmButton == null) {
+    private void initRequestButtons() {
+        requestButtons.clear();
+        requestButtonsScrollbar = new ScrollbarWidget(
+            leftPos - 17 + 4,
+            getRequestButtonsInnerY(),
+            ScrollbarWidget.Type.NORMAL,
+            96
+        );
+        requestButtonsScrollbar.setListener(value -> {
+            final int scrollOffset = requestButtonsScrollbar.isSmoothScrolling()
+                ? (int) requestButtonsScrollbar.getOffset()
+                : (int) requestButtonsScrollbar.getOffset() * REQUEST_BUTTON_HEIGHT;
+            for (int i = 0; i < requestButtons.size(); i++) {
+                final CraftingRequestButton requestButton = requestButtons.get(i);
+                final int y = getCraftingRequestButtonY(i) - scrollOffset;
+                requestButton.setY(y);
+                requestButton.visible = isCraftingRequestButtonVisible(y);
+            }
+        });
+        final int totalRequestButtons = getMenu().getRequests().size() - REQUESTS_VISIBLE;
+        final int maxOffset = requestButtonsScrollbar.isSmoothScrolling()
+            ? totalRequestButtons * REQUEST_BUTTON_HEIGHT
+            : totalRequestButtons;
+        requestButtonsScrollbar.setEnabled(maxOffset > 0);
+        requestButtonsScrollbar.setMaxOffset(maxOffset);
+        for (int i = 0; i < getMenu().getRequests().size(); ++i) {
+            final CraftingRequest request = getMenu().getRequests().get(i);
+            final int buttonY = getCraftingRequestButtonY(i);
+            final CraftingRequestButton button = new CraftingRequestButton(
+                getRequestButtonsInnerX(),
+                buttonY,
+                request,
+                this::changeCurrentRequest
+            );
+            button.visible = isCraftingRequestButtonVisible(buttonY);
+            requestButtons.add(addWidget(button));
+        }
+    }
+
+    private boolean isCraftingRequestButtonVisible(final int y) {
+        final int innerY = getRequestButtonsInnerY();
+        return y >= innerY - REQUEST_BUTTON_HEIGHT && y <= innerY + REQUESTS_INNER_HEIGHT;
+    }
+
+    private int getCraftingRequestButtonY(final int i) {
+        return getRequestButtonsInnerY() + (i * REQUEST_BUTTON_HEIGHT);
+    }
+
+    private void changeCurrentRequest(final CraftingRequest request) {
+        getMenu().setCurrentRequest(request);
+        updateCurrentRequest();
+    }
+
+    private void updateCurrentRequest() {
+        if (previewItemsScrollbar == null || confirmButton == null) {
             return;
         }
-        final CraftingPreview preview = getMenu().getPreview();
+        final CraftingRequest currentRequest = getMenu().getCurrentRequest();
+        for (final CraftingRequestButton requestButton : requestButtons) {
+            requestButton.active = requestButton.getRequest() != currentRequest;
+        }
+        updateAmount(currentRequest.getAmount());
+        final CraftingPreview preview = currentRequest.getPreview();
         if (preview == null) {
-            scrollbar.setEnabled(false);
-            scrollbar.setMaxOffset(0);
+            previewItemsScrollbar.setEnabled(false);
+            previewItemsScrollbar.setMaxOffset(0);
             confirmButton.active = false;
             return;
         }
-        final int items = getMenu().getPreview().items().size();
+        final int items = preview.items().size();
         final int rows = Math.ceilDiv(items, COLUMNS) - ROWS_VISIBLE;
-        scrollbar.setMaxOffset(scrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
-        scrollbar.setEnabled(rows > 0);
+        previewItemsScrollbar.setMaxOffset(previewItemsScrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
+        previewItemsScrollbar.setEnabled(rows > 0);
         confirmButton.active = !preview.missing();
         confirmButton.setTooltip(preview.missing() ? Tooltip.create(MISSING_RESOURCES) : null);
     }
@@ -105,27 +191,49 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
     @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
-        if (scrollbar != null) {
-            scrollbar.render(graphics, mouseX, mouseY, partialTicks);
+        if (previewItemsScrollbar != null) {
+            previewItemsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
+        }
+        if (requestButtonsScrollbar != null) {
+            requestButtonsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
+        }
+        if (requestsButtonsVisible) {
+            final int requestsInnerX = getRequestButtonsInnerX();
+            final int requestsInnerY = getRequestButtonsInnerY();
+            graphics.enableScissor(
+                requestsInnerX,
+                requestsInnerY,
+                requestsInnerX + REQUESTS_INNER_WIDTH,
+                requestsInnerY + REQUESTS_INNER_HEIGHT
+            );
+            for (final CraftingRequestButton requestButton : requestButtons) {
+                requestButton.render(graphics, mouseX, mouseY, partialTicks);
+            }
+            graphics.disableScissor();
         }
     }
 
     @Override
     protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
         super.renderBg(graphics, delta, mouseX, mouseY);
-        final CraftingPreview preview = getMenu().getPreview();
-        if (preview == null || scrollbar == null) {
+        if (requestsButtonsVisible) {
+            graphics.blitSprite(CRAFTING_REQUESTS, leftPos - REQUESTS_WIDTH + 4, topPos, REQUESTS_WIDTH,
+                REQUESTS_HEIGHT);
+        }
+        final CraftingRequest request = getMenu().getCurrentRequest();
+        final CraftingPreview preview = request.getPreview();
+        if (preview == null || previewItemsScrollbar == null) {
             return;
         }
         final int x = leftPos + 8;
         final int y = topPos + 98;
         graphics.enableScissor(x, y, x + 221, y + PREVIEW_AREA_HEIGHT);
-        final List<CraftingPreviewItem> items = getMenu().getPreview().items();
+        final List<CraftingPreviewItem> items = preview.items();
         final int rows = Math.ceilDiv(items.size(), COLUMNS);
         for (int i = 0; i < rows; ++i) {
-            final int scrollOffset = scrollbar.isSmoothScrolling()
-                ? (int) scrollbar.getOffset()
-                : (int) scrollbar.getOffset() * ROW_HEIGHT;
+            final int scrollOffset = previewItemsScrollbar.isSmoothScrolling()
+                ? (int) previewItemsScrollbar.getOffset()
+                : (int) previewItemsScrollbar.getOffset() * ROW_HEIGHT;
             final int yy = y + (i * ROW_HEIGHT) - scrollOffset;
             renderRow(graphics, x, yy, i, items, mouseX, mouseY);
         }
@@ -206,7 +314,10 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
 
     @Override
     public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
-        if (scrollbar != null && scrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
+        if (previewItemsScrollbar != null && previewItemsScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
+            return true;
+        }
+        if (requestButtonsScrollbar != null && requestButtonsScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, clickedButton);
@@ -214,28 +325,54 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
 
     @Override
     public void mouseMoved(final double mx, final double my) {
-        if (scrollbar != null) {
-            scrollbar.mouseMoved(mx, my);
+        if (previewItemsScrollbar != null) {
+            previewItemsScrollbar.mouseMoved(mx, my);
+        }
+        if (requestButtonsScrollbar != null) {
+            requestButtonsScrollbar.mouseMoved(mx, my);
         }
         super.mouseMoved(mx, my);
     }
 
     @Override
     public boolean mouseReleased(final double mx, final double my, final int button) {
-        return (scrollbar != null && scrollbar.mouseReleased(mx, my, button))
-            || super.mouseReleased(mx, my, button);
+        if (previewItemsScrollbar != null && previewItemsScrollbar.mouseReleased(mx, my, button)) {
+            return true;
+        }
+        if (requestButtonsScrollbar != null && requestButtonsScrollbar.mouseReleased(mx, my, button)) {
+            return true;
+        }
+        return super.mouseReleased(mx, my, button);
     }
 
     @Override
     public boolean mouseScrolled(final double x, final double y, final double z, final double delta) {
-        final boolean didScrollbar = scrollbar != null
+        final boolean didPreviewItemsScrollbar = previewItemsScrollbar != null
             && isHoveringOverPreviewArea(x, y)
-            && scrollbar.mouseScrolled(x, y, z, delta);
-        return didScrollbar || super.mouseScrolled(x, y, z, delta);
+            && previewItemsScrollbar.mouseScrolled(x, y, z, delta);
+        final boolean didRequestButtonsScrollbar = !didPreviewItemsScrollbar
+            && requestButtonsScrollbar != null
+            && isHoveringOverRequestButtons(x, y)
+            && requestButtonsScrollbar.mouseScrolled(x, y, z, delta);
+        return didPreviewItemsScrollbar || didRequestButtonsScrollbar || super.mouseScrolled(x, y, z, delta);
     }
 
     private boolean isHoveringOverPreviewArea(final double x, final double y) {
         return isHovering(7, 97, 241, 121, x, y);
+    }
+
+    private boolean isHoveringOverRequestButtons(final double x, final double y) {
+        final int requestsInnerX = getRequestButtonsInnerX() - 1;
+        final int requestsInnerY = getRequestButtonsInnerY() - 1;
+        return isHovering(requestsInnerX - leftPos, requestsInnerY - topPos, 80, 98, x, y);
+    }
+
+    private int getRequestButtonsInnerY() {
+        return topPos + 8;
+    }
+
+    private int getRequestButtonsInnerX() {
+        return leftPos - 83 + 4;
     }
 
     @Override
@@ -251,6 +388,11 @@ public class CraftingPreviewScreen extends AbstractAmountScreen<CraftingPreviewC
         confirmButton.active = false;
         final boolean valid = getAndValidateAmount().isPresent();
         amountField.setTextColor(valid ? 0xFFFFFF : 0xFF5555);
+    }
+
+    @Override
+    protected void reset() {
+        updateAmount(getMenu().getCurrentRequest().getAmount());
     }
 
     @Override

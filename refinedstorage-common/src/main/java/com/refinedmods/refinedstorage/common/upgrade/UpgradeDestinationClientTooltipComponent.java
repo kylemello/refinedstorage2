@@ -2,7 +2,6 @@ package com.refinedmods.refinedstorage.common.upgrade;
 
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 
-import java.util.Objects;
 import java.util.Set;
 
 import net.minecraft.ChatFormatting;

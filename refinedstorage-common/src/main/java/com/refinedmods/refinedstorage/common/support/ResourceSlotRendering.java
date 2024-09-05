@@ -6,12 +6,9 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRender
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-
-import static java.util.Objects.requireNonNullElse;
 
 public final class ResourceSlotRendering {
     private ResourceSlotRendering() {

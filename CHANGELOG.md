@@ -28,6 +28,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Resources in the Grid that are autocraftable now display an orange backdrop and tooltip to indicate whether the resource is autocraftable at a glance.
 -   Slots used in the Pattern Grid for pattern encoding and Crafting Grid crafting matrix slots now display an orange backdrop and tooltip to indicate whether the item is autocraftable at a glance. This checks patterns from your network and from your inventory.
 -   Added help tooltip for filtering based on recipe items in the Crafting Grid.
+-   The crafting amount and crafting preview screens have been merged. Changing the amount will update the live preview.
+-   The numbers on the crafting preview screen are now compacted with units.
+-   When requesting autocrafting multiple resources at once, which can happen via a recipe mod, all the crafting requests are now listed on the side of the GUI.
 
 ### Fixed
 

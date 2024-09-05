@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
-import static java.util.Objects.requireNonNullElse;
 
 class SmithingTablePatternClientTooltipComponent implements ClientTooltipComponent {
     private static final int ARROW_SPACING = 8;

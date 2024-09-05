@@ -51,6 +51,7 @@ import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotRefer
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingPreviewScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingRequest;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.ItemGridInsertionHint;
@@ -601,8 +602,8 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public void openCraftingPreview(final List<ResourceAmount> resources) {
-        if (resources.isEmpty()) {
+    public void openCraftingPreview(final List<ResourceAmount> requests) {
+        if (requests.isEmpty()) {
             return;
         }
         final Minecraft minecraft = Minecraft.getInstance();
@@ -610,6 +611,10 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
             return;
         }
         final Inventory inventory = minecraft.player.getInventory();
-        minecraft.setScreen(new CraftingPreviewScreen(minecraft.screen, inventory, resources.getFirst().resource()));
+        minecraft.setScreen(new CraftingPreviewScreen(
+            minecraft.screen,
+            inventory,
+            requests.stream().map(CraftingRequest::of).toList()
+        ));
     }
 }

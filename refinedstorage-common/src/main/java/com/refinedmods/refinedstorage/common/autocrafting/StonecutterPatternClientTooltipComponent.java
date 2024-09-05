@@ -15,7 +15,6 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
-import static java.util.Objects.requireNonNullElse;
 
 class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final int ARROW_SPACING = 8;

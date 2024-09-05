@@ -112,7 +112,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         );
         amountField.setBordered(false);
         if (configuration.getInitialAmount() != null) {
-            amountField.setValue(amountOperations.format(configuration.getInitialAmount()));
+            updateAmount(configuration.getInitialAmount());
         }
         amountField.setVisible(true);
         amountField.setCanLoseFocus(this instanceof AlternativesScreen);
@@ -122,6 +122,13 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         setFocused(amountField);
 
         addRenderableWidget(amountField);
+    }
+
+    protected final void updateAmount(final N amount) {
+        if (amountField == null) {
+            return;
+        }
+        amountField.setValue(amountOperations.format(amount));
     }
 
     protected void onAmountFieldChanged() {
@@ -182,7 +189,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
                 configuration.getMinAmount(),
                 configuration.getMaxAmount()
             );
-            amountField.setValue(amountOperations.format(newAmount));
+            updateAmount(newAmount);
         });
     }
 
@@ -248,7 +255,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         if (amountField == null || configuration.getResetAmount() == null) {
             return;
         }
-        amountField.setValue(amountOperations.format(configuration.getResetAmount()));
+        updateAmount(configuration.getResetAmount());
     }
 
     private void tryConfirm() {

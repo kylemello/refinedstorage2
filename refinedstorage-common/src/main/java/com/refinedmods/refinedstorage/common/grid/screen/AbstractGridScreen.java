@@ -498,11 +498,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             if (resource.canExtract(carriedStack, getMenu().getView()) && !hasControlDown()) {
                 mouseClickedInGrid(clickedButton, resource);
                 return true;
-            } else if (resource.isCraftable()) {
-                RefinedStorageApi.INSTANCE.openCraftingPreview(List.of(new ResourceAmount(
-                    resource.getResourceForRecipeMods(),
-                    1
-                )));
+            } else if (resource.isCraftable() && tryStartAutocrafting(resource)) {
                 return true;
             }
         }
@@ -514,6 +510,24 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
 
         return super.mouseClicked(mouseX, mouseY, clickedButton);
+    }
+
+    private static boolean tryStartAutocrafting(final PlatformGridResource resource) {
+        final ResourceAmount request = resource.getAutocraftingRequest();
+        if (request == null) {
+            return false;
+        }
+        final List<ResourceAmount> requests = new ArrayList<>();
+        requests.add(request);
+        // TODO: Remove - temporary code
+        if (hasShiftDown()) {
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 2));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 3));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 5));
+        }
+        RefinedStorageApi.INSTANCE.openCraftingPreview(requests);
+        return true;
     }
 
     private void mouseClickedInGrid(final int clickedButton) {
