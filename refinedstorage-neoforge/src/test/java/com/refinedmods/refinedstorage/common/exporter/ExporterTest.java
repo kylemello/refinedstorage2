@@ -186,8 +186,8 @@ public final class ExporterTest {
             }));
 
             // Act
-            exporter.addUpgradeItem(RSITEMS.getStackUpgrade());
             exporter.setFilters(List.of(asResource(WATER)));
+            exporter.addUpgradeItem(RSITEMS.getStackUpgrade());
 
             // Assert
             sequence

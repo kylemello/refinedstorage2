@@ -19,7 +19,7 @@ import static com.refinedmods.refinedstorage.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.interfaceContainsExactly;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.networkIsAvailable;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.prepareInterface;
-import static com.refinedmods.refinedstorage.common.GameTestUtil.removeFluidToInterface;
+import static com.refinedmods.refinedstorage.common.GameTestUtil.removeFluidFromInterface;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.storageContainsExactly;
 import static com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageTestPlots.preparePlot;
 import static net.minecraft.world.item.Items.STONE;
@@ -223,7 +223,7 @@ public final class ExternalStorageFluidTest {
                     new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount()),
                     new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount() * 2)
                 ))
-                .thenExecute(() -> removeFluidToInterface(
+                .thenExecute(() -> removeFluidFromInterface(
                     helper,
                     pos.east(),
                     new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount() * 2)
@@ -272,7 +272,7 @@ public final class ExternalStorageFluidTest {
                     new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount()),
                     new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount() * 2)
                 ))
-                .thenExecute(() -> removeFluidToInterface(
+                .thenExecute(() -> removeFluidFromInterface(
                     helper,
                     pos.east(),
                     new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount())

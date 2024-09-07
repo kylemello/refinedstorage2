@@ -19,6 +19,7 @@ val commonResources by configurations.existing
 
 dependencies {
     testCompileOnly(libs.apiguardian)
+    testCompileOnly(project(":refinedstorage-common"))
 
     compileOnly(project(":refinedstorage-common"))
     compileOnly(project(":refinedstorage-common-api"))
