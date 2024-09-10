@@ -277,6 +277,14 @@ public final class GameTestUtil {
         });
     }
 
+    public static Runnable storageIsEmpty(final GameTestHelper helper,
+                                          final BlockPos networkPos) {
+        return networkIsAvailable(helper, networkPos, network -> {
+            final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
+            helper.assertTrue(storage.getStored() == 0, "Storage is not empty");
+        });
+    }
+
     private static ResourceList toResourceList(final ResourceAmount... resources) {
         return toResourceList(Arrays.asList(resources));
     }
@@ -343,13 +351,13 @@ public final class GameTestUtil {
 
     public static void prepareInterface(final GameTestHelper helper,
                                         final BlockPos pos,
-                                        final ResourceAmount... resource) {
+                                        final ResourceAmount... resources) {
         helper.setBlock(pos, RSBLOCKS.getInterface());
         final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
         final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
 
-        for (int i = 0; i < resource.length; i++) {
-            exportedResources.set(i, resource[i]);
+        for (int i = 0; i < resources.length; i++) {
+            exportedResources.set(i, resources[i]);
         }
     }
 
@@ -362,9 +370,9 @@ public final class GameTestUtil {
         exportedResources.insert(resource.resource(), resource.amount(), Action.EXECUTE);
     }
 
-    public static void removeFluidToInterface(final GameTestHelper helper,
-                                              final BlockPos pos,
-                                              final ResourceAmount resource) {
+    public static void removeFluidFromInterface(final GameTestHelper helper,
+                                                final BlockPos pos,
+                                                final ResourceAmount resource) {
         final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
         final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
 
