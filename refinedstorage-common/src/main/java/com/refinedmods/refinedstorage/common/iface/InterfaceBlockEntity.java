@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.iface;
 import com.refinedmods.refinedstorage.api.network.impl.node.iface.InterfaceNetworkNode;
 import com.refinedmods.refinedstorage.api.network.impl.node.iface.externalstorage.InterfaceExternalStorageProvider;
 import com.refinedmods.refinedstorage.api.network.impl.node.iface.externalstorage.InterfaceExternalStorageProviderImpl;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
@@ -17,6 +18,7 @@ import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetwork
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -135,6 +137,16 @@ public class InterfaceBlockEntity
 
     void setFuzzyMode(final boolean fuzzyMode) {
         filter.setFuzzyMode(fuzzyMode);
+    }
+
+    void clearFilters() {
+        filter.getFilterContainer().clear();
+    }
+
+    void setFilters(final List<ResourceAmount> filters) {
+        for (int i = 0; i < filters.size(); i++) {
+            filter.getFilterContainer().set(i, filters.get(i));
+        }
     }
 
     public ExportedResourcesContainer getExportedResources() {
