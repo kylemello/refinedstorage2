@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.exporter;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public final class ExporterTest {
 
             // Act
             exporter.setFilters(List.of(asResource(DIRT)));
-            exporter.addUpgradeItem(RSITEMS.getStackUpgrade());
+            exporter.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
@@ -107,6 +108,42 @@ public final class ExporterTest {
                     helper,
                     pos,
                     new ResourceAmount(asResource(DIRT), 1)
+                ))
+                .thenSucceed();
+        });
+    }
+
+    @GameTest(template = "empty_15x15")
+    public static void shouldExportItemWithRegulatorUpgrade(final GameTestHelper helper) {
+        ExporterTestPlots.preparePlot(helper, Blocks.CHEST, Direction.EAST, (exporter, pos, sequence) -> {
+            // Arrange
+            sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
+                insert(helper, network, DIRT, 15);
+                insert(helper, network, STONE, 15);
+            }));
+
+            // Act
+            exporter.setFilters(List.of(asResource(DIRT.getDefaultInstance())));
+
+            final ItemStack upgrade = RSITEMS.getRegulatorUpgrade().getDefaultInstance();
+            if (upgrade.getItem() instanceof RegulatorUpgradeItem upgradeItem) {
+                upgradeItem.setAmount(upgrade, asResource(DIRT.getDefaultInstance()), 10);
+            }
+            exporter.addUpgradeItem(upgrade);
+
+            // Assert
+            sequence
+                .thenIdle(95)
+                .thenExecute(containerContainsExactly(
+                    helper,
+                    pos.east(),
+                    new ResourceAmount(asResource(DIRT), 10)
+                ))
+                .thenExecute(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 5),
+                    new ResourceAmount(asResource(STONE), 15)
                 ))
                 .thenSucceed();
         });
@@ -187,7 +224,7 @@ public final class ExporterTest {
 
             // Act
             exporter.setFilters(List.of(asResource(WATER)));
-            exporter.addUpgradeItem(RSITEMS.getStackUpgrade());
+            exporter.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence

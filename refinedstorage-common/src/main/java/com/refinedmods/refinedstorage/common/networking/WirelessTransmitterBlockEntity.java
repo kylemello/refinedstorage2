@@ -79,8 +79,8 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addUpgradeItem(upgradeItem);
+    public boolean addUpgradeItem(final ItemStack upgradeStack) {
+        return upgradeContainer.addUpgradeItem(upgradeStack);
     }
 
     @Override

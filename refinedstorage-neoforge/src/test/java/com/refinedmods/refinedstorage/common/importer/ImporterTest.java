@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.importer;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.filter.FilterMode;
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
 import java.util.Set;
@@ -89,11 +90,11 @@ public final class ImporterTest {
                 DIRT.getDefaultInstance()
             );
 
-            importer.addUpgradeItem(RSITEMS.getStackUpgrade());
+            importer.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
-                .thenExecute(() -> containerContainsExactly(
+                .thenExecute(containerContainsExactly(
                     helper,
                     pos.east(),
                     new ResourceAmount(asResource(DIRT), 1)
@@ -113,6 +114,48 @@ public final class ImporterTest {
                     new ResourceAmount(asResource(DIRT), 11),
                     new ResourceAmount(asResource(STONE), 15),
                     new ResourceAmount(asResource(COBBLESTONE), 64)
+                ))
+                .thenSucceed();
+        });
+    }
+
+    @GameTest(template = "empty_15x15")
+    public static void shouldImportItemWithRegulatorUpgrade(final GameTestHelper helper) {
+        preparePlot(helper, Direction.EAST, (importer, pos, sequence) -> {
+            // Arrange
+            sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
+                insert(helper, network, DIRT, 10);
+                insert(helper, network, STONE, 15);
+            }));
+
+            // Act
+            prepareChest(
+                helper,
+                pos.east(),
+                COBBLESTONE.getDefaultInstance(),
+                DIRT.getDefaultInstance().copyWithCount(15)
+            );
+
+            final ItemStack upgrade = RSITEMS.getRegulatorUpgrade().getDefaultInstance();
+            if (upgrade.getItem() instanceof RegulatorUpgradeItem upgradeItem) {
+                upgradeItem.setAmount(upgrade, asResource(DIRT.getDefaultInstance()), 10);
+            }
+            importer.addUpgradeItem(upgrade);
+
+            // Assert
+            sequence
+                .thenIdle(95)
+                .thenExecute(containerContainsExactly(
+                    helper,
+                    pos.east(),
+                    new ResourceAmount(asResource(DIRT), 10)
+                ))
+                .thenExecute(storageContainsExactly(
+                    helper,
+                    pos,
+                    new ResourceAmount(asResource(DIRT), 15),
+                    new ResourceAmount(asResource(STONE), 15),
+                    new ResourceAmount(asResource(COBBLESTONE), 1)
                 ))
                 .thenSucceed();
         });
@@ -328,7 +371,7 @@ public final class ImporterTest {
                 new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 15),
                 new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount())
             );
-            importer.addUpgradeItem(RSITEMS.getStackUpgrade());
+            importer.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
