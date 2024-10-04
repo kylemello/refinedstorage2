@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import static com.refinedmods.refinedstorage.common.support.amount.ConfirmButton.ERROR_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N extends Number>
@@ -28,11 +29,12 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     private static final MutableComponent CANCEL_TEXT = Component.translatable("gui.cancel");
 
     private static final int INCREMENT_BUTTON_WIDTH = 30;
-    private static final int ACTION_BUTTON_WIDTH = 50;
     private static final int ACTION_BUTTON_HEIGHT = 20;
+    private static final int ACTION_BUTTON_WIDTH = 50;
+    private static final int ACTION_BUTTON_SPACING = 20;
 
     @Nullable
-    protected Button confirmButton;
+    protected ConfirmButton confirmButton;
     @Nullable
     protected EditBox amountField;
 
@@ -66,37 +68,50 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
     private void addActionButtons() {
         final Vector3f pos = configuration.getActionButtonsStartPosition();
         if (configuration.isHorizontalActionButtons()) {
-            final int xIncrement = ACTION_BUTTON_WIDTH + 3;
-            addCancelButton((int) pos.x, (int) pos.y);
-            addResetButton((int) pos.x + xIncrement, (int) pos.y);
-            addConfirmButton((int) pos.x + xIncrement * 2, (int) pos.y);
+            final int spacing = 3;
+            final Button cancelButton = addCancelButton((int) pos.x, (int) pos.y);
+            final Button resetButton = addResetButton((int) pos.x + cancelButton.getWidth() + spacing, (int) pos.y);
+            addConfirmButton((int) pos.x + cancelButton.getWidth() + spacing + resetButton.getWidth() + spacing,
+                (int) pos.y);
         } else {
-            final int yIncrement = 24;
+            final int spacing = 24;
             addResetButton((int) pos.x, (int) pos.y);
-            addConfirmButton((int) pos.x, (int) pos.y + yIncrement);
-            addCancelButton((int) pos.x, (int) pos.y + yIncrement * 2);
+            addConfirmButton((int) pos.x, (int) pos.y + spacing);
+            addCancelButton((int) pos.x, (int) pos.y + spacing * 2);
         }
     }
 
-    private void addResetButton(final int x, final int y) {
-        addRenderableWidget(Button.builder(RESET_TEXT, btn -> reset())
+    private Button addResetButton(final int x, final int y) {
+        final int width = configuration.isHorizontalActionButtons()
+            ? font.width(RESET_TEXT) + ACTION_BUTTON_SPACING
+            : ACTION_BUTTON_WIDTH;
+        return addRenderableWidget(Button.builder(RESET_TEXT, btn -> reset())
             .pos(leftPos + x, topPos + y)
-            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
+            .size(width, ACTION_BUTTON_HEIGHT)
             .build());
     }
 
     private void addConfirmButton(final int x, final int y) {
-        confirmButton = addRenderableWidget(
-            Button.builder(configuration.getConfirmButtonText(), btn -> tryConfirmAndCloseToParent())
-                .pos(leftPos + x, topPos + y)
-                .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
-                .build());
+        final int width = configuration.isHorizontalActionButtons()
+            ? font.width(configuration.getConfirmButtonText()) + ACTION_BUTTON_SPACING + ERROR_SIZE
+            : ACTION_BUTTON_WIDTH;
+        confirmButton = addRenderableWidget(new ConfirmButton(
+            leftPos + x,
+            topPos + y,
+            width,
+            ACTION_BUTTON_HEIGHT,
+            configuration.getConfirmButtonText(),
+            btn -> tryConfirmAndCloseToParent()
+        ));
     }
 
-    private void addCancelButton(final int x, final int y) {
-        addRenderableWidget(Button.builder(CANCEL_TEXT, btn -> tryCloseToParent())
+    private Button addCancelButton(final int x, final int y) {
+        final int width = configuration.isHorizontalActionButtons()
+            ? font.width(CANCEL_TEXT) + ACTION_BUTTON_SPACING
+            : ACTION_BUTTON_WIDTH;
+        return addRenderableWidget(Button.builder(CANCEL_TEXT, btn -> tryCloseToParent())
             .pos(leftPos + x, topPos + y)
-            .size(ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT)
+            .size(width, ACTION_BUTTON_HEIGHT)
             .build());
     }
 
@@ -138,6 +153,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         final boolean valid = getAndValidateAmount().isPresent();
         if (confirmButton != null) {
             confirmButton.active = valid;
+            confirmButton.setError(!valid);
         } else {
             tryConfirm();
         }

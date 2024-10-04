@@ -50,8 +50,8 @@ import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotRefer
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingPreviewScreen;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingRequest;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingRequest;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.ItemGridInsertionHint;
@@ -611,10 +611,10 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
             return;
         }
         final Inventory inventory = minecraft.player.getInventory();
-        minecraft.setScreen(new CraftingPreviewScreen(
+        minecraft.setScreen(new AutocraftingPreviewScreen(
             minecraft.screen,
             inventory,
-            requests.stream().map(CraftingRequest::of).toList()
+            requests.stream().map(AutocraftingRequest::of).toList()
         ));
     }
 }

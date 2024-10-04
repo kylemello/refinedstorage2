@@ -30,6 +30,10 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewItem;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridScrollingStrategy;
@@ -41,6 +45,8 @@ import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListen
 import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -58,7 +64,8 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
-    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
+    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener,
+    AutocraftingPreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -481,6 +488,23 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     @Nullable
     protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
         return null;
+    }
+
+    @Override
+    public AutocraftingPreview getPreview(final PlatformResourceKey resource, final long amount) {
+        final List<AutocraftingPreviewItem> items = new ArrayList<>();
+        final boolean missing = amount == 404;
+        for (int i = 0; i < 31; ++i) {
+            items.add(new AutocraftingPreviewItem(
+                resource,
+                (i + 1),
+                (i % 2 == 0 && missing) ? amount : 0,
+                i % 2 == 0 ? 0 : amount
+            ));
+        }
+        return new AutocraftingPreview(missing
+            ? AutocraftingPreviewType.MISSING_RESOURCES
+            : AutocraftingPreviewType.SUCCESS, items);
     }
 
     public boolean isLargeSlot(final Slot slot) {

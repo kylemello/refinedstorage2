@@ -15,18 +15,18 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingPreviewScreen.REQUEST_BUTTON_HEIGHT;
-import static com.refinedmods.refinedstorage.common.autocrafting.preview.CraftingPreviewScreen.REQUEST_BUTTON_WIDTH;
+import static com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen.REQUEST_BUTTON_HEIGHT;
+import static com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen.REQUEST_BUTTON_WIDTH;
 
-class CraftingRequestButton extends AbstractButton {
-    private final CraftingRequest request;
+class AutocraftingRequestButton extends AbstractButton {
+    private final AutocraftingRequest request;
     private final TextMarquee text;
-    private final Consumer<CraftingRequest> onPress;
+    private final Consumer<AutocraftingRequest> onPress;
 
-    CraftingRequestButton(final int x,
-                          final int y,
-                          final CraftingRequest request,
-                          final Consumer<CraftingRequest> onPress) {
+    AutocraftingRequestButton(final int x,
+                              final int y,
+                              final AutocraftingRequest request,
+                              final Consumer<AutocraftingRequest> onPress) {
         super(x, y, REQUEST_BUTTON_WIDTH, REQUEST_BUTTON_HEIGHT, Component.empty());
         this.request = request;
         final ResourceKey resource = request.getResource();
@@ -44,7 +44,7 @@ class CraftingRequestButton extends AbstractButton {
         this.onPress = onPress;
     }
 
-    CraftingRequest getRequest() {
+    AutocraftingRequest getRequest() {
         return request;
     }
 

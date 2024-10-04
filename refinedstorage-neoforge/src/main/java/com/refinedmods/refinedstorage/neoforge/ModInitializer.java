@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
@@ -53,6 +54,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
@@ -631,6 +633,11 @@ public class ModInitializer extends AbstractModInitializer {
             CrafterNameUpdatePacket.STREAM_CODEC,
             wrapHandler(CrafterNameUpdatePacket::handle)
         );
+        registrar.playToClient(
+            AutocraftingPreviewResponsePacket.PACKET_TYPE,
+            AutocraftingPreviewResponsePacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> AutocraftingPreviewResponsePacket.handle(packet))
+        );
     }
 
     private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
@@ -753,6 +760,11 @@ public class ModInitializer extends AbstractModInitializer {
             CrafterNameChangePacket.PACKET_TYPE,
             CrafterNameChangePacket.STREAM_CODEC,
             wrapHandler(CrafterNameChangePacket::handle)
+        );
+        registrar.playToServer(
+            AutocraftingPreviewRequestPacket.PACKET_TYPE,
+            AutocraftingPreviewRequestPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingPreviewRequestPacket::handle)
         );
     }
 
