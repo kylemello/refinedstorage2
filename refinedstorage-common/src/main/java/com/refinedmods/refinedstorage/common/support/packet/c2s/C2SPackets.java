@@ -137,4 +137,10 @@ public final class C2SPackets {
                                                       final long amount) {
         Platform.INSTANCE.sendPacketToServer(new AutocraftingPreviewRequestPacket(id, resource, amount));
     }
+
+    public static void sendAutocraftingRequest(final UUID id,
+                                               final PlatformResourceKey resource,
+                                               final long amount) {
+        Platform.INSTANCE.sendPacketToServer(new AutocraftingRequestPacket(id, resource, amount));
+    }
 }

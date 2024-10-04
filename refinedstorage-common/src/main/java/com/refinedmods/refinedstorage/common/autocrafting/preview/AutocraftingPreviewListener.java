@@ -6,4 +6,6 @@ interface AutocraftingPreviewListener {
     void requestChanged(AutocraftingRequest request);
 
     void previewChanged(@Nullable AutocraftingPreview preview);
+
+    void requestRemoved(AutocraftingRequest request);
 }

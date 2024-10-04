@@ -35,9 +35,15 @@ public final class ClientPlatformUtil {
         );
     }
 
-    public static void craftingPreviewReceived(final UUID id, final AutocraftingPreview preview) {
+    public static void autocraftingPreviewResponseReceived(final UUID id, final AutocraftingPreview preview) {
         if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
-            screen.getMenu().previewReceived(id, preview);
+            screen.getMenu().previewResponseReceived(id, preview);
+        }
+    }
+
+    public static void autocraftingResponseReceived(final UUID id, final boolean started) {
+        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+            screen.responseReceived(id, started);
         }
     }
 }

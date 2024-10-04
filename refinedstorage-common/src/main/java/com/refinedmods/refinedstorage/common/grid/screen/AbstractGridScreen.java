@@ -524,7 +524,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             requests.add(new ResourceAmount(request.resource(), request.amount() * 2));
             requests.add(new ResourceAmount(request.resource(), request.amount() * 3));
             requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
-            requests.add(new ResourceAmount(request.resource(), request.amount() * 5));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
         }
         RefinedStorageApi.INSTANCE.openCraftingPreview(requests);
         return true;

@@ -1,7 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreview;
-import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.UUID;
@@ -26,7 +25,7 @@ public record AutocraftingPreviewResponsePacket(UUID id, AutocraftingPreview pre
         );
 
     public static void handle(final AutocraftingPreviewResponsePacket packet) {
-        ClientPlatformUtil.craftingPreviewReceived(packet.id, packet.preview);
+        ClientPlatformUtil.autocraftingPreviewResponseReceived(packet.id, packet.preview);
     }
 
     @Override

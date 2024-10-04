@@ -92,4 +92,10 @@ public final class S2CPackets {
                                                        final AutocraftingPreview preview) {
         Platform.INSTANCE.sendPacketToClient(player, new AutocraftingPreviewResponsePacket(id, preview));
     }
+
+    public static void sendAutocraftingResponse(final ServerPlayer player,
+                                                final UUID id,
+                                                final boolean started) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingResponsePacket(id, started));
+    }
 }

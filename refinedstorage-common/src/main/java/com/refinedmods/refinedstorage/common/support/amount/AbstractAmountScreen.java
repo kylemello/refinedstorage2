@@ -286,7 +286,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         });
     }
 
-    private boolean tryCloseToParent() {
+    protected final boolean tryCloseToParent() {
         if (parent != null) {
             Minecraft.getInstance().setScreen(parent);
             return true;

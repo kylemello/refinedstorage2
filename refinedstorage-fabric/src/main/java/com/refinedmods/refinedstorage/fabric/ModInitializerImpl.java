@@ -30,6 +30,7 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridTy
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
@@ -55,6 +56,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChan
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
@@ -449,6 +451,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             AutocraftingPreviewResponsePacket.PACKET_TYPE,
             AutocraftingPreviewResponsePacket.STREAM_CODEC
         );
+        PayloadTypeRegistry.playS2C().register(
+            AutocraftingResponsePacket.PACKET_TYPE,
+            AutocraftingResponsePacket.STREAM_CODEC
+        );
     }
 
     private void registerClientToServerPackets() {
@@ -539,6 +545,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playC2S().register(
             AutocraftingPreviewRequestPacket.PACKET_TYPE,
             AutocraftingPreviewRequestPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            AutocraftingRequestPacket.PACKET_TYPE,
+            AutocraftingRequestPacket.STREAM_CODEC
         );
     }
 
@@ -642,6 +652,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         ServerPlayNetworking.registerGlobalReceiver(
             AutocraftingPreviewRequestPacket.PACKET_TYPE,
             wrapHandler(AutocraftingPreviewRequestPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            AutocraftingRequestPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingRequestPacket::handle)
         );
     }
 

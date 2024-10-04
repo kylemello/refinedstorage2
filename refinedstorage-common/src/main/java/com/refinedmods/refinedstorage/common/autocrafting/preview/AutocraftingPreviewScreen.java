@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -63,7 +64,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     private final List<AutocraftingRequestButton> requestButtons = new ArrayList<>();
     private final boolean requestsButtonsVisible;
 
-    private final RateLimiter requestRateLimiter = RateLimiter.create(0.5);
+    private final RateLimiter requestRateLimiter = RateLimiter.create(1);
 
     @Nullable
     private Double changedAmount;
@@ -111,10 +112,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
             initRequestButtons();
         }
         if (confirmButton != null) {
-            confirmButton.active = false;
-            confirmButton.setMessage(START);
-            confirmButton.setTooltip(null);
-            confirmButton.setError(false);
+            setStartDisabled();
         }
         getMenu().loadCurrentRequest();
         getExclusionZones().add(new Rect2i(
@@ -144,12 +142,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
                 requestButton.visible = isCraftingRequestButtonVisible(y);
             }
         });
-        final int totalRequestButtons = getMenu().getRequests().size() - REQUESTS_VISIBLE;
-        final int maxOffset = requestButtonsScrollbar.isSmoothScrolling()
-            ? totalRequestButtons * REQUEST_BUTTON_HEIGHT
-            : totalRequestButtons;
-        requestButtonsScrollbar.setEnabled(maxOffset > 0);
-        requestButtonsScrollbar.setMaxOffset(maxOffset);
+        updateRequestsScrollbar();
         for (int i = 0; i < getMenu().getRequests().size(); ++i) {
             final AutocraftingRequest request = getMenu().getRequests().get(i);
             final int buttonY = getCraftingRequestButtonY(i);
@@ -189,19 +182,17 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         if (previewItemsScrollbar == null || confirmButton == null) {
             return;
         }
-        confirmButton.setMessage(START);
         if (preview == null) {
             previewItemsScrollbar.setEnabled(false);
             previewItemsScrollbar.setMaxOffset(0);
-            confirmButton.active = false;
-            confirmButton.setError(false);
-            confirmButton.setTooltip(null);
+            setStartDisabled();
             return;
         }
         final int items = preview.items().size();
         final int rows = Math.ceilDiv(items, COLUMNS) - ROWS_VISIBLE;
         previewItemsScrollbar.setMaxOffset(previewItemsScrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
         previewItemsScrollbar.setEnabled(rows > 0);
+        confirmButton.setMessage(START);
         confirmButton.active = preview.type() == AutocraftingPreviewType.SUCCESS;
         confirmButton.setError(preview.type() != AutocraftingPreviewType.SUCCESS);
         confirmButton.setTooltip(preview.type() == AutocraftingPreviewType.MISSING_RESOURCES
@@ -406,14 +397,28 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         if (amountField == null || confirmButton == null) {
             return;
         }
+        getAndValidateAmount().ifPresentOrElse(amount -> {
+            setPending();
+            changedAmount = amount;
+            amountField.setTextColor(0xFFFFFF);
+        }, () -> {
+            setStartDisabled();
+            amountField.setTextColor(0xFF5555);
+        });
+    }
+
+    private void setPending() {
         confirmButton.active = false;
         confirmButton.setError(false);
         confirmButton.setTooltip(null);
         confirmButton.setMessage(PENDING);
-        getAndValidateAmount().ifPresentOrElse(amount -> {
-            changedAmount = amount;
-            amountField.setTextColor(0xFFFFFF);
-        }, () -> amountField.setTextColor(0xFF5555));
+    }
+
+    private void setStartDisabled() {
+        confirmButton.active = false;
+        confirmButton.setError(false);
+        confirmButton.setTooltip(null);
+        confirmButton.setMessage(START);
     }
 
     @Override
@@ -432,6 +437,8 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
 
     @Override
     protected boolean confirm(final Double amount) {
+        setPending();
+        getMenu().startRequest(amount);
         return false;
     }
 
@@ -443,5 +450,35 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     @Override
     public void previewChanged(@Nullable final AutocraftingPreview preview) {
         setPreview(preview);
+    }
+
+    @Override
+    public void requestRemoved(final AutocraftingRequest request) {
+        requestButtons.removeIf(requestButton -> requestButton.getRequest() == request);
+        updateRequestsScrollbar();
+        for (int i = 0; i < requestButtons.size(); ++i) {
+            final AutocraftingRequestButton requestButton = requestButtons.get(i);
+            final int buttonY = getCraftingRequestButtonY(i);
+            requestButton.setY(buttonY);
+            requestButton.visible = isCraftingRequestButtonVisible(buttonY);
+        }
+    }
+
+    private void updateRequestsScrollbar() {
+        if (requestButtonsScrollbar == null) {
+            return;
+        }
+        final int totalRequestButtons = getMenu().getRequests().size() - REQUESTS_VISIBLE;
+        final int maxOffset = requestButtonsScrollbar.isSmoothScrolling()
+            ? totalRequestButtons * REQUEST_BUTTON_HEIGHT
+            : totalRequestButtons;
+        requestButtonsScrollbar.setEnabled(maxOffset > 0);
+        requestButtonsScrollbar.setMaxOffset(maxOffset);
+    }
+
+    public void responseReceived(final UUID id, final boolean started) {
+        if (started && getMenu().requestStarted(id)) {
+            tryCloseToParent();
+        }
     }
 }

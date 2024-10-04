@@ -7,7 +7,6 @@ import com.refinedmods.refinedstorage.common.support.containermenu.DisabledResou
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -33,7 +32,7 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
             48,
             ResourceSlotType.FILTER
         ));
-        this.requests = Collections.unmodifiableList(requests);
+        this.requests = requests;
         this.currentRequest = requests.getFirst();
     }
 
@@ -62,16 +61,35 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
         }
     }
 
-    public void previewReceived(final UUID id, final AutocraftingPreview preview) {
+    public void previewResponseReceived(final UUID id, final AutocraftingPreview preview) {
         if (currentRequest.previewReceived(id, preview) && listener != null) {
             listener.previewChanged(preview);
         }
     }
 
-    public void loadCurrentRequest() {
+    void loadCurrentRequest() {
         if (listener != null) {
             currentRequest.clearPreview();
             listener.requestChanged(currentRequest);
         }
+    }
+
+    void startRequest(final double amount) {
+        currentRequest.start(amount);
+    }
+
+    boolean requestStarted(final UUID id) {
+        if (currentRequest.isStarted(id)) {
+            if (listener != null) {
+                listener.requestRemoved(currentRequest);
+            }
+            requests.remove(currentRequest);
+            if (!requests.isEmpty()) {
+                setCurrentRequest(requests.getFirst());
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

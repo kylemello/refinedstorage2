@@ -43,6 +43,14 @@ public class AutocraftingRequest {
         return true;
     }
 
+    void start(final double amountRequested) {
+        if (!(resource instanceof PlatformResourceKey resourceKey)) {
+            return;
+        }
+        final long normalizedAmount = resourceKey.getResourceType().normalizeAmount(amountRequested);
+        C2SPackets.sendAutocraftingRequest(id, resourceKey, normalizedAmount);
+    }
+
     ResourceKey getResource() {
         return resource;
     }
@@ -68,5 +76,9 @@ public class AutocraftingRequest {
     void clearPreview() {
         pendingPreviewAmount = 0;
         preview = null;
+    }
+
+    boolean isStarted(final UUID startedId) {
+        return id.equals(startedId);
     }
 }

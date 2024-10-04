@@ -507,6 +507,11 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
             : AutocraftingPreviewType.SUCCESS, items);
     }
 
+    @Override
+    public boolean start(final PlatformResourceKey resource, final long amount) {
+        return true;
+    }
+
     public boolean isLargeSlot(final Slot slot) {
         return false;
     }
