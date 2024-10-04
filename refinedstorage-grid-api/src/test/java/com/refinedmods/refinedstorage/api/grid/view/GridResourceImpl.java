@@ -11,23 +11,23 @@ import java.util.Set;
 public class GridResourceImpl implements GridResource {
     private final ResourceKey resource;
     private final Map<GridResourceAttributeKey, Set<String>> attributes;
-    private boolean craftable;
+    private boolean autocraftable;
 
     public GridResourceImpl(final ResourceKey resource) {
         this(resource, false);
     }
 
-    public GridResourceImpl(final ResourceKey resource, final boolean craftable) {
+    public GridResourceImpl(final ResourceKey resource, final boolean autocraftable) {
         this.resource = resource;
         this.attributes = Map.of(
             FakeGridResourceAttributeKeys.MOD_ID, Set.of(resource.toString()),
             FakeGridResourceAttributeKeys.MOD_NAME, Set.of(resource.toString())
         );
-        this.craftable = craftable;
+        this.autocraftable = autocraftable;
     }
 
-    public GridResourceImpl craftable() {
-        craftable = true;
+    public GridResourceImpl autocraftable() {
+        autocraftable = true;
         return this;
     }
 
@@ -52,8 +52,8 @@ public class GridResourceImpl implements GridResource {
     }
 
     @Override
-    public boolean isCraftable() {
-        return craftable;
+    public boolean isAutocraftable() {
+        return autocraftable;
     }
 
     @Override

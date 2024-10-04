@@ -51,7 +51,7 @@ public final class Items {
     private final List<Supplier<BaseBlockItem>> allSecurityManagers = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allRelays = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allDiskInterfaces = new ArrayList<>();
-    private final List<Supplier<BaseBlockItem>> allCrafters = new ArrayList<>();
+    private final List<Supplier<BaseBlockItem>> allAutocrafters = new ArrayList<>();
     @Nullable
     private Supplier<Item> quartzEnrichedIron;
     @Nullable
@@ -439,12 +439,12 @@ public final class Items {
         return Collections.unmodifiableList(allDiskInterfaces);
     }
 
-    public void addCrafter(final Supplier<BaseBlockItem> supplier) {
-        allCrafters.add(supplier);
+    public void addAutocrafter(final Supplier<BaseBlockItem> supplier) {
+        allAutocrafters.add(supplier);
     }
 
-    public List<Supplier<BaseBlockItem>> getCrafters() {
-        return Collections.unmodifiableList(allCrafters);
+    public List<Supplier<BaseBlockItem>> getAutocrafters() {
+        return Collections.unmodifiableList(allAutocrafters);
     }
 
     public Item getNetworkCard() {

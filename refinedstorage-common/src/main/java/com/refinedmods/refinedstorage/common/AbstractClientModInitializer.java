@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
@@ -94,7 +94,7 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getSecurityManager(), SecurityManagerScreen::new);
         registration.register(Menus.INSTANCE.getRelay(), RelayScreen::new);
         registration.register(Menus.INSTANCE.getDiskInterface(), DiskInterfaceScreen::new);
-        registration.register(Menus.INSTANCE.getCrafter(), CrafterScreen::new);
+        registration.register(Menus.INSTANCE.getAutocrafter(), AutocrafterScreen::new);
         registration.register(Menus.INSTANCE.getAutocraftingStorageMonitor(),
             new ScreenConstructor<AutocraftingPreviewContainerMenu, AutocraftingPreviewScreen>() {
                 @Override

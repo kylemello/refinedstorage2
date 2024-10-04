@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity.PATTERNS;
-import static com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity.isValidPattern;
+import static com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity.PATTERNS;
+import static com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity.isValidPattern;
 
 class PatternInventory extends FilteredContainer {
     @Nullable

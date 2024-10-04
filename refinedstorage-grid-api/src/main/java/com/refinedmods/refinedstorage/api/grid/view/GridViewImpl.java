@@ -28,7 +28,7 @@ public class GridViewImpl implements GridView {
     private final Comparator<GridResource> identitySort;
     private final GridResourceFactory resourceFactory;
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
-    private final Set<ResourceKey> craftableResources;
+    private final Set<ResourceKey> autocraftableResources;
 
     private ViewList viewList = new ViewList(new ArrayList<>(), new HashMap<>());
     private GridSortingType sortingType;
@@ -44,12 +44,12 @@ public class GridViewImpl implements GridView {
      * @param initialTrackedResources initial tracked resources state
      * @param identitySortingType     a sorting type required to keep a consistent sorting order with quantity sorting
      * @param defaultSortingType      the default sorting type
-     * @param craftableResources      resources which are craftable and must stay in the view list
+     * @param autocraftableResources  resources which are autocraftable and must stay in the view list
      */
     public GridViewImpl(final GridResourceFactory resourceFactory,
                         final MutableResourceList backingList,
                         final Map<ResourceKey, TrackedResource> initialTrackedResources,
-                        final Set<ResourceKey> craftableResources,
+                        final Set<ResourceKey> autocraftableResources,
                         final GridSortingType identitySortingType,
                         final GridSortingType defaultSortingType) {
         this.resourceFactory = resourceFactory;
@@ -57,7 +57,7 @@ public class GridViewImpl implements GridView {
         this.sortingType = defaultSortingType;
         this.backingList = backingList;
         this.trackedResources.putAll(initialTrackedResources);
-        this.craftableResources = craftableResources;
+        this.autocraftableResources = autocraftableResources;
     }
 
     @Override
@@ -101,8 +101,8 @@ public class GridViewImpl implements GridView {
     }
 
     @Override
-    public boolean isCraftable(final ResourceKey resource) {
-        return craftableResources.contains(resource);
+    public boolean isAutocraftable(final ResourceKey resource) {
+        return autocraftableResources.contains(resource);
     }
 
     @Override
@@ -116,11 +116,11 @@ public class GridViewImpl implements GridView {
         final List<GridResource> list = new ArrayList<>();
         final Map<ResourceKey, GridResource> index = new HashMap<>();
         for (final ResourceKey resource : backingList.getAll()) {
-            tryAddResourceIntoViewList(resource, list, index, craftableResources.contains(resource));
+            tryAddResourceIntoViewList(resource, list, index, autocraftableResources.contains(resource));
         }
-        for (final ResourceKey craftableResource : craftableResources) {
-            if (!index.containsKey(craftableResource)) {
-                tryAddResourceIntoViewList(craftableResource, list, index, true);
+        for (final ResourceKey autocraftableResource : autocraftableResources) {
+            if (!index.containsKey(autocraftableResource)) {
+                tryAddResourceIntoViewList(autocraftableResource, list, index, true);
             }
         }
         list.sort(getComparator());
@@ -130,12 +130,12 @@ public class GridViewImpl implements GridView {
     private void tryAddResourceIntoViewList(final ResourceKey resource,
                                             final List<GridResource> list,
                                             final Map<ResourceKey, GridResource> index,
-                                            final boolean craftable) {
+                                            final boolean autocraftable) {
         final GridResource existingGridResource = viewList.index.get(resource);
         if (existingGridResource != null) {
             tryAddGridResourceIntoViewList(existingGridResource, list, index, resource);
         } else {
-            resourceFactory.apply(resource, craftable).ifPresent(
+            resourceFactory.apply(resource, autocraftable).ifPresent(
                 gridResource -> tryAddGridResourceIntoViewList(gridResource, list, index, resource)
             );
         }
@@ -193,7 +193,7 @@ public class GridViewImpl implements GridView {
         LOGGER.debug("{} was removed from backing list, reinserting now into the view list", resource);
         final GridResource newResource = resourceFactory.apply(
             resource,
-            craftableResources.contains(resource)
+            autocraftableResources.contains(resource)
         ).orElseThrow();
         viewList.index.put(resource, newResource);
         final int index = CoreValidations.validateNotNegative(
@@ -222,7 +222,7 @@ public class GridViewImpl implements GridView {
                                                   final GridResource gridResource,
                                                   final boolean noLongerAvailable) {
         viewList.list.remove(gridResource);
-        if (noLongerAvailable && !craftableResources.contains(resource)) {
+        if (noLongerAvailable && !autocraftableResources.contains(resource)) {
             viewList.index.remove(resource);
             notifyListener();
         } else {

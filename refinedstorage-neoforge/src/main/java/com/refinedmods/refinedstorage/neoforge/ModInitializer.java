@@ -29,9 +29,9 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
-import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
@@ -55,9 +55,9 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -429,7 +429,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getSecurityManager());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getStorageMonitor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getWirelessTransmitter());
-        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getCrafter());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getAutocrafter());
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK,
             BlockEntities.INSTANCE.getDiskDrive(),
@@ -631,9 +631,9 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
         );
         registrar.playToClient(
-            CrafterNameUpdatePacket.PACKET_TYPE,
-            CrafterNameUpdatePacket.STREAM_CODEC,
-            wrapHandler(CrafterNameUpdatePacket::handle)
+            AutocrafterNameUpdatePacket.PACKET_TYPE,
+            AutocrafterNameUpdatePacket.STREAM_CODEC,
+            wrapHandler(AutocrafterNameUpdatePacket::handle)
         );
         registrar.playToClient(
             AutocraftingPreviewResponsePacket.PACKET_TYPE,
@@ -764,9 +764,9 @@ public class ModInitializer extends AbstractModInitializer {
             wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
         );
         registrar.playToServer(
-            CrafterNameChangePacket.PACKET_TYPE,
-            CrafterNameChangePacket.STREAM_CODEC,
-            wrapHandler(CrafterNameChangePacket::handle)
+            AutocrafterNameChangePacket.PACKET_TYPE,
+            AutocrafterNameChangePacket.STREAM_CODEC,
+            wrapHandler(AutocrafterNameChangePacket::handle)
         );
         registrar.playToServer(
             AutocraftingPreviewRequestPacket.PACKET_TYPE,

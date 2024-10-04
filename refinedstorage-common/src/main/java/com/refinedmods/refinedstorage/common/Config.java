@@ -73,7 +73,7 @@ public interface Config {
 
     RelayEntry getRelay();
 
-    SimpleEnergyUsageEntry getCrafter();
+    SimpleEnergyUsageEntry getAutocrafter();
 
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();

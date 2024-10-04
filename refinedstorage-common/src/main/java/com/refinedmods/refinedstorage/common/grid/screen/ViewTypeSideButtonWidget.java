@@ -36,9 +36,9 @@ class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
 
     private static GridViewType toggle(final GridViewType sortingType) {
         return switch (sortingType) {
-            case ALL -> GridViewType.CRAFTABLE;
-            case CRAFTABLE -> GridViewType.NON_CRAFTABLE;
-            case NON_CRAFTABLE -> GridViewType.ALL;
+            case ALL -> GridViewType.AUTOCRAFTABLE;
+            case AUTOCRAFTABLE -> GridViewType.NON_AUTOCRAFTABLE;
+            case NON_AUTOCRAFTABLE -> GridViewType.ALL;
         };
     }
 
@@ -46,8 +46,8 @@ class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     protected ResourceLocation getSprite() {
         return switch (menu.getViewType()) {
             case ALL -> ALL;
-            case CRAFTABLE -> CRAFTABLE;
-            case NON_CRAFTABLE -> NON_CRAFTABLE;
+            case AUTOCRAFTABLE -> CRAFTABLE;
+            case NON_AUTOCRAFTABLE -> NON_CRAFTABLE;
         };
     }
 
@@ -60,8 +60,8 @@ class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     protected MutableComponent getSubText() {
         return switch (menu.getViewType()) {
             case ALL -> SUBTEXT_ALL;
-            case CRAFTABLE -> SUBTEXT_AUTOCRAFTABLE;
-            case NON_CRAFTABLE -> SUBTEXT_NON_AUTOCRAFTABLE;
+            case AUTOCRAFTABLE -> SUBTEXT_AUTOCRAFTABLE;
+            case NON_AUTOCRAFTABLE -> SUBTEXT_NON_AUTOCRAFTABLE;
         };
     }
 }

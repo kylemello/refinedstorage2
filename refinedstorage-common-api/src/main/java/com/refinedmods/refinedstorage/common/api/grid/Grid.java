@@ -27,7 +27,7 @@ public interface Grid extends AutocraftingPreviewProvider {
 
     List<TrackedResourceAmount> getResources(Class<? extends Actor> actorType);
 
-    Set<PlatformResourceKey> getCraftableResources();
+    Set<PlatformResourceKey> getAutocraftableResources();
 
     GridOperations createOperations(ResourceType resourceType, ServerPlayer player);
 }

@@ -9,7 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
--   Crafter
+-   Autocrafter
 
 ### Changed
 
@@ -32,6 +32,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The numbers on the crafting preview screen are now compacted with units.
 -   When requesting autocrafting multiple resources at once, which can happen via a recipe mod, all the crafting requests are now listed on the side of the GUI.
 -   You can now request autocrafting from the Storage Monitor if the resource count reaches zero.
+-   The Crafter has been renamed to "Autocrafter".
 
 ### Fixed
 

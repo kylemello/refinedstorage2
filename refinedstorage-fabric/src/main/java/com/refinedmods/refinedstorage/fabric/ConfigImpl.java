@@ -120,8 +120,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     private RelayEntryImpl relay = new RelayEntryImpl();
 
     @ConfigEntry.Gui.CollapsibleObject
-    private SimpleEnergyUsageEntryImpl crafter = new SimpleEnergyUsageEntryImpl(
-        DefaultEnergyUsage.CRAFTER
+    private SimpleEnergyUsageEntryImpl autocrafter = new SimpleEnergyUsageEntryImpl(
+        DefaultEnergyUsage.AUTOCRAFTER
     );
 
     public static ConfigImpl get() {
@@ -285,8 +285,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     }
 
     @Override
-    public SimpleEnergyUsageEntry getCrafter() {
-        return crafter;
+    public SimpleEnergyUsageEntry getAutocrafter() {
+        return autocrafter;
     }
 
     private static class GridEntryImpl implements GridEntry {

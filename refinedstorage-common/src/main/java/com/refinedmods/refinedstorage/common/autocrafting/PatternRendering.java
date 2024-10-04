@@ -30,7 +30,7 @@ public final class PatternRendering {
         final Screen screen = Minecraft.getInstance().screen;
         return switch (screen) {
             case PatternGridScreen patternGridScreen -> patternGridScreen.getMenu().isPatternInOutput(stack);
-            case CrafterScreen crafterScreen -> crafterScreen.getMenu().containsPattern(stack);
+            case AutocrafterScreen autocrafterScreen -> autocrafterScreen.getMenu().containsPattern(stack);
             case null, default -> false;
         };
     }

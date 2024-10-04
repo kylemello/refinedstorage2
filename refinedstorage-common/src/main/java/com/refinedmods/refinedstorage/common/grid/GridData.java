@@ -19,7 +19,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record GridData(boolean active, List<GridResource> resources, Set<PlatformResourceKey> craftableResources) {
+public record GridData(boolean active, List<GridResource> resources, Set<PlatformResourceKey> autocraftableResources) {
     public static final StreamCodec<RegistryFriendlyByteBuf, GridData> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.BOOL, GridData::active,
         ByteBufCodecs.collection(ArrayList::new, StreamCodec.composite(
@@ -27,7 +27,7 @@ public record GridData(boolean active, List<GridResource> resources, Set<Platfor
             StorageCodecs.TRACKED_RESOURCE_OPTIONAL_STREAM_CODEC, GridResource::trackedResource,
             GridResource::new
         )), GridData::resources,
-        ByteBufCodecs.collection(HashSet::new, ResourceCodecs.STREAM_CODEC), GridData::craftableResources,
+        ByteBufCodecs.collection(HashSet::new, ResourceCodecs.STREAM_CODEC), GridData::autocraftableResources,
         GridData::new
     );
 
@@ -35,7 +35,7 @@ public record GridData(boolean active, List<GridResource> resources, Set<Platfor
         return new GridData(
             grid.isGridActive(),
             grid.getResources(PlayerActor.class).stream().map(GridResource::of).toList(),
-            grid.getCraftableResources()
+            grid.getAutocraftableResources()
         );
     }
 

@@ -26,8 +26,8 @@ class FluidResourceType implements ResourceType {
     private static final ResourceLocation SPRITE = createIdentifier("widget/side_button/resource_type/fluid");
 
     @Override
-    public Optional<GridResource> toGridResource(final ResourceKey resource, final boolean craftable) {
-        return Platform.INSTANCE.getFluidGridResourceFactory().apply(resource, craftable);
+    public Optional<GridResource> toGridResource(final ResourceKey resource, final boolean autocraftable) {
+        return Platform.INSTANCE.getFluidGridResourceFactory().apply(resource, autocraftable);
     }
 
     @Override

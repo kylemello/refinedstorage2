@@ -251,7 +251,7 @@ class ProcessingPatternGridRenderer implements PatternGridRenderer {
                                   final int mouseY,
                                   final ResourceSlot resourceSlot,
                                   final ProcessingMatrixResourceSlot matrixSlot) {
-        if (matrixSlot.getResource() != null && menu.getView().isCraftable(matrixSlot.getResource())) {
+        if (matrixSlot.getResource() != null && menu.getView().isAutocraftable(matrixSlot.getResource())) {
             AbstractGridScreen.renderCraftableBackground(
                 graphics,
                 resourceSlot.x + leftPos,

@@ -17,7 +17,7 @@ import org.apiguardian.api.API;
 public class GridViewBuilderImpl implements GridViewBuilder {
     private final GridResourceFactory resourceFactory;
     private final MutableResourceList backingList = MutableResourceListImpl.create();
-    private final Set<ResourceKey> craftableResources = new HashSet<>();
+    private final Set<ResourceKey> autocraftableResources = new HashSet<>();
     private final Map<ResourceKey, TrackedResource> trackedResources = new HashMap<>();
     private final GridSortingType identitySortingType;
     private final GridSortingType defaultSortingType;
@@ -40,8 +40,8 @@ public class GridViewBuilderImpl implements GridViewBuilder {
     }
 
     @Override
-    public GridViewBuilder withCraftableResource(final ResourceKey resource) {
-        craftableResources.add(resource);
+    public GridViewBuilder withAutocraftableResource(final ResourceKey resource) {
+        autocraftableResources.add(resource);
         return this;
     }
 
@@ -51,7 +51,7 @@ public class GridViewBuilderImpl implements GridViewBuilder {
             resourceFactory,
             backingList,
             trackedResources,
-            craftableResources,
+            autocraftableResources,
             identitySortingType,
             defaultSortingType
         );

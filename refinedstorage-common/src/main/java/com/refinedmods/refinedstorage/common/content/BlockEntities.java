@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
@@ -90,7 +90,7 @@ public final class BlockEntities {
     @Nullable
     private Supplier<BlockEntityType<AbstractDiskInterfaceBlockEntity>> diskInterface;
     @Nullable
-    private Supplier<BlockEntityType<CrafterBlockEntity>> crafter;
+    private Supplier<BlockEntityType<AutocrafterBlockEntity>> autocrafter;
 
     private BlockEntities() {
     }
@@ -297,11 +297,11 @@ public final class BlockEntities {
         this.diskInterface = supplier;
     }
 
-    public BlockEntityType<CrafterBlockEntity> getCrafter() {
-        return requireNonNull(crafter).get();
+    public BlockEntityType<AutocrafterBlockEntity> getAutocrafter() {
+        return requireNonNull(autocrafter).get();
     }
 
-    public void setCrafter(final Supplier<BlockEntityType<CrafterBlockEntity>> supplier) {
-        this.crafter = supplier;
+    public void setAutocrafter(final Supplier<BlockEntityType<AutocrafterBlockEntity>> supplier) {
+        this.autocrafter = supplier;
     }
 }

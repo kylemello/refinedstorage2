@@ -324,7 +324,7 @@ class GridQueryParserImplTest {
         }
 
         @Override
-        public boolean isCraftable() {
+        public boolean isAutocraftable() {
             return false;
         }
     }

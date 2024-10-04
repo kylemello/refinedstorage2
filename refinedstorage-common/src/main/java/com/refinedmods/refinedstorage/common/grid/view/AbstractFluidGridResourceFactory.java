@@ -17,7 +17,7 @@ import net.minecraft.world.level.material.Fluid;
 
 public abstract class AbstractFluidGridResourceFactory implements GridResourceFactory {
     @Override
-    public Optional<GridResource> apply(final ResourceKey resource, final boolean craftable) {
+    public Optional<GridResource> apply(final ResourceKey resource, final boolean autocraftable) {
         if (!(resource instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
@@ -35,7 +35,7 @@ public abstract class AbstractFluidGridResourceFactory implements GridResourceFa
                 GridResourceAttributeKeys.TAGS, tags,
                 GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
             ),
-            craftable
+            autocraftable
         ));
     }
 

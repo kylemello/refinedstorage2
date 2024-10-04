@@ -40,8 +40,8 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
     public FluidGridResource(final FluidResource resource,
                              final String name,
                              final Map<GridResourceAttributeKey, Set<String>> attributes,
-                             final boolean craftable) {
-        super(resource, name, attributes, craftable);
+                             final boolean autocraftable) {
+        super(resource, name, attributes, autocraftable);
         this.id = BuiltInRegistries.FLUID.getId(resource.fluid());
         this.rendering = RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class);
     }

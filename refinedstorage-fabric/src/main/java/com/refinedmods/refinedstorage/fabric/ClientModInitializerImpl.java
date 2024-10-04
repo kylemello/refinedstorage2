@@ -19,9 +19,9 @@ import com.refinedmods.refinedstorage.common.security.SecurityCardItemPropertyFu
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -127,7 +127,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getSecurityManager());
         setCutout(Blocks.INSTANCE.getRelay());
         setCutout(Blocks.INSTANCE.getDiskInterface());
-        setCutout(Blocks.INSTANCE.getCrafter());
+        setCutout(Blocks.INSTANCE.getAutocrafter());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -156,7 +156,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             (color, id, block) -> registerEmissiveSecurityManagerModels(color, id)
         );
         Blocks.INSTANCE.getRelay().forEach((color, id, block) -> registerEmissiveRelayModels(color, id));
-        Blocks.INSTANCE.getCrafter().forEach((color, id, block) -> registerEmissiveCrafterModels(color, id));
+        Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) -> registerEmissiveAutocrafterModels(color, id));
     }
 
     private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
@@ -234,16 +234,16 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         );
     }
 
-    private void registerEmissiveCrafterModels(final DyeColor color, final ResourceLocation id) {
+    private void registerEmissiveAutocrafterModels(final DyeColor color, final ResourceLocation id) {
         EmissiveModelRegistry.INSTANCE.register(
-            createIdentifier(BLOCK_PREFIX + "/crafter/" + color.getName()),
-            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
-            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
+            createIdentifier(BLOCK_PREFIX + "/autocrafter/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/autocrafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/autocrafter/cutouts/top/" + color.getName())
         );
         EmissiveModelRegistry.INSTANCE.register(
             createIdentifier(ITEM_PREFIX + "/" + id.getPath()),
-            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/side/" + color.getName()),
-            createIdentifier(BLOCK_PREFIX + "/crafter/cutouts/top/" + color.getName())
+            createIdentifier(BLOCK_PREFIX + "/autocrafter/cutouts/side/" + color.getName()),
+            createIdentifier(BLOCK_PREFIX + "/autocrafter/cutouts/top/" + color.getName())
         );
     }
 
@@ -289,8 +289,8 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
         );
         ClientPlayNetworking.registerGlobalReceiver(
-            CrafterNameUpdatePacket.PACKET_TYPE,
-            wrapHandler(CrafterNameUpdatePacket::handle)
+            AutocrafterNameUpdatePacket.PACKET_TYPE,
+            wrapHandler(AutocrafterNameUpdatePacket::handle)
         );
         ClientPlayNetworking.registerGlobalReceiver(
             AutocraftingPreviewResponsePacket.PACKET_TYPE,

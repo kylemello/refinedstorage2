@@ -58,7 +58,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
-        registerCrafters();
+        registerAutocrafters();
     }
 
     private void registerCables() {
@@ -306,10 +306,10 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         });
     }
 
-    private void registerCrafters() {
-        final ModelFile inactive = modelFile(createIdentifier(BLOCK_PREFIX + "/crafter/inactive"));
-        Blocks.INSTANCE.getCrafter().forEach((color, id, block) -> {
-            final ModelFile active = modelFile(createIdentifier(BLOCK_PREFIX + "/crafter/" + color.getName()));
+    private void registerAutocrafters() {
+        final ModelFile inactive = modelFile(createIdentifier(BLOCK_PREFIX + "/autocrafter/inactive"));
+        Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) -> {
+            final ModelFile active = modelFile(createIdentifier(BLOCK_PREFIX + "/autocrafter/" + color.getName()));
             final var builder = getVariantBuilder(block.get());
             builder.forAllStates(blockState -> {
                 final ConfiguredModel.Builder<?> model = ConfiguredModel.builder();
@@ -319,7 +319,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                     model.modelFile(inactive);
                 }
                 final Direction direction = blockState.getValue(DefaultDirectionType.FACE_PLAYER.getProperty());
-                addCrafterRotation(model, direction);
+                addAutocrafterRotation(model, direction);
                 return model.build();
             });
         });
@@ -368,7 +368,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         }
     }
 
-    private void addCrafterRotation(final ConfiguredModel.Builder<?> model, final Direction direction) {
+    private void addAutocrafterRotation(final ConfiguredModel.Builder<?> model, final Direction direction) {
         if (direction.getAxis().isHorizontal()) {
             model.rotationX(90);
         } else if (direction == Direction.DOWN) {
