@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -493,9 +494,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final ItemStack carriedStack = getMenu().getCarried();
         final PlatformGridResource resource = getCurrentGridResource();
 
-        if (resource != null && resource.canExtract(carriedStack, getMenu().getView())) {
-            mouseClickedInGrid(clickedButton, resource);
-            return true;
+        if (resource != null) {
+            if (resource.canExtract(carriedStack, getMenu().getView()) && !hasControlDown()) {
+                mouseClickedInGrid(clickedButton, resource);
+                return true;
+            } else if (resource.isCraftable() && tryStartAutocrafting(resource)) {
+                return true;
+            }
         }
 
         if (isOverStorageArea((int) mouseX, (int) mouseY)
@@ -505,6 +510,24 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
 
         return super.mouseClicked(mouseX, mouseY, clickedButton);
+    }
+
+    private static boolean tryStartAutocrafting(final PlatformGridResource resource) {
+        final ResourceAmount request = resource.getAutocraftingRequest();
+        if (request == null) {
+            return false;
+        }
+        final List<ResourceAmount> requests = new ArrayList<>();
+        requests.add(request);
+        // TODO: Remove - temporary code
+        if (hasShiftDown()) {
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 2));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 3));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
+            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
+        }
+        RefinedStorageApi.INSTANCE.openCraftingPreview(requests);
+        return true;
     }
 
     private void mouseClickedInGrid(final int clickedButton) {

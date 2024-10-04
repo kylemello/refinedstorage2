@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.grid.view;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -78,9 +80,15 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
         );
     }
 
+    @Nullable
+    @Override
+    public ResourceAmount getAutocraftingRequest() {
+        return new ResourceAmount(itemResource, 1);
+    }
+
     @Override
     public boolean canExtract(final ItemStack carriedStack, final GridView view) {
-        return carriedStack.isEmpty();
+        return getAmount(view) > 0 && carriedStack.isEmpty();
     }
 
     @Override

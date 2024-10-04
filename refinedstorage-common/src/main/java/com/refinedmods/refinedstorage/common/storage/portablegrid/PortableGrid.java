@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.portablegrid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.operations.NoopGridOperations;
@@ -7,6 +8,7 @@ import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcherManager;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcherManagerImpl;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.NoopStorage;
 import com.refinedmods.refinedstorage.api.storage.StateTrackedStorage;
@@ -23,6 +25,7 @@ import com.refinedmods.refinedstorage.common.storage.DiskInventory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -125,5 +128,15 @@ class PortableGrid implements Grid {
         final RootStorage rootStorage = this.storage.getRootStorage();
         final GridOperations operations = resourceType.createGridOperations(rootStorage, new PlayerActor(player));
         return new PortableGridOperations(operations, energyStorage);
+    }
+
+    @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean start(final ResourceKey resource, final long amount) {
+        return false;
     }
 }

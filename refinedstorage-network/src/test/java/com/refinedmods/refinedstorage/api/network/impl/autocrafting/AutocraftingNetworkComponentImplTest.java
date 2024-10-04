@@ -73,4 +73,14 @@ class AutocraftingNetworkComponentImplTest {
         // Assert
         assertThat(sut.getOutputs()).usingRecursiveFieldByFieldElementComparator().isEmpty();
     }
+
+    @Test
+    void shouldStart() {
+        sut.start(FakeResources.A, 10);
+    }
+
+    @Test
+    void shouldGetPreview() {
+        sut.getPreview(FakeResources.A, 10);
+    }
 }

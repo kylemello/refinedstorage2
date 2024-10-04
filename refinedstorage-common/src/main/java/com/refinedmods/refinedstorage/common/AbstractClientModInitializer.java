@@ -5,6 +5,8 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.autocrafting.CrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorScreen;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -93,6 +95,15 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getRelay(), RelayScreen::new);
         registration.register(Menus.INSTANCE.getDiskInterface(), DiskInterfaceScreen::new);
         registration.register(Menus.INSTANCE.getCrafter(), CrafterScreen::new);
+        registration.register(Menus.INSTANCE.getAutocraftingStorageMonitor(),
+            new ScreenConstructor<AutocraftingPreviewContainerMenu, AutocraftingPreviewScreen>() {
+                @Override
+                public AutocraftingPreviewScreen create(final AutocraftingPreviewContainerMenu menu,
+                                                        final Inventory inventory,
+                                                        final Component title) {
+                    return new AutocraftingPreviewScreen(menu, inventory, title);
+                }
+            });
     }
 
     protected static void registerAlternativeGridHints() {

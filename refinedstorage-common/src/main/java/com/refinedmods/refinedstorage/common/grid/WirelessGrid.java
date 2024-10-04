@@ -1,12 +1,15 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.operations.NoopGridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcherManager;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcherManagerImpl;
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.NoopStorage;
 import com.refinedmods.refinedstorage.api.storage.Storage;
@@ -99,5 +102,19 @@ class WirelessGrid implements Grid {
         final PlayerActor playerActor = new PlayerActor(player);
         final GridOperations operations = resourceType.createGridOperations(rootStorage, playerActor);
         return new SecuredGridOperations(player, securityNetworkComponent, operations);
+    }
+
+    @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return context.resolveNetwork()
+            .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
+            .flatMap(component -> component.getPreview(resource, amount));
+    }
+
+    @Override
+    public boolean start(final ResourceKey resource, final long amount) {
+        return context.resolveNetwork()
+            .map(network -> network.getComponent(AutocraftingNetworkComponent.class).start(resource, amount))
+            .orElse(false);
     }
 }

@@ -20,7 +20,6 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
-import static java.util.Objects.requireNonNullElse;
 
 class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
@@ -78,7 +77,7 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
             cycleStart = now;
         }
         if (outputText != null) {
-            graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+            graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         }
         renderInputSlots(x, y + 9 + 2, graphics);
         renderArrow(x, y + 9 + 2, graphics);

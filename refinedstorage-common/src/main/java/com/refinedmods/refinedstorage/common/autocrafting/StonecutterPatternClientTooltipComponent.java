@@ -15,7 +15,6 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
-import static java.util.Objects.requireNonNullElse;
 
 class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final int ARROW_SPACING = 8;
@@ -32,7 +31,7 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+        graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         graphics.blitSprite(SLOT, x, y + 9 + 2, 18, 18);
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
         rendering.render(input, graphics, x + 1, y + 9 + 2 + 1);

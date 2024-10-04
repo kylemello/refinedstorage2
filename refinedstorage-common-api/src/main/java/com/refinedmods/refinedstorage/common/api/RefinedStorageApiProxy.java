@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
@@ -46,6 +47,7 @@ import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -399,6 +401,11 @@ public class RefinedStorageApiProxy implements RefinedStorageApi {
     @Override
     public Optional<Pattern> getPattern(final ItemStack stack, final Level level) {
         return ensureLoaded().getPattern(stack, level);
+    }
+
+    @Override
+    public void openCraftingPreview(final List<ResourceAmount> requests) {
+        ensureLoaded().openCraftingPreview(requests);
     }
 
     private RefinedStorageApi ensureLoaded() {

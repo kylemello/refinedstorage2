@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.network.Network;
@@ -7,6 +8,7 @@ import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetwo
 import com.refinedmods.refinedstorage.api.network.impl.node.container.NetworkNodeContainerPriorities;
 import com.refinedmods.refinedstorage.api.network.impl.node.grid.GridNetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
@@ -23,6 +25,7 @@ import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetwork
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -95,6 +98,22 @@ public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeCon
     @Override
     public void removeWatcher(final GridWatcher watcher) {
         mainNetworkNode.removeWatcher(watcher);
+    }
+
+    @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return Optional.ofNullable(mainNetworkNode.getNetwork())
+            .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
+            .flatMap(component -> component.getPreview(resource, amount));
+    }
+
+    @Override
+    public boolean start(final ResourceKey resource, final long amount) {
+        final Network network = mainNetworkNode.getNetwork();
+        if (network == null) {
+            return false;
+        }
+        return network.getComponent(AutocraftingNetworkComponent.class).start(resource, amount);
     }
 
     @Override

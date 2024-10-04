@@ -46,8 +46,9 @@ public class ResourceAmountScreen
     }
 
     @Override
-    protected void accept(final Double amount) {
+    protected boolean confirm(final Double amount) {
         slot.changeAmountOnClient(amount);
+        return true;
     }
 
     @Override

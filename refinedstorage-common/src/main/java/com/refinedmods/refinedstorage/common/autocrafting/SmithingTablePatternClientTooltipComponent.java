@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
-import static java.util.Objects.requireNonNullElse;
 
 class SmithingTablePatternClientTooltipComponent implements ClientTooltipComponent {
     private static final int ARROW_SPACING = 8;
@@ -29,7 +28,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        graphics.drawString(font, outputText, x, y, requireNonNullElse(ChatFormatting.GRAY.getColor(), 15));
+        graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         final int slotsY = y + 9 + 2;
         graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);

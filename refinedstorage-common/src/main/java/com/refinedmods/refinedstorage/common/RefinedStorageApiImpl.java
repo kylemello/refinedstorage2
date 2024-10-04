@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage.api.network.impl.NetworkFactory;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
@@ -49,6 +50,8 @@ import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotRefer
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingRequest;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.ItemGridInsertionHint;
@@ -99,12 +102,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
@@ -593,6 +598,23 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
         return Optional.ofNullable(patternCache.computeIfAbsent(
             id,
             i -> providerItem.getPattern(stack, level).orElse(null)
+        ));
+    }
+
+    @Override
+    public void openCraftingPreview(final List<ResourceAmount> requests) {
+        if (requests.isEmpty()) {
+            return;
+        }
+        final Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen == null || minecraft.player == null) {
+            return;
+        }
+        final Inventory inventory = minecraft.player.getInventory();
+        minecraft.setScreen(new AutocraftingPreviewScreen(
+            minecraft.screen,
+            inventory,
+            requests.stream().map(AutocraftingRequest::of).toList()
         ));
     }
 }

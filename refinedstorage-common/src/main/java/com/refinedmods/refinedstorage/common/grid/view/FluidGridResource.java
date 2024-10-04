@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -61,6 +62,12 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
             )).stream().toList();
     }
 
+    @Nullable
+    @Override
+    public ResourceAmount getAutocraftingRequest() {
+        return new ResourceAmount(resource, Platform.INSTANCE.getBucketAmount());
+    }
+
     private Optional<FluidOperationResult> tryFillFluidContainer(final ItemStack carriedStack) {
         final ResourceAmount toFill = new ResourceAmount(resource, Platform.INSTANCE.getBucketAmount());
         return carriedStack.isEmpty()
@@ -70,6 +77,9 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
 
     @Override
     public boolean canExtract(final ItemStack carriedStack, final GridView view) {
+        if (getAmount(view) == 0) {
+            return false;
+        }
         if (carriedStack.isEmpty()) {
             return true;
         }

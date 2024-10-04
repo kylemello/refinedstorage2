@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
@@ -42,6 +44,7 @@ import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
@@ -58,7 +61,8 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
-    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
+    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener,
+    AutocraftingPreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -481,6 +485,16 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     @Nullable
     protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
         return null;
+    }
+
+    @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).getPreview(resource, amount);
+    }
+
+    @Override
+    public boolean start(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).start(resource, amount);
     }
 
     public boolean isLargeSlot(final Slot slot) {

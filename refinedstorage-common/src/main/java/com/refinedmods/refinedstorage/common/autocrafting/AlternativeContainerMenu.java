@@ -22,7 +22,7 @@ import static com.refinedmods.refinedstorage.common.autocrafting.AlternativesScr
 import static com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen.ALTERNATIVE_ROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.getTagTranslationKey;
 
-public class AlternativeContainerMenu extends AbstractResourceContainerMenu {
+class AlternativeContainerMenu extends AbstractResourceContainerMenu {
     private final List<Alternative> alternatives;
     private final ResourceSlot amountSlot;
 

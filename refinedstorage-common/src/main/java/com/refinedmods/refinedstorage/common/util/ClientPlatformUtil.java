@@ -1,5 +1,9 @@
 package com.refinedmods.refinedstorage.common.util;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
+
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
@@ -29,5 +33,17 @@ public final class ClientPlatformUtil {
             NO_PERMISSION,
             message
         );
+    }
+
+    public static void autocraftingPreviewResponseReceived(final UUID id, final AutocraftingPreview preview) {
+        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+            screen.getMenu().previewResponseReceived(id, preview);
+        }
+    }
+
+    public static void autocraftingResponseReceived(final UUID id, final boolean started) {
+        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+            screen.responseReceived(id, started);
+        }
     }
 }

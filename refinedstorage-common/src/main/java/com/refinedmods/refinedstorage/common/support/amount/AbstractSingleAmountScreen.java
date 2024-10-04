@@ -38,8 +38,9 @@ public abstract class AbstractSingleAmountScreen<T extends AbstractSingleAmountC
     }
 
     @Override
-    protected void accept(final Double amount) {
+    protected boolean confirm(final Double amount) {
         getMenu().changeAmountOnClient(amount);
+        return true;
     }
 
     @Override

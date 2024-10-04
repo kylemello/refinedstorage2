@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -84,5 +85,17 @@ public final class S2CPackets {
 
     public static void sendCrafterNameUpdate(final ServerPlayer player, final Component name) {
         Platform.INSTANCE.sendPacketToClient(player, new CrafterNameUpdatePacket(name));
+    }
+
+    public static void sendAutocraftingPreviewResponse(final ServerPlayer player,
+                                                       final UUID id,
+                                                       final AutocraftingPreview preview) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingPreviewResponsePacket(id, preview));
+    }
+
+    public static void sendAutocraftingResponse(final ServerPlayer player,
+                                                final UUID id,
+                                                final boolean started) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingResponsePacket(id, started));
     }
 }

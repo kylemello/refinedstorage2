@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 
+// TODO: More energy usage for more patterns.
 public class CrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<PatternProviderNetworkNode>
     implements ExtendedMenuProvider<CrafterData>, BlockEntityWithDrops, PatternInventory.Listener {
     static final int PATTERNS = 9;
