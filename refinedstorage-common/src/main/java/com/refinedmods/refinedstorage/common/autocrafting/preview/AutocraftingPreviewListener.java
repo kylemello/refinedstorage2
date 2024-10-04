@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+
 import javax.annotation.Nullable;
 
 interface AutocraftingPreviewListener {

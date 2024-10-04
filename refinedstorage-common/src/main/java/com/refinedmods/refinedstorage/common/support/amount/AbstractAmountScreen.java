@@ -109,7 +109,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         final int width = configuration.isHorizontalActionButtons()
             ? font.width(CANCEL_TEXT) + ACTION_BUTTON_SPACING
             : ACTION_BUTTON_WIDTH;
-        return addRenderableWidget(Button.builder(CANCEL_TEXT, btn -> tryCloseToParent())
+        return addRenderableWidget(Button.builder(CANCEL_TEXT, btn -> close())
             .pos(leftPos + x, topPos + y)
             .size(width, ACTION_BUTTON_HEIGHT)
             .build());
@@ -259,9 +259,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
 
     protected final boolean tryClose(final int key) {
         if (key == GLFW.GLFW_KEY_ESCAPE) {
-            if (!tryCloseToParent()) {
-                onClose();
-            }
+            close();
             return true;
         }
         return false;
@@ -286,12 +284,18 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
         });
     }
 
-    protected final boolean tryCloseToParent() {
+    private boolean tryCloseToParent() {
         if (parent != null) {
             Minecraft.getInstance().setScreen(parent);
             return true;
         }
         return false;
+    }
+
+    protected final void close() {
+        if (!tryCloseToParent()) {
+            onClose();
+        }
     }
 
     protected final Optional<N> getAndValidateAmount() {

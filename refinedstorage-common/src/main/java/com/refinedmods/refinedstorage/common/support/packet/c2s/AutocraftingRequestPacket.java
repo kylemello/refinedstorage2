@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceCodecs;

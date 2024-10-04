@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
@@ -7,11 +8,13 @@ import com.refinedmods.refinedstorage.common.support.containermenu.DisabledResou
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlotType;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
 
 public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerMenu {
     private final List<AutocraftingRequest> requests;
@@ -21,7 +24,15 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
     private AutocraftingPreviewListener listener;
 
     AutocraftingPreviewContainerMenu(final List<AutocraftingRequest> requests) {
-        super(null, 0);
+        this(null, 0, requests);
+    }
+
+    public AutocraftingPreviewContainerMenu(@Nullable final MenuType<?> type,
+                                            final int syncId,
+                                            final List<AutocraftingRequest> requests) {
+        super(type, syncId);
+        this.requests = new ArrayList<>(requests);
+        this.currentRequest = requests.getFirst();
         final ResourceContainer resourceContainer = ResourceContainerImpl.createForFilter(1);
         resourceContainer.set(0, new ResourceAmount(requests.getFirst().getResource(), 1));
         addSlot(new DisabledResourceSlot(
@@ -32,8 +43,6 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
             48,
             ResourceSlotType.FILTER
         ));
-        this.requests = requests;
-        this.currentRequest = requests.getFirst();
     }
 
     void setListener(final AutocraftingPreviewListener listener) {

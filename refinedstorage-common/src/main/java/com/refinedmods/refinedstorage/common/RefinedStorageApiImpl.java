@@ -614,7 +614,7 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
         minecraft.setScreen(new AutocraftingPreviewScreen(
             minecraft.screen,
             inventory,
-            requests.stream().map(AutocraftingRequest::of).collect(Collectors.toList())
+            requests.stream().map(AutocraftingRequest::of).toList()
         ));
     }
 }

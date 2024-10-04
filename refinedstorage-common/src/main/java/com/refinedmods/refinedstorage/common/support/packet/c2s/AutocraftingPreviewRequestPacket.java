@@ -1,8 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreview;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceCodecs;
@@ -36,8 +35,10 @@ public record AutocraftingPreviewRequestPacket(UUID id,
 
     public static void handle(final AutocraftingPreviewRequestPacket packet, final PacketContext ctx) {
         if (ctx.getPlayer().containerMenu instanceof AutocraftingPreviewProvider provider) {
-            final AutocraftingPreview preview = provider.getPreview(packet.resource(), packet.amount());
-            S2CPackets.sendAutocraftingPreviewResponse((ServerPlayer) ctx.getPlayer(), packet.id, preview);
+            final ServerPlayer player = (ServerPlayer) ctx.getPlayer();
+            provider.getPreview(packet.resource(), packet.amount()).ifPresent(
+                preview -> S2CPackets.sendAutocraftingPreviewResponse(player, packet.id, preview)
+            );
         }
     }
 

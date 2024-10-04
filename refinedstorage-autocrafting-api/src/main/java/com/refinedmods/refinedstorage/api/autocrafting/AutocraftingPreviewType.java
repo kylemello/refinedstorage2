@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting.preview;
+package com.refinedmods.refinedstorage.api.autocrafting;
 
 public enum AutocraftingPreviewType {
     SUCCESS,

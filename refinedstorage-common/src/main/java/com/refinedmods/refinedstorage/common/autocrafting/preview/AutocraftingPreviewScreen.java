@@ -1,5 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewItem;
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
@@ -72,8 +75,20 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     public AutocraftingPreviewScreen(final Screen parent,
                                      final Inventory playerInventory,
                                      final List<AutocraftingRequest> requests) {
+        this(new AutocraftingPreviewContainerMenu(requests), parent, playerInventory);
+    }
+
+    public AutocraftingPreviewScreen(final AutocraftingPreviewContainerMenu menu,
+                                     final Inventory playerInventory,
+                                     final Component title) {
+        this(menu, null, playerInventory);
+    }
+
+    public AutocraftingPreviewScreen(final AutocraftingPreviewContainerMenu menu,
+                                     @Nullable final Screen parent,
+                                     final Inventory playerInventory) {
         super(
-            new AutocraftingPreviewContainerMenu(requests),
+            menu,
             parent,
             playerInventory,
             TITLE,
@@ -478,7 +493,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
 
     public void responseReceived(final UUID id, final boolean started) {
         if (started && getMenu().requestStarted(id)) {
-            tryCloseToParent();
+            close();
         }
     }
 }

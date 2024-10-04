@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.CrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
 import com.refinedmods.refinedstorage.common.controller.ControllerContainerMenu;
@@ -74,6 +75,8 @@ public final class Menus {
     private Supplier<MenuType<WirelessTransmitterContainerMenu>> wirelessTransmitter;
     @Nullable
     private Supplier<MenuType<StorageMonitorContainerMenu>> storageMonitor;
+    @Nullable
+    private Supplier<MenuType<AutocraftingPreviewContainerMenu>> autocraftingStorageMonitor;
     @Nullable
     private Supplier<MenuType<NetworkTransmitterContainerMenu>> networkTransmitter;
     @Nullable
@@ -238,6 +241,16 @@ public final class Menus {
 
     public void setStorageMonitor(final Supplier<MenuType<StorageMonitorContainerMenu>> supplier) {
         this.storageMonitor = supplier;
+    }
+
+    public MenuType<AutocraftingPreviewContainerMenu> getAutocraftingStorageMonitor() {
+        return requireNonNull(autocraftingStorageMonitor).get();
+    }
+
+    public void setAutocraftingStorageMonitor(
+        final Supplier<MenuType<AutocraftingPreviewContainerMenu>> supplier
+    ) {
+        this.autocraftingStorageMonitor = supplier;
     }
 
     public MenuType<NetworkTransmitterContainerMenu> getNetworkTransmitter() {

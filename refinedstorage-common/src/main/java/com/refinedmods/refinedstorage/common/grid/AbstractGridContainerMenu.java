@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
@@ -30,10 +32,6 @@ import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegistry;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreview;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewItem;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewProvider;
-import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.ClientGridScrollingStrategy;
@@ -45,9 +43,8 @@ import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListen
 import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
@@ -491,25 +488,13 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Override
-    public AutocraftingPreview getPreview(final PlatformResourceKey resource, final long amount) {
-        final List<AutocraftingPreviewItem> items = new ArrayList<>();
-        final boolean missing = amount == 404;
-        for (int i = 0; i < 31; ++i) {
-            items.add(new AutocraftingPreviewItem(
-                resource,
-                (i + 1),
-                (i % 2 == 0 && missing) ? amount : 0,
-                i % 2 == 0 ? 0 : amount
-            ));
-        }
-        return new AutocraftingPreview(missing
-            ? AutocraftingPreviewType.MISSING_RESOURCES
-            : AutocraftingPreviewType.SUCCESS, items);
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).getPreview(resource, amount);
     }
 
     @Override
-    public boolean start(final PlatformResourceKey resource, final long amount) {
-        return true;
+    public boolean start(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).start(resource, amount);
     }
 
     public boolean isLargeSlot(final Slot slot) {

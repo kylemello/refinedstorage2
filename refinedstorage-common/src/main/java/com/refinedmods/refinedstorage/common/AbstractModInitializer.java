@@ -121,6 +121,7 @@ import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockDa
 import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockLootItemFunction;
 import com.refinedmods.refinedstorage.common.storage.storagedisk.FluidStorageDiskItem;
 import com.refinedmods.refinedstorage.common.storage.storagedisk.ItemStorageDiskItem;
+import com.refinedmods.refinedstorage.common.storagemonitor.AutocraftingStorageMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.storagemonitor.FluidStorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.storagemonitor.FluidStorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.storagemonitor.ItemStorageMonitorExtractionStrategy;
@@ -136,6 +137,7 @@ import com.refinedmods.refinedstorage.common.support.energy.EnergyLootItemFuncti
 import com.refinedmods.refinedstorage.common.support.network.component.PlatformStorageNetworkComponent;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceFactory;
+import com.refinedmods.refinedstorage.common.support.resource.ResourceCodecs;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.slotreference.InventorySlotReferenceFactory;
@@ -744,6 +746,13 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setStorageMonitor(callback.register(
             ContentIds.STORAGE_MONITOR,
             () -> extendedMenuTypeFactory.create(StorageMonitorContainerMenu::new, ResourceContainerData.STREAM_CODEC)
+        ));
+        Menus.INSTANCE.setAutocraftingStorageMonitor(callback.register(
+            createIdentifier("autocrafting_storage_monitor"),
+            () -> extendedMenuTypeFactory.create(
+                (syncId, playerInventory, data) -> new AutocraftingStorageMonitorContainerMenu(syncId, data),
+                ResourceCodecs.STREAM_CODEC
+            )
         ));
         Menus.INSTANCE.setNetworkTransmitter(callback.register(
             ContentIds.NETWORK_TRANSMITTER,
