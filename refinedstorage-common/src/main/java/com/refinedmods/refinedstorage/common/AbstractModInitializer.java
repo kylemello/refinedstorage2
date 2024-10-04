@@ -14,9 +14,9 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApiProxy;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterBlockEntity;
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterData;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterData;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
@@ -343,7 +343,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getSecurityManager().registerBlocks(callback);
         Blocks.INSTANCE.getRelay().registerBlocks(callback);
         Blocks.INSTANCE.setDiskInterface(blockEntityProviders.diskInterface()).registerBlocks(callback);
-        Blocks.INSTANCE.getCrafter().registerBlocks(callback);
+        Blocks.INSTANCE.getAutocrafter().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -366,7 +366,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getSecurityManager().registerItems(callback, Items.INSTANCE::addSecurityManager);
         Blocks.INSTANCE.getRelay().registerItems(callback, Items.INSTANCE::addRelay);
         Blocks.INSTANCE.getDiskInterface().registerItems(callback, Items.INSTANCE::addDiskInterface);
-        Blocks.INSTANCE.getCrafter().registerItems(callback, Items.INSTANCE::addCrafter);
+        Blocks.INSTANCE.getAutocrafter().registerItems(callback, Items.INSTANCE::addAutocrafter);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -527,7 +527,7 @@ public abstract class AbstractModInitializer {
             .add(Items.INSTANCE.getSpeedUpgrade(), 4)
             .add(Items.INSTANCE.getStackUpgrade());
 
-        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.CRAFTER)
+        RefinedStorageApi.INSTANCE.getUpgradeRegistry().forDestination(UpgradeDestinations.AUTOCRAFTER)
             .add(Items.INSTANCE.getSpeedUpgrade(), 4);
     }
 
@@ -665,9 +665,9 @@ public abstract class AbstractModInitializer {
             ContentIds.DISK_INTERFACE,
             () -> typeFactory.create(providers.diskInterface(), Blocks.INSTANCE.getDiskInterface().toArray())
         ));
-        BlockEntities.INSTANCE.setCrafter(callback.register(
-            ContentIds.CRAFTER,
-            () -> typeFactory.create(CrafterBlockEntity::new, Blocks.INSTANCE.getCrafter().toArray())
+        BlockEntities.INSTANCE.setAutocrafter(callback.register(
+            ContentIds.AUTOCRAFTER,
+            () -> typeFactory.create(AutocrafterBlockEntity::new, Blocks.INSTANCE.getAutocrafter().toArray())
         ));
     }
 
@@ -788,9 +788,9 @@ public abstract class AbstractModInitializer {
             ContentIds.DISK_INTERFACE,
             () -> extendedMenuTypeFactory.create(DiskInterfaceContainerMenu::new, ResourceContainerData.STREAM_CODEC)
         ));
-        Menus.INSTANCE.setCrafter(callback.register(
-            ContentIds.CRAFTER,
-            () -> extendedMenuTypeFactory.create(CrafterContainerMenu::new, CrafterData.STREAM_CODEC)
+        Menus.INSTANCE.setAutocrafter(callback.register(
+            ContentIds.AUTOCRAFTER,
+            () -> extendedMenuTypeFactory.create(AutocrafterContainerMenu::new, AutocrafterData.STREAM_CODEC)
         ));
     }
 

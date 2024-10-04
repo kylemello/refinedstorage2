@@ -116,7 +116,7 @@ class PortableGrid implements Grid {
     }
 
     @Override
-    public Set<PlatformResourceKey> getCraftableResources() {
+    public Set<PlatformResourceKey> getAutocraftableResources() {
         return Collections.emptySet();
     }
 

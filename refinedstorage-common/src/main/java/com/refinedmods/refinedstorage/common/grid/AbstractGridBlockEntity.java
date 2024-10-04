@@ -61,7 +61,7 @@ public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeCon
     }
 
     @Override
-    public Set<PlatformResourceKey> getCraftableResources() {
+    public Set<PlatformResourceKey> getAutocraftableResources() {
         return requireNonNull(mainNetworkNode.getNetwork())
             .getComponent(AutocraftingNetworkComponent.class)
             .getOutputs()

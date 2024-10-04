@@ -83,8 +83,8 @@ public final class S2CPackets {
         Platform.INSTANCE.sendPacketToClient(player, new PatternGridAllowedAlternativesUpdatePacket(index, ids));
     }
 
-    public static void sendCrafterNameUpdate(final ServerPlayer player, final Component name) {
-        Platform.INSTANCE.sendPacketToClient(player, new CrafterNameUpdatePacket(name));
+    public static void sendAutocrafterNameUpdate(final ServerPlayer player, final Component name) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocrafterNameUpdatePacket(name));
     }
 
     public static void sendAutocraftingPreviewResponse(final ServerPlayer player,

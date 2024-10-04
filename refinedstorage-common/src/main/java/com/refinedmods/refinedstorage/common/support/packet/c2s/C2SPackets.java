@@ -128,8 +128,8 @@ public final class C2SPackets {
         );
     }
 
-    public static void sendCrafterNameChange(final String name) {
-        Platform.INSTANCE.sendPacketToServer(new CrafterNameChangePacket(name));
+    public static void sendAutocrafterNameChange(final String name) {
+        Platform.INSTANCE.sendPacketToServer(new AutocrafterNameChangePacket(name));
     }
 
     public static void sendAutocraftingPreviewRequest(final UUID id,

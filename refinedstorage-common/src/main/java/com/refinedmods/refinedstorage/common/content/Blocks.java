@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
-import com.refinedmods.refinedstorage.common.autocrafting.CrafterBlock;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlock;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
@@ -145,10 +145,10 @@ public final class Blocks {
     );
     @Nullable
     private BlockColorMap<DiskInterfaceBlock, BaseBlockItem> diskInterface;
-    private final BlockColorMap<CrafterBlock, BaseBlockItem> crafter = new BlockColorMap<>(
-        CrafterBlock::new,
-        ContentIds.CRAFTER,
-        ContentNames.CRAFTER,
+    private final BlockColorMap<AutocrafterBlock, BaseBlockItem> autocrafter = new BlockColorMap<>(
+        AutocrafterBlock::new,
+        ContentIds.AUTOCRAFTER,
+        ContentNames.AUTOCRAFTER,
         COLOR
     );
 
@@ -419,7 +419,7 @@ public final class Blocks {
         return requireNonNull(diskInterface);
     }
 
-    public BlockColorMap<CrafterBlock, BaseBlockItem> getCrafter() {
-        return crafter;
+    public BlockColorMap<AutocrafterBlock, BaseBlockItem> getAutocrafter() {
+        return autocrafter;
     }
 }

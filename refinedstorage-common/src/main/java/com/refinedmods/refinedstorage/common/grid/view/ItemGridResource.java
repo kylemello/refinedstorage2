@@ -41,8 +41,8 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
                             final ItemStack itemStack,
                             final String name,
                             final Map<GridResourceAttributeKey, Set<String>> attributes,
-                            final boolean craftable) {
-        super(resource, name, attributes, craftable);
+                            final boolean autocraftable) {
+        super(resource, name, attributes, autocraftable);
         this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
         this.itemResource = resource;

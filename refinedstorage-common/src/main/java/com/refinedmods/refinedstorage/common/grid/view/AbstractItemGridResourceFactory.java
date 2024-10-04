@@ -20,7 +20,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 public abstract class AbstractItemGridResourceFactory implements GridResourceFactory {
     @Override
-    public Optional<GridResource> apply(final ResourceKey resource, final boolean craftable) {
+    public Optional<GridResource> apply(final ResourceKey resource, final boolean autocraftable) {
         if (!(resource instanceof ItemResource itemResource)) {
             return Optional.empty();
         }
@@ -41,7 +41,7 @@ public abstract class AbstractItemGridResourceFactory implements GridResourceFac
                 GridResourceAttributeKeys.TAGS, tags,
                 GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
             ),
-            craftable
+            autocraftable
         ));
     }
 

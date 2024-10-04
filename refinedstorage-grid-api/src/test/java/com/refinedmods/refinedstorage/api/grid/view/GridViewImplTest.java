@@ -657,11 +657,11 @@ class GridViewImplTest {
     }
 
     @Test
-    void shouldIncludeCraftableResourceInViewList() {
+    void shouldIncludeAutocraftableResourceInViewList() {
         // Arrange
         final GridView view = viewBuilder
             .withResource(A, 15, null)
-            .withCraftableResource(B)
+            .withAutocraftableResource(B)
             .build();
 
         // Act
@@ -670,10 +670,10 @@ class GridViewImplTest {
         // Assert
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new GridResourceImpl(A),
-            new GridResourceImpl(B).craftable()
+            new GridResourceImpl(B).autocraftable()
         );
-        assertThat(view.isCraftable(A)).isFalse();
-        assertThat(view.isCraftable(B)).isTrue();
+        assertThat(view.isAutocraftable(A)).isFalse();
+        assertThat(view.isAutocraftable(B)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(15);
         assertThat(view.getAmount(B)).isZero();
         assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator()
@@ -681,11 +681,11 @@ class GridViewImplTest {
     }
 
     @Test
-    void shouldIncludeCraftableResourceInViewListEvenIfItIsInTheBackingList() {
+    void shouldIncludeAutocraftableResourceInViewListEvenIfItIsInTheBackingList() {
         // Arrange
         final GridView view = viewBuilder
             .withResource(A, 15, null)
-            .withCraftableResource(A)
+            .withAutocraftableResource(A)
             .build();
 
         // Act
@@ -693,9 +693,9 @@ class GridViewImplTest {
 
         // Assert
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new GridResourceImpl(A).craftable()
+            new GridResourceImpl(A).autocraftable()
         );
-        assertThat(view.isCraftable(A)).isTrue();
+        assertThat(view.isAutocraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(15);
         assertThat(view.copyBackingList().copyState())
             .usingRecursiveFieldByFieldElementComparator()
@@ -703,11 +703,11 @@ class GridViewImplTest {
     }
 
     @Test
-    void shouldNotRemoveCraftableResource() {
+    void shouldNotRemoveAutocraftableResource() {
         // Arrange
         final GridView view = viewBuilder
             .withResource(A, 15, null)
-            .withCraftableResource(A)
+            .withAutocraftableResource(A)
             .build();
 
         view.sort();
@@ -717,19 +717,19 @@ class GridViewImplTest {
 
         // Assert
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new GridResourceImpl(A).craftable()
+            new GridResourceImpl(A).autocraftable()
         );
-        assertThat(view.isCraftable(A)).isTrue();
+        assertThat(view.isAutocraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isZero();
         assertThat(view.copyBackingList().copyState()).isEmpty();
     }
 
     @Test
-    void shouldNotRemoveCraftableResourceEvenWhenPreventingSorting() {
+    void shouldNotRemoveAutocraftableResourceEvenWhenPreventingSorting() {
         // Arrange
         final GridView view = viewBuilder
             .withResource(A, 15, null)
-            .withCraftableResource(A)
+            .withAutocraftableResource(A)
             .build();
 
         view.sort();
@@ -739,18 +739,18 @@ class GridViewImplTest {
         view.onChange(A, -15, null);
 
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new GridResourceImpl(A).craftable()
+            new GridResourceImpl(A).autocraftable()
         );
-        assertThat(view.isCraftable(A)).isTrue();
+        assertThat(view.isAutocraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isZero();
         assertThat(view.copyBackingList().copyState()).isEmpty();
 
         view.onChange(A, 1, null);
 
         assertThat(view.getViewList()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new GridResourceImpl(A).craftable()
+            new GridResourceImpl(A).autocraftable()
         );
-        assertThat(view.isCraftable(A)).isTrue();
+        assertThat(view.isAutocraftable(A)).isTrue();
         assertThat(view.getAmount(A)).isEqualTo(1);
         assertThat(view.copyBackingList().copyState()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 1)

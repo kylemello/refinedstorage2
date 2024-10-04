@@ -2,14 +2,14 @@ package com.refinedmods.refinedstorage.common.grid;
 
 public enum GridViewType {
     ALL,
-    CRAFTABLE,
-    NON_CRAFTABLE;
+    AUTOCRAFTABLE,
+    NON_AUTOCRAFTABLE;
 
-    boolean accepts(final boolean craftable) {
+    boolean accepts(final boolean autocraftable) {
         return switch (this) {
             case ALL -> true;
-            case CRAFTABLE -> craftable;
-            case NON_CRAFTABLE -> !craftable;
+            case AUTOCRAFTABLE -> autocraftable;
+            case NON_AUTOCRAFTABLE -> !autocraftable;
         };
     }
 }

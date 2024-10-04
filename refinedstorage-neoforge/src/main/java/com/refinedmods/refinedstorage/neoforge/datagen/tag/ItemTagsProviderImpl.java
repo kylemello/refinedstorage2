@@ -20,10 +20,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
+import static com.refinedmods.refinedstorage.common.content.Tags.AUTOCRAFTERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CABLES;
 import static com.refinedmods.refinedstorage.common.content.Tags.CONSTRUCTORS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CONTROLLERS;
-import static com.refinedmods.refinedstorage.common.content.Tags.CRAFTERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CRAFTING_GRIDS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CREATIVE_CONTROLLERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.DESTRUCTORS;
@@ -131,8 +131,8 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
             Blocks.INSTANCE.getDiskInterface().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
-        addAllToTag(CRAFTERS,
-            Blocks.INSTANCE.getCrafter().values().stream()
+        addAllToTag(AUTOCRAFTERS,
+            Blocks.INSTANCE.getAutocrafter().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
     }

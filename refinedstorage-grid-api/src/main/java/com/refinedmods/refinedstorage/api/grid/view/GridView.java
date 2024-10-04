@@ -72,9 +72,9 @@ public interface GridView {
 
     /**
      * @param resource the resource
-     * @return whether its craftable
+     * @return whether its autocraftable
      */
-    boolean isCraftable(ResourceKey resource);
+    boolean isAutocraftable(ResourceKey resource);
 
     /**
      * Sorts the view list.

@@ -292,7 +292,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                           final int slotX,
                                           final int slotY,
                                           final GridResource resource) {
-        if (resource.isCraftable()) {
+        if (resource.isAutocraftable()) {
             renderCraftableBackground(graphics, slotX, slotY, false,
                 AutocraftableResourceHint.AUTOCRAFTABLE.getColor());
         }
@@ -329,7 +329,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     private int getAmountColor(final GridResource resource, final long amount) {
         if (amount == 0) {
-            if (resource.isCraftable()) {
+            if (resource.isAutocraftable()) {
                 return 0xFFFFFF;
             }
             return 0xFF5555;
@@ -340,7 +340,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private String getAmountText(final GridResource resource,
                                  final PlatformGridResource platformResource,
                                  final long amount) {
-        if (amount == 0 && resource.isCraftable()) {
+        if (amount == 0 && resource.isAutocraftable()) {
             return I18n.get(createTranslationKey("gui", "grid.craft"));
         }
         return platformResource.getDisplayedAmount(getMenu().getView());
@@ -420,7 +420,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (amount > 0 && Platform.INSTANCE.getConfig().getGrid().isDetailedTooltip()) {
             addDetailedTooltip(view, gridResource, processedLines);
         }
-        if (gridResource.isCraftable()) {
+        if (gridResource.isAutocraftable()) {
             processedLines.add(amount == 0
                 ? AutocraftableClientTooltipComponent.empty()
                 : AutocraftableClientTooltipComponent.existing());
@@ -498,7 +498,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             if (resource.canExtract(carriedStack, getMenu().getView()) && !hasControlDown()) {
                 mouseClickedInGrid(clickedButton, resource);
                 return true;
-            } else if (resource.isCraftable() && tryStartAutocrafting(resource)) {
+            } else if (resource.isAutocraftable() && tryStartAutocrafting(resource)) {
                 return true;
             }
         }

@@ -29,9 +29,9 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
-import com.refinedmods.refinedstorage.common.support.packet.c2s.CrafterNameChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
@@ -55,9 +55,9 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
-import com.refinedmods.refinedstorage.common.support.packet.s2c.CrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -444,8 +444,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playS2C().register(
-            CrafterNameUpdatePacket.PACKET_TYPE,
-            CrafterNameUpdatePacket.STREAM_CODEC
+            AutocrafterNameUpdatePacket.PACKET_TYPE,
+            AutocrafterNameUpdatePacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playS2C().register(
             AutocraftingPreviewResponsePacket.PACKET_TYPE,
@@ -539,8 +539,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playC2S().register(
-            CrafterNameChangePacket.PACKET_TYPE,
-            CrafterNameChangePacket.STREAM_CODEC
+            AutocrafterNameChangePacket.PACKET_TYPE,
+            AutocrafterNameChangePacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playC2S().register(
             AutocraftingPreviewRequestPacket.PACKET_TYPE,
@@ -646,8 +646,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
-            CrafterNameChangePacket.PACKET_TYPE,
-            wrapHandler(CrafterNameChangePacket::handle)
+            AutocrafterNameChangePacket.PACKET_TYPE,
+            wrapHandler(AutocrafterNameChangePacket::handle)
         );
         ServerPlayNetworking.registerGlobalReceiver(
             AutocraftingPreviewRequestPacket.PACKET_TYPE,
@@ -691,7 +691,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getSecurityManager());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getStorageMonitor());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getWirelessTransmitter());
-        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getCrafter());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocrafter());
         registerItemStorage(
             AbstractDiskDriveBlockEntity.class::isInstance,
             AbstractDiskDriveBlockEntity.class::cast,

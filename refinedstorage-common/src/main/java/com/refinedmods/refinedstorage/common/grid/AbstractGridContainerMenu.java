@@ -114,7 +114,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
             resource.resourceAmount().amount(),
             resource.trackedResource().orElse(null)
         ));
-        gridData.craftableResources().forEach(viewBuilder::withCraftableResource);
+        gridData.autocraftableResources().forEach(viewBuilder::withAutocraftableResource);
 
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
@@ -162,7 +162,8 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     private BiPredicate<GridView, GridResource> createViewTypeFilter() {
-        return (v, resource) -> Platform.INSTANCE.getConfig().getGrid().getViewType().accepts(resource.isCraftable());
+        return (v, resource) -> Platform.INSTANCE.getConfig().getGrid().getViewType()
+            .accepts(resource.isAutocraftable());
     }
 
     private static GridViewBuilder createViewBuilder() {
@@ -473,7 +474,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     @Nullable
     private AutocraftableResourceHint getAutocraftableResourceHint(final ResourceKey resource) {
-        if (view.isCraftable(resource)) {
+        if (view.isAutocraftable(resource)) {
             return AutocraftableResourceHint.AUTOCRAFTABLE;
         }
         if (playerInventoryPatterns.getOutputs().contains(resource)) {
