@@ -94,17 +94,6 @@ public class AutocrafterScreen extends AbstractBaseScreen<AutocrafterContainerMe
     }
 
     @Override
-    public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
-        if (!editName && getMenu().canChangeName() && isHovering(
-            titleLabelX, titleLabelY, titleMarquee.getEffectiveWidth(font), font.lineHeight, mouseX, mouseY
-        )) {
-            setEditName(true);
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, clickedButton);
-    }
-
-    @Override
     protected void init() {
         super.init();
         getMenu().setListener(name -> {

@@ -79,6 +79,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final Component title,
                                  final int bottomHeight) {
         super(menu, playerInventory, new TextMarquee(title, 70));
+        menu.setGridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview(this);
         this.bottomHeight = bottomHeight;
     }
 
@@ -278,13 +279,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
     }
 
-    private void tryRenderAutocraftableResourceHintBackground(final GuiGraphics guiGraphics, final Slot slot) {
+    private void tryRenderAutocraftableResourceHintBackground(final GuiGraphics graphics, final Slot slot) {
         if (!slot.isHighlightable() || !slot.isActive()) {
             return;
         }
         final AutocraftableResourceHint hint = getMenu().getAutocraftableResourceHint(slot);
         if (hint != null) {
-            renderCraftableBackground(guiGraphics, slot.x, slot.y, getMenu().isLargeSlot(slot), hint.getColor());
+            renderSlotBackground(graphics, slot.x, slot.y, getMenu().isLargeSlot(slot), hint.getColor());
         }
     }
 
@@ -293,8 +294,21 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                           final int slotY,
                                           final GridResource resource) {
         if (resource.isAutocraftable()) {
-            renderCraftableBackground(graphics, slotX, slotY, false,
-                AutocraftableResourceHint.AUTOCRAFTABLE.getColor());
+            renderSlotBackground(
+                graphics,
+                slotX,
+                slotY,
+                false,
+                AutocraftableResourceHint.AUTOCRAFTABLE.getColor()
+            );
+        } else if (resource.getAmount(getMenu().getView()) == 0) {
+            renderSlotBackground(
+                graphics,
+                slotX,
+                slotY,
+                false,
+                0x66FF0000
+            );
         }
         if (resource instanceof PlatformGridResource platformResource) {
             platformResource.render(graphics, slotX, slotY);
@@ -302,14 +316,19 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         renderAmount(graphics, slotX, slotY, resource);
     }
 
-    public static void renderCraftableBackground(final GuiGraphics graphics,
-                                                 final int slotX,
-                                                 final int slotY,
-                                                 final boolean large,
-                                                 final int color) {
+    public static void renderSlotBackground(final GuiGraphics graphics,
+                                            final int slotX,
+                                            final int slotY,
+                                            final boolean large,
+                                            final int color) {
         final int offset = large ? 4 : 0;
-        graphics.fill(slotX - offset, slotY - offset, slotX + 16 + offset, slotY + 16 + offset,
-            color);
+        graphics.fill(
+            slotX - offset,
+            slotY - offset,
+            slotX + 16 + offset,
+            slotY + 16 + offset,
+            color
+        );
     }
 
     private void renderAmount(final GuiGraphics graphics,
@@ -512,7 +531,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         return super.mouseClicked(mouseX, mouseY, clickedButton);
     }
 
-    private static boolean tryStartAutocrafting(final PlatformGridResource resource) {
+    private boolean tryStartAutocrafting(final PlatformGridResource resource) {
         final ResourceAmount request = resource.getAutocraftingRequest();
         if (request == null) {
             return false;
@@ -526,7 +545,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
             requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
         }
-        RefinedStorageApi.INSTANCE.openCraftingPreview(requests);
+        RefinedStorageApi.INSTANCE.openCraftingPreview(requests, this);
         return true;
     }
 

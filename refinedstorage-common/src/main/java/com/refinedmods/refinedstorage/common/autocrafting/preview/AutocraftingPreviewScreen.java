@@ -13,7 +13,6 @@ import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -453,7 +452,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     @Override
     protected boolean confirm(final Double amount) {
         setPending();
-        getMenu().startRequest(amount);
+        getMenu().sendRequest(amount);
         return false;
     }
 
@@ -468,7 +467,11 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     }
 
     @Override
-    public void requestRemoved(final AutocraftingRequest request) {
+    public void requestRemoved(final AutocraftingRequest request, final boolean last) {
+        if (last) {
+            close();
+            return;
+        }
         requestButtons.removeIf(requestButton -> requestButton.getRequest() == request);
         updateRequestsScrollbar();
         for (int i = 0; i < requestButtons.size(); ++i) {
@@ -489,11 +492,5 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
             : totalRequestButtons;
         requestButtonsScrollbar.setEnabled(maxOffset > 0);
         requestButtonsScrollbar.setMaxOffset(maxOffset);
-    }
-
-    public void responseReceived(final UUID id, final boolean started) {
-        if (started && getMenu().requestStarted(id)) {
-            close();
-        }
     }
 }

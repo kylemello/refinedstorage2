@@ -9,5 +9,5 @@ interface AutocraftingPreviewListener {
 
     void previewChanged(@Nullable AutocraftingPreview preview);
 
-    void requestRemoved(AutocraftingRequest request);
+    void requestRemoved(AutocraftingRequest request, boolean last);
 }

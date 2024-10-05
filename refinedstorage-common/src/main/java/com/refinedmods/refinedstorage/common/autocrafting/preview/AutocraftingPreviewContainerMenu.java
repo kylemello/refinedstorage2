@@ -65,40 +65,43 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
     }
 
     void amountChanged(final double amount) {
-        if (currentRequest.trySendRequest(amount) && listener != null) {
+        if (currentRequest.sendPreviewRequest(amount) && listener != null) {
             listener.previewChanged(null);
         }
     }
 
     public void previewResponseReceived(final UUID id, final AutocraftingPreview preview) {
-        if (currentRequest.previewReceived(id, preview) && listener != null) {
+        if (!currentRequest.getId().equals(id)) {
+            return;
+        }
+        currentRequest.previewResponseReceived(preview);
+        if (listener != null) {
             listener.previewChanged(preview);
         }
     }
 
     void loadCurrentRequest() {
+        currentRequest.clearPreview();
         if (listener != null) {
-            currentRequest.clearPreview();
             listener.requestChanged(currentRequest);
         }
     }
 
-    void startRequest(final double amount) {
-        currentRequest.start(amount);
+    void sendRequest(final double amount) {
+        currentRequest.sendRequest(amount);
     }
 
-    boolean requestStarted(final UUID id) {
-        if (currentRequest.isStarted(id)) {
-            if (listener != null) {
-                listener.requestRemoved(currentRequest);
-            }
-            requests.remove(currentRequest);
-            if (!requests.isEmpty()) {
-                setCurrentRequest(requests.getFirst());
-                return false;
-            }
-            return true;
+    public void responseReceived(final UUID id, final boolean started) {
+        if (!currentRequest.getId().equals(id) || !started) {
+            return;
         }
-        return false;
+        requests.remove(currentRequest);
+        final boolean last = requests.isEmpty();
+        if (listener != null) {
+            listener.requestRemoved(currentRequest, last);
+        }
+        if (!last) {
+            setCurrentRequest(requests.getFirst());
+        }
     }
 }

@@ -206,5 +206,5 @@ public interface RefinedStorageApi {
 
     Optional<Pattern> getPattern(ItemStack stack, Level level);
 
-    void openCraftingPreview(List<ResourceAmount> requests);
+    void openCraftingPreview(List<ResourceAmount> requests, @Nullable Object parentScreen);
 }

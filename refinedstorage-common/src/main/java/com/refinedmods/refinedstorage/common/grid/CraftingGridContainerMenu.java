@@ -128,7 +128,7 @@ public class CraftingGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     @API(status = API.Status.INTERNAL)
-    public ResourceList getAvailableListForRecipeTransfer() {
+    public MutableResourceList getAvailableListForRecipeTransfer() {
         final MutableResourceList available = getView().copyBackingList();
         addContainerToList(craftingGrid.getCraftingMatrix(), available);
         addContainerToList(gridPlayer.getInventory(), available);

@@ -404,8 +404,8 @@ public class RefinedStorageApiProxy implements RefinedStorageApi {
     }
 
     @Override
-    public void openCraftingPreview(final List<ResourceAmount> requests) {
-        ensureLoaded().openCraftingPreview(requests);
+    public void openCraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
+        ensureLoaded().openCraftingPreview(requests, parentScreen);
     }
 
     private RefinedStorageApi ensureLoaded() {
