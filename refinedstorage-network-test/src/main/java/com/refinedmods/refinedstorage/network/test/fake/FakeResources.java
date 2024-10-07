@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.network.test.fake;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
+// TODO: rename to fixtures
 public enum FakeResources implements ResourceKey {
     A,
     A_ALTERNATIVE,

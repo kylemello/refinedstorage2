@@ -591,7 +591,7 @@ class RelayStorageNetworkNodeTest {
     @Test
     @SetupNetwork(id = "cycle_input", energyStored = 1, energyCapacity = 2)
     @SetupNetwork(id = "cycle_input_alt", energyStored = 3, energyCapacity = 4)
-    void shouldDetectStorageCycles(
+    void shouldDetectCycles(
         @InjectNetwork("cycle_input") final Network inputNetwork,
         @InjectNetworkStorageComponent(networkId = "cycle_input") final StorageNetworkComponent inputStorage,
         @InjectNetwork("cycle_input_alt") final Network inputAlternativeNetwork,

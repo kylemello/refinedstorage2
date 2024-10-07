@@ -45,6 +45,7 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
     private static final String TAG_PASS_ENERGY = "passenergy";
     private static final String TAG_PASS_SECURITY = "passsecurity";
     private static final String TAG_PASS_STORAGE = "passstorage";
+    private static final String TAG_PASS_AUTOCRAFTING = "passautocrafting";
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_ACCESS_MODE = "am";
     private static final String TAG_PRIORITY = "pri";
@@ -157,6 +158,15 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         setChanged();
     }
 
+    boolean isPassAutocrafting() {
+        return mainNetworkNode.hasComponentType(RelayComponentType.AUTOCRAFTING);
+    }
+
+    void setPassAutocrafting(final boolean passAutocrafting) {
+        mainNetworkNode.updateComponentType(RelayComponentType.AUTOCRAFTING, passAutocrafting);
+        setChanged();
+    }
+
     boolean isPassThrough() {
         return passThrough;
     }
@@ -221,6 +231,7 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         tag.putBoolean(TAG_PASS_ENERGY, mainNetworkNode.hasComponentType(RelayComponentType.ENERGY));
         tag.putBoolean(TAG_PASS_STORAGE, mainNetworkNode.hasComponentType(RelayComponentType.STORAGE));
         tag.putBoolean(TAG_PASS_SECURITY, mainNetworkNode.hasComponentType(RelayComponentType.SECURITY));
+        tag.putBoolean(TAG_PASS_AUTOCRAFTING, mainNetworkNode.hasComponentType(RelayComponentType.AUTOCRAFTING));
         tag.putInt(TAG_ACCESS_MODE, AccessModeSettings.getAccessMode(accessMode));
         tag.putInt(TAG_PRIORITY, priority);
     }
@@ -257,6 +268,9 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         }
         if (tag.getBoolean(TAG_PASS_STORAGE)) {
             types.add(RelayComponentType.STORAGE);
+        }
+        if (tag.getBoolean(TAG_PASS_AUTOCRAFTING)) {
+            types.add(RelayComponentType.AUTOCRAFTING);
         }
         return types;
     }

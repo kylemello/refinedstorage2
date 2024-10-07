@@ -13,4 +13,6 @@ public interface PatternRepository {
     void remove(Pattern pattern);
 
     Set<ResourceKey> getOutputs();
+
+    Set<Pattern> getAll();
 }

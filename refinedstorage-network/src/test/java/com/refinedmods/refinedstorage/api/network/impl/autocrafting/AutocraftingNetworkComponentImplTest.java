@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.api.network.impl.autocrafting;
 
-import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.network.impl.node.patternprovider.PatternProviderNetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage.network.test.fake.FakeResources;
@@ -15,7 +14,7 @@ class AutocraftingNetworkComponentImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new AutocraftingNetworkComponentImpl(new PatternRepositoryImpl());
+        sut = new AutocraftingNetworkComponentImpl();
     }
 
     @Test
@@ -75,8 +74,8 @@ class AutocraftingNetworkComponentImplTest {
     }
 
     @Test
-    void shouldStart() {
-        sut.start(FakeResources.A, 10);
+    void shouldStartTask() {
+        sut.startTask(FakeResources.A, 10);
     }
 
     @Test

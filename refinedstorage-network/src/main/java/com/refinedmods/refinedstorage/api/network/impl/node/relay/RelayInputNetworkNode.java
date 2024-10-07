@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.relay;
 
 import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkComponent;
@@ -72,6 +73,10 @@ public class RelayInputNetworkNode extends AbstractNetworkNode {
         final boolean hasStorage = componentTypes.contains(RelayComponentType.STORAGE);
         outputNode.setStorageDelegate(valid && hasStorage
             ? network.getComponent(StorageNetworkComponent.class)
+            : null);
+        final boolean hasAutocrafting = componentTypes.contains(RelayComponentType.AUTOCRAFTING);
+        outputNode.setAutocraftingDelegate(valid && hasAutocrafting
+            ? network.getComponent(AutocraftingNetworkComponent.class)
             : null);
     }
 

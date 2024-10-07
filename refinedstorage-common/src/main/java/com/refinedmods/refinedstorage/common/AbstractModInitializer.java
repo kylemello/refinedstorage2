@@ -271,7 +271,7 @@ public abstract class AbstractModInitializer {
         );
         RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             AutocraftingNetworkComponent.class,
-            network -> new AutocraftingNetworkComponentImpl(new PatternRepositoryImpl())
+            network -> new AutocraftingNetworkComponentImpl()
         );
     }
 

@@ -1,5 +1,8 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.relay;
 
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.autocrafting.ParentContainer;
+import com.refinedmods.refinedstorage.api.network.autocrafting.PatternProvider;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyProvider;
 import com.refinedmods.refinedstorage.api.network.impl.node.AbstractNetworkNode;
@@ -20,9 +23,10 @@ import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
 public class RelayOutputNetworkNode extends AbstractNetworkNode
-    implements EnergyProvider, SecurityDecisionProvider, StorageProvider {
+    implements EnergyProvider, SecurityDecisionProvider, StorageProvider, PatternProvider {
     private final long energyUsage;
     private final RelayOutputStorage storage = new RelayOutputStorage();
+    private final RelayOutputPatternProvider patternProvider = new RelayOutputPatternProvider();
 
     @Nullable
     private EnergyNetworkComponent energyDelegate;
@@ -45,6 +49,10 @@ public class RelayOutputNetworkNode extends AbstractNetworkNode
         this.storage.setDelegate(storageDelegate);
     }
 
+    void setAutocraftingDelegate(@Nullable final AutocraftingNetworkComponent autocraftingDelegate) {
+        this.patternProvider.setDelegate(autocraftingDelegate);
+    }
+
     void setAccessMode(final AccessMode accessMode) {
         this.storage.setAccessMode(accessMode);
     }
@@ -58,19 +66,25 @@ public class RelayOutputNetworkNode extends AbstractNetworkNode
 
     void setFilters(final Set<ResourceKey> filters) {
         this.storage.setFilters(filters);
+        this.patternProvider.setFilters(filters);
     }
 
     void setFilterMode(final FilterMode filterMode) {
         this.storage.setFilterMode(filterMode);
+        this.patternProvider.setFilterMode(filterMode);
     }
 
     void setFilterNormalizer(final UnaryOperator<ResourceKey> normalizer) {
         this.storage.setFilterNormalizer(normalizer);
+        this.patternProvider.setFilterNormalizer(normalizer);
     }
 
     @Override
     public long getEnergyUsage() {
-        if (energyDelegate != null || securityDelegate != null || storage.hasDelegate()) {
+        if (energyDelegate != null
+            || securityDelegate != null
+            || storage.hasDelegate()
+            || patternProvider.hasDelegate()) {
             return energyUsage;
         }
         return 0;
@@ -104,6 +118,11 @@ public class RelayOutputNetworkNode extends AbstractNetworkNode
     }
 
     @Override
+    public boolean contains(final AutocraftingNetworkComponent component) {
+        return patternProvider.contains(component);
+    }
+
+    @Override
     public SecurityDecision isAllowed(final Permission permission, final SecurityActor actor) {
         if (securityDelegate == null || securityDelegate.contains(securityDelegate)) {
             return SecurityDecision.PASS;
@@ -119,5 +138,15 @@ public class RelayOutputNetworkNode extends AbstractNetworkNode
     @Override
     public Storage getStorage() {
         return storage;
+    }
+
+    @Override
+    public void onAddedIntoContainer(final ParentContainer parentContainer) {
+        patternProvider.onAddedIntoContainer(parentContainer);
+    }
+
+    @Override
+    public void onRemovedFromContainer(final ParentContainer parentContainer) {
+        patternProvider.onRemovedFromContainer(parentContainer);
     }
 }

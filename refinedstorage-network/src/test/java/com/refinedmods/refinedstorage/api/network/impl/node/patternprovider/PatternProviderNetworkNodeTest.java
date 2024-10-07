@@ -26,7 +26,6 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Assert
-        assertThat(sut.getPatterns()).isEmpty();
         assertThat(autocrafting.getOutputs()).isEmpty();
     }
 
@@ -39,7 +38,6 @@ class PatternProviderNetworkNodeTest {
         sut.setPattern(0, pattern);
 
         // Assert
-        assertThat(sut.getPatterns()).containsExactly(pattern);
         assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.A);
     }
 
@@ -55,7 +53,6 @@ class PatternProviderNetworkNodeTest {
         sut.setPattern(0, null);
 
         // Assert
-        assertThat(sut.getPatterns()).isEmpty();
         assertThat(autocrafting.getOutputs()).isEmpty();
     }
 
@@ -72,7 +69,6 @@ class PatternProviderNetworkNodeTest {
         sut.setPattern(0, replacedPattern);
 
         // Assert
-        assertThat(sut.getPatterns()).containsExactly(replacedPattern);
         assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.B);
     }
 
@@ -88,7 +84,6 @@ class PatternProviderNetworkNodeTest {
         sut.setActive(false);
 
         // Assert
-        assertThat(sut.getPatterns()).containsExactly(pattern);
         assertThat(autocrafting.getOutputs()).isEmpty();
     }
 
@@ -105,7 +100,6 @@ class PatternProviderNetworkNodeTest {
         sut.setActive(true);
 
         // Assert
-        assertThat(sut.getPatterns()).containsExactly(pattern);
         assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.A);
     }
 }

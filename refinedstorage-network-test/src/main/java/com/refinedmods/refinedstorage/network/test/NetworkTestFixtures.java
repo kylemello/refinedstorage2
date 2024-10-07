@@ -1,6 +1,5 @@
 package com.refinedmods.refinedstorage.network.test;
 
-import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.NetworkComponent;
@@ -41,7 +40,7 @@ public final class NetworkTestFixtures {
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             AutocraftingNetworkComponent.class,
-            network -> new AutocraftingNetworkComponentImpl(new PatternRepositoryImpl())
+            network -> new AutocraftingNetworkComponentImpl()
         );
     }
 
