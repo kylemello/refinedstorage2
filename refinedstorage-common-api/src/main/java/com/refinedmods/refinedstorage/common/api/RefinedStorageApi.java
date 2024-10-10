@@ -206,6 +206,5 @@ public interface RefinedStorageApi {
 
     Optional<Pattern> getPattern(ItemStack stack, Level level);
 
-    // TODO: rename, openAutocraftingPreview
-    void openCraftingPreview(List<ResourceAmount> requests, @Nullable Object parentScreen);
+    void openAutocraftingPreview(List<ResourceAmount> requests, @Nullable Object parentScreen);
 }

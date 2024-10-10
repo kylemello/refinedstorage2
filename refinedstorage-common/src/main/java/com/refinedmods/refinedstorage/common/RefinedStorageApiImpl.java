@@ -599,7 +599,7 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public void openCraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
+    public void openAutocraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
         if (requests.isEmpty()) {
             return;
         }

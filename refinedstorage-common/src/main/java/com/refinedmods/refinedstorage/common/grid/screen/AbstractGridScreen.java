@@ -79,7 +79,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
                                  final Component title,
                                  final int bottomHeight) {
         super(menu, playerInventory, new TextMarquee(title, 70));
-        menu.setGridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview(this);
         this.bottomHeight = bottomHeight;
     }
 
@@ -536,16 +535,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (request == null) {
             return false;
         }
-        final List<ResourceAmount> requests = new ArrayList<>();
-        requests.add(request);
-        // TODO: Remove - temporary code
-        if (hasShiftDown()) {
-            requests.add(new ResourceAmount(request.resource(), request.amount() * 2));
-            requests.add(new ResourceAmount(request.resource(), request.amount() * 3));
-            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
-            requests.add(new ResourceAmount(request.resource(), request.amount() * 4));
-        }
-        RefinedStorageApi.INSTANCE.openCraftingPreview(requests, this);
+        RefinedStorageApi.INSTANCE.openAutocraftingPreview(List.of(request), this);
         return true;
     }
 

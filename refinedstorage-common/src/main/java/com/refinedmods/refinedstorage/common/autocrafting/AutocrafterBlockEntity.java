@@ -45,7 +45,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
     implements ExtendedMenuProvider<AutocrafterData>, BlockEntityWithDrops, PatternInventory.Listener {
     static final int PATTERNS = 9;
 
-    private static final int MAX_CHAINED_CRAFTERS = 8;
+    private static final int MAX_CHAINED_AUTOCRAFTERS = 8;
     private static final String TAG_UPGRADES = "upgr";
     private static final String TAG_PATTERNS = "patterns";
     private static final String TAG_LOCK_MODE = "lm";
@@ -119,7 +119,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
 
     private AutocrafterBlockEntity getChainingRoot(final int depth, final AutocrafterBlockEntity origin) {
         final Direction direction = tryExtractDirection(getBlockState());
-        if (level == null || direction == null || depth >= MAX_CHAINED_CRAFTERS) {
+        if (level == null || direction == null || depth >= MAX_CHAINED_AUTOCRAFTERS) {
             return origin;
         }
         final BlockEntity neighbor = getConnectedMachine();

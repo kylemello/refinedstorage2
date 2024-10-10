@@ -95,9 +95,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     private boolean active;
     @Nullable
     private GridSearchBox searchBox;
-    // TODO: remove this ;)
-    @Nullable
-    private Object gridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview;
 
     protected AbstractGridContainerMenu(
         final MenuType<? extends AbstractGridContainerMenu> menuType,
@@ -148,17 +145,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
         this.synchronizer = NoopGridSynchronizer.INSTANCE;
         initStrategies((ServerPlayer) playerInventory.player);
-    }
-
-    public void setGridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview(
-        @Nullable final Object gridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview) {
-        this.gridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview =
-            gridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview;
-    }
-
-    @Nullable
-    public Object getGridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview() {
-        return gridScreenForRecipeModsThatDontProvideEnoughContextToReturnToAfterCraftingPreview;
     }
 
     private BiPredicate<GridView, GridResource> createBaseFilter() {
