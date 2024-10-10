@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.api.grid.view;
 import java.util.Map;
 import java.util.Set;
 
-public enum FakeGridResourceAttributeKeys implements GridResourceAttributeKey {
+public enum GridResourceAttributeKeys implements GridResourceAttributeKey {
     MOD_ID,
     MOD_NAME,
     TAGS;

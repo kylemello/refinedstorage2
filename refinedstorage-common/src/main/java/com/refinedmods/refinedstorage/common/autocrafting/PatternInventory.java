@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.core.NullableType;
+import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
 
 import java.util.Optional;
@@ -42,6 +43,17 @@ class PatternInventory extends FilteredContainer {
         if (listener != null) {
             listener.patternChanged(slot);
         }
+    }
+
+    long getEnergyUsage() {
+        long patterns = 0;
+        for (int i = 0; i < getContainerSize(); i++) {
+            final ItemStack stack = getItem(i);
+            if (!stack.isEmpty()) {
+                patterns++;
+            }
+        }
+        return patterns * Platform.INSTANCE.getConfig().getAutocrafter().getEnergyUsagePerPattern();
     }
 
     interface Listener {

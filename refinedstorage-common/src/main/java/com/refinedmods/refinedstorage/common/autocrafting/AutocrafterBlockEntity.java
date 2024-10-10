@@ -40,7 +40,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 
-// TODO: More energy usage for more patterns.
 public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<PatternProviderNetworkNode>
     implements ExtendedMenuProvider<AutocrafterData>, BlockEntityWithDrops, PatternInventory.Listener {
     static final int PATTERNS = 9;
@@ -65,11 +64,18 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
         );
         this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.AUTOCRAFTER, upgradeEnergyUsage -> {
             final long baseEnergyUsage = Platform.INSTANCE.getConfig().getAutocrafter().getEnergyUsage();
-            mainNetworkNode.setEnergyUsage(baseEnergyUsage + upgradeEnergyUsage);
+            final long patternEnergyUsage = patternContainer.getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseEnergyUsage + patternEnergyUsage + upgradeEnergyUsage);
             setChanged();
         });
-        patternContainer.addListener(container -> setChanged());
-        patternContainer.setListener(this);
+        this.patternContainer.addListener(container -> {
+            final long upgradeEnergyUsage = upgradeContainer.getEnergyUsage();
+            final long baseEnergyUsage = Platform.INSTANCE.getConfig().getAutocrafter().getEnergyUsage();
+            final long patternEnergyUsage = patternContainer.getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseEnergyUsage + patternEnergyUsage + upgradeEnergyUsage);
+            setChanged();
+        });
+        this.patternContainer.setListener(this);
     }
 
     @Override
@@ -91,7 +97,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
         return getChainingRoot() != this;
     }
 
-    // if there is another autocrafter next to us, that is pointing in our direction,
+    // If there is another autocrafter next to us, that is pointing in our direction,
     // and we are not part of a chain, we are the head of the chain
     private boolean isHeadOfChain() {
         if (level == null || isPartOfChain()) {

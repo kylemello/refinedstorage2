@@ -12,15 +12,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class FakeImporterSource implements ImporterSource {
+class ImporterSourceImpl implements ImporterSource {
     private final List<ResourceKey> resources;
     private final StorageImpl storage = new StorageImpl();
 
-    public FakeImporterSource(final ResourceKey... resources) {
+    ImporterSourceImpl(final ResourceKey... resources) {
         this.resources = Arrays.stream(resources).toList();
     }
 
-    public FakeImporterSource add(final ResourceKey resource, final long amount) {
+    ImporterSourceImpl add(final ResourceKey resource, final long amount) {
         storage.insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
         return this;
     }
@@ -36,7 +36,7 @@ public class FakeImporterSource implements ImporterSource {
         return storage.extract(resource, Math.min(amount, 5), action, actor);
     }
 
-    public Collection<ResourceAmount> getAll() {
+    Collection<ResourceAmount> getAll() {
         return storage.getAll();
     }
 

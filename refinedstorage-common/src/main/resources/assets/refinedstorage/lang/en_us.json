@@ -595,6 +595,8 @@
   "text.autoconfig.refinedstorage.option.autocrafter.tooltip": "Configuration for the Autocrafter.",
   "text.autoconfig.refinedstorage.option.autocrafter.energyUsage": "Energy usage",
   "text.autoconfig.refinedstorage.option.autocrafter.energyUsage.tooltip": "The energy used by the Autocrafter.",
+  "text.autoconfig.refinedstorage.option.autocrafter.energyUsagePerPattern": "Energy usage per pattern",
+  "text.autoconfig.refinedstorage.option.autocrafter.energyUsagePerPattern.tooltip": "The additional energy used per pattern.",
   "advancements.refinedstorage.root.description": "Use one or multiple Controllers in a storage network to provide your network with energy",
   "advancements.refinedstorage.connecting": "Connecting",
   "advancements.refinedstorage.connecting.description": "Use Cable to connect devices with each other, or place devices against each other",

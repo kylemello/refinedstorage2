@@ -14,18 +14,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class FakeConnectionProvider implements ConnectionProvider {
+public class ConnectionProviderImpl implements ConnectionProvider {
     private final Map<NetworkNodeContainer, List<NetworkNodeContainer>> connections = new HashMap<>();
     private final List<NetworkNodeContainer> allowed = new ArrayList<>();
 
-    public FakeConnectionProvider with(final NetworkNodeContainer... containers) {
+    public ConnectionProviderImpl with(final NetworkNodeContainer... containers) {
         for (final NetworkNodeContainer container : containers) {
             with(container);
         }
         return this;
     }
 
-    public FakeConnectionProvider with(final NetworkNodeContainer container) {
+    public ConnectionProviderImpl with(final NetworkNodeContainer container) {
         if (allowed.contains(container)) {
             throw new IllegalArgumentException();
         }
@@ -33,7 +33,7 @@ public class FakeConnectionProvider implements ConnectionProvider {
         return this;
     }
 
-    public FakeConnectionProvider connect(final NetworkNodeContainer from, final NetworkNodeContainer to) {
+    public ConnectionProviderImpl connect(final NetworkNodeContainer from, final NetworkNodeContainer to) {
         if (!allowed.contains(from) || !allowed.contains(to)) {
             throw new IllegalArgumentException();
         }

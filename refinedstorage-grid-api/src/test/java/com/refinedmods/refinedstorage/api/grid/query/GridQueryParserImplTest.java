@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.api.grid.query;
 
-import com.refinedmods.refinedstorage.api.grid.view.FakeGridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
+import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKeys;
 import com.refinedmods.refinedstorage.api.grid.view.GridResourceImpl;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.grid.view.GridViewImpl;
@@ -30,7 +30,7 @@ class GridQueryParserImplTest {
     private final GridQueryParser queryParser = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
         ParserOperatorMappings.DEFAULT_MAPPINGS,
-        FakeGridResourceAttributeKeys.UNARY_OPERATOR_TO_ATTRIBUTE_KEY_MAPPING
+        GridResourceAttributeKeys.UNARY_OPERATOR_TO_ATTRIBUTE_KEY_MAPPING
     );
 
     private final GridView view = new GridViewImpl(
@@ -297,9 +297,9 @@ class GridQueryParserImplTest {
             this.name = name;
             this.amount = amount;
             this.attributes = Map.of(
-                FakeGridResourceAttributeKeys.MOD_ID, Set.of(modId),
-                FakeGridResourceAttributeKeys.MOD_NAME, Set.of(modName),
-                FakeGridResourceAttributeKeys.TAGS, tags
+                GridResourceAttributeKeys.MOD_ID, Set.of(modId),
+                GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
+                GridResourceAttributeKeys.TAGS, tags
             );
         }
 

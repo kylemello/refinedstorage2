@@ -120,9 +120,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     private RelayEntryImpl relay = new RelayEntryImpl();
 
     @ConfigEntry.Gui.CollapsibleObject
-    private SimpleEnergyUsageEntryImpl autocrafter = new SimpleEnergyUsageEntryImpl(
-        DefaultEnergyUsage.AUTOCRAFTER
-    );
+    private AutocrafterEntryImpl autocrafter = new AutocrafterEntryImpl();
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -285,7 +283,7 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     }
 
     @Override
-    public SimpleEnergyUsageEntry getAutocrafter() {
+    public AutocrafterEntry getAutocrafter() {
         return autocrafter;
     }
 
@@ -723,6 +721,22 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public long getOutputNetworkEnergyUsage() {
             return outputNetworkEnergyUsage;
+        }
+    }
+
+    private static class AutocrafterEntryImpl implements AutocrafterEntry {
+        private long energyUsage = DefaultEnergyUsage.AUTOCRAFTER;
+
+        private long energyUsagePerPattern = DefaultEnergyUsage.AUTOCRAFTER_PER_PATTERN;
+
+        @Override
+        public long getEnergyUsagePerPattern() {
+            return energyUsagePerPattern;
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage;
         }
     }
 }

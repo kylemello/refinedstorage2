@@ -29,10 +29,11 @@ import com.refinedmods.refinedstorage.network.test.fixtures.PermissionFixtures;
 import com.refinedmods.refinedstorage.network.test.fixtures.SecurityActorFixtures;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static com.refinedmods.refinedstorage.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode.activeSecurityDecisionProvider;
 import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
@@ -438,9 +439,13 @@ class RelayNetworkNodeTest {
         assertThat(output.getEnergyUsage()).isEqualTo(OUTPUT_ENERGY_USAGE);
     }
 
+    private static Stream<RelayComponentType<?>> provideComponentTypes() {
+        return RelayComponentType.ALL.stream();
+    }
+
     @ParameterizedTest
-    @EnumSource(RelayComponentType.class)
-    void shouldUseEnergyWhenAtLeastOneComponentIsActive(final RelayComponentType type) {
+    @MethodSource("provideComponentTypes")
+    void shouldUseEnergyWhenAtLeastOneComponentIsActive(final RelayComponentType<?> type) {
         // Arrange
         input.setActive(true);
         input.setOutputNode(output);

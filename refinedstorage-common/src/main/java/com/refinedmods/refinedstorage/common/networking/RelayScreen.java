@@ -107,13 +107,13 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         );
         fuzzyModeButton.visible = visible;
         addSideButton(fuzzyModeButton);
-
-        accessModeButton = new AccessModeSideButtonWidget(getMenu().getProperty(StoragePropertyTypes.ACCESS_MODE));
-        accessModeButton.visible = visible;
-        addSideButton(accessModeButton);
     }
 
     private void addStorageButtons(final boolean visible) {
+        accessModeButton = new AccessModeSideButtonWidget(getMenu().getProperty(StoragePropertyTypes.ACCESS_MODE));
+        accessModeButton.visible = visible;
+        addSideButton(accessModeButton);
+
         priorityButton = PrioritySideButtonWidget.forStorage(
             getMenu().getProperty(StoragePropertyTypes.PRIORITY),
             playerInventory,
@@ -154,12 +154,12 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         if (fuzzyModeButton != null) {
             fuzzyModeButton.visible = visible;
         }
-        if (accessModeButton != null) {
-            accessModeButton.visible = visible;
-        }
     }
 
     private void updateStorageButtons(final boolean visible) {
+        if (accessModeButton != null) {
+            accessModeButton.visible = visible;
+        }
         if (priorityButton != null) {
             priorityButton.visible = visible;
         }

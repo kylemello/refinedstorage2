@@ -39,7 +39,7 @@ class PriorityNetworkBuilderImplTest extends AbstractNetworkBuilderImplTest {
         final NetworkSide slave = createNetworkSide(SLAVE, () -> originalNetwork);
         clearInvocations(master.watcher);
 
-        final ConnectionProvider connectionProvider = new FakeConnectionProvider()
+        final ConnectionProvider connectionProvider = new ConnectionProviderImpl()
             .with(master.a, master.b, slave.a, slave.b)
             .connect(master.a, master.b)
             .connect(slave.a, slave.b);
@@ -78,7 +78,7 @@ class PriorityNetworkBuilderImplTest extends AbstractNetworkBuilderImplTest {
         final NetworkNodeContainer connector = createContainer();
         final NetworkSide slave = createNetworkSide(SLAVE, () -> new NetworkImpl(componentMapFactory));
 
-        final ConnectionProvider connectionProvider = new FakeConnectionProvider()
+        final ConnectionProvider connectionProvider = new ConnectionProviderImpl()
             .with(master.a, master.b, connector, slave.a, slave.b)
             .connect(master.a, master.b)
             .connect(master.b, connector)

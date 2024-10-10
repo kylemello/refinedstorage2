@@ -52,7 +52,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry fallbackSecurityCard;
     private final SimpleEnergyUsageEntry securityManager;
     private final RelayEntry relay;
-    private final SimpleEnergyUsageEntry autocrafter;
+    private final AutocrafterEntryImpl autocrafter;
 
     public ConfigImpl() {
         screenSize = builder
@@ -97,7 +97,7 @@ public class ConfigImpl implements Config {
         );
         securityManager = new SimpleEnergyUsageEntryImpl("securityManager", DefaultEnergyUsage.SECURITY_MANAGER);
         relay = new RelayEntryImpl();
-        autocrafter = new SimpleEnergyUsageEntryImpl("autocrafter", DefaultEnergyUsage.AUTOCRAFTER);
+        autocrafter = new AutocrafterEntryImpl();
         spec = builder.build();
     }
 
@@ -264,7 +264,7 @@ public class ConfigImpl implements Config {
     }
 
     @Override
-    public SimpleEnergyUsageEntry getAutocrafter() {
+    public AutocrafterEntryImpl getAutocrafter() {
         return autocrafter;
     }
 
@@ -923,6 +923,32 @@ public class ConfigImpl implements Config {
         @Override
         public long getOutputNetworkEnergyUsage() {
             return outputNetworkEnergyUsage.get();
+        }
+    }
+
+    private class AutocrafterEntryImpl implements AutocrafterEntry {
+        private final ModConfigSpec.LongValue energyUsage;
+        private final ModConfigSpec.LongValue energyUsagePerPattern;
+
+        AutocrafterEntryImpl() {
+            builder.translation(translationKey("autocrafter")).push("autocrafter");
+            energyUsage = builder
+                .translation(translationKey("autocrafter." + ENERGY_USAGE))
+                .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.AUTOCRAFTER, 0, Long.MAX_VALUE);
+            energyUsagePerPattern = builder
+                .translation(translationKey("autocrafter.energyUsagePerPattern"))
+                .defineInRange("energyUsagePerPattern", DefaultEnergyUsage.AUTOCRAFTER_PER_PATTERN, 0, Long.MAX_VALUE);
+            builder.pop();
+        }
+
+        @Override
+        public long getEnergyUsagePerPattern() {
+            return energyUsagePerPattern.get();
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage.get();
         }
     }
 }

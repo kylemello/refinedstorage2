@@ -258,8 +258,8 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         mainNetworkNode.setPriority(priority);
     }
 
-    private Set<RelayComponentType> getComponentTypes(final CompoundTag tag) {
-        final Set<RelayComponentType> types = new HashSet<>();
+    private Set<RelayComponentType<?>> getComponentTypes(final CompoundTag tag) {
+        final Set<RelayComponentType<?>> types = new HashSet<>();
         if (tag.getBoolean(TAG_PASS_ENERGY)) {
             types.add(RelayComponentType.ENERGY);
         }
