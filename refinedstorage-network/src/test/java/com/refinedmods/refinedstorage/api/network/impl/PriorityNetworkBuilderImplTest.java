@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeCont
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.StorageImpl;
-import com.refinedmods.refinedstorage.network.test.fake.FakeActor;
+import com.refinedmods.refinedstorage.network.test.fixtures.ActorFixture;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -118,7 +118,7 @@ class PriorityNetworkBuilderImplTest extends AbstractNetworkBuilderImplTest {
                                           final Supplier<Network> networkFactory) {
         final StorageNetworkNode nodeA = new StorageNetworkNode(0, 0, 1);
         final StorageImpl storage = new StorageImpl();
-        storage.insert(side, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        storage.insert(side, 10, Action.EXECUTE, ActorFixture.INSTANCE);
         nodeA.setProvider(index -> Optional.of(storage));
         final NetworkNodeContainer a = createContainerWithNetwork(
             nodeA,

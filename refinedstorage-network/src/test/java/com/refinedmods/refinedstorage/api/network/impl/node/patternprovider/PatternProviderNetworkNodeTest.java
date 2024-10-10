@@ -6,11 +6,12 @@ import com.refinedmods.refinedstorage.network.test.AddNetworkNode;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkAutocraftingComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakeResources;
 import com.refinedmods.refinedstorage.network.test.nodefactory.PatternProviderNetworkNodeFactory;
 
 import org.junit.jupiter.api.Test;
 
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NetworkTest
@@ -34,11 +35,11 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Act
-        final SimplePattern pattern = new SimplePattern(FakeResources.A);
+        final SimplePattern pattern = new SimplePattern(A);
         sut.setPattern(0, pattern);
 
         // Assert
-        assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.A);
+        assertThat(autocrafting.getOutputs()).containsExactly(A);
     }
 
     @Test
@@ -46,7 +47,7 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Arrange
-        final SimplePattern pattern = new SimplePattern(FakeResources.A);
+        final SimplePattern pattern = new SimplePattern(A);
         sut.setPattern(0, pattern);
 
         // Act
@@ -61,15 +62,15 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Arrange
-        final SimplePattern pattern = new SimplePattern(FakeResources.A);
+        final SimplePattern pattern = new SimplePattern(A);
         sut.setPattern(0, pattern);
 
         // Act
-        final SimplePattern replacedPattern = new SimplePattern(FakeResources.B);
+        final SimplePattern replacedPattern = new SimplePattern(B);
         sut.setPattern(0, replacedPattern);
 
         // Assert
-        assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.B);
+        assertThat(autocrafting.getOutputs()).containsExactly(B);
     }
 
     @Test
@@ -77,7 +78,7 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Arrange
-        final SimplePattern pattern = new SimplePattern(FakeResources.A);
+        final SimplePattern pattern = new SimplePattern(A);
         sut.setPattern(0, pattern);
 
         // Act
@@ -92,7 +93,7 @@ class PatternProviderNetworkNodeTest {
         @InjectNetworkAutocraftingComponent final AutocraftingNetworkComponent autocrafting
     ) {
         // Arrange
-        final SimplePattern pattern = new SimplePattern(FakeResources.A);
+        final SimplePattern pattern = new SimplePattern(A);
         sut.setPattern(0, pattern);
         sut.setActive(false);
 
@@ -100,6 +101,6 @@ class PatternProviderNetworkNodeTest {
         sut.setActive(true);
 
         // Assert
-        assertThat(autocrafting.getOutputs()).containsExactly(FakeResources.A);
+        assertThat(autocrafting.getOutputs()).containsExactly(A);
     }
 }

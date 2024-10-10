@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package com.refinedmods.refinedstorage.network.test.fake;
+package com.refinedmods.refinedstorage.network.test.fixtures;
 
 import com.refinedmods.refinedstorage.api.core.FieldsAndMethodsAreNonnullByDefault;
 

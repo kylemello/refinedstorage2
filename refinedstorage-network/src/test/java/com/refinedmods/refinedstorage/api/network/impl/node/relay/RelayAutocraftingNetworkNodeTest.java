@@ -8,18 +8,17 @@ import com.refinedmods.refinedstorage.network.test.InjectNetwork;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkAutocraftingComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakeResources;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import static com.refinedmods.refinedstorage.api.network.impl.node.relay.RelayNetworkNodeTest.addPattern;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.D;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.D;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +49,7 @@ class RelayAutocraftingNetworkNodeTest {
         // Act
         input.setComponentTypes(Set.of(RelayComponentType.AUTOCRAFTING));
 
-        final var removeB = addPattern(inputAutocrafting, FakeResources.B);
+        final var removeB = addPattern(inputAutocrafting, B);
         removeB.run();
 
         addPattern(inputAutocrafting, C);
@@ -75,7 +74,7 @@ class RelayAutocraftingNetworkNodeTest {
         // Act
         input.setNetwork(null);
 
-        addPattern(inputAutocrafting, FakeResources.B);
+        addPattern(inputAutocrafting, B);
 
         // Assert
         assertThat(inputAutocrafting.getOutputs()).usingRecursiveFieldByFieldElementComparator()
@@ -138,7 +137,7 @@ class RelayAutocraftingNetworkNodeTest {
         outputAlternativeNetwork.addContainer(() -> output);
         output.setNetwork(outputAlternativeNetwork);
 
-        addPattern(inputAutocrafting, FakeResources.B);
+        addPattern(inputAutocrafting, B);
 
         // Assert
         assertThat(inputAutocrafting.getOutputs()).usingRecursiveFieldByFieldElementComparator()

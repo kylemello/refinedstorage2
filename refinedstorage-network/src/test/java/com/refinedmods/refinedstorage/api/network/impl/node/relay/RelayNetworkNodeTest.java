@@ -25,8 +25,8 @@ import com.refinedmods.refinedstorage.network.test.InjectNetworkSecurityComponen
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakePermissions;
-import com.refinedmods.refinedstorage.network.test.fake.FakeSecurityActors;
+import com.refinedmods.refinedstorage.network.test.fixtures.PermissionFixtures;
+import com.refinedmods.refinedstorage.network.test.fixtures.SecurityActorFixtures;
 
 import java.util.Set;
 
@@ -35,9 +35,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import static com.refinedmods.refinedstorage.api.network.impl.node.security.SecurityDecisionProviderProxyNetworkNode.activeSecurityDecisionProvider;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ACTIVE;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ENERGY_USAGE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +80,7 @@ class RelayNetworkNodeTest {
         // Arrange
         input.setActive(true);
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -100,8 +100,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(outputEnergy.extract(1)).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
         assertThat(outputStorage.getAll()).isEmpty();
         assertThat(outputStorage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
         assertThat(outputStorage.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
@@ -123,7 +123,7 @@ class RelayNetworkNodeTest {
         // Arrange
         input.setOutputNode(output);
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -139,8 +139,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(outputEnergy.extract(1)).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
         assertThat(outputStorage.getAll()).isEmpty();
         assertThat(outputStorage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
         assertThat(outputStorage.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
@@ -164,7 +164,7 @@ class RelayNetworkNodeTest {
         input.setNetwork(null);
         input.setOutputNode(output);
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -180,8 +180,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(outputEnergy.extract(1)).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
         assertThat(outputStorage.getAll()).isEmpty();
         assertThat(outputStorage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
         assertThat(outputStorage.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
@@ -210,7 +210,7 @@ class RelayNetworkNodeTest {
             RelayComponentType.AUTOCRAFTING
         ));
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -221,8 +221,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(outputEnergy.extract(1)).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
         assertThat(outputStorage.getAll()).isEmpty();
         assertThat(outputStorage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
         assertThat(outputStorage.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
@@ -251,7 +251,7 @@ class RelayNetworkNodeTest {
             RelayComponentType.AUTOCRAFTING
         ));
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -262,8 +262,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(outputEnergy.extract(1)).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
         assertThat(outputStorage.getAll()).isEmpty();
         assertThat(outputStorage.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
         assertThat(outputStorage.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE)).isZero();
@@ -309,8 +309,8 @@ class RelayNetworkNodeTest {
         inputAlternativeStorage.addSource(new StorageImpl());
         inputAlternativeStorage.insert(A, 33, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
-        addSecurityPolicy(inputAlternativeSecurity, FakePermissions.OTHER2);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
+        addSecurityPolicy(inputAlternativeSecurity, PermissionFixtures.OTHER2);
 
         addPattern(inputAutocrafting, A);
         addPattern(inputAlternativeAutocrafting, B);
@@ -333,9 +333,9 @@ class RelayNetworkNodeTest {
 
         assertThat(outputEnergy.getCapacity()).isEqualTo(inputAlternativeEnergy.getCapacity());
         assertThat(outputEnergy.getStored()).isEqualTo(originalStored - 1);
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isFalse();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER2, FakeSecurityActors.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER2, SecurityActorFixtures.A)).isTrue();
         assertThat(outputStorage.getStored()).isEqualTo(33);
         assertThat(outputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 32),
@@ -370,7 +370,7 @@ class RelayNetworkNodeTest {
             RelayComponentType.AUTOCRAFTING
         ));
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -383,8 +383,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isEqualTo(inputEnergy.getCapacity());
         assertThat(outputEnergy.getStored()).isEqualTo(originalStored - 10);
         assertThat(extracted).isEqualTo(10);
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isFalse();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isTrue();
         assertThat(outputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
@@ -414,7 +414,7 @@ class RelayNetworkNodeTest {
             RelayComponentType.AUTOCRAFTING
         ));
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
         addStorageSource(inputStorage);
         addPattern(inputAutocrafting, A);
 
@@ -426,8 +426,8 @@ class RelayNetworkNodeTest {
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
         assertThat(extracted).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isFalse();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isTrue();
         assertThat(outputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
@@ -452,9 +452,9 @@ class RelayNetworkNodeTest {
         assertThat(output.getEnergyUsage()).isEqualTo(OUTPUT_ENERGY_USAGE);
     }
 
-    static void addSecurityPolicy(final SecurityNetworkComponent security, final FakePermissions permission) {
+    static void addSecurityPolicy(final SecurityNetworkComponent security, final PermissionFixtures permission) {
         security.onContainerAdded(() -> activeSecurityDecisionProvider(new SecurityDecisionProviderImpl()
-            .setPolicy(FakeSecurityActors.A, SecurityPolicy.of(permission))
+            .setPolicy(SecurityActorFixtures.A, SecurityPolicy.of(permission))
         ));
     }
 
