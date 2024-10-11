@@ -1,8 +1,8 @@
-package com.refinedmods.refinedstorage.network.test.fake;
+package com.refinedmods.refinedstorage.network.test.fixtures;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
-public enum FakeResources implements ResourceKey {
+public enum ResourceFixtures implements ResourceKey {
     A,
     A_ALTERNATIVE,
     A_ALTERNATIVE2,

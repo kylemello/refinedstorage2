@@ -1,6 +1,5 @@
-package com.refinedmods.refinedstorage.network.test;
+package com.refinedmods.refinedstorage.network.test.fixtures;
 
-import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.NetworkComponent;
@@ -16,7 +15,6 @@ import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkCompon
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
-import com.refinedmods.refinedstorage.network.test.fake.FakePermissions;
 
 public final class NetworkTestFixtures {
     public static final ComponentMapFactory<NetworkComponent, Network> NETWORK_COMPONENT_MAP_FACTORY =
@@ -37,11 +35,11 @@ public final class NetworkTestFixtures {
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             SecurityNetworkComponent.class,
-            network -> new SecurityNetworkComponentImpl(SecurityPolicy.of(FakePermissions.ALLOW_BY_DEFAULT))
+            network -> new SecurityNetworkComponentImpl(SecurityPolicy.of(PermissionFixtures.ALLOW_BY_DEFAULT))
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             AutocraftingNetworkComponent.class,
-            network -> new AutocraftingNetworkComponentImpl(new PatternRepositoryImpl())
+            network -> new AutocraftingNetworkComponentImpl()
         );
     }
 

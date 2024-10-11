@@ -73,7 +73,7 @@ public interface Config {
 
     RelayEntry getRelay();
 
-    SimpleEnergyUsageEntry getAutocrafter();
+    AutocrafterEntry getAutocrafter();
 
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
@@ -207,5 +207,9 @@ public interface Config {
         long getInputNetworkEnergyUsage();
 
         long getOutputNetworkEnergyUsage();
+    }
+
+    interface AutocrafterEntry extends SimpleEnergyUsageEntry {
+        long getEnergyUsagePerPattern();
     }
 }

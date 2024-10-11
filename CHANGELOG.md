@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 -   Autocrafter
+-   The Relay now has support for propagating autocrafting when not in pass-through mode.
 
 ### Changed
 

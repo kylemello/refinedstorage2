@@ -4,10 +4,10 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.Set;
 
-public class SimplePattern implements Pattern {
+class SimplePattern implements Pattern {
     private final Set<ResourceKey> outputs;
 
-    public SimplePattern(final ResourceKey... outputs) {
+    SimplePattern(final ResourceKey... outputs) {
         this.outputs = Set.of(outputs);
     }
 

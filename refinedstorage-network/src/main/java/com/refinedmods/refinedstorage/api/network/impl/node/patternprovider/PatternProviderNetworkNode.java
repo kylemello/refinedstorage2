@@ -1,18 +1,17 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.patternprovider;
 
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
-import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.autocrafting.ParentContainer;
 import com.refinedmods.refinedstorage.api.network.autocrafting.PatternProvider;
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public class PatternProviderNetworkNode extends SimpleNetworkNode implements PatternProvider {
     private final Pattern[] patterns;
+    private final Set<ParentContainer> parents = new HashSet<>();
 
     public PatternProviderNetworkNode(final long energyUsage, final int patterns) {
         super(energyUsage);
@@ -21,37 +20,50 @@ public class PatternProviderNetworkNode extends SimpleNetworkNode implements Pat
 
     public void setPattern(final int index, @Nullable final Pattern pattern) {
         final Pattern oldPattern = patterns[index];
-        if (oldPattern != null && network != null) {
-            network.getComponent(AutocraftingNetworkComponent.class).remove(oldPattern);
+        if (oldPattern != null) {
+            parents.forEach(parent -> parent.remove(oldPattern));
         }
         patterns[index] = pattern;
-        if (pattern != null && network != null) {
-            network.getComponent(AutocraftingNetworkComponent.class).add(pattern);
+        if (pattern != null) {
+            parents.forEach(parent -> parent.add(pattern));
         }
     }
 
     @Override
     protected void onActiveChanged(final boolean newActive) {
         super.onActiveChanged(newActive);
-        if (!newActive && network != null) {
-            final AutocraftingNetworkComponent component = network.getComponent(AutocraftingNetworkComponent.class);
+        if (!newActive) {
             for (final Pattern pattern : patterns) {
                 if (pattern != null) {
-                    component.remove(pattern);
+                    parents.forEach(parent -> parent.remove(pattern));
                 }
             }
-        } else if (newActive && network != null) {
-            final AutocraftingNetworkComponent component = network.getComponent(AutocraftingNetworkComponent.class);
-            for (final Pattern pattern : patterns) {
-                if (pattern != null) {
-                    component.add(pattern);
-                }
+            return;
+        }
+        for (final Pattern pattern : patterns) {
+            if (pattern != null) {
+                parents.forEach(parent -> parent.add(pattern));
             }
         }
     }
 
     @Override
-    public Set<Pattern> getPatterns() {
-        return Arrays.stream(patterns).filter(Objects::nonNull).collect(Collectors.toSet());
+    public void onAddedIntoContainer(final ParentContainer parentContainer) {
+        parents.add(parentContainer);
+        for (final Pattern pattern : patterns) {
+            if (pattern != null) {
+                parentContainer.add(pattern);
+            }
+        }
+    }
+
+    @Override
+    public void onRemovedFromContainer(final ParentContainer parentContainer) {
+        parents.remove(parentContainer);
+        for (final Pattern pattern : patterns) {
+            if (pattern != null) {
+                parentContainer.remove(pattern);
+            }
+        }
     }
 }

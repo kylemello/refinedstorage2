@@ -1,15 +1,20 @@
 package com.refinedmods.refinedstorage.common.util;
 
 import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingRequest;
 
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
@@ -43,7 +48,20 @@ public final class ClientPlatformUtil {
 
     public static void autocraftingResponseReceived(final UUID id, final boolean started) {
         if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
-            screen.responseReceived(id, started);
+            screen.getMenu().responseReceived(id, started);
         }
+    }
+
+    public static void openCraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
+        final Minecraft minecraft = Minecraft.getInstance();
+        if ((!(parentScreen instanceof Screen) && minecraft.screen == null) || minecraft.player == null) {
+            return;
+        }
+        final Inventory inventory = minecraft.player.getInventory();
+        minecraft.setScreen(new AutocraftingPreviewScreen(
+            parentScreen instanceof Screen castedParentScreen ? castedParentScreen : minecraft.screen,
+            inventory,
+            requests.stream().map(AutocraftingRequest::of).toList()
+        ));
     }
 }

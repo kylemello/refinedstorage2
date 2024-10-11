@@ -37,6 +37,8 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
     @Nullable
     private AbstractSideButtonWidget passStorageButton;
     @Nullable
+    private AbstractSideButtonWidget passAutocraftingButton;
+    @Nullable
     private AbstractSideButtonWidget filterModeButton;
     @Nullable
     private AbstractSideButtonWidget fuzzyModeButton;
@@ -62,6 +64,7 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         addSideButton(new RelayPassThroughSideButtonWidget(getMenu().getProperty(RelayPropertyTypes.PASS_THROUGH)));
         final boolean visible = !getMenu().isPassThrough();
         addPassButtons(visible);
+        addFilterButtons(visible && (getMenu().isPassStorage() || getMenu().isPassAutocrafting()));
         addStorageButtons(visible && getMenu().isPassStorage());
     }
 
@@ -76,6 +79,12 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         passSecurityButton.visible = visible;
         addSideButton(passSecurityButton);
 
+        passAutocraftingButton = new RelayPassAutocraftingSideButtonWidget(
+            getMenu().getProperty(RelayPropertyTypes.PASS_AUTOCRAFTING)
+        );
+        passAutocraftingButton.visible = visible;
+        addSideButton(passAutocraftingButton);
+
         passStorageButton = new RelayPassStorageSideButtonWidget(
             getMenu().getProperty(RelayPropertyTypes.PASS_STORAGE)
         );
@@ -83,7 +92,7 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         addSideButton(passStorageButton);
     }
 
-    private void addStorageButtons(final boolean visible) {
+    private void addFilterButtons(final boolean visible) {
         filterModeButton = new FilterModeSideButtonWidget(
             getMenu().getProperty(PropertyTypes.FILTER_MODE),
             ALLOW_FILTER_MODE_HELP,
@@ -98,7 +107,9 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         );
         fuzzyModeButton.visible = visible;
         addSideButton(fuzzyModeButton);
+    }
 
+    private void addStorageButtons(final boolean visible) {
         accessModeButton = new AccessModeSideButtonWidget(getMenu().getProperty(StoragePropertyTypes.ACCESS_MODE));
         accessModeButton.visible = visible;
         addSideButton(accessModeButton);
@@ -113,9 +124,12 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
     }
 
     @Override
-    public void passThroughChanged(final boolean passThrough, final boolean passStorage) {
+    public void passThroughChanged(final boolean passThrough,
+                                   final boolean passStorage,
+                                   final boolean passAutocrafting) {
         updatePassButtons(passThrough);
-        updateStorageButtons(passThrough, passStorage);
+        updateFilterButtons(!passThrough && (passStorage || passAutocrafting));
+        updateStorageButtons(!passThrough && passStorage);
     }
 
     private void updatePassButtons(final boolean passThrough) {
@@ -128,20 +142,26 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         if (passStorageButton != null) {
             passStorageButton.visible = !passThrough;
         }
+        if (passAutocraftingButton != null) {
+            passAutocraftingButton.visible = !passThrough;
+        }
     }
 
-    private void updateStorageButtons(final boolean passThrough, final boolean passStorage) {
+    private void updateFilterButtons(final boolean visible) {
         if (filterModeButton != null) {
-            filterModeButton.visible = !passThrough && passStorage;
+            filterModeButton.visible = visible;
         }
         if (fuzzyModeButton != null) {
-            fuzzyModeButton.visible = !passThrough && passStorage;
+            fuzzyModeButton.visible = visible;
         }
+    }
+
+    private void updateStorageButtons(final boolean visible) {
         if (accessModeButton != null) {
-            accessModeButton.visible = !passThrough && passStorage;
+            accessModeButton.visible = visible;
         }
         if (priorityButton != null) {
-            priorityButton.visible = !passThrough && passStorage;
+            priorityButton.visible = visible;
         }
     }
 }

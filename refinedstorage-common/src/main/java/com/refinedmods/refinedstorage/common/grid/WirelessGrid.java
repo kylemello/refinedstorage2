@@ -112,9 +112,9 @@ class WirelessGrid implements Grid {
     }
 
     @Override
-    public boolean start(final ResourceKey resource, final long amount) {
+    public boolean startTask(final ResourceKey resource, final long amount) {
         return context.resolveNetwork()
-            .map(network -> network.getComponent(AutocraftingNetworkComponent.class).start(resource, amount))
+            .map(network -> network.getComponent(AutocraftingNetworkComponent.class).startTask(resource, amount))
             .orElse(false);
     }
 }

@@ -374,11 +374,11 @@ public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerB
     }
 
     @Override
-    public boolean start(final ResourceKey resource, final long amount) {
+    public boolean startTask(final ResourceKey resource, final long amount) {
         final Network network = mainNetworkNode.getNetwork();
         if (network == null) {
             return false;
         }
-        return network.getComponent(AutocraftingNetworkComponent.class).start(resource, amount);
+        return network.getComponent(AutocraftingNetworkComponent.class).startTask(resource, amount);
     }
 }

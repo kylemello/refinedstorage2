@@ -34,7 +34,7 @@ public record AutocraftingRequestPacket(UUID id,
 
     public static void handle(final AutocraftingRequestPacket packet, final PacketContext ctx) {
         if (ctx.getPlayer().containerMenu instanceof AutocraftingPreviewProvider provider) {
-            final boolean started = provider.start(packet.resource(), packet.amount());
+            final boolean started = provider.startTask(packet.resource(), packet.amount());
             S2CPackets.sendAutocraftingResponse((ServerPlayer) ctx.getPlayer(), packet.id, started);
         }
     }

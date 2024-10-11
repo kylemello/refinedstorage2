@@ -18,7 +18,7 @@ import com.refinedmods.refinedstorage.network.test.InjectNetwork;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakeActor;
+import com.refinedmods.refinedstorage.network.test.fixtures.ActorFixture;
 
 import java.util.Optional;
 import java.util.Set;
@@ -30,9 +30,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ENERGY_USAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,8 +50,8 @@ class ExternalStorageNetworkNodeTest {
     @Test
     void testInitialState(@InjectNetworkStorageComponent final StorageNetworkComponent networkStorage) {
         // Act
-        final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
-        final long extracted = networkStorage.extract(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, ActorFixture.INSTANCE);
+        final long extracted = networkStorage.extract(A, 10, Action.EXECUTE, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(inserted).isZero();
@@ -62,7 +62,7 @@ class ExternalStorageNetworkNodeTest {
         assertThat(sut.getStorageConfiguration().getFilterMode()).isEqualTo(FilterMode.BLOCK);
         assertThat(networkStorage.getAll()).isEmpty();
         assertThat(networkStorage.getStored()).isZero();
-        assertThat(networkStorage.findTrackedResourceByActorType(A, FakeActor.class)).isEmpty();
+        assertThat(networkStorage.findTrackedResourceByActorType(A, ActorFixture.class)).isEmpty();
     }
 
     @Test
@@ -484,17 +484,17 @@ class ExternalStorageNetworkNodeTest {
         );
 
         // Act
-        final long extracted = networkStorage.extract(A, 7, action, FakeActor.INSTANCE);
+        final long extracted = networkStorage.extract(A, 7, action, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(extracted).isEqualTo(7);
         final Optional<TrackedResource> trackedResource = networkStorage.findTrackedResourceByActorType(
             A,
-            FakeActor.class
+            ActorFixture.class
         );
         if (action == Action.EXECUTE) {
             assertThat(trackedResource).get().usingRecursiveComparison().isEqualTo(new TrackedResource(
-                FakeActor.INSTANCE.getName(),
+                ActorFixture.INSTANCE.getName(),
                 0
             ));
             assertThat(trackedResourceWasPresent).describedAs("tracked resource was present").isTrue();
@@ -516,13 +516,13 @@ class ExternalStorageNetworkNodeTest {
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
         // Act
-        final long extracted = networkStorage.extract(A, 7, action, FakeActor.INSTANCE);
+        final long extracted = networkStorage.extract(A, 7, action, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(extracted).isZero();
         final Optional<TrackedResource> trackedResource = networkStorage.findTrackedResourceByActorType(
             A,
-            FakeActor.class
+            ActorFixture.class
         );
         assertThat(trackedResource).isEmpty();
     }
@@ -544,17 +544,17 @@ class ExternalStorageNetworkNodeTest {
         );
 
         // Act
-        final long inserted = networkStorage.insert(A, 10, action, FakeActor.INSTANCE);
+        final long inserted = networkStorage.insert(A, 10, action, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(inserted).isEqualTo(10);
         final Optional<TrackedResource> trackedResource = networkStorage.findTrackedResourceByActorType(
             A,
-            FakeActor.class
+            ActorFixture.class
         );
         if (action == Action.EXECUTE) {
             assertThat(trackedResource).get().usingRecursiveComparison().isEqualTo(new TrackedResource(
-                FakeActor.INSTANCE.getName(),
+                ActorFixture.INSTANCE.getName(),
                 0
             ));
             assertThat(trackedResourceWasPresent).describedAs("tracked resource was present").isTrue();
@@ -576,13 +576,13 @@ class ExternalStorageNetworkNodeTest {
         sut.initialize(new ExternalStorageProviderFactoryImpl(provider));
 
         // Act
-        final long inserted = networkStorage.insert(A, 10, action, FakeActor.INSTANCE);
+        final long inserted = networkStorage.insert(A, 10, action, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(inserted).isZero();
         final Optional<TrackedResource> trackedResource = networkStorage.findTrackedResourceByActorType(
             A,
-            FakeActor.class
+            ActorFixture.class
         );
         assertThat(trackedResource).isEmpty();
     }
@@ -593,7 +593,7 @@ class ExternalStorageNetworkNodeTest {
         final AtomicBoolean found = new AtomicBoolean();
         networkStorage.addListener(change -> {
             if (change.resource().equals(A)) {
-                found.set(networkStorage.findTrackedResourceByActorType(A, FakeActor.class).isPresent());
+                found.set(networkStorage.findTrackedResourceByActorType(A, ActorFixture.class).isPresent());
             }
         });
         return found;

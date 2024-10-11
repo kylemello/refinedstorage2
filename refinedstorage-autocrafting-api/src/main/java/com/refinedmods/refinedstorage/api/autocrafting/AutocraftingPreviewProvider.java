@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface AutocraftingPreviewProvider {
     Optional<AutocraftingPreview> getPreview(ResourceKey resource, long amount);
 
-    boolean start(ResourceKey resource, long amount);
+    boolean startTask(ResourceKey resource, long amount);
 }

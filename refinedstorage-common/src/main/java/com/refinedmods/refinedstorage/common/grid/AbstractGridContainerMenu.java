@@ -494,8 +494,8 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Override
-    public boolean start(final ResourceKey resource, final long amount) {
-        return requireNonNull(grid).start(resource, amount);
+    public boolean startTask(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).startTask(resource, amount);
     }
 
     public boolean isLargeSlot(final Slot slot) {

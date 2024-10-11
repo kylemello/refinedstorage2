@@ -23,11 +23,11 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE2;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -91,7 +91,7 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B)
             .add(A, 100)
             .add(B, 100);
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 1);
@@ -115,7 +115,7 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, B, A)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B, A)
             .add(A, 100)
             .add(B, 100);
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 1);
@@ -141,10 +141,10 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource emptySource = new FakeImporterSource();
-        final FakeImporterSource outdatedSource = new FakeImporterSource(C)
+        final ImporterSourceImpl emptySource = new ImporterSourceImpl();
+        final ImporterSourceImpl outdatedSource = new ImporterSourceImpl(C)
             .add(C, 100);
-        final FakeImporterSource source = new FakeImporterSource(A, B, A)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B, A)
             .add(A, 100)
             .add(B, 100);
 
@@ -178,7 +178,7 @@ class ImporterNetworkNodeTest {
         storage.addSource(new LimitedStorageImpl(100));
         storage.insert(C, 100, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final FakeImporterSource source = new FakeImporterSource(A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B)
             .add(A, 100)
             .add(B, 100);
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 1);
@@ -204,7 +204,7 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, B, A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B, A, B)
             .add(A, 11)
             .add(B, 6);
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 10);
@@ -230,7 +230,7 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, A, A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, A, A, B)
             .add(A, 20)
             .add(B, 5);
 
@@ -265,7 +265,7 @@ class ImporterNetworkNodeTest {
             }
         });
 
-        final FakeImporterSource source = new FakeImporterSource(A, B, B, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B, B, B)
             .add(A, 8)
             .add(B, 11);
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 10);
@@ -291,7 +291,7 @@ class ImporterNetworkNodeTest {
         // Arrange
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource();
+        final ImporterSourceImpl source = new ImporterSourceImpl();
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 10);
         sut.setTransferStrategies(List.of(strategy));
 
@@ -311,7 +311,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(B, A)
+        final ImporterSourceImpl source = new ImporterSourceImpl(B, A)
             .add(B, 10)
             .add(A, 10);
 
@@ -347,7 +347,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(B, A_ALTERNATIVE, A_ALTERNATIVE2)
+        final ImporterSourceImpl source = new ImporterSourceImpl(B, A_ALTERNATIVE, A_ALTERNATIVE2)
             .add(B, 10)
             .add(A_ALTERNATIVE, 1)
             .add(A_ALTERNATIVE2, 1);
@@ -379,7 +379,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(B)
             .add(B, 10);
 
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 1);
@@ -403,7 +403,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(B, A)
+        final ImporterSourceImpl source = new ImporterSourceImpl(B, A)
             .add(B, 10)
             .add(A, 10);
 
@@ -429,7 +429,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B)
             .add(A, 10)
             .add(B, 10);
 
@@ -459,7 +459,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A)
             .add(A, 10);
 
         final ImporterTransferStrategy strategy = new ImporterTransferStrategyImpl(source, 1);
@@ -483,7 +483,7 @@ class ImporterNetworkNodeTest {
 
         storage.addSource(new StorageImpl());
 
-        final FakeImporterSource source = new FakeImporterSource(A, B)
+        final ImporterSourceImpl source = new ImporterSourceImpl(A, B)
             .add(A, 10)
             .add(B, 10);
 

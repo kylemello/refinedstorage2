@@ -11,6 +11,7 @@ import com.refinedmods.refinedstorage.api.network.impl.node.controller.Controlle
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage.network.test.fixtures.NetworkTestFixtures;
 import com.refinedmods.refinedstorage.network.test.nodefactory.NetworkNodeFactory;
 
 import java.lang.annotation.Annotation;

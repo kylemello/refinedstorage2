@@ -20,8 +20,8 @@ public class GridResourceImpl implements GridResource {
     public GridResourceImpl(final ResourceKey resource, final boolean autocraftable) {
         this.resource = resource;
         this.attributes = Map.of(
-            FakeGridResourceAttributeKeys.MOD_ID, Set.of(resource.toString()),
-            FakeGridResourceAttributeKeys.MOD_NAME, Set.of(resource.toString())
+            GridResourceAttributeKeys.MOD_ID, Set.of(resource.toString()),
+            GridResourceAttributeKeys.MOD_NAME, Set.of(resource.toString())
         );
         this.autocraftable = autocraftable;
     }

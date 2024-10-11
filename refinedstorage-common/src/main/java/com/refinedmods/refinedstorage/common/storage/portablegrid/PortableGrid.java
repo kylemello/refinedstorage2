@@ -136,7 +136,7 @@ class PortableGrid implements Grid {
     }
 
     @Override
-    public boolean start(final ResourceKey resource, final long amount) {
+    public boolean startTask(final ResourceKey resource, final long amount) {
         return false;
     }
 }

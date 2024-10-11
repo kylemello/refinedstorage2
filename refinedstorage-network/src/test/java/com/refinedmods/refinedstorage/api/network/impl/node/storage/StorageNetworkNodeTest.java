@@ -19,7 +19,7 @@ import com.refinedmods.refinedstorage.network.test.InjectNetwork;
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakeActor;
+import com.refinedmods.refinedstorage.network.test.fixtures.ActorFixture;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,12 +31,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE2;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B_ALTERNATIVE;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE2;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B_ALTERNATIVE;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ENERGY_USAGE;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.StorageNetworkNodeFactory.PROPERTY_ENERGY_USAGE_PER_STORAGE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -666,11 +666,11 @@ class StorageNetworkNodeTest {
         initializeAndActivate();
 
         // Act
-        final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, FakeActor.INSTANCE);
+        final long inserted = networkStorage.insert(A, 10, Action.EXECUTE, ActorFixture.INSTANCE);
 
         // Assert
         assertThat(inserted).isEqualTo(10);
-        assertThat(networkStorage.findTrackedResourceByActorType(A, FakeActor.class)).isNotEmpty();
+        assertThat(networkStorage.findTrackedResourceByActorType(A, ActorFixture.class)).isNotEmpty();
     }
 
     @Test
@@ -686,7 +686,7 @@ class StorageNetworkNodeTest {
         initializeAndActivate();
 
         // Act
-        networkStorage.insert(A, 75, Action.EXECUTE, FakeActor.INSTANCE);
+        networkStorage.insert(A, 75, Action.EXECUTE, ActorFixture.INSTANCE);
 
         // Assert
         verify(listener, times(1)).onStorageStateChanged();

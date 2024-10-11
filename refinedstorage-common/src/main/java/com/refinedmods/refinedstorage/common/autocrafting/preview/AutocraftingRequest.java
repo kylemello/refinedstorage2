@@ -30,11 +30,11 @@ public class AutocraftingRequest {
         return new AutocraftingRequest(UUID.randomUUID(), resourceAmount.resource(), displayAmount);
     }
 
-    boolean trySendRequest(final double amountRequested) {
+    boolean sendPreviewRequest(final double previewAmount) {
         if (!(resource instanceof PlatformResourceKey resourceKey)) {
             return false;
         }
-        final long normalizedAmount = resourceKey.getResourceType().normalizeAmount(amountRequested);
+        final long normalizedAmount = resourceKey.getResourceType().normalizeAmount(previewAmount);
         if (normalizedAmount == pendingPreviewAmount) {
             return false;
         }
@@ -44,12 +44,21 @@ public class AutocraftingRequest {
         return true;
     }
 
-    void start(final double amountRequested) {
+    void previewResponseReceived(final AutocraftingPreview previewReceived) {
+        this.pendingPreviewAmount = 0;
+        this.preview = previewReceived;
+    }
+
+    void sendRequest(final double amountRequested) {
         if (!(resource instanceof PlatformResourceKey resourceKey)) {
             return;
         }
         final long normalizedAmount = resourceKey.getResourceType().normalizeAmount(amountRequested);
         C2SPackets.sendAutocraftingRequest(id, resourceKey, normalizedAmount);
+    }
+
+    UUID getId() {
+        return id;
     }
 
     ResourceKey getResource() {
@@ -65,21 +74,8 @@ public class AutocraftingRequest {
         return preview;
     }
 
-    boolean previewReceived(final UUID idReceived, final AutocraftingPreview previewReceived) {
-        if (id.equals(idReceived)) {
-            pendingPreviewAmount = 0;
-            preview = previewReceived;
-            return true;
-        }
-        return false;
-    }
-
     void clearPreview() {
-        pendingPreviewAmount = 0;
-        preview = null;
-    }
-
-    boolean isStarted(final UUID startedId) {
-        return id.equals(startedId);
+        this.pendingPreviewAmount = 0;
+        this.preview = null;
     }
 }

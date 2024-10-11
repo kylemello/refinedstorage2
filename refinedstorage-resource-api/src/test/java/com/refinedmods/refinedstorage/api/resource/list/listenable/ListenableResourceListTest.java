@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ListenableResourceListTest {
-    private FakeResourceListListener listener;
+    private ResourceListListenerStub listener;
     private MutableResourceListImpl list;
     private ListenableResourceList sut;
 
     @BeforeEach
     void setUp() {
-        listener = new FakeResourceListListener();
+        listener = new ResourceListListenerStub();
         list = MutableResourceListImpl.create();
         sut = new ListenableResourceList(list);
     }
@@ -129,7 +129,7 @@ class ListenableResourceListTest {
         assertThat(listener.changes).hasSize(1);
     }
 
-    private static class FakeResourceListListener implements ResourceListListener {
+    private static class ResourceListListenerStub implements ResourceListListener {
         private final List<MutableResourceList.OperationResult> changes = new ArrayList<>();
 
         @Override

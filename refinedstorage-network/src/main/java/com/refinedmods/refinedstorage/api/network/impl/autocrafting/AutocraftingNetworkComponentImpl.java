@@ -4,51 +4,61 @@ import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewItem;
 import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
-import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.autocrafting.ParentContainer;
+import com.refinedmods.refinedstorage.api.network.autocrafting.PatternListener;
 import com.refinedmods.refinedstorage.api.network.autocrafting.PatternProvider;
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComponent {
-    private final PatternRepository patternRepository;
-
-    public AutocraftingNetworkComponentImpl(final PatternRepository patternRepository) {
-        this.patternRepository = patternRepository;
-    }
+public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComponent, ParentContainer {
+    private final Set<PatternProvider> providers = new HashSet<>();
+    private final Set<PatternListener> listeners = new HashSet<>();
+    private final PatternRepositoryImpl patternRepository = new PatternRepositoryImpl();
 
     @Override
     public void onContainerAdded(final NetworkNodeContainer container) {
         if (container.getNode() instanceof PatternProvider provider) {
-            provider.getPatterns().forEach(patternRepository::add);
+            provider.onAddedIntoContainer(this);
+            providers.add(provider);
         }
     }
 
     @Override
     public void onContainerRemoved(final NetworkNodeContainer container) {
         if (container.getNode() instanceof PatternProvider provider) {
-            provider.getPatterns().forEach(patternRepository::remove);
+            provider.onRemovedFromContainer(this);
+            providers.remove(provider);
         }
     }
 
     @Override
     public void add(final Pattern pattern) {
         patternRepository.add(pattern);
+        listeners.forEach(listener -> listener.onAdded(pattern));
     }
 
     @Override
     public void remove(final Pattern pattern) {
+        listeners.forEach(listener -> listener.onRemoved(pattern));
         patternRepository.remove(pattern);
     }
 
     @Override
     public Set<ResourceKey> getOutputs() {
         return patternRepository.getOutputs();
+    }
+
+    @Override
+    public boolean contains(final AutocraftingNetworkComponent component) {
+        return providers.stream().anyMatch(provider -> provider.contains(component));
     }
 
     @Override
@@ -69,7 +79,22 @@ public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComp
     }
 
     @Override
-    public boolean start(final ResourceKey resource, final long amount) {
+    public boolean startTask(final ResourceKey resource, final long amount) {
         return true;
+    }
+
+    @Override
+    public void addListener(final PatternListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(final PatternListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public Set<Pattern> getPatterns() {
+        return patternRepository.getAll();
     }
 }

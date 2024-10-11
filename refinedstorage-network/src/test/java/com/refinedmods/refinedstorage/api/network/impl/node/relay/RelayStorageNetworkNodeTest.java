@@ -20,18 +20,18 @@ import com.refinedmods.refinedstorage.network.test.InjectNetworkSecurityComponen
 import com.refinedmods.refinedstorage.network.test.InjectNetworkStorageComponent;
 import com.refinedmods.refinedstorage.network.test.NetworkTest;
 import com.refinedmods.refinedstorage.network.test.SetupNetwork;
-import com.refinedmods.refinedstorage.network.test.fake.FakePermissions;
-import com.refinedmods.refinedstorage.network.test.fake.FakeSecurityActors;
+import com.refinedmods.refinedstorage.network.test.fixtures.PermissionFixtures;
+import com.refinedmods.refinedstorage.network.test.fixtures.SecurityActorFixtures;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import static com.refinedmods.refinedstorage.api.network.impl.node.relay.RelayNetworkNodeTest.addSecurityPolicy;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A_ALTERNATIVE;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A_ALTERNATIVE;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static com.refinedmods.refinedstorage.network.test.nodefactory.AbstractNetworkNodeFactory.PROPERTY_ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +60,7 @@ class RelayStorageNetworkNodeTest {
         input.setActive(true);
         input.setOutputNode(output);
 
-        addSecurityPolicy(inputSecurity, FakePermissions.OTHER);
+        addSecurityPolicy(inputSecurity, PermissionFixtures.OTHER);
 
         inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -74,8 +74,8 @@ class RelayStorageNetworkNodeTest {
         // Assert
         assertThat(outputEnergy.getCapacity()).isZero();
         assertThat(outputEnergy.getStored()).isZero();
-        assertThat(outputSecurity.isAllowed(FakePermissions.ALLOW_BY_DEFAULT, FakeSecurityActors.A)).isTrue();
-        assertThat(outputSecurity.isAllowed(FakePermissions.OTHER, FakeSecurityActors.A)).isFalse();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.ALLOW_BY_DEFAULT, SecurityActorFixtures.A)).isTrue();
+        assertThat(outputSecurity.isAllowed(PermissionFixtures.OTHER, SecurityActorFixtures.A)).isFalse();
 
         assertThat(inputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
             new ResourceAmount(A, 10),
@@ -591,7 +591,7 @@ class RelayStorageNetworkNodeTest {
     @Test
     @SetupNetwork(id = "cycle_input", energyStored = 1, energyCapacity = 2)
     @SetupNetwork(id = "cycle_input_alt", energyStored = 3, energyCapacity = 4)
-    void shouldDetectStorageCycles(
+    void shouldDetectCycles(
         @InjectNetwork("cycle_input") final Network inputNetwork,
         @InjectNetworkStorageComponent(networkId = "cycle_input") final StorageNetworkComponent inputStorage,
         @InjectNetwork("cycle_input_alt") final Network inputAlternativeNetwork,
