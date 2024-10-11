@@ -129,7 +129,7 @@ public final class ConstructorTest {
             // Act
             constructor.setDropItems(true);
             constructor.setFilters(List.of(asResource(DIRT)));
-            constructor.addUpgradeItem(RSITEMS.getStackUpgrade());
+            constructor.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence

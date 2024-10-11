@@ -93,6 +93,14 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
         stack.set(DataComponents.INSTANCE.getRegulatorUpgradeState(), state.withAmount(amount));
     }
 
+    public void setAmount(final ItemStack regulatorStack, final PlatformResourceKey resource, final double amount) {
+        final RegulatorUpgradeState state = regulatorStack.getOrDefault(
+            DataComponents.INSTANCE.getRegulatorUpgradeState(),
+            new RegulatorUpgradeState(amount, Optional.of(resource))
+        );
+        regulatorStack.set(DataComponents.INSTANCE.getRegulatorUpgradeState(), state);
+    }
+
     @Override
     public long getEnergyUsage() {
         return Platform.INSTANCE.getConfig().getUpgrade().getRegulatorUpgradeEnergyUsage();

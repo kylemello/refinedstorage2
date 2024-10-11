@@ -157,8 +157,8 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
         return upgradeItems;
     }
 
-    public boolean addUpgradeItem(final Item upgradeItem) {
-        return addItem(new ItemStack(upgradeItem)).isEmpty();
+    public boolean addUpgradeItem(final ItemStack upgradeStack) {
+        return addItem(upgradeStack).isEmpty();
     }
 
     public NonNullList<ItemStack> getDrops() {
