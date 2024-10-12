@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBl
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorBlock;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ColorMap;
+import com.refinedmods.refinedstorage.common.content.ContentIds;
 import com.refinedmods.refinedstorage.common.exporter.ExporterBlock;
 import com.refinedmods.refinedstorage.common.importer.ImporterBlock;
 import com.refinedmods.refinedstorage.common.networking.CableBlock;
@@ -15,7 +16,6 @@ import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalSto
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -51,6 +51,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
+        registerAutocrafters();
     }
 
     private void registerCables() {
@@ -209,13 +210,21 @@ public class ItemModelProviderImpl extends ItemModelProvider {
     private void registerDiskInterfaces() {
         final var blocks = Blocks.INSTANCE.getDiskInterface();
         blocks.forEach((color, id, block) -> getBuilder(id.getPath()).customLoader(
-            (blockModelBuilder, existingFileHelper) -> new CustomLoaderBuilder<>(
-                id,
+            (blockModelBuilder, existingFileHelper) -> new ColoredCustomLoaderBuilder<>(
+                ContentIds.DISK_INTERFACE,
                 blockModelBuilder,
                 existingFileHelper,
-                true
+                color
             ) {
             }).end());
+    }
+
+    private void registerAutocrafters() {
+        final var blocks = Blocks.INSTANCE.getAutocrafter();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/autocrafter/" + color.getName())
+        ));
     }
 
     private ModelFile modelFile(final ResourceLocation location) {

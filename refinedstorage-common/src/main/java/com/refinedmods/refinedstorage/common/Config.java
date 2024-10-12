@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common;
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 
 import java.util.Optional;
@@ -72,6 +73,8 @@ public interface Config {
 
     RelayEntry getRelay();
 
+    AutocrafterEntry getAutocrafter();
+
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
     }
@@ -102,6 +105,10 @@ public interface Config {
         GridSortingTypes getSortingType();
 
         void setSortingType(GridSortingTypes sortingType);
+
+        GridViewType getViewType();
+
+        void setViewType(GridViewType viewType);
 
         Optional<ResourceLocation> getResourceType();
 
@@ -200,5 +207,9 @@ public interface Config {
         long getInputNetworkEnergyUsage();
 
         long getOutputNetworkEnergyUsage();
+    }
+
+    interface AutocrafterEntry extends SimpleEnergyUsageEntry {
+        long getEnergyUsagePerPattern();
     }
 }

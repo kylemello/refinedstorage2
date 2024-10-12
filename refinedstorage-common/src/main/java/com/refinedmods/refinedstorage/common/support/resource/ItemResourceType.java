@@ -26,8 +26,8 @@ class ItemResourceType implements ResourceType {
     private static final ResourceLocation SPRITE = createIdentifier("widget/side_button/resource_type/item");
 
     @Override
-    public Optional<GridResource> toGridResource(final ResourceKey resource) {
-        return Platform.INSTANCE.getItemGridResourceFactory().apply(resource);
+    public Optional<GridResource> toGridResource(final ResourceKey resource, final boolean autocraftable) {
+        return Platform.INSTANCE.getItemGridResourceFactory().apply(resource, autocraftable);
     }
 
     @Override

@@ -129,11 +129,11 @@ public final class ConstructorTest {
             // Act
             constructor.setDropItems(true);
             constructor.setFilters(List.of(asResource(DIRT)));
-            constructor.addUpgradeItem(RSITEMS.getStackUpgrade());
+            constructor.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
-                .thenIdle(9)
+                .thenIdle(20)
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, pos.east()))
                 .thenExecute(() -> assertItemEntityPresentExactly(
                     helper,
@@ -147,7 +147,7 @@ public final class ConstructorTest {
                     new ResourceAmount(asResource(DIRT), 1),
                     new ResourceAmount(asResource(STONE), 15)
                 ))
-                .thenIdle(9)
+                .thenIdle(20)
                 .thenExecute(storageContainsExactly(
                     helper,
                     pos,

@@ -127,4 +127,20 @@ public final class C2SPackets {
             new PatternGridSmithingTableRecipeTransferPacket(template, base, addition)
         );
     }
+
+    public static void sendAutocrafterNameChange(final String name) {
+        Platform.INSTANCE.sendPacketToServer(new AutocrafterNameChangePacket(name));
+    }
+
+    public static void sendAutocraftingPreviewRequest(final UUID id,
+                                                      final PlatformResourceKey resource,
+                                                      final long amount) {
+        Platform.INSTANCE.sendPacketToServer(new AutocraftingPreviewRequestPacket(id, resource, amount));
+    }
+
+    public static void sendAutocraftingRequest(final UUID id,
+                                               final PlatformResourceKey resource,
+                                               final long amount) {
+        Platform.INSTANCE.sendPacketToServer(new AutocraftingRequestPacket(id, resource, amount));
+    }
 }

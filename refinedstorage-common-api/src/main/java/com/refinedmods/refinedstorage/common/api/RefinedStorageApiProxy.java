@@ -1,13 +1,14 @@
 package com.refinedmods.refinedstorage.common.api;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.NetworkComponent;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
@@ -46,12 +47,14 @@ import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -399,6 +402,16 @@ public class RefinedStorageApiProxy implements RefinedStorageApi {
     @Override
     public Optional<Pattern> getPattern(final ItemStack stack, final Level level) {
         return ensureLoaded().getPattern(stack, level);
+    }
+
+    @Override
+    public void openAutocraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
+        ensureLoaded().openAutocraftingPreview(requests, parentScreen);
+    }
+
+    @Override
+    public ResourceLocation getCreativeModeTabId() {
+        return ensureLoaded().getCreativeModeTabId();
     }
 
     private RefinedStorageApi ensureLoaded() {

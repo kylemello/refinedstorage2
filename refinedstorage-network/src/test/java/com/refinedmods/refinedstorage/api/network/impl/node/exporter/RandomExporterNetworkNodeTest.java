@@ -1,9 +1,9 @@
 package com.refinedmods.refinedstorage.api.network.impl.node.exporter;
 
 import com.refinedmods.refinedstorage.api.core.Action;
-import com.refinedmods.refinedstorage.api.network.impl.node.task.RandomTaskExecutor;
+import com.refinedmods.refinedstorage.api.network.impl.node.task.RandomSchedulingMode;
+import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
 import com.refinedmods.refinedstorage.api.network.node.exporter.ExporterTransferStrategy;
-import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
@@ -15,17 +15,17 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RandomExporterNetworkNodeTest extends AbstractExporterNetworkNodeTest {
     @Override
-    protected TaskExecutor<ExporterNetworkNode.TaskContext> createTaskExecutor() {
-        return new RandomTaskExecutor<>(list -> {
+    protected SchedulingMode createSchedulingMode() {
+        return new RandomSchedulingMode(list -> {
             list.clear();
-            list.add(sut.new TaskImpl(A));
-            list.add(sut.new TaskImpl(B));
+            list.add(sut.new ExporterTask(A));
+            list.add(sut.new ExporterTask(B));
         });
     }
 

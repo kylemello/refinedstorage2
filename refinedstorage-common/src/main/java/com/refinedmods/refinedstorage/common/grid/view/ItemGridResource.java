@@ -1,8 +1,9 @@
 package com.refinedmods.refinedstorage.common.grid.view;
 
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
+import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
-import com.refinedmods.refinedstorage.common.api.grid.GridResourceAttributeKeys;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -38,16 +40,9 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     public ItemGridResource(final ItemResource resource,
                             final ItemStack itemStack,
                             final String name,
-                            final String modId,
-                            final String modName,
-                            final Set<String> tags,
-                            final String tooltip) {
-        super(resource, name, Map.of(
-            GridResourceAttributeKeys.MOD_ID, Set.of(modId),
-            GridResourceAttributeKeys.MOD_NAME, Set.of(modName),
-            GridResourceAttributeKeys.TAGS, tags,
-            GridResourceAttributeKeys.TOOLTIP, Set.of(tooltip)
-        ));
+                            final Map<GridResourceAttributeKey, Set<String>> attributes,
+                            final boolean autocraftable) {
+        super(resource, name, attributes, autocraftable);
         this.id = Item.getId(resource.item());
         this.itemStack = itemStack;
         this.itemResource = resource;
@@ -85,9 +80,15 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
         );
     }
 
+    @Nullable
+    @Override
+    public ResourceAmount getAutocraftingRequest() {
+        return new ResourceAmount(itemResource, 1);
+    }
+
     @Override
     public boolean canExtract(final ItemStack carriedStack, final GridView view) {
-        return carriedStack.isEmpty();
+        return getAmount(view) > 0 && carriedStack.isEmpty();
     }
 
     @Override

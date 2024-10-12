@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
 
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public class NetworkTransmitterBlockEntity
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<NetworkTransmitterData>, BlockEntityWithDrops {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkTransmitterBlockEntity.class);
 
@@ -207,12 +207,12 @@ public class NetworkTransmitterBlockEntity
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.NETWORK_TRANSMITTER);
+    public Component getName() {
+        return overrideName(ContentNames.NETWORK_TRANSMITTER);
     }
 
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         return NonNullList.of(ItemStack.EMPTY, networkCardInventory.getNetworkCard());
     }
 }

@@ -7,6 +7,44 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.8] - 2024-10-12
+
+### Added
+
+-   Autocrafter
+-   The Relay now has support for propagating autocrafting when not in pass-through mode.
+
+### Changed
+
+-   Optimized memory usage and startup time of cable models. After updating, cables will appear disconnected, but this is only visual. Cause a block update to fix this.
+-   Optimized performance of searching in the Grid.
+-   Custom titles that overflow will now have a marquee effect instead, for every GUI.
+-   You can now define a priority in the Crafter.
+-   You can now change the name of a Crafter in the GUI.
+-   Changed "Crafter mode" to "Locking mode" with following options:
+    -   Never
+    -   Lock until redstone pulse is received
+    -   Lock until connected machine is empty (new, facilitates easier "blocking mode" without redstone)
+    -   Lock until all outputs are received (new, facilitates easier "blocking mode" without redstone)
+    -   Lock until low redstone signal
+    -   Lock until high redstone signal
+-   Resources in the Grid that are autocraftable now display an orange backdrop and tooltip to indicate whether the resource is autocraftable at a glance.
+-   Slots used in the Pattern Grid for pattern encoding and Crafting Grid crafting matrix slots now display an orange backdrop and tooltip to indicate whether the item is autocraftable at a glance. This checks patterns from your network and from your inventory.
+-   Added help tooltip for filtering based on recipe items in the Crafting Grid.
+-   The crafting amount and crafting preview screens have been merged. Changing the amount will update the live preview.
+-   The numbers on the crafting preview screen are now compacted with units.
+-   When requesting autocrafting multiple resources at once, which can happen via a recipe mod, all the crafting requests are now listed on the side of the GUI.
+-   You can now request autocrafting from the Storage Monitor if the resource count reaches zero.
+-   The Crafter has been renamed to "Autocrafter".
+
+### Fixed
+
+-   Fixed mouse keybindings not working on NeoForge.
+-   Fixed upgrade destinations not being shown on upgrades.
+-   Fixed resources with changed data format or ID causing entire storage to fail to load.
+-   Fixed crash when trying to export fluids from an External Storage on Fabric.
+-   The Configuration Card can now also transfer the (configured) Regulator Upgrade.
+
 ## [2.0.0-milestone.4.7] - 2024-08-11
 
 ### Added
@@ -737,7 +775,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.8...HEAD
+
+[2.0.0-milestone.4.8]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...v2.0.0-milestone.4.8
 
 [2.0.0-milestone.4.7]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...v2.0.0-milestone.4.7
 

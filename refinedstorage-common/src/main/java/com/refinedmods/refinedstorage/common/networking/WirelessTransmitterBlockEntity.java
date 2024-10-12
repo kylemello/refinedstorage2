@@ -9,7 +9,7 @@ import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.BlockEntityWithDrops;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeContainer;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinations;
 import com.refinedmods.refinedstorage.common.util.ContainerUtil;
@@ -27,25 +27,25 @@ import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WirelessTransmitterBlockEntity
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<SimpleNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<WirelessTransmitterData>, BlockEntityWithDrops {
     private static final String TAG_UPGRADES = "upgr";
 
-    private final UpgradeContainer upgradeContainer = new UpgradeContainer(
-        UpgradeDestinations.WIRELESS_TRANSMITTER,
-        RefinedStorageApi.INSTANCE.getUpgradeRegistry(),
-        this::upgradeContainerChanged
-    );
+    private final UpgradeContainer upgradeContainer;
 
     public WirelessTransmitterBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage()
         ));
+        this.upgradeContainer = new UpgradeContainer(UpgradeDestinations.WIRELESS_TRANSMITTER, upgradeEnergyUsage -> {
+            final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
+            mainNetworkNode.setEnergyUsage(baseUsage + upgradeEnergyUsage);
+            setChanged();
+        });
     }
 
     @Override
@@ -73,18 +73,18 @@ public class WirelessTransmitterBlockEntity
     }
 
     @Override
-    public List<Item> getUpgradeItems() {
+    public List<ItemStack> getUpgrades() {
         return upgradeContainer.getUpgradeItems();
     }
 
     @Override
-    public boolean addUpgradeItem(final Item upgradeItem) {
-        return upgradeContainer.addUpgradeItem(upgradeItem);
+    public boolean addUpgrade(final ItemStack upgradeStack) {
+        return upgradeContainer.addUpgradeItem(upgradeStack);
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.WIRELESS_TRANSMITTER);
+    public Component getName() {
+        return overrideName(ContentNames.WIRELESS_TRANSMITTER);
     }
 
     @Nullable
@@ -107,14 +107,8 @@ public class WirelessTransmitterBlockEntity
         return RefinedStorageApi.INSTANCE.getWirelessTransmitterRangeModifier().modifyRange(upgradeContainer, 0);
     }
 
-    private void upgradeContainerChanged() {
-        final long baseUsage = Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage();
-        mainNetworkNode.setEnergyUsage(baseUsage + upgradeContainer.getEnergyUsage());
-        setChanged();
-    }
-
     @Override
-    public NonNullList<ItemStack> getDrops() {
+    public final NonNullList<ItemStack> getDrops() {
         final NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < upgradeContainer.getContainerSize(); ++i) {
             drops.add(upgradeContainer.getItem(i));
@@ -125,7 +119,7 @@ public class WirelessTransmitterBlockEntity
     @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
-        return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+        return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
     }
 
     boolean isActive() {

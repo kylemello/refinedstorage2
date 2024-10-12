@@ -1,11 +1,14 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.container.NetworkNodeContainerPriorities;
 import com.refinedmods.refinedstorage.api.network.impl.node.grid.GridNetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
@@ -15,12 +18,16 @@ import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.storage.PlayerActor;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.network.ColoredConnectionStrategy;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,8 +36,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractGridBlockEntity
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<GridNetworkNode>
+public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<GridNetworkNode>
     implements Grid {
     protected AbstractGridBlockEntity(final BlockEntityType<? extends AbstractGridBlockEntity> type,
                                       final BlockPos pos,
@@ -52,6 +58,17 @@ public abstract class AbstractGridBlockEntity
         return requireNonNull(mainNetworkNode.getNetwork())
             .getComponent(StorageNetworkComponent.class)
             .getResources(actorType);
+    }
+
+    @Override
+    public Set<PlatformResourceKey> getAutocraftableResources() {
+        return requireNonNull(mainNetworkNode.getNetwork())
+            .getComponent(AutocraftingNetworkComponent.class)
+            .getOutputs()
+            .stream()
+            .filter(PlatformResourceKey.class::isInstance)
+            .map(PlatformResourceKey.class::cast)
+            .collect(Collectors.toSet());
     }
 
     @Override
@@ -84,8 +101,24 @@ public abstract class AbstractGridBlockEntity
     }
 
     @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return Optional.ofNullable(mainNetworkNode.getNetwork())
+            .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
+            .flatMap(component -> component.getPreview(resource, amount));
+    }
+
+    @Override
+    public boolean startTask(final ResourceKey resource, final long amount) {
+        final Network network = mainNetworkNode.getNetwork();
+        if (network == null) {
+            return false;
+        }
+        return network.getComponent(AutocraftingNetworkComponent.class).startTask(resource, amount);
+    }
+
+    @Override
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
-        return AbstractDirectionalBlock.doesBlockStateChangeWarrantNetworkNodeUpdate(oldBlockState, newBlockState);
+        return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
     }
 }

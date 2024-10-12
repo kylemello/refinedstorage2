@@ -1,7 +1,12 @@
 package com.refinedmods.refinedstorage.common;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorScreen;
 import com.refinedmods.refinedstorage.common.content.Items;
@@ -36,12 +41,22 @@ import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResourceRendering;
+import com.refinedmods.refinedstorage.common.support.tooltip.CompositeClientTooltipComponent;
+import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
+import com.refinedmods.refinedstorage.common.support.tooltip.ResourceClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeScreen;
+import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -79,6 +94,16 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getSecurityManager(), SecurityManagerScreen::new);
         registration.register(Menus.INSTANCE.getRelay(), RelayScreen::new);
         registration.register(Menus.INSTANCE.getDiskInterface(), DiskInterfaceScreen::new);
+        registration.register(Menus.INSTANCE.getAutocrafter(), AutocrafterScreen::new);
+        registration.register(Menus.INSTANCE.getAutocraftingStorageMonitor(),
+            new ScreenConstructor<AutocraftingPreviewContainerMenu, AutocraftingPreviewScreen>() {
+                @Override
+                public AutocraftingPreviewScreen create(final AutocraftingPreviewContainerMenu menu,
+                                                        final Inventory inventory,
+                                                        final Component title) {
+                    return new AutocraftingPreviewScreen(menu, inventory, title);
+                }
+            });
     }
 
     protected static void registerAlternativeGridHints() {
@@ -131,6 +156,21 @@ public abstract class AbstractClientModInitializer {
                 fluidDiskModel
             );
         }
+    }
+
+    protected static CompositeClientTooltipComponent createRegulatorUpgradeClientTooltipComponent(
+        final Set<UpgradeMapping> destinations,
+        @Nullable final ResourceAmount configuredResource,
+        final Component help
+    ) {
+        final List<ClientTooltipComponent> components = new ArrayList<>();
+        if (configuredResource != null) {
+            components.add(new ResourceClientTooltipComponent(configuredResource));
+        } else {
+            components.add(new UpgradeDestinationClientTooltipComponent(destinations));
+        }
+        components.add(HelpClientTooltipComponent.create(help));
+        return new CompositeClientTooltipComponent(components);
     }
 
     @FunctionalInterface

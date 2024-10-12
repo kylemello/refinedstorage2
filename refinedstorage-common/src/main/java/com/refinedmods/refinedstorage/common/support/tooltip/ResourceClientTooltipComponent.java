@@ -4,9 +4,6 @@ import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 
-import java.util.Objects;
-
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -44,7 +41,7 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
             name,
             x + 16 + 4,
             y + 4,
-            Objects.requireNonNullElse(ChatFormatting.GRAY.getColor(), 11184810)
+            0xAAAAAA
         );
     }
 

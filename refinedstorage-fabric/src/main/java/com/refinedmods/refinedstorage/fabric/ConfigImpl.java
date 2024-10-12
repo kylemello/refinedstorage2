@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 
@@ -117,6 +118,9 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
     @ConfigEntry.Gui.CollapsibleObject
     private RelayEntryImpl relay = new RelayEntryImpl();
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private AutocrafterEntryImpl autocrafter = new AutocrafterEntryImpl();
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -278,6 +282,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         return relay;
     }
 
+    @Override
+    public AutocrafterEntry getAutocrafter() {
+        return autocrafter;
+    }
+
     private static class GridEntryImpl implements GridEntry {
         private boolean largeFont = false;
 
@@ -298,6 +307,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         private GridSortingDirection sortingDirection = GridSortingDirection.ASCENDING;
 
         private GridSortingTypes sortingType = GridSortingTypes.QUANTITY;
+
+        private GridViewType viewType = GridViewType.ALL;
 
         @Override
         public boolean isLargeFont() {
@@ -374,6 +385,17 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public void setSortingType(final GridSortingTypes sortingType) {
             this.sortingType = sortingType;
+            save();
+        }
+
+        @Override
+        public GridViewType getViewType() {
+            return viewType;
+        }
+
+        @Override
+        public void setViewType(final GridViewType viewType) {
+            this.viewType = viewType;
             save();
         }
 
@@ -699,6 +721,22 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public long getOutputNetworkEnergyUsage() {
             return outputNetworkEnergyUsage;
+        }
+    }
+
+    private static class AutocrafterEntryImpl implements AutocrafterEntry {
+        private long energyUsage = DefaultEnergyUsage.AUTOCRAFTER;
+
+        private long energyUsagePerPattern = DefaultEnergyUsage.AUTOCRAFTER_PER_PATTERN;
+
+        @Override
+        public long getEnergyUsagePerPattern() {
+            return energyUsagePerPattern;
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage;
         }
     }
 }

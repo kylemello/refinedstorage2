@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.support.HelpTooltipComponent;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -159,29 +159,29 @@ public class PatternItem extends Item implements PatternProviderItem {
             return Optional.empty();
         }
         return switch (state.type()) {
-            case CRAFTING -> getCraftingPattern(stack, level);
-            case PROCESSING -> getProcessingPattern(stack);
-            case STONECUTTER -> getStonecutterPattern(stack, level);
-            case SMITHING_TABLE -> getSmithingTablePattern(stack, level);
+            case CRAFTING -> getCraftingPattern(state.id(), stack, level);
+            case PROCESSING -> getProcessingPattern(state.id(), stack);
+            case STONECUTTER -> getStonecutterPattern(state.id(), stack, level);
+            case SMITHING_TABLE -> getSmithingTablePattern(state.id(), stack, level);
         };
     }
 
-    private Optional<Pattern> getCraftingPattern(final ItemStack stack, final Level level) {
+    private Optional<Pattern> getCraftingPattern(final UUID id, final ItemStack stack, final Level level) {
         final CraftingPatternState craftingState = stack.get(DataComponents.INSTANCE.getCraftingPatternState());
         if (craftingState == null) {
             return Optional.empty();
         }
-        return getCraftingPattern(level, craftingState);
+        return getCraftingPattern(id, level, craftingState);
     }
 
-    private Optional<Pattern> getCraftingPattern(final Level level, final CraftingPatternState state) {
+    private Optional<Pattern> getCraftingPattern(final UUID id, final Level level, final CraftingPatternState state) {
         final RecipeMatrixContainer craftingMatrix = getFilledCraftingMatrix(state);
         final CraftingInput.Positioned positionedCraftingInput = craftingMatrix.asPositionedCraftInput();
         final CraftingInput craftingInput = positionedCraftingInput.input();
         return level.getRecipeManager()
             .getRecipeFor(RecipeType.CRAFTING, craftingInput, level)
             .map(RecipeHolder::value)
-            .map(recipe -> toCraftingPattern(level, recipe, craftingInput, state));
+            .map(recipe -> toCraftingPattern(id, level, recipe, craftingInput, state));
     }
 
     private RecipeMatrixContainer getFilledCraftingMatrix(final CraftingPatternState state) {
@@ -194,14 +194,15 @@ public class PatternItem extends Item implements PatternProviderItem {
         return craftingMatrix;
     }
 
-    private CraftingPattern toCraftingPattern(final Level level,
+    private CraftingPattern toCraftingPattern(final UUID id,
+                                              final Level level,
                                               final CraftingRecipe recipe,
                                               final CraftingInput craftingInput,
                                               final CraftingPatternState state) {
         final List<List<PlatformResourceKey>> inputs = getInputs(recipe, state);
         final ResourceAmount output = getOutput(level, recipe, craftingInput);
         final List<ResourceAmount> byproducts = getByproducts(recipe, craftingInput);
-        return new CraftingPattern(inputs, output, byproducts);
+        return new CraftingPattern(id, inputs, output, byproducts);
     }
 
     private List<List<PlatformResourceKey>> getInputs(final CraftingRecipe recipe, final CraftingPatternState state) {
@@ -237,25 +238,26 @@ public class PatternItem extends Item implements PatternProviderItem {
             .toList();
     }
 
-    private Optional<Pattern> getProcessingPattern(final ItemStack stack) {
+    private Optional<Pattern> getProcessingPattern(final UUID id, final ItemStack stack) {
         final ProcessingPatternState state = stack.get(
             DataComponents.INSTANCE.getProcessingPatternState()
         );
         if (state == null) {
             return Optional.empty();
         }
-        return Optional.of(new ProcessingPattern(state.getFlatInputs(), state.getFlatOutputs()));
+        return Optional.of(new ProcessingPattern(id, state.getFlatInputs(), state.getFlatOutputs()));
     }
 
-    private Optional<Pattern> getStonecutterPattern(final ItemStack stack, final Level level) {
+    private Optional<Pattern> getStonecutterPattern(final UUID id, final ItemStack stack, final Level level) {
         final StonecutterPatternState state = stack.get(DataComponents.INSTANCE.getStonecutterPatternState());
         if (state == null) {
             return Optional.empty();
         }
-        return getStonecutterPattern(level, state);
+        return getStonecutterPattern(id, level, state);
     }
 
-    private Optional<Pattern> getStonecutterPattern(final Level level, final StonecutterPatternState state) {
+    private Optional<Pattern> getStonecutterPattern(final UUID id, final Level level,
+                                                    final StonecutterPatternState state) {
         final SingleRecipeInput input = new SingleRecipeInput(state.input().toItemStack());
         final ItemStack selectedOutput = state.selectedOutput().toItemStack();
         final var recipes = level.getRecipeManager().getRecipesFor(RecipeType.STONECUTTING, input, level);
@@ -263,6 +265,7 @@ public class PatternItem extends Item implements PatternProviderItem {
             final ItemStack output = recipe.value().assemble(input, level.registryAccess());
             if (ItemStack.isSameItemSameComponents(output, selectedOutput)) {
                 return Optional.of(new StonecutterPattern(
+                    id,
                     state.input(),
                     ItemResource.ofItemStack(output)
                 ));
@@ -271,15 +274,17 @@ public class PatternItem extends Item implements PatternProviderItem {
         return Optional.empty();
     }
 
-    private Optional<Pattern> getSmithingTablePattern(final ItemStack stack, final Level level) {
+    private Optional<Pattern> getSmithingTablePattern(final UUID id, final ItemStack stack, final Level level) {
         final SmithingTablePatternState state = stack.get(DataComponents.INSTANCE.getSmithingTablePatternState());
         if (state == null) {
             return Optional.empty();
         }
-        return getSmithingTablePattern(level, state);
+        return getSmithingTablePattern(id, level, state);
     }
 
-    private Optional<Pattern> getSmithingTablePattern(final Level level, final SmithingTablePatternState state) {
+    private Optional<Pattern> getSmithingTablePattern(final UUID id,
+                                                      final Level level,
+                                                      final SmithingTablePatternState state) {
         final SmithingRecipeInput input = new SmithingRecipeInput(
             state.template().toItemStack(),
             state.base().toItemStack(),
@@ -287,6 +292,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         );
         return level.getRecipeManager().getRecipeFor(RecipeType.SMITHING, input, level)
             .map(recipe -> new SmithingTablePattern(
+                id,
                 state.template(),
                 state.base(),
                 state.addition(),

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.common.util.PacketUtil;
+import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public record PatternState(UUID id, PatternType type) {
     public static final StreamCodec<RegistryFriendlyByteBuf, PatternState> STREAM_CODEC =
         StreamCodec.composite(
             UUIDUtil.STREAM_CODEC, PatternState::id,
-            PacketUtil.enumStreamCodec(PatternType.values()), PatternState::type,
+            PlatformUtil.enumStreamCodec(PatternType.values()), PatternState::type,
             PatternState::new
         );
 }

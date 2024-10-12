@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.api.grid.view;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.view.GridResource;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
@@ -46,6 +47,9 @@ public interface PlatformGridResource extends GridResource {
     int getRegistryId();
 
     List<ClientTooltipComponent> getExtractionHints(ItemStack carriedStack, GridView view);
+
+    @Nullable
+    ResourceAmount getAutocraftingRequest();
 
     @Nullable
     @API(status = API.Status.INTERNAL)

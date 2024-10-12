@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.api.network.impl.node.exporter;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
+import com.refinedmods.refinedstorage.api.network.node.SchedulingMode;
 import com.refinedmods.refinedstorage.api.network.node.exporter.ExporterTransferStrategy;
-import com.refinedmods.refinedstorage.api.network.node.task.TaskExecutor;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
@@ -24,9 +24,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.C;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.C;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -39,12 +39,12 @@ abstract class AbstractExporterNetworkNodeTest {
     @AddNetworkNode(networkId = "nonexistent")
     ExporterNetworkNode sutWithoutNetwork;
 
-    protected abstract TaskExecutor<ExporterNetworkNode.TaskContext> createTaskExecutor();
+    protected abstract SchedulingMode createSchedulingMode();
 
     @BeforeEach
     void setUp() {
         sut.setEnergyUsage(5);
-        sut.setTaskExecutor(createTaskExecutor());
+        sut.setSchedulingMode(createSchedulingMode());
     }
 
     @Test
@@ -141,9 +141,7 @@ abstract class AbstractExporterNetworkNodeTest {
     }
 
     @Test
-    void shouldNotTransferWithoutTaskExecutor(
-        @InjectNetworkStorageComponent final StorageNetworkComponent storage
-    ) {
+    void shouldNotTransferWithoutSchedulingMode(@InjectNetworkStorageComponent final StorageNetworkComponent storage) {
         // Arrange
         storage.addSource(new StorageImpl());
         storage.insert(A, 100, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -153,7 +151,7 @@ abstract class AbstractExporterNetworkNodeTest {
 
         sut.setFilters(List.of(A, B));
         sut.setTransferStrategy(createTransferStrategy(destination, 1));
-        sut.setTaskExecutor(null);
+        sut.setSchedulingMode(null);
 
         // Act
         sut.doWork();

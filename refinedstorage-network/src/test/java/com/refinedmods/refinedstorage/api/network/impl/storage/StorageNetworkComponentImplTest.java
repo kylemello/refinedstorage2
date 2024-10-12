@@ -6,13 +6,13 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storage.StorageNetwo
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.api.storage.TrackedResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedStorageImpl;
-import com.refinedmods.refinedstorage.network.test.NetworkTestFixtures;
+import com.refinedmods.refinedstorage.network.test.fixtures.NetworkTestFixtures;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,8 +22,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.A;
-import static com.refinedmods.refinedstorage.network.test.fake.FakeResources.B;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.A;
+import static com.refinedmods.refinedstorage.network.test.fixtures.ResourceFixtures.B;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class StorageNetworkComponentImplTest {
@@ -37,7 +37,7 @@ class StorageNetworkComponentImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new StorageNetworkComponentImpl(ResourceListImpl.create());
+        sut = new StorageNetworkComponentImpl(MutableResourceListImpl.create());
 
         storage1 = new StorageNetworkNode(0, 0, 1);
         storage1.setNetwork(new NetworkImpl(NetworkTestFixtures.NETWORK_COMPONENT_MAP_FACTORY));

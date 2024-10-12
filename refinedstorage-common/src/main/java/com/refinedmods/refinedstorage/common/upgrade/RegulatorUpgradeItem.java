@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResour
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
+import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
@@ -18,6 +19,7 @@ import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerI
 
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
@@ -41,7 +43,7 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
     private static final Component HELP = createTranslation("item", "regulator_upgrade.help");
 
     public RegulatorUpgradeItem(final UpgradeRegistry registry) {
-        super(new Item.Properties(), registry);
+        super(new Item.Properties(), registry, HELP);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(final ItemStack stack) {
-        return Optional.of(new RegulatorTooltipComponent(HELP, getConfiguredResource(stack)));
+        return Optional.of(new RegulatorTooltipComponent(getDestinations(), HELP, getConfiguredResource(stack)));
     }
 
     private void setAmount(final ItemStack stack, final double amount) {
@@ -89,6 +91,14 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
             RegulatorUpgradeState.EMPTY
         );
         stack.set(DataComponents.INSTANCE.getRegulatorUpgradeState(), state.withAmount(amount));
+    }
+
+    public void setAmount(final ItemStack regulatorStack, final PlatformResourceKey resource, final double amount) {
+        final RegulatorUpgradeState state = regulatorStack.getOrDefault(
+            DataComponents.INSTANCE.getRegulatorUpgradeState(),
+            new RegulatorUpgradeState(amount, Optional.of(resource))
+        );
+        regulatorStack.set(DataComponents.INSTANCE.getRegulatorUpgradeState(), state);
     }
 
     @Override
@@ -127,7 +137,9 @@ public class RegulatorUpgradeItem extends AbstractUpgradeItem {
         }).orElse(OptionalLong.empty());
     }
 
-    public record RegulatorTooltipComponent(Component helpText, @Nullable ResourceAmount configuredResource)
+    public record RegulatorTooltipComponent(Set<UpgradeMapping> destinations,
+                                            Component helpText,
+                                            @Nullable ResourceAmount configuredResource)
         implements TooltipComponent {
     }
 

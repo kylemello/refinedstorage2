@@ -54,8 +54,8 @@ public class FluidStorageBlockBlockEntity extends AbstractStorageBlockBlockEntit
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(displayName);
+    public Component getName() {
+        return overrideName(displayName);
     }
 
     @Override

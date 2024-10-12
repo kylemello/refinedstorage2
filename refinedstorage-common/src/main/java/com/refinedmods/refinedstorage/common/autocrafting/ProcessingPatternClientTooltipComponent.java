@@ -19,7 +19,6 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.support.Sprites.LIGHT_ARROW_WIDTH;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SLOT;
-import static java.util.Objects.requireNonNullElse;
 
 class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent {
     private static final long CYCLE_MS = 1000;
@@ -162,7 +161,7 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
                 outputTexts.get(i),
                 x,
                 y + (i * 9),
-                requireNonNullElse(ChatFormatting.GRAY.getColor(), 15)
+                0xAAAAAA
             );
         }
     }

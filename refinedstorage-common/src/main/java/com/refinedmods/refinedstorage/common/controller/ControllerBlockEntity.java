@@ -11,7 +11,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeEx
 import com.refinedmods.refinedstorage.common.support.energy.BlockEntityEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.CreativeEnergyStorage;
 import com.refinedmods.refinedstorage.common.support.energy.ItemBlockEnergyStorage;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 
 import com.google.common.util.concurrent.RateLimiter;
 import net.minecraft.core.BlockPos;
@@ -19,7 +19,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,7 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<ControllerNetworkNode>
+public class ControllerBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<ControllerNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ControllerData>, TransferableBlockEntityEnergy {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerBlockEntity.class);
 
@@ -95,11 +94,11 @@ public class ControllerBlockEntity extends AbstractRedstoneModeNetworkNodeContai
     }
 
     @Override
-    public Component getDisplayName() {
-        final MutableComponent defaultName = type == ControllerType.CREATIVE
+    public Component getName() {
+        final Component defaultName = type == ControllerType.CREATIVE
             ? ContentNames.CREATIVE_CONTROLLER
             : ContentNames.CONTROLLER;
-        return getName(defaultName);
+        return overrideName(defaultName);
     }
 
     @Override

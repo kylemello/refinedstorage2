@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
+import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 
 import java.util.Optional;
@@ -51,6 +52,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry fallbackSecurityCard;
     private final SimpleEnergyUsageEntry securityManager;
     private final RelayEntry relay;
+    private final AutocrafterEntryImpl autocrafter;
 
     public ConfigImpl() {
         screenSize = builder
@@ -95,6 +97,7 @@ public class ConfigImpl implements Config {
         );
         securityManager = new SimpleEnergyUsageEntryImpl("securityManager", DefaultEnergyUsage.SECURITY_MANAGER);
         relay = new RelayEntryImpl();
+        autocrafter = new AutocrafterEntryImpl();
         spec = builder.build();
     }
 
@@ -260,6 +263,11 @@ public class ConfigImpl implements Config {
         return relay;
     }
 
+    @Override
+    public AutocrafterEntryImpl getAutocrafter() {
+        return autocrafter;
+    }
+
     private static String translationKey(final String value) {
         return createTranslationKey("text.autoconfig", "option." + value);
     }
@@ -362,6 +370,7 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.ConfigValue<String> resourceType;
         private final ModConfigSpec.EnumValue<GridSortingDirection> sortingDirection;
         private final ModConfigSpec.EnumValue<GridSortingTypes> sortingType;
+        private final ModConfigSpec.EnumValue<GridViewType> viewType;
 
         GridEntryImpl() {
             builder.translation(translationKey("grid")).push("grid");
@@ -395,6 +404,9 @@ public class ConfigImpl implements Config {
             sortingType = builder
                 .translation(translationKey("grid.sortingType"))
                 .defineEnum("sortingType", GridSortingTypes.QUANTITY);
+            viewType = builder
+                .translation(translationKey("grid.viewType"))
+                .defineEnum("viewType", GridViewType.ALL);
             builder.pop();
         }
 
@@ -430,7 +442,7 @@ public class ConfigImpl implements Config {
 
         @Override
         public void setAutoSelected(final boolean autoSelected) {
-            if (autoSelected != this.autoSelected.get()) {
+            if (autoSelected != Boolean.TRUE.equals(this.autoSelected.get())) {
                 this.autoSelected.set(autoSelected);
                 ConfigImpl.this.spec.save();
             }
@@ -482,6 +494,19 @@ public class ConfigImpl implements Config {
         public void setSortingType(final GridSortingTypes sortingType) {
             if (sortingType != this.sortingType.get()) {
                 this.sortingType.set(sortingType);
+                ConfigImpl.this.spec.save();
+            }
+        }
+
+        @Override
+        public GridViewType getViewType() {
+            return viewType.get();
+        }
+
+        @Override
+        public void setViewType(final GridViewType viewType) {
+            if (viewType != this.viewType.get()) {
+                this.viewType.set(viewType);
                 ConfigImpl.this.spec.save();
             }
         }
@@ -898,6 +923,32 @@ public class ConfigImpl implements Config {
         @Override
         public long getOutputNetworkEnergyUsage() {
             return outputNetworkEnergyUsage.get();
+        }
+    }
+
+    private class AutocrafterEntryImpl implements AutocrafterEntry {
+        private final ModConfigSpec.LongValue energyUsage;
+        private final ModConfigSpec.LongValue energyUsagePerPattern;
+
+        AutocrafterEntryImpl() {
+            builder.translation(translationKey("autocrafter")).push("autocrafter");
+            energyUsage = builder
+                .translation(translationKey("autocrafter." + ENERGY_USAGE))
+                .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.AUTOCRAFTER, 0, Long.MAX_VALUE);
+            energyUsagePerPattern = builder
+                .translation(translationKey("autocrafter.energyUsagePerPattern"))
+                .defineInRange("energyUsagePerPattern", DefaultEnergyUsage.AUTOCRAFTER_PER_PATTERN, 0, Long.MAX_VALUE);
+            builder.pop();
+        }
+
+        @Override
+        public long getEnergyUsagePerPattern() {
+            return energyUsagePerPattern.get();
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage.get();
         }
     }
 }

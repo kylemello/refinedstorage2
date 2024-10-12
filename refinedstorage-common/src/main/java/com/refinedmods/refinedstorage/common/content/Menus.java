@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
 import com.refinedmods.refinedstorage.common.controller.ControllerContainerMenu;
@@ -74,6 +76,8 @@ public final class Menus {
     @Nullable
     private Supplier<MenuType<StorageMonitorContainerMenu>> storageMonitor;
     @Nullable
+    private Supplier<MenuType<AutocraftingPreviewContainerMenu>> autocraftingStorageMonitor;
+    @Nullable
     private Supplier<MenuType<NetworkTransmitterContainerMenu>> networkTransmitter;
     @Nullable
     private Supplier<MenuType<PortableGridBlockContainerMenu>> portableGridBlock;
@@ -89,6 +93,8 @@ public final class Menus {
     private Supplier<MenuType<RelayContainerMenu>> relay;
     @Nullable
     private Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface;
+    @Nullable
+    private Supplier<MenuType<AutocrafterContainerMenu>> autocrafter;
 
     private Menus() {
     }
@@ -237,6 +243,16 @@ public final class Menus {
         this.storageMonitor = supplier;
     }
 
+    public MenuType<AutocraftingPreviewContainerMenu> getAutocraftingStorageMonitor() {
+        return requireNonNull(autocraftingStorageMonitor).get();
+    }
+
+    public void setAutocraftingStorageMonitor(
+        final Supplier<MenuType<AutocraftingPreviewContainerMenu>> supplier
+    ) {
+        this.autocraftingStorageMonitor = supplier;
+    }
+
     public MenuType<NetworkTransmitterContainerMenu> getNetworkTransmitter() {
         return requireNonNull(networkTransmitter).get();
     }
@@ -301,5 +317,13 @@ public final class Menus {
 
     public void setDiskInterface(final Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface) {
         this.diskInterface = diskInterface;
+    }
+
+    public MenuType<AutocrafterContainerMenu> getAutocrafter() {
+        return requireNonNull(autocrafter).get();
+    }
+
+    public void setAutocrafter(final Supplier<MenuType<AutocrafterContainerMenu>> autocrafter) {
+        this.autocrafter = autocrafter;
     }
 }

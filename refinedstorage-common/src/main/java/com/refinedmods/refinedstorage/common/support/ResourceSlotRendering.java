@@ -6,12 +6,9 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRender
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-
-import static java.util.Objects.requireNonNullElse;
 
 public final class ResourceSlotRendering {
     private ResourceSlotRendering() {
@@ -58,7 +55,7 @@ public final class ResourceSlotRendering {
             x,
             y,
             rendering.formatAmount(amount, true),
-            requireNonNullElse(ChatFormatting.WHITE.getColor(), 15),
+            0xFFFFFF,
             true
         );
     }
@@ -66,7 +63,7 @@ public final class ResourceSlotRendering {
     public static void renderAmount(final GuiGraphics graphics,
                                     final int x,
                                     final int y,
-                                    final String amount,
+                                    final String text,
                                     final int color,
                                     final boolean large) {
         final Font font = Minecraft.getInstance().font;
@@ -77,7 +74,7 @@ public final class ResourceSlotRendering {
         if (!large) {
             poseStack.scale(0.5F, 0.5F, 1);
         }
-        graphics.drawString(font, amount, (large ? 16 : 30) - font.width(amount), large ? 8 : 22, color, true);
+        graphics.drawString(font, text, (large ? 16 : 30) - font.width(text), large ? 8 : 22, color, true);
         poseStack.popPose();
     }
 }

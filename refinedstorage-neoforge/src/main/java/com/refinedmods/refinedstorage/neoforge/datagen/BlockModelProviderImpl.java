@@ -2,11 +2,11 @@ package com.refinedmods.refinedstorage.neoforge.datagen;
 
 import com.refinedmods.refinedstorage.common.content.BlockColorMap;
 import com.refinedmods.refinedstorage.common.content.Blocks;
+import com.refinedmods.refinedstorage.common.content.ContentIds;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.MOD_ID;
@@ -58,6 +58,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerSecurityManagers();
         registerRelays();
         registerDiskInterfaces();
+        registerAutocrafters();
     }
 
     private void registerCables() {
@@ -71,6 +72,14 @@ public class BlockModelProviderImpl extends BlockModelProvider {
             withExistingParent("block/cable/extension/" + color.getName(), extensionBase)
                 .texture("cable", texture)
                 .texture(PARTICLE_TEXTURE, texture);
+            getBuilder("block/cable/" + color.getName())
+                .customLoader((blockModelBuilder, existingFileHelper) -> new ColoredCustomLoaderBuilder<>(
+                    ContentIds.CABLE,
+                    blockModelBuilder,
+                    existingFileHelper,
+                    color
+                ) {
+                }).end();
         });
     }
 
@@ -276,12 +285,51 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getDiskInterface(), "disk_interface", "base_");
         Blocks.INSTANCE.getDiskInterface()
             .forEach((color, id, block) -> getBuilder("block/disk_interface/" + color.getName())
-                .customLoader((blockModelBuilder, existingFileHelper) -> new CustomLoaderBuilder<>(
-                    id,
+                .customLoader((blockModelBuilder, existingFileHelper) -> new ColoredCustomLoaderBuilder<>(
+                    ContentIds.DISK_INTERFACE,
                     blockModelBuilder,
                     existingFileHelper,
-                    true
+                    color
                 ) {
                 }).end());
+    }
+
+    private void registerAutocrafters() {
+        final ResourceLocation side = createIdentifier("block/autocrafter/side");
+        final ResourceLocation top = createIdentifier("block/autocrafter/top");
+        Blocks.INSTANCE.getAutocrafter().forEach((color, id, autocrafter) -> {
+            final ResourceLocation cutoutSide = createIdentifier("block/autocrafter/cutouts/side/" + color.getName());
+            final ResourceLocation cutoutTop = createIdentifier("block/autocrafter/cutouts/top/" + color.getName());
+            withExistingParent("block/autocrafter/" + color.getName(), EMISSIVE_CUTOUT)
+                .texture(PARTICLE_TEXTURE, side)
+                .texture(NORTH, side)
+                .texture(EAST, side)
+                .texture(SOUTH, side)
+                .texture(WEST, side)
+                .texture(UP, top)
+                .texture(DOWN, BOTTOM_TEXTURE)
+                .texture(CUTOUT_NORTH, cutoutSide)
+                .texture(CUTOUT_EAST, cutoutSide)
+                .texture(CUTOUT_SOUTH, cutoutSide)
+                .texture(CUTOUT_WEST, cutoutSide)
+                .texture(CUTOUT_UP, cutoutTop)
+                .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
+        });
+        final ResourceLocation cutoutSide = createIdentifier("block/autocrafter/cutouts/side/inactive");
+        final ResourceLocation cutoutTop = createIdentifier("block/autocrafter/cutouts/top/inactive");
+        withExistingParent("block/autocrafter/inactive", CUTOUT)
+            .texture(PARTICLE_TEXTURE, side)
+            .texture(NORTH, side)
+            .texture(EAST, side)
+            .texture(SOUTH, side)
+            .texture(WEST, side)
+            .texture(UP, top)
+            .texture(DOWN, BOTTOM_TEXTURE)
+            .texture(CUTOUT_NORTH, cutoutSide)
+            .texture(CUTOUT_EAST, cutoutSide)
+            .texture(CUTOUT_SOUTH, cutoutSide)
+            .texture(CUTOUT_WEST, cutoutSide)
+            .texture(CUTOUT_UP, cutoutTop)
+            .texture(CUTOUT_DOWN, BOTTOM_TEXTURE);
     }
 }

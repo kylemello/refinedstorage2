@@ -1,5 +1,10 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
+import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.query.GridQueryParserException;
@@ -39,6 +44,7 @@ import com.refinedmods.refinedstorage.query.lexer.LexerTokenMappings;
 import com.refinedmods.refinedstorage.query.parser.ParserOperatorMappings;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
@@ -55,7 +61,8 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
-    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener {
+    implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener,
+    AutocraftingPreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -72,6 +79,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     protected final Inventory playerInventory;
 
     private final GridView view;
+    private final PatternRepository playerInventoryPatterns = new PatternRepositoryImpl();
     @Nullable
     private Grid grid;
     @Nullable
@@ -106,11 +114,12 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
             resource.resourceAmount().amount(),
             resource.trackedResource().orElse(null)
         ));
+        gridData.autocraftableResources().forEach(viewBuilder::withAutocraftableResource);
 
         this.view = viewBuilder.build();
         this.view.setSortingDirection(Platform.INSTANCE.getConfig().getGrid().getSortingDirection());
         this.view.setSortingType(Platform.INSTANCE.getConfig().getGrid().getSortingType());
-        this.view.setFilterAndSort(filterResourceType());
+        this.view.setFilterAndSort(createBaseFilter());
 
         this.synchronizer = loadSynchronizer();
         this.resourceTypeFilter = loadResourceType();
@@ -138,7 +147,11 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         initStrategies((ServerPlayer) playerInventory.player);
     }
 
-    private BiPredicate<GridView, GridResource> filterResourceType() {
+    private BiPredicate<GridView, GridResource> createBaseFilter() {
+        return createResourceTypeFilter().and(createViewTypeFilter());
+    }
+
+    private BiPredicate<GridView, GridResource> createResourceTypeFilter() {
         return (v, resource) -> resource instanceof PlatformGridResource platformResource
             && Platform.INSTANCE.getConfig().getGrid().getResourceType().flatMap(resourceTypeId ->
             RefinedStorageApi.INSTANCE
@@ -146,6 +159,11 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
                 .get(resourceTypeId)
                 .map(platformResource::belongsToResourceType)
         ).orElse(true);
+    }
+
+    private BiPredicate<GridView, GridResource> createViewTypeFilter() {
+        return (v, resource) -> Platform.INSTANCE.getConfig().getGrid().getViewType()
+            .accepts(resource.isAutocraftable());
     }
 
     private static GridViewBuilder createViewBuilder() {
@@ -183,6 +201,15 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         view.sort();
     }
 
+    public GridViewType getViewType() {
+        return Platform.INSTANCE.getConfig().getGrid().getViewType();
+    }
+
+    public void setViewType(final GridViewType viewType) {
+        Platform.INSTANCE.getConfig().getGrid().setViewType(viewType);
+        view.sort();
+    }
+
     public void setSearchBox(final GridSearchBox searchBox) {
         this.searchBox = searchBox;
         registerViewUpdatingListener(searchBox);
@@ -198,7 +225,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     private boolean onSearchTextChanged(final String text) {
         try {
-            view.setFilterAndSort(QUERY_PARSER.parse(text).and(filterResourceType()));
+            view.setFilterAndSort(QUERY_PARSER.parse(text).and(createBaseFilter()));
             return true;
         } catch (GridQueryParserException e) {
             view.setFilterAndSort((v, resource) -> false);
@@ -229,7 +256,18 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     @Override
     public void onScreenReady(final int playerInventoryY) {
         resetSlots();
-        addPlayerInventory(playerInventory, 8, playerInventoryY);
+        addPlayerInventory(playerInventory, 8, playerInventoryY, (before, after) -> {
+            final Pattern beforePattern = RefinedStorageApi.INSTANCE.getPattern(before, playerInventory.player.level())
+                .orElse(null);
+            final Pattern afterPattern = RefinedStorageApi.INSTANCE.getPattern(after, playerInventory.player.level())
+                .orElse(null);
+            if (beforePattern != null) {
+                playerInventoryPatterns.remove(beforePattern);
+            }
+            if (afterPattern != null) {
+                playerInventoryPatterns.add(afterPattern);
+            }
+        });
     }
 
     public GridView getView() {
@@ -423,5 +461,44 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     public void onClear() {
         view.clear();
+    }
+
+    @Nullable
+    public final AutocraftableResourceHint getAutocraftableResourceHint(final Slot slot) {
+        final ResourceKey resource = getResourceForAutocraftableHint(slot);
+        if (resource == null) {
+            return null;
+        }
+        return getAutocraftableResourceHint(resource);
+    }
+
+    @Nullable
+    private AutocraftableResourceHint getAutocraftableResourceHint(final ResourceKey resource) {
+        if (view.isAutocraftable(resource)) {
+            return AutocraftableResourceHint.AUTOCRAFTABLE;
+        }
+        if (playerInventoryPatterns.getOutputs().contains(resource)) {
+            return AutocraftableResourceHint.PATTERN_IN_INVENTORY;
+        }
+        return null;
+    }
+
+    @Nullable
+    protected ResourceKey getResourceForAutocraftableHint(final Slot slot) {
+        return null;
+    }
+
+    @Override
+    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).getPreview(resource, amount);
+    }
+
+    @Override
+    public boolean startTask(final ResourceKey resource, final long amount) {
+        return requireNonNull(grid).startTask(resource, amount);
+    }
+
+    public boolean isLargeSlot(final Slot slot) {
+        return false;
     }
 }

@@ -12,7 +12,7 @@ import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactor
 import com.refinedmods.refinedstorage.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 abstract class AbstractStorageBlockBlockEntity
-    extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<StorageNetworkNode>
+    extends AbstractBaseNetworkNodeContainerBlockEntity<StorageNetworkNode>
     implements NetworkNodeExtendedMenuProvider<StorageBlockData>, StorageBlockEntity,
     AbstractStorageContainerNetworkNode.Provider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageBlockBlockEntity.class);

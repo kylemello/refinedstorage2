@@ -16,7 +16,7 @@ import com.refinedmods.refinedstorage.common.support.FilterModeSettings;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
-import com.refinedmods.refinedstorage.common.support.network.AbstractRedstoneModeNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerData;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
@@ -39,12 +39,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock.tryExtractDirection;
 import static java.util.Objects.requireNonNull;
 
-public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
+public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<RelayInputNetworkNode>
     implements NetworkNodeExtendedMenuProvider<ResourceContainerData> {
     private static final String TAG_PASS_THROUGH = "passthrough";
     private static final String TAG_PASS_ENERGY = "passenergy";
     private static final String TAG_PASS_SECURITY = "passsecurity";
     private static final String TAG_PASS_STORAGE = "passstorage";
+    private static final String TAG_PASS_AUTOCRAFTING = "passautocrafting";
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_ACCESS_MODE = "am";
     private static final String TAG_PRIORITY = "pri";
@@ -157,6 +158,15 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         setChanged();
     }
 
+    boolean isPassAutocrafting() {
+        return mainNetworkNode.hasComponentType(RelayComponentType.AUTOCRAFTING);
+    }
+
+    void setPassAutocrafting(final boolean passAutocrafting) {
+        mainNetworkNode.updateComponentType(RelayComponentType.AUTOCRAFTING, passAutocrafting);
+        setChanged();
+    }
+
     boolean isPassThrough() {
         return passThrough;
     }
@@ -202,8 +212,8 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
     }
 
     @Override
-    public Component getDisplayName() {
-        return getName(ContentNames.RELAY);
+    public Component getName() {
+        return overrideName(ContentNames.RELAY);
     }
 
     @Nullable
@@ -221,6 +231,7 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         tag.putBoolean(TAG_PASS_ENERGY, mainNetworkNode.hasComponentType(RelayComponentType.ENERGY));
         tag.putBoolean(TAG_PASS_STORAGE, mainNetworkNode.hasComponentType(RelayComponentType.STORAGE));
         tag.putBoolean(TAG_PASS_SECURITY, mainNetworkNode.hasComponentType(RelayComponentType.SECURITY));
+        tag.putBoolean(TAG_PASS_AUTOCRAFTING, mainNetworkNode.hasComponentType(RelayComponentType.AUTOCRAFTING));
         tag.putInt(TAG_ACCESS_MODE, AccessModeSettings.getAccessMode(accessMode));
         tag.putInt(TAG_PRIORITY, priority);
     }
@@ -247,8 +258,8 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         mainNetworkNode.setPriority(priority);
     }
 
-    private Set<RelayComponentType> getComponentTypes(final CompoundTag tag) {
-        final Set<RelayComponentType> types = new HashSet<>();
+    private Set<RelayComponentType<?>> getComponentTypes(final CompoundTag tag) {
+        final Set<RelayComponentType<?>> types = new HashSet<>();
         if (tag.getBoolean(TAG_PASS_ENERGY)) {
             types.add(RelayComponentType.ENERGY);
         }
@@ -257,6 +268,9 @@ public class RelayBlockEntity extends AbstractRedstoneModeNetworkNodeContainerBl
         }
         if (tag.getBoolean(TAG_PASS_STORAGE)) {
             types.add(RelayComponentType.STORAGE);
+        }
+        if (tag.getBoolean(TAG_PASS_AUTOCRAFTING)) {
+            types.add(RelayComponentType.AUTOCRAFTING);
         }
         return types;
     }

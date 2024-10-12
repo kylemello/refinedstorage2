@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -55,13 +55,13 @@ class CraftingPatternGridRenderer implements PatternGridRenderer {
             CustomCheckboxWidget.Size.SMALL
         );
         checkbox.setOnPressed((c, selected) -> menu.setFuzzyMode(selected));
-        checkbox.setTooltip(getFuzzyModeTooltip(menu.isFuzzyMode()));
+        checkbox.setHelpTooltip(getFuzzyModeTooltip(menu.isFuzzyMode()));
         checkbox.visible = isFuzzyModeCheckboxVisible();
         return checkbox;
     }
 
-    private static Tooltip getFuzzyModeTooltip(final boolean fuzzyMode) {
-        return fuzzyMode ? Tooltip.create(FUZZY_MODE_ON_HELP) : Tooltip.create(FUZZY_MODE_OFF_HELP);
+    private static Component getFuzzyModeTooltip(final boolean fuzzyMode) {
+        return fuzzyMode ? FUZZY_MODE_ON_HELP : FUZZY_MODE_OFF_HELP;
     }
 
     @Override
@@ -91,7 +91,7 @@ class CraftingPatternGridRenderer implements PatternGridRenderer {
             return;
         }
         fuzzyModeCheckbox.setSelected(newFuzzyMode);
-        fuzzyModeCheckbox.setTooltip(getFuzzyModeTooltip(newFuzzyMode));
+        fuzzyModeCheckbox.setHelpTooltip(getFuzzyModeTooltip(newFuzzyMode));
     }
 
     @Override

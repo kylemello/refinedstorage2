@@ -77,6 +77,9 @@ public class RecoloringRecipeProvider extends RecipeProvider {
         Blocks.INSTANCE.getDiskInterface().forEach((color, id, block) ->
             recipe(Tags.DISK_INTERFACES, block.get().asItem(), color)
                 .save(output, recipeId(color, "disk_interface")));
+        Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) ->
+            recipe(Tags.AUTOCRAFTERS, block.get().asItem(), color)
+                .save(output, recipeId(color, "autocrafter")));
     }
 
     private ResourceLocation recipeId(final DyeColor color, final String suffix) {

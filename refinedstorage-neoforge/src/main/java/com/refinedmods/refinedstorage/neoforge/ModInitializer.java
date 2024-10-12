@@ -7,6 +7,8 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
+import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
@@ -27,6 +29,9 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocrafterNameChangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridRecipeTransferPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.FilterSlotChangePacket;
@@ -50,6 +55,9 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.GridClearPacket;
@@ -65,17 +73,23 @@ import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
 import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApi;
 import com.refinedmods.refinedstorage.neoforge.api.RefinedStorageNeoForgeApiProxy;
+import com.refinedmods.refinedstorage.neoforge.constructordestructor.ForgeConstructorBlockEntity;
+import com.refinedmods.refinedstorage.neoforge.constructordestructor.ForgeDestructorBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.exporter.FluidHandlerExporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.exporter.ForgeExporterBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.exporter.ItemHandlerExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridExtractionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.FluidGridInsertionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.ItemGridExtractionStrategy;
 import com.refinedmods.refinedstorage.neoforge.grid.strategy.ItemGridScrollingStrategy;
 import com.refinedmods.refinedstorage.neoforge.importer.FluidHandlerImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.importer.ForgeImporterBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.importer.ItemHandlerImporterTransferStrategyFactory;
+import com.refinedmods.refinedstorage.neoforge.networking.ForgeCableBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.diskdrive.ForgeDiskDriveBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.diskinterface.ForgeDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.FluidHandlerPlatformExternalStorageProviderFactory;
+import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.ForgeExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.storage.externalstorage.ItemHandlerPlatformExternalStorageProviderFactory;
 import com.refinedmods.refinedstorage.neoforge.storage.portablegrid.ForgePortableGridBlockEntity;
 import com.refinedmods.refinedstorage.neoforge.support.energy.EnergyStorageAdapter;
@@ -145,6 +159,19 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 @Mod(IdentifierUtil.MOD_ID)
 public class ModInitializer extends AbstractModInitializer {
+    private static final BlockEntityProviders BLOCK_ENTITY_PROVIDERS = new BlockEntityProviders(
+        ForgeDiskDriveBlockEntity::new,
+        (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
+        (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
+        ForgeDiskInterfaceBlockEntity::new,
+        ForgeCableBlockEntity::new,
+        ForgeExternalStorageBlockEntity::new,
+        ForgeExporterBlockEntity::new,
+        ForgeImporterBlockEntity::new,
+        ForgeConstructorBlockEntity::new,
+        ForgeDestructorBlockEntity::new
+    );
+
     private final DeferredRegister<Block> blockRegistry =
         DeferredRegister.create(BuiltInRegistries.BLOCK, IdentifierUtil.MOD_ID);
     private final DeferredRegister<Item> itemRegistry =
@@ -179,7 +206,7 @@ public class ModInitializer extends AbstractModInitializer {
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             eventBus.addListener(ClientModInitializer::onClientSetup);
-            eventBus.addListener(ClientModInitializer::onRegisterModelGeometry);
+            eventBus.addListener(ClientModInitializer::onRegisterCustomModels);
             eventBus.addListener(ClientModInitializer::onRegisterMenuScreens);
             eventBus.addListener(ClientModInitializer::onRegisterKeyMappings);
             eventBus.addListener(ClientModInitializer::onRegisterItemColors);
@@ -251,13 +278,7 @@ public class ModInitializer extends AbstractModInitializer {
     }
 
     private void registerBlocks(final IEventBus eventBus) {
-        registerBlocks(
-            new ForgeRegistryCallback<>(blockRegistry),
-            ForgeDiskDriveBlockEntity::new,
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            ForgeDiskInterfaceBlockEntity::new
-        );
+        registerBlocks(new ForgeRegistryCallback<>(blockRegistry), BLOCK_ENTITY_PROVIDERS);
         blockRegistry.register(eventBus);
     }
 
@@ -279,7 +300,7 @@ public class ModInitializer extends AbstractModInitializer {
                 return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
             }
         }));
-        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem() {
+        Items.INSTANCE.setWirelessGrid(callback.register(WIRELESS_GRID, () -> new WirelessGridItem(false) {
             @Override
             public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                        final ItemStack newStack,
@@ -289,7 +310,7 @@ public class ModInitializer extends AbstractModInitializer {
         }));
         Items.INSTANCE.setCreativeWirelessGrid(callback.register(
             CREATIVE_WIRELESS_GRID,
-            () -> new WirelessGridItem() {
+            () -> new WirelessGridItem(true) {
                 @Override
                 public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
                                                            final ItemStack newStack,
@@ -346,15 +367,12 @@ public class ModInitializer extends AbstractModInitializer {
             new BlockEntityTypeFactory() {
                 @SuppressWarnings("DataFlowIssue") // data type can be null
                 @Override
-                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntitySupplier<T> factory,
+                public <T extends BlockEntity> BlockEntityType<T> create(final BlockEntityProvider<T> factory,
                                                                          final Block... allowedBlocks) {
                     return new BlockEntityType<>(factory::create, new HashSet<>(Arrays.asList(allowedBlocks)), null);
                 }
             },
-            ForgeDiskDriveBlockEntity::new,
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.NORMAL, pos, state),
-            (pos, state) -> new ForgePortableGridBlockEntity(PortableGridType.CREATIVE, pos, state),
-            ForgeDiskInterfaceBlockEntity::new
+            BLOCK_ENTITY_PROVIDERS
         );
         blockEntityTypeRegistry.register(eventBus);
     }
@@ -411,6 +429,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getSecurityManager());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getStorageMonitor());
         registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getWirelessTransmitter());
+        registerNetworkNodeContainerProvider(event, BlockEntities.INSTANCE.getAutocrafter());
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK,
             BlockEntities.INSTANCE.getDiskDrive(),
@@ -509,7 +528,7 @@ public class ModInitializer extends AbstractModInitializer {
             helper -> registerLootFunctions(new DirectRegistryCallback<>(BuiltInRegistries.LOOT_FUNCTION_TYPE))
         );
         e.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(
-            createIdentifier("general"),
+            RefinedStorageApi.INSTANCE.getCreativeModeTabId(),
             CreativeModeTab.builder()
                 .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))
@@ -610,6 +629,21 @@ public class ModInitializer extends AbstractModInitializer {
             PatternGridAllowedAlternativesUpdatePacket.PACKET_TYPE,
             PatternGridAllowedAlternativesUpdatePacket.STREAM_CODEC,
             wrapHandler(PatternGridAllowedAlternativesUpdatePacket::handle)
+        );
+        registrar.playToClient(
+            AutocrafterNameUpdatePacket.PACKET_TYPE,
+            AutocrafterNameUpdatePacket.STREAM_CODEC,
+            wrapHandler(AutocrafterNameUpdatePacket::handle)
+        );
+        registrar.playToClient(
+            AutocraftingPreviewResponsePacket.PACKET_TYPE,
+            AutocraftingPreviewResponsePacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> AutocraftingPreviewResponsePacket.handle(packet))
+        );
+        registrar.playToClient(
+            AutocraftingResponsePacket.PACKET_TYPE,
+            AutocraftingResponsePacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> AutocraftingResponsePacket.handle(packet))
         );
     }
 
@@ -728,6 +762,21 @@ public class ModInitializer extends AbstractModInitializer {
             PatternGridSmithingTableRecipeTransferPacket.PACKET_TYPE,
             PatternGridSmithingTableRecipeTransferPacket.STREAM_CODEC,
             wrapHandler(PatternGridSmithingTableRecipeTransferPacket::handle)
+        );
+        registrar.playToServer(
+            AutocrafterNameChangePacket.PACKET_TYPE,
+            AutocrafterNameChangePacket.STREAM_CODEC,
+            wrapHandler(AutocrafterNameChangePacket::handle)
+        );
+        registrar.playToServer(
+            AutocraftingPreviewRequestPacket.PACKET_TYPE,
+            AutocraftingPreviewRequestPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingPreviewRequestPacket::handle)
+        );
+        registrar.playToServer(
+            AutocraftingRequestPacket.PACKET_TYPE,
+            AutocraftingRequestPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingRequestPacket::handle)
         );
     }
 

@@ -63,11 +63,20 @@ public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
         slots.clear();
     }
 
-    protected void addPlayerInventory(final Inventory inventory, final int inventoryX, final int inventoryY) {
+    protected final void addPlayerInventory(final Inventory inventory,
+                                            final int inventoryX,
+                                            final int inventoryY) {
+        addPlayerInventory(inventory, inventoryX, inventoryY, null);
+    }
+
+    protected final void addPlayerInventory(final Inventory inventory,
+                                            final int inventoryX,
+                                            final int inventoryY,
+                                            @Nullable final PlayerInventoryListener listener) {
         int id = 9;
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
-                addSlot(new Slot(inventory, id++, inventoryX + x * 18, inventoryY + y * 18));
+                addSlot(new PlayerInventorySlot(inventory, id++, inventoryX + x * 18, inventoryY + y * 18, listener));
             }
         }
 
@@ -77,7 +86,10 @@ public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
             final int y = inventoryY + 4 + (3 * 18);
             final boolean disabled = disabledSlot != null
                 && disabledSlot.isDisabledSlot(id);
-            addSlot(disabled ? new DisabledSlot(inventory, id, x, y) : new Slot(inventory, id, x, y));
+            final Slot slot = disabled
+                ? new DisabledSlot(inventory, id, x, y)
+                : new PlayerInventorySlot(inventory, id, x, y, listener);
+            addSlot(slot);
             id++;
         }
     }

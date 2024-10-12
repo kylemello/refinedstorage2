@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
+import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
 import javax.annotation.Nullable;
 
@@ -27,8 +28,14 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
 
     protected AbstractStretchingScreen(final T menu,
                                        final Inventory playerInventory,
-                                       final Component text) {
-        super(menu, playerInventory, text);
+                                       final TextMarquee title) {
+        super(menu, playerInventory, title);
+    }
+
+    protected AbstractStretchingScreen(final T menu,
+                                       final Inventory playerInventory,
+                                       final Component title) {
+        super(menu, playerInventory, title);
     }
 
     @Override

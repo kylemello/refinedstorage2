@@ -139,7 +139,7 @@ public final class DestructorTest {
 
             // Act
             helper.setBlock(pos.east(), Blocks.DIAMOND_ORE);
-            destructor.addUpgradeItem(RSITEMS.getSilkTouchUpgrade());
+            destructor.addUpgrade(RSITEMS.getSilkTouchUpgrade().getDefaultInstance());
 
             // Assert
             sequence
@@ -268,6 +268,7 @@ public final class DestructorTest {
 
             // Assert
             sequence
+                .thenIdle(20)
                 .thenWaitUntil(() -> helper.assertBlockNotPresent(Blocks.WATER, pos.east()))
                 .thenExecute(() -> helper.setBlock(pos.east(), Blocks.LAVA))
                 .thenIdle(20)

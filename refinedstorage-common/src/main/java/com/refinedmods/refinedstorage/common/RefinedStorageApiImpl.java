@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common;
 
+import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.core.component.ComponentMapFactory;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.NetworkBuilder;
@@ -9,9 +10,9 @@ import com.refinedmods.refinedstorage.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage.api.network.impl.NetworkFactory;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
+import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
@@ -49,6 +50,7 @@ import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotRefer
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceProvider;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
+import com.refinedmods.refinedstorage.common.content.ContentIds;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.GridInsertionHintsImpl;
 import com.refinedmods.refinedstorage.common.grid.screen.hint.ItemGridInsertionHint;
@@ -79,6 +81,7 @@ import com.refinedmods.refinedstorage.common.support.resource.ItemResourceFactor
 import com.refinedmods.refinedstorage.common.support.slotreference.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage.common.support.slotreference.InventorySlotReference;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeRegistryImpl;
+import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
 
@@ -102,6 +105,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -594,5 +598,18 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
             id,
             i -> providerItem.getPattern(stack, level).orElse(null)
         ));
+    }
+
+    @Override
+    public void openAutocraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
+        if (requests.isEmpty()) {
+            return;
+        }
+        ClientPlatformUtil.openCraftingPreview(requests, parentScreen);
+    }
+
+    @Override
+    public ResourceLocation getCreativeModeTabId() {
+        return ContentIds.CREATIVE_MODE_TAB;
     }
 }

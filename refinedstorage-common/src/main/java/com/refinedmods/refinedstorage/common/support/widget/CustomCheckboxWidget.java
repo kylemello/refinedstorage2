@@ -1,5 +1,9 @@
 package com.refinedmods.refinedstorage.common.support.widget;
 
+import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
+import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
+
+import java.util.List;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -32,6 +36,8 @@ public class CustomCheckboxWidget extends AbstractButton {
 
     @Nullable
     private OnPressed onPressed;
+    @Nullable
+    private Component helpTooltip;
 
     public CustomCheckboxWidget(final int x,
                                 final int y,
@@ -57,6 +63,11 @@ public class CustomCheckboxWidget extends AbstractButton {
 
     private static int getWidth(final int maxWidth, final Component text, final Font font, final Size size) {
         return Math.min(maxWidth, size.widthHeight + CHECKBOX_TEXT_SPACING + font.width(text));
+    }
+
+
+    public void setHelpTooltip(@Nullable final Component helpTooltip) {
+        this.helpTooltip = helpTooltip;
     }
 
     public void setOnPressed(@Nullable final OnPressed onPressed) {
@@ -92,6 +103,9 @@ public class CustomCheckboxWidget extends AbstractButton {
     @Override
     public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         final Minecraft minecraft = Minecraft.getInstance();
+        if (isHovered && helpTooltip != null && minecraft.screen instanceof AbstractBaseScreen<?> screen) {
+            screen.setDeferredTooltip(List.of(HelpClientTooltipComponent.createAlwaysDisplayed(helpTooltip)));
+        }
         RenderSystem.enableDepthTest();
         final Font font = minecraft.font;
         graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);

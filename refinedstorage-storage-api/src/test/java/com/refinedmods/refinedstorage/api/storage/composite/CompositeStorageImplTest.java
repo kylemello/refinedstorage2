@@ -2,9 +2,9 @@ package com.refinedmods.refinedstorage.api.storage.composite;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
+import com.refinedmods.refinedstorage.api.storage.ActorFixtures;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
-import com.refinedmods.refinedstorage.api.storage.FakeActors;
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.api.storage.StorageImpl;
 import com.refinedmods.refinedstorage.api.storage.limited.LimitedStorageImpl;
@@ -27,7 +27,7 @@ class CompositeStorageImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CompositeStorageImpl(ResourceListImpl.create());
+        sut = new CompositeStorageImpl(MutableResourceListImpl.create());
     }
 
     @Test
@@ -214,24 +214,24 @@ class CompositeStorageImplTest {
         final TrackedStorage b = new TrackedStorageImpl(new StorageImpl(), clock::get);
 
         // Test if it uses the latest across 2 different storages
-        a.insert(A, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
+        a.insert(A, 1, Action.EXECUTE, ActorFixtures.ActorFixture1.INSTANCE);
         clock.set(1L);
-        b.insert(A, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
+        b.insert(A, 1, Action.EXECUTE, ActorFixtures.ActorFixture1.INSTANCE);
 
         // Test if it differentiates between source types properly
         clock.set(2L);
-        b.insert(B, 1, Action.EXECUTE, FakeActors.FakeActor1.INSTANCE);
+        b.insert(B, 1, Action.EXECUTE, ActorFixtures.ActorFixture1.INSTANCE);
         clock.set(3L);
-        b.insert(B, 1, Action.EXECUTE, FakeActors.FakeActor2.INSTANCE);
+        b.insert(B, 1, Action.EXECUTE, ActorFixtures.ActorFixture2.INSTANCE);
 
         sut.addSource(a);
         sut.addSource(b);
 
         // Act
-        final var oneOne = sut.findTrackedResourceByActorType(A, FakeActors.FakeActor1.class);
-        final var oneTwo = sut.findTrackedResourceByActorType(A, FakeActors.FakeActor2.class);
-        final var twoOne = sut.findTrackedResourceByActorType(B, FakeActors.FakeActor1.class);
-        final var twoTwo = sut.findTrackedResourceByActorType(B, FakeActors.FakeActor2.class);
+        final var oneOne = sut.findTrackedResourceByActorType(A, ActorFixtures.ActorFixture1.class);
+        final var oneTwo = sut.findTrackedResourceByActorType(A, ActorFixtures.ActorFixture2.class);
+        final var twoOne = sut.findTrackedResourceByActorType(B, ActorFixtures.ActorFixture1.class);
+        final var twoTwo = sut.findTrackedResourceByActorType(B, ActorFixtures.ActorFixture2.class);
 
         // Assert
         assertThat(oneOne).get().usingRecursiveComparison().isEqualTo(new TrackedResource("Source1", 1L));

@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.api.storage;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 
 import java.util.Collection;
 
@@ -15,15 +15,15 @@ import org.apiguardian.api.API;
  */
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.1.0")
 public class StorageImpl implements Storage {
-    private final ResourceList list;
+    private final MutableResourceList list;
     private long stored;
 
-    public StorageImpl(final ResourceList list) {
+    public StorageImpl(final MutableResourceList list) {
         this.list = list;
     }
 
     public StorageImpl() {
-        this(ResourceListImpl.create());
+        this(MutableResourceListImpl.create());
     }
 
     @Override

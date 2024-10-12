@@ -43,8 +43,9 @@ public class PriorityScreen extends AbstractAmountScreen<AbstractAmountScreen.De
     }
 
     @Override
-    protected void accept(final Integer amount) {
+    protected boolean confirm(final Integer amount) {
         property.setValue(amount);
+        return true;
     }
 
     @Override

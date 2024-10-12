@@ -493,7 +493,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
     }
 
     @Override
-    protected void accept(final Double amount) {
+    protected boolean confirm(final Double amount) {
         slot.changeAmountOnClient(amount);
         final Set<Alternative> allowedAlternatives = new HashSet<>();
         for (int i = 0; i < alternativeCheckboxes.size(); ++i) {
@@ -502,6 +502,7 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
             }
         }
         getMenu().sendAllowedAlternatives(allowedAlternatives);
+        return true;
     }
 
     @Override

@@ -1,20 +1,36 @@
 package com.refinedmods.refinedstorage.common.support.widget;
 
+import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
+
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class TextMarquee {
-    private final Component text;
     private final int maxWidth;
+    private final int color;
+    private final boolean dropShadow;
+    private final boolean small;
 
+    private Component text;
     private int offset;
-    private int ticks;
+    private int stateTicks;
     private State state = State.MOVING_LEFT;
 
-    public TextMarquee(final Component text, final int maxWidth) {
+    public TextMarquee(final Component text,
+                       final int maxWidth,
+                       final int color,
+                       final boolean dropShadow,
+                       final boolean small) {
         this.text = text;
         this.maxWidth = maxWidth;
+        this.color = color;
+        this.dropShadow = dropShadow;
+        this.small = small;
+    }
+
+    public TextMarquee(final Component text, final int maxWidth) {
+        this(text, maxWidth, 4210752, false, false);
     }
 
     public int getEffectiveWidth(final Font font) {
@@ -25,29 +41,61 @@ public class TextMarquee {
         if (!hovering) {
             offset = 0;
             state = State.MOVING_LEFT;
-            ticks = 0;
+            stateTicks = 0;
         }
-        final int width = font.width(text);
+        final int width = (int) (font.width(text) * (small ? SmallText.getScale() : 1F));
         if (width > maxWidth) {
             final int overflow = width - maxWidth;
             if (hovering) {
                 updateMarquee(overflow);
             }
             graphics.enableScissor(x, y, x + maxWidth, y + font.lineHeight);
-            graphics.drawString(font, text, x + offset, y, 4210752, false);
+            if (small) {
+                SmallText.render(
+                    graphics,
+                    font,
+                    text.getVisualOrderText(),
+                    x + offset,
+                    y,
+                    color,
+                    dropShadow
+                );
+            } else {
+                graphics.drawString(font, text, x + offset, y, color, dropShadow);
+            }
             graphics.disableScissor();
         } else {
-            graphics.drawString(font, text, x, y, 4210752, false);
+            if (small) {
+                SmallText.render(
+                    graphics,
+                    font,
+                    text.getVisualOrderText(),
+                    x,
+                    y,
+                    color,
+                    dropShadow
+                );
+            } else {
+                graphics.drawString(font, text, x, y, color, dropShadow);
+            }
         }
     }
 
     private void updateMarquee(final int overflow) {
-        ticks++;
-        if (ticks % state.ticks == 0) {
+        stateTicks++;
+        if (stateTicks % state.ticks == 0) {
             offset = state.updateOffset(offset);
             state = state.nextState(offset, overflow);
-            ticks = 0;
+            stateTicks = 0;
         }
+    }
+
+    public Component getText() {
+        return text;
+    }
+
+    public void setText(final Component text) {
+        this.text = text;
     }
 
     enum State {

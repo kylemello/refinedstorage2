@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
+import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -80,5 +81,21 @@ public final class S2CPackets {
                                                                 final int index,
                                                                 final Set<ResourceLocation> ids) {
         Platform.INSTANCE.sendPacketToClient(player, new PatternGridAllowedAlternativesUpdatePacket(index, ids));
+    }
+
+    public static void sendAutocrafterNameUpdate(final ServerPlayer player, final Component name) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocrafterNameUpdatePacket(name));
+    }
+
+    public static void sendAutocraftingPreviewResponse(final ServerPlayer player,
+                                                       final UUID id,
+                                                       final AutocraftingPreview preview) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingPreviewResponsePacket(id, preview));
+    }
+
+    public static void sendAutocraftingResponse(final ServerPlayer player,
+                                                final UUID id,
+                                                final boolean started) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingResponsePacket(id, started));
     }
 }

@@ -6,13 +6,15 @@ import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
+import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
-import com.refinedmods.refinedstorage.api.resource.list.ResourceListImpl;
 import com.refinedmods.refinedstorage.api.storage.EmptyActor;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
+import com.refinedmods.refinedstorage.common.iface.ExportedResourcesContainer;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -71,24 +73,96 @@ public final class GameTestUtil {
     public static void insert(final GameTestHelper helper,
                               final Network network,
                               final Item resource,
+                              final long amount,
+                              final boolean shouldSucceed) {
+        insert(helper, network, new ItemResource(resource), amount, shouldSucceed);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Item resource,
                               final long amount) {
-        insert(helper, network, new ItemResource(resource), amount);
+        insert(helper, network, new ItemResource(resource), amount, true);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final Fluid resource,
+                              final long amount,
+                              final boolean shouldSucceed) {
+        insert(helper, network, new FluidResource(resource), amount, shouldSucceed);
     }
 
     public static void insert(final GameTestHelper helper,
                               final Network network,
                               final Fluid resource,
                               final long amount) {
-        insert(helper, network, new FluidResource(resource), amount);
+        insert(helper, network, new FluidResource(resource), amount, true);
     }
 
     public static void insert(final GameTestHelper helper,
                               final Network network,
                               final ResourceKey resource,
                               final long amount) {
+        insert(helper, network, resource, amount, true);
+    }
+
+    public static void insert(final GameTestHelper helper,
+                              final Network network,
+                              final ResourceKey resource,
+                              final long amount,
+                              final boolean shouldSucceed) {
         final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
         final long inserted = storage.insert(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
-        helper.assertTrue(inserted == amount, "Resource couldn't be inserted");
+        if (shouldSucceed) {
+            helper.assertTrue(inserted == amount, "Resource couldn't be inserted");
+        } else {
+            helper.assertFalse(inserted == amount, "Resource could be inserted");
+        }
+    }
+
+    public static void extract(final GameTestHelper helper,
+                               final Network network,
+                               final Item resource,
+                               final long amount,
+                               final boolean shouldSucceed) {
+        extract(helper, network, new ItemResource(resource), amount, shouldSucceed);
+    }
+
+    public static void extract(final GameTestHelper helper,
+                               final Network network,
+                               final Item resource,
+                               final long amount) {
+        extract(helper, network, new ItemResource(resource), amount, true);
+    }
+
+    public static void extract(final GameTestHelper helper,
+                               final Network network,
+                               final Fluid resource,
+                               final long amount,
+                               final boolean shouldSucceed) {
+        extract(helper, network, new FluidResource(resource), amount, shouldSucceed);
+    }
+
+    public static void extract(final GameTestHelper helper,
+                               final Network network,
+                               final Fluid resource,
+                               final long amount) {
+        extract(helper, network, new FluidResource(resource), amount, true);
+    }
+
+    public static void extract(final GameTestHelper helper,
+                               final Network network,
+                               final ResourceKey resource,
+                               final long amount,
+                               final boolean shouldSucceed) {
+        final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
+        final long extracted = storage.extract(resource, amount, Action.EXECUTE, EmptyActor.INSTANCE);
+        if (shouldSucceed) {
+            helper.assertTrue(extracted == amount, "Resource couldn't be extracted");
+        } else {
+            helper.assertFalse(extracted == amount, "Resource could be extracted");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -165,7 +239,7 @@ public final class GameTestUtil {
                                                              final ResourceAmount... expected) {
         final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            final ResourceList given = ResourceListImpl.create();
+            final MutableResourceList given = MutableResourceListImpl.create();
             for (int i = 0; i < container.size(); i++) {
                 final ResourceAmount item = container.get(i);
                 if (item != null) {
@@ -182,7 +256,7 @@ public final class GameTestUtil {
         final var containerBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
         final ResourceList expectedList = toResourceList(expected);
         return () -> {
-            final ResourceList given = ResourceListImpl.create();
+            final MutableResourceList given = MutableResourceListImpl.create();
             for (int i = 0; i < containerBlockEntity.getContainerSize(); i++) {
                 final ItemStack itemStack = containerBlockEntity.getItem(i);
                 if (!itemStack.isEmpty()) {
@@ -203,12 +277,20 @@ public final class GameTestUtil {
         });
     }
 
+    public static Runnable storageIsEmpty(final GameTestHelper helper,
+                                          final BlockPos networkPos) {
+        return networkIsAvailable(helper, networkPos, network -> {
+            final StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
+            helper.assertTrue(storage.getStored() == 0, "Storage is not empty");
+        });
+    }
+
     private static ResourceList toResourceList(final ResourceAmount... resources) {
         return toResourceList(Arrays.asList(resources));
     }
 
     private static ResourceList toResourceList(final Collection<ResourceAmount> resources) {
-        final ResourceList list = ResourceListImpl.create();
+        final MutableResourceList list = MutableResourceListImpl.create();
         for (final ResourceAmount resource : resources) {
             list.add(resource);
         }
@@ -234,6 +316,83 @@ public final class GameTestUtil {
         }
     }
 
+    public static void prepareChest(final GameTestHelper helper,
+                             final BlockPos pos,
+                             final ItemStack... stacks) {
+        helper.setBlock(pos, net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+        final var chestBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
+        for (int i = 0; i < stacks.length; i++) {
+            chestBlockEntity.setItem(i, stacks[i]);
+        }
+    }
+
+    public static void addItemToChest(final GameTestHelper helper,
+                                      final BlockPos pos,
+                                      final ItemStack stack) {
+        final var chestBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
+        for (int i = 0; i < chestBlockEntity.getContainerSize(); i++) {
+            if (chestBlockEntity.getItem(i).isEmpty()) {
+                chestBlockEntity.setItem(i, stack);
+                return;
+            }
+        }
+    }
+
+    public static void removeItemFromChest(final GameTestHelper helper,
+                                           final BlockPos pos,
+                                           final ItemStack stack) {
+        final var chestBlockEntity = requireBlockEntity(helper, pos, BaseContainerBlockEntity.class);
+        for (int i = 0; i < chestBlockEntity.getContainerSize(); i++) {
+            if (chestBlockEntity.getItem(i).is(stack.getItem())) {
+                chestBlockEntity.removeItem(i, stack.getCount());
+            }
+        }
+    }
+
+    public static void prepareInterface(final GameTestHelper helper,
+                                        final BlockPos pos,
+                                        final ResourceAmount... resources) {
+        helper.setBlock(pos, RSBLOCKS.getInterface());
+        final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
+        final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
+
+        for (int i = 0; i < resources.length; i++) {
+            exportedResources.set(i, resources[i]);
+        }
+    }
+
+    public static void addFluidToInterface(final GameTestHelper helper,
+                                           final BlockPos pos,
+                                           final ResourceAmount resource) {
+        final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
+        final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
+
+        exportedResources.insert(resource.resource(), resource.amount(), Action.EXECUTE);
+    }
+
+    public static void removeFluidFromInterface(final GameTestHelper helper,
+                                                final BlockPos pos,
+                                                final ResourceAmount resource) {
+        final var interfaceBlockEntity = requireBlockEntity(helper, pos, InterfaceBlockEntity.class);
+        final ExportedResourcesContainer exportedResources = interfaceBlockEntity.getExportedResources();
+
+        final long extracted = exportedResources.extract(resource.resource(), resource.amount(), Action.EXECUTE);
+
+        if (extracted <= 0) {
+            throw new GameTestAssertException(
+                "Resource " + resource.resource() + " with amount " + resource.amount() + " could not be extracted "
+            );
+        }
+    }
+
+    public static ItemStack[] createStacks(final Item item, final int count, final int amount) {
+        final ItemStack[] stacks = new ItemStack[amount];
+        for (int i = 0; i < amount; i++) {
+            stacks[i] = item.getDefaultInstance().copyWithCount(count);
+        }
+        return stacks;
+    }
+
     public static ItemResource asResource(final Item item) {
         return new ItemResource(item);
     }
@@ -244,5 +403,10 @@ public final class GameTestUtil {
 
     public static FluidResource asResource(final Fluid fluid) {
         return new FluidResource(fluid);
+    }
+
+    public static ItemStack getItemAsDamaged(final ItemStack stack, final int damageValue) {
+        stack.setDamageValue(damageValue);
+        return stack;
     }
 }

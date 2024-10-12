@@ -21,7 +21,7 @@ public class PatternItemOverrides extends ItemOverrides {
     private final BakedModel stonecutterModel;
     private final BakedModel smithingTableModel;
 
-    @SuppressWarnings({"DataFlowIssue"}) // null is allowed as long as we don't pass overrides
+    @SuppressWarnings({"DataFlowIssue", "deprecation"}) // null is allowed as long as we don't pass overrides
     public PatternItemOverrides(final ModelBaker modelBaker,
                                 final BakedModel emptyModel,
                                 final BakedModel craftingModel,
