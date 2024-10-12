@@ -16,11 +16,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+-   The Crafter has been renamed to "Autocrafter".
 -   Optimized memory usage and startup time of cable models. After updating, cables will appear disconnected, but this is only visual. Cause a block update to fix this.
 -   Optimized performance of searching in the Grid.
 -   Custom titles that overflow will now have a marquee effect instead, for every GUI.
--   You can now define a priority in the Crafter.
--   You can now change the name of a Crafter in the GUI.
+-   You can now define a priority in the Autocrafter.
+-   You can now change the name of a Autocrafter in the GUI.
 -   Changed "Crafter mode" to "Locking mode" with following options:
     -   Never
     -   Lock until redstone pulse is received
@@ -35,7 +36,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The numbers on the crafting preview screen are now compacted with units.
 -   When requesting autocrafting multiple resources at once, which can happen via a recipe mod, all the crafting requests are now listed on the side of the GUI.
 -   You can now request autocrafting from the Storage Monitor if the resource count reaches zero.
--   The Crafter has been renamed to "Autocrafter".
 
 ### Fixed
 
