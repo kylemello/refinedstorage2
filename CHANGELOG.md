@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.8] - 2024-10-12
+
 ### Added
 
 -   Autocrafter
@@ -20,12 +22,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   You can now define a priority in the Crafter.
 -   You can now change the name of a Crafter in the GUI.
 -   Changed "Crafter mode" to "Locking mode" with following options:
-    - Never
-    - Lock until redstone pulse is received
-    - Lock until connected machine is empty (new, facilitates easier "blocking mode" without redstone)
-    - Lock until all outputs are received (new, facilitates easier "blocking mode" without redstone)
-    - Lock until low redstone signal
-    - Lock until high redstone signal
+    -   Never
+    -   Lock until redstone pulse is received
+    -   Lock until connected machine is empty (new, facilitates easier "blocking mode" without redstone)
+    -   Lock until all outputs are received (new, facilitates easier "blocking mode" without redstone)
+    -   Lock until low redstone signal
+    -   Lock until high redstone signal
 -   Resources in the Grid that are autocraftable now display an orange backdrop and tooltip to indicate whether the resource is autocraftable at a glance.
 -   Slots used in the Pattern Grid for pattern encoding and Crafting Grid crafting matrix slots now display an orange backdrop and tooltip to indicate whether the item is autocraftable at a glance. This checks patterns from your network and from your inventory.
 -   Added help tooltip for filtering based on recipe items in the Crafting Grid.
@@ -773,7 +775,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.8...HEAD
+
+[2.0.0-milestone.4.8]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...v2.0.0-milestone.4.8
 
 [2.0.0-milestone.4.7]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.6...v2.0.0-milestone.4.7
 
