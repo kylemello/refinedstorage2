@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public final class ContentIds {
+    public static final ResourceLocation CREATIVE_MODE_TAB = createIdentifier("general");
+
     public static final ResourceLocation DISK_DRIVE = createIdentifier("disk_drive");
     public static final ResourceLocation MACHINE_CASING = createIdentifier("machine_casing");
     public static final ResourceLocation CABLE = createIdentifier("cable");

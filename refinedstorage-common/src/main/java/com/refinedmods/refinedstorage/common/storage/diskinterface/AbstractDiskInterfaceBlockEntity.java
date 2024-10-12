@@ -28,7 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -109,12 +108,12 @@ public abstract class AbstractDiskInterfaceBlockEntity
     }
 
     @Override
-    public List<Item> getUpgradeItems() {
+    public List<ItemStack> getUpgrades() {
         return upgradeContainer.getUpgradeItems();
     }
 
     @Override
-    public boolean addUpgradeItem(final ItemStack upgradeStack) {
+    public boolean addUpgrade(final ItemStack upgradeStack) {
         return upgradeContainer.addUpgradeItem(upgradeStack);
     }
 

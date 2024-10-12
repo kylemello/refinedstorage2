@@ -39,7 +39,7 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
     private final UpgradeContainerListener listener;
     private final int defaultWorkTickRate;
     private final ThrottledNetworkNodeTicker ticker;
-    
+
     public UpgradeContainer(final UpgradeDestination destination) {
         this(destination, null);
     }
@@ -145,20 +145,20 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
         return usage;
     }
 
-    public List<Item> getUpgradeItems() {
-        final List<Item> upgradeItems = new ArrayList<>();
+    public List<ItemStack> getUpgradeItems() {
+        final List<ItemStack> upgradeItems = new ArrayList<>();
         for (int i = 0; i < getContainerSize(); ++i) {
             final ItemStack itemStack = getItem(i);
             if (itemStack.isEmpty()) {
                 continue;
             }
-            upgradeItems.add(itemStack.getItem());
+            upgradeItems.add(itemStack.copy());
         }
         return upgradeItems;
     }
 
-    public boolean addUpgradeItem(final ItemStack upgradeStack) {
-        return addItem(upgradeStack).isEmpty();
+    public boolean addUpgradeItem(final ItemStack upgradeItem) {
+        return addItem(upgradeItem).isEmpty();
     }
 
     public NonNullList<ItemStack> getDrops() {

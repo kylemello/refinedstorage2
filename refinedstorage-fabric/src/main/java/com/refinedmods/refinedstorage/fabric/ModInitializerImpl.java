@@ -400,7 +400,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
     private void registerCreativeModeTab() {
         Registry.register(
             BuiltInRegistries.CREATIVE_MODE_TAB,
-            createIdentifier("general"),
+            RefinedStorageApi.INSTANCE.getCreativeModeTabId(),
             CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
                 .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))

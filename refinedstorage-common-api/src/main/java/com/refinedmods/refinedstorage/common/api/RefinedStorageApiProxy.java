@@ -54,6 +54,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -406,6 +407,11 @@ public class RefinedStorageApiProxy implements RefinedStorageApi {
     @Override
     public void openAutocraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
         ensureLoaded().openAutocraftingPreview(requests, parentScreen);
+    }
+
+    @Override
+    public ResourceLocation getCreativeModeTabId() {
+        return ensureLoaded().getCreativeModeTabId();
     }
 
     private RefinedStorageApi ensureLoaded() {

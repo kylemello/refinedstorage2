@@ -90,7 +90,7 @@ public final class ImporterTest {
                 DIRT.getDefaultInstance()
             );
 
-            importer.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            importer.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
@@ -140,7 +140,7 @@ public final class ImporterTest {
             if (upgrade.getItem() instanceof RegulatorUpgradeItem upgradeItem) {
                 upgradeItem.setAmount(upgrade, asResource(DIRT.getDefaultInstance()), 10);
             }
-            importer.addUpgradeItem(upgrade);
+            importer.addUpgrade(upgrade);
 
             // Assert
             sequence
@@ -371,7 +371,7 @@ public final class ImporterTest {
                 new ResourceAmount(asResource(WATER), Platform.INSTANCE.getBucketAmount() * 15),
                 new ResourceAmount(asResource(LAVA), Platform.INSTANCE.getBucketAmount())
             );
-            importer.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            importer.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence

@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apiguardian.api.API;
 
@@ -18,11 +17,11 @@ public interface ConfigurationCardTarget {
 
     void readConfiguration(CompoundTag tag, HolderLookup.Provider provider);
 
-    default List<Item> getUpgradeItems() {
+    default List<ItemStack> getUpgrades() {
         return Collections.emptyList();
     }
 
-    default boolean addUpgradeItem(ItemStack upgradeStack) {
+    default boolean addUpgrade(ItemStack upgradeStack) {
         return false;
     }
 }

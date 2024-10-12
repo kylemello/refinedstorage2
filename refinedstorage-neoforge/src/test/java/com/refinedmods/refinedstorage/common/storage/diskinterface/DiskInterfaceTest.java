@@ -76,7 +76,7 @@ public final class DiskInterfaceTest {
 
             // Act
             diskInterface.setTransferMode(StorageTransferMode.INSERT_INTO_NETWORK);
-            diskInterface.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            diskInterface.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
@@ -217,7 +217,7 @@ public final class DiskInterfaceTest {
 
             // Act
             diskInterface.setTransferMode(StorageTransferMode.EXTRACT_FROM_NETWORK);
-            diskInterface.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            diskInterface.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence

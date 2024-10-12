@@ -41,6 +41,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Fixed upgrade destinations not being shown on upgrades.
 -   Fixed resources with changed data format or ID causing entire storage to fail to load.
 -   Fixed crash when trying to export fluids from an External Storage on Fabric.
+-   The Configuration Card can now also transfer the (configured) Regulator Upgrade.
 
 ## [2.0.0-milestone.4.7] - 2024-08-11
 
