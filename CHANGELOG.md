@@ -12,6 +12,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 -   Autocrafter
+    - Note: autocrafting itself hasn't been implemented yet. This is the in-game content, but not the autocrafting engine itself yet. 
 -   The Relay now has support for propagating autocrafting when not in pass-through mode.
 
 ### Changed

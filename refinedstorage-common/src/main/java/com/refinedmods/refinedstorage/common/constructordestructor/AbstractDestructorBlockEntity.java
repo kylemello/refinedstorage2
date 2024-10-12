@@ -75,12 +75,12 @@ public abstract class AbstractDestructorBlockEntity
 
     @Override
     public List<ItemStack> getUpgrades() {
-        return upgradeContainer.getUpgradeItems();
+        return upgradeContainer.getUpgrades();
     }
 
     @Override
     public boolean addUpgrade(final ItemStack upgradeStack) {
-        return upgradeContainer.addUpgradeItem(upgradeStack);
+        return upgradeContainer.addUpgrade(upgradeStack);
     }
 
     public boolean isPickupItems() {

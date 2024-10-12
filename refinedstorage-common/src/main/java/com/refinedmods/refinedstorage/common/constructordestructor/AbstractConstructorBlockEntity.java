@@ -84,12 +84,12 @@ public abstract class AbstractConstructorBlockEntity
 
     @Override
     public List<ItemStack> getUpgrades() {
-        return upgradeContainer.getUpgradeItems();
+        return upgradeContainer.getUpgrades();
     }
 
     @Override
     public boolean addUpgrade(final ItemStack upgradeStack) {
-        return upgradeContainer.addUpgradeItem(upgradeStack);
+        return upgradeContainer.addUpgrade(upgradeStack);
     }
 
     @Override
