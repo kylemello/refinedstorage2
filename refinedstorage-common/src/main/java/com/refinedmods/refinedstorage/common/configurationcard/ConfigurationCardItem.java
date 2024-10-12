@@ -82,10 +82,10 @@ public class ConfigurationCardItem extends Item {
 
     private void tryTransferUpgrades(final Player player,
                                      final ConfigurationCardTarget target,
-                                     final List<ItemStack> upgradeItems) {
-        for (final ItemStack upgradeItem : upgradeItems) {
-            final int upgradeIndexInPlayerInventory = player.getInventory().findSlotMatchingItem(upgradeItem);
-            if (upgradeIndexInPlayerInventory >= 0 && target.addUpgrade(upgradeItem)) {
+                                     final List<ItemStack> upgrades) {
+        for (final ItemStack upgrade : upgrades) {
+            final int upgradeIndexInPlayerInventory = player.getInventory().findSlotMatchingItem(upgrade);
+            if (upgradeIndexInPlayerInventory >= 0 && target.addUpgrade(upgrade)) {
                 player.getInventory().removeItem(upgradeIndexInPlayerInventory, 1);
             }
         }

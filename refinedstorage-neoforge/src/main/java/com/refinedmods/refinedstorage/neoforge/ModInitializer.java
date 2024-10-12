@@ -528,7 +528,7 @@ public class ModInitializer extends AbstractModInitializer {
             helper -> registerLootFunctions(new DirectRegistryCallback<>(BuiltInRegistries.LOOT_FUNCTION_TYPE))
         );
         e.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(
-            createIdentifier("general"),
+            RefinedStorageApi.INSTANCE.getCreativeModeTabId(),
             CreativeModeTab.builder()
                 .title(ContentNames.MOD)
                 .icon(() -> new ItemStack(Blocks.INSTANCE.getCreativeController().getDefault()))

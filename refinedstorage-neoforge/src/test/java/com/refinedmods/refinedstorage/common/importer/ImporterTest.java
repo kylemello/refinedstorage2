@@ -140,7 +140,7 @@ public final class ImporterTest {
             if (upgrade.getItem() instanceof RegulatorUpgradeItem upgradeItem) {
                 upgradeItem.setAmount(upgrade, asResource(DIRT.getDefaultInstance()), 10);
             }
-            importer.addUpgradeItem(upgrade);
+            importer.addUpgrade(upgrade);
 
             // Assert
             sequence

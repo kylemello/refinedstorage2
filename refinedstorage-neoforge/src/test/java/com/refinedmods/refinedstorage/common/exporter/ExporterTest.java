@@ -129,7 +129,7 @@ public final class ExporterTest {
             if (upgrade.getItem() instanceof RegulatorUpgradeItem upgradeItem) {
                 upgradeItem.setAmount(upgrade, asResource(DIRT.getDefaultInstance()), 10);
             }
-            exporter.addUpgradeItem(upgrade);
+            exporter.addUpgrade(upgrade);
 
             // Assert
             sequence

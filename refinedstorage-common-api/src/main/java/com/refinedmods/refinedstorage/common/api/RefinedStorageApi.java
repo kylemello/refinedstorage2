@@ -54,6 +54,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -207,4 +208,6 @@ public interface RefinedStorageApi {
     Optional<Pattern> getPattern(ItemStack stack, Level level);
 
     void openAutocraftingPreview(List<ResourceAmount> requests, @Nullable Object parentScreen);
+
+    ResourceLocation getCreativeModeTabId();
 }
