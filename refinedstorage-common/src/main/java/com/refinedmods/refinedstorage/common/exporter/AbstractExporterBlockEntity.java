@@ -87,12 +87,12 @@ public abstract class AbstractExporterBlockEntity
     }
 
     @Override
-    public List<Item> getUpgradeItems() {
+    public List<ItemStack> getUpgrades() {
         return upgradeContainer.getUpgradeItems();
     }
 
     @Override
-    public boolean addUpgradeItem(final ItemStack upgradeStack) {
+    public boolean addUpgrade(final ItemStack upgradeStack) {
         return upgradeContainer.addUpgradeItem(upgradeStack);
     }
 

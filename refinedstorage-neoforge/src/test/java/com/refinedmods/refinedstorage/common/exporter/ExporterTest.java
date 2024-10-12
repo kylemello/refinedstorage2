@@ -80,7 +80,7 @@ public final class ExporterTest {
 
             // Act
             exporter.setFilters(List.of(asResource(DIRT)));
-            exporter.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            exporter.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence
@@ -224,7 +224,7 @@ public final class ExporterTest {
 
             // Act
             exporter.setFilters(List.of(asResource(WATER)));
-            exporter.addUpgradeItem(RSITEMS.getStackUpgrade().getDefaultInstance());
+            exporter.addUpgrade(RSITEMS.getStackUpgrade().getDefaultInstance());
 
             // Assert
             sequence

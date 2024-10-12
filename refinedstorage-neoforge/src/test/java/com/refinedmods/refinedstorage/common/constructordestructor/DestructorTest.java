@@ -139,7 +139,7 @@ public final class DestructorTest {
 
             // Act
             helper.setBlock(pos.east(), Blocks.DIAMOND_ORE);
-            destructor.addUpgradeItem(RSITEMS.getSilkTouchUpgrade().getDefaultInstance());
+            destructor.addUpgrade(RSITEMS.getSilkTouchUpgrade().getDefaultInstance());
 
             // Assert
             sequence
