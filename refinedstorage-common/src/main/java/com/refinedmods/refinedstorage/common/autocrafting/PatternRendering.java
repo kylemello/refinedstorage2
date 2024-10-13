@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 

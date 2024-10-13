@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.autocrafter;
 
 import com.refinedmods.refinedstorage.api.core.NullableType;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -11,8 +11,8 @@ import javax.annotation.Nullable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity.PATTERNS;
-import static com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity.isValidPattern;
+import static com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity.PATTERNS;
+import static com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity.isValidPattern;
 
 class PatternInventory extends FilteredContainer {
     @Nullable

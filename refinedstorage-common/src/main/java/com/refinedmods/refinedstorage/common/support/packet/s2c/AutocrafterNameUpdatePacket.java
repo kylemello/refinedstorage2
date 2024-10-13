@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;

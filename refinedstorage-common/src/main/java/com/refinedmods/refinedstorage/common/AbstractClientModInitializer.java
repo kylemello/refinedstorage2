@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;

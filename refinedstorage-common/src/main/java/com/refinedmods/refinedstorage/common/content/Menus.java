@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
