@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 class PatternTypeSettings {
     private static final int CRAFTING = 0;

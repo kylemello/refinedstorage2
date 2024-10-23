@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlock;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlock;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorBlock;

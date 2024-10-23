@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.grid.AutocraftableResourceHint;
@@ -16,9 +16,9 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_HEIGHT;
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_PADDING;
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_WIDTH;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_HEIGHT;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_PADDING;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_WIDTH;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.renderSlotHighlight;

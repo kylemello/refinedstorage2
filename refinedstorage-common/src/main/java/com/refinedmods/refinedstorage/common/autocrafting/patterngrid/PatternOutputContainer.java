@@ -1,5 +1,6 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
 
 import net.minecraft.world.item.ItemStack;

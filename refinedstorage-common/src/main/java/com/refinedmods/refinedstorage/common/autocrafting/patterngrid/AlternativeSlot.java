@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledResourceSlot;

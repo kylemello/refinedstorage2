@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyType;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;

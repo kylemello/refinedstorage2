@@ -1,5 +1,6 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
+import com.refinedmods.refinedstorage.common.autocrafting.VanillaConstants;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
@@ -18,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_PADDING;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_PADDING;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static java.util.Objects.requireNonNull;
 

@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
@@ -229,7 +229,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         transferManager.addTransfer(patternOutput, playerInventory);
     }
 
-    boolean isPatternInOutput(final ItemStack stack) {
+    public boolean isPatternInOutput(final ItemStack stack) {
         return patternOutputSlot != null && patternOutputSlot.getItem() == stack;
     }
 

@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;

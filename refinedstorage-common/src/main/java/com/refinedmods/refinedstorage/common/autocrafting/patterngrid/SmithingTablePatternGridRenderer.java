@@ -1,5 +1,6 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
+import com.refinedmods.refinedstorage.common.autocrafting.VanillaConstants;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.List;
@@ -23,9 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.world.level.Level;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_HEIGHT;
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_PADDING;
-import static com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen.INSET_WIDTH;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_HEIGHT;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_PADDING;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen.INSET_WIDTH;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 class SmithingTablePatternGridRenderer implements PatternGridRenderer {

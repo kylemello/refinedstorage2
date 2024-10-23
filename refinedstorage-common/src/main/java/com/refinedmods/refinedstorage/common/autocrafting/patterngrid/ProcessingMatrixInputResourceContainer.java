@@ -1,9 +1,10 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.api.core.NullableType;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
+import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceContainerImpl;
 
 import java.util.ArrayList;

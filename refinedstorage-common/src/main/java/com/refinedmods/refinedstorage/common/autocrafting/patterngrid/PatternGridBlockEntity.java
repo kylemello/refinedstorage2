@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
@@ -6,6 +6,12 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
+import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.SmithingTablePatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.content.DataComponents;

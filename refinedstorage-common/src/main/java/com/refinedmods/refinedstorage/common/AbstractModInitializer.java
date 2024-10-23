@@ -17,9 +17,9 @@ import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.Autocrafte
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterData;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridData;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;

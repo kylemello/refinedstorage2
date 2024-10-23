@@ -1,4 +1,4 @@
-package com.refinedmods.refinedstorage.common.autocrafting;
+package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
@@ -18,8 +18,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import static com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen.ALTERNATIVE_HEIGHT;
-import static com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen.ALTERNATIVE_ROW_HEIGHT;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.AlternativesScreen.ALTERNATIVE_HEIGHT;
+import static com.refinedmods.refinedstorage.common.autocrafting.patterngrid.AlternativesScreen.ALTERNATIVE_ROW_HEIGHT;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.getTagTranslationKey;
 
 class AlternativeContainerMenu extends AbstractResourceContainerMenu {
