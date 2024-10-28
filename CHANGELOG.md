@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Autocrafter Manager
+
 ## [2.0.0-milestone.4.8] - 2024-10-12
 
 ### Added

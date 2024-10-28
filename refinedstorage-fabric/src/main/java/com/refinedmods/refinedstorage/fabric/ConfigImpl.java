@@ -122,6 +122,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @ConfigEntry.Gui.CollapsibleObject
     private AutocrafterEntryImpl autocrafter = new AutocrafterEntryImpl();
 
+    @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl autocrafterManager = new SimpleEnergyUsageEntryImpl(
+        DefaultEnergyUsage.AUTOCRAFTER_MANAGER
+    );
+
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
     }
@@ -285,6 +290,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public AutocrafterEntry getAutocrafter() {
         return autocrafter;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getAutocrafterManager() {
+        return autocrafterManager;
     }
 
     private static class GridEntryImpl implements GridEntry {

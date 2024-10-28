@@ -59,6 +59,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerRelays();
         registerDiskInterfaces();
         registerAutocrafters();
+        registerAutocrafterManagers();
     }
 
     private void registerCables() {
@@ -323,6 +324,14 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                 return model.build();
             });
         });
+    }
+
+    private void registerAutocrafterManagers() {
+        Blocks.INSTANCE.getAutocrafterManager().forEach((color, id, block) -> configureActiveColoredDirectionalBlock(
+            color,
+            block,
+            "autocrafter_manager"
+        ));
     }
 
     private void configureActiveColoredDirectionalBlock(final DyeColor color,

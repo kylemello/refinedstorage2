@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlock;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlock;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
@@ -149,6 +150,12 @@ public final class Blocks {
         AutocrafterBlock::new,
         ContentIds.AUTOCRAFTER,
         ContentNames.AUTOCRAFTER,
+        COLOR
+    );
+    private final BlockColorMap<AutocrafterManagerBlock, BaseBlockItem> autocrafterManager = new BlockColorMap<>(
+        AutocrafterManagerBlock::new,
+        ContentIds.AUTOCRAFTER_MANAGER,
+        ContentNames.AUTOCRAFTER_MANAGER,
         COLOR
     );
 
@@ -421,5 +428,9 @@ public final class Blocks {
 
     public BlockColorMap<AutocrafterBlock, BaseBlockItem> getAutocrafter() {
         return autocrafter;
+    }
+
+    public BlockColorMap<AutocrafterManagerBlock, BaseBlockItem> getAutocrafterManager() {
+        return autocrafterManager;
     }
 }

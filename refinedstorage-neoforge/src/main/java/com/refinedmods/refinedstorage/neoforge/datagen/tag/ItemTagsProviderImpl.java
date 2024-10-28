@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import static com.refinedmods.refinedstorage.common.content.Tags.AUTOCRAFTERS;
+import static com.refinedmods.refinedstorage.common.content.Tags.AUTOCRAFTER_MANAGERS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CABLES;
 import static com.refinedmods.refinedstorage.common.content.Tags.CONSTRUCTORS;
 import static com.refinedmods.refinedstorage.common.content.Tags.CONTROLLERS;
@@ -133,6 +134,10 @@ public class ItemTagsProviderImpl extends ItemTagsProvider {
                 .toList());
         addAllToTag(AUTOCRAFTERS,
             Blocks.INSTANCE.getAutocrafter().values().stream()
+                .map(block -> (Supplier<Item>) block::asItem)
+                .toList());
+        addAllToTag(AUTOCRAFTER_MANAGERS,
+            Blocks.INSTANCE.getAutocrafterManager().values().stream()
                 .map(block -> (Supplier<Item>) block::asItem)
                 .toList());
     }
