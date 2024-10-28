@@ -23,6 +23,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static java.util.Objects.requireNonNull;
+
 public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
     protected final TransferManager transferManager;
     @Nullable
@@ -40,7 +42,7 @@ public abstract class AbstractBaseContainerMenu extends AbstractContainerMenu {
 
     @SuppressWarnings("unchecked")
     public <T> ClientProperty<T> getProperty(final PropertyType<T> type) {
-        return (ClientProperty<T>) propertyMap.get(type);
+        return (ClientProperty<T>) requireNonNull(propertyMap.get(type), "Property not found");
     }
 
     public void receivePropertyChangeFromClient(final ResourceLocation id, final int newValue) {

@@ -19,8 +19,10 @@ class PatternInventory extends FilteredContainer {
     private Listener listener;
 
     PatternInventory(final Supplier<@NullableType Level> levelSupplier) {
-        super(PATTERNS,
-            stack -> Optional.ofNullable(levelSupplier.get()).map(level -> isValidPattern(stack, level)).orElse(false));
+        super(
+            PATTERNS,
+            stack -> Optional.ofNullable(levelSupplier.get()).map(level -> isValidPattern(stack, level)).orElse(false)
+        );
     }
 
     void setListener(@Nullable final Listener listener) {

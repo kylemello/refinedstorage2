@@ -23,6 +23,8 @@ import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.Autocrafte
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterData;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerData;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
@@ -798,6 +800,13 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setAutocrafter(callback.register(
             ContentIds.AUTOCRAFTER,
             () -> extendedMenuTypeFactory.create(AutocrafterContainerMenu::new, AutocrafterData.STREAM_CODEC)
+        ));
+        Menus.INSTANCE.setAutocrafterManager(callback.register(
+            ContentIds.AUTOCRAFTER_MANAGER,
+            () -> extendedMenuTypeFactory.create(
+                AutocrafterManagerContainerMenu::new,
+                AutocrafterManagerData.STREAM_CODEC
+            )
         ));
     }
 

@@ -83,7 +83,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.smithingTableResult = new ResultContainer();
         this.smithingTableRecipes = playerInventory.player.level().getRecipeManager()
             .getAllRecipesFor(RecipeType.SMITHING);
-        onScreenReady(0);
+        resized(0, 0, 0);
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         registerProperty(new ClientProperty<>(PatternGridPropertyTypes.PATTERN_TYPE, patternGridData.patternType()) {
             @Override
@@ -125,7 +125,7 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
         this.smithingTableRecipes = playerInventory.player.level().getRecipeManager()
             .getAllRecipesFor(RecipeType.SMITHING);
         this.patternGrid = grid;
-        onScreenReady(0);
+        resized(0, 0, 0);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             grid::getRedstoneMode,
@@ -181,8 +181,8 @@ public class PatternGridContainerMenu extends AbstractGridContainerMenu {
     }
 
     @Override
-    public void onScreenReady(final int playerInventoryY) {
-        super.onScreenReady(playerInventoryY);
+    public void resized(final int playerInventoryY, final int topYStart, final int topYEnd) {
+        super.resized(playerInventoryY, topYStart, topYEnd);
         transferManager.clear();
         addSmithingTableSlots(playerInventoryY); // these must be always first for the smithing table helpers
         addPatternSlots(playerInventoryY);

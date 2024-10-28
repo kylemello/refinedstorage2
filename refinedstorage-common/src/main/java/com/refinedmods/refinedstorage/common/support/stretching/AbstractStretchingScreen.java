@@ -44,7 +44,11 @@ public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMe
         this.imageHeight = TOP_HEIGHT + (ROW_SIZE * visibleRows) + getBottomHeight();
         this.inventoryLabelY = imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 4;
 
-        getMenu().onScreenReady(imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 17);
+        getMenu().resized(
+            imageHeight - INVENTORY_INCLUDING_TITLE_HEIGHT + 17,
+            TOP_HEIGHT + 1,
+            TOP_HEIGHT + 1 + (ROW_SIZE * visibleRows) - 2
+        );
 
         super.init();
 
