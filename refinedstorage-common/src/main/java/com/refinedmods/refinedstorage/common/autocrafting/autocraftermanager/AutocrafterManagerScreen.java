@@ -137,33 +137,47 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
             );
             return;
         }
-        renderRowTitlesAndSlots(graphics, x, y, topHeight, rows);
+        renderGroups(graphics, x, y, topHeight, rows);
         renderSlotContents(graphics, mouseX, mouseY, y, topHeight, rows);
     }
 
-    private void renderRowTitlesAndSlots(final GuiGraphics graphics,
-                                         final int x,
-                                         final int y,
-                                         final int topHeight,
-                                         final int rows) {
+    private void renderGroups(final GuiGraphics graphics,
+                              final int x,
+                              final int y,
+                              final int topHeight,
+                              final int rows) {
         final int rowX = x + 7;
         int rowY = y + topHeight - getScrollbarOffset();
-        for (final AutocrafterManagerContainerMenu.Group group : menu.getGroups()) {
+        for (final AutocrafterManagerContainerMenu.ViewGroup group : menu.getGroups()) {
             if (!group.isVisible()) {
                 continue;
             }
             if (!isOutOfFrame(y, topHeight, rows, rowY)) {
                 graphics.blitSprite(AUTOCRAFTER_NAME, rowX, rowY, 162, ROW_SIZE);
-                graphics.drawString(font, group.name, rowX + 4, rowY + 6, 4210752, false);
+                graphics.drawString(font, group.getName(), rowX + 4, rowY + 6, 4210752, false);
             }
-            for (int i = 0; i < group.getVisibleSlots(); i++) {
-                final int slotX = rowX + ((i % COLUMNS) * 18);
-                final int slotY = rowY + 18 + ((i / COLUMNS) * 18);
+            renderGroup(graphics, y, topHeight, rows, group, rowX, rowY);
+            rowY += (group.getVisibleRows() + 1) * ROW_SIZE;
+        }
+    }
+
+    private static void renderGroup(final GuiGraphics graphics,
+                                    final int y,
+                                    final int topHeight,
+                                    final int rows,
+                                    final AutocrafterManagerContainerMenu.ViewGroup group,
+                                    final int rowX,
+                                    final int rowY) {
+        int j = 0;
+        for (final AutocrafterManagerContainerMenu.SubViewGroup subGroup : group.getSubViewGroups()) {
+            for (int i = 0; i < subGroup.getVisibleSlots(); i++) {
+                final int slotX = rowX + ((j % COLUMNS) * 18);
+                final int slotY = rowY + 18 + ((j / COLUMNS) * 18);
                 if (!isOutOfFrame(y, topHeight, rows, slotY)) {
                     graphics.blitSprite(Sprites.SLOT, slotX, slotY, 18, 18);
                 }
+                ++j;
             }
-            rowY += (group.getVisibleRows() + 1) * ROW_SIZE;
         }
     }
 

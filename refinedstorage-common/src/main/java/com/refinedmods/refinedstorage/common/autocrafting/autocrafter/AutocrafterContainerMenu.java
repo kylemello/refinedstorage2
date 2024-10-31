@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting.autocrafter;
 
+import com.refinedmods.refinedstorage.common.autocrafting.PatternInventory;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternSlot;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.FilteredContainer;
@@ -21,6 +23,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import static com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity.PATTERNS;
 
 public class AutocrafterContainerMenu extends AbstractBaseContainerMenu {
     private static final int PATTERN_SLOT_X = 8;
@@ -44,7 +48,7 @@ public class AutocrafterContainerMenu extends AbstractBaseContainerMenu {
         registerProperty(new ClientProperty<>(AutocrafterPropertyTypes.PRIORITY, 0));
         registerProperty(new ClientProperty<>(AutocrafterPropertyTypes.VISIBLE_TO_THE_AUTOCRAFTER_MANAGER, true));
         addSlots(
-            new PatternInventory(playerInventory.player::level),
+            new PatternInventory(PATTERNS, playerInventory.player::level),
             new UpgradeContainer(UpgradeDestinations.AUTOCRAFTER)
         );
         this.name = Component.empty();

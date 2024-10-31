@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting.autocrafter;
 
 import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternSlot;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;

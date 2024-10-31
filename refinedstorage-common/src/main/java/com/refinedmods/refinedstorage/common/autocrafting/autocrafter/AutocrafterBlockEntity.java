@@ -4,8 +4,8 @@ import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.network.impl.node.patternprovider.PatternProviderNetworkNode;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternInventory;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.ContentNames;
 import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
@@ -50,7 +50,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
     private static final String TAG_PRIORITY = "pri";
     private static final String TAG_VISIBLE_TO_THE_AUTOCRAFTER_MANAGER = "vaum";
 
-    private final PatternInventory patternContainer = new PatternInventory(this::getLevel);
+    private final PatternInventory patternContainer = new PatternInventory(PATTERNS, this::getLevel);
     private final UpgradeContainer upgradeContainer;
     private LockMode lockMode = LockMode.NEVER;
     private int priority;
@@ -81,9 +81,12 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
 
     @Override
     protected InWorldNetworkNodeContainer createMainContainer(final PatternProviderNetworkNode networkNode) {
-        return RefinedStorageApi.INSTANCE.createNetworkNodeContainer(this, networkNode)
-            .connectionStrategy(new AutocrafterConnectionStrategy(this::getBlockState, getBlockPos()))
-            .build();
+        return new AutocrafterNetworkNodeContainer(
+            this,
+            networkNode,
+            "main",
+            new AutocrafterConnectionStrategy(this::getBlockState, getBlockPos())
+        );
     }
 
     FilteredContainer getPatternContainer() {
@@ -314,10 +317,5 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
     protected boolean doesBlockStateChangeWarrantNetworkNodeUpdate(final BlockState oldBlockState,
                                                                    final BlockState newBlockState) {
         return AbstractDirectionalBlock.didDirectionChange(oldBlockState, newBlockState);
-    }
-
-    static boolean isValidPattern(final ItemStack stack, final Level level) {
-        return stack.getItem() instanceof PatternProviderItem patternProviderItem
-            && patternProviderItem.getPattern(stack, level).isPresent();
     }
 }

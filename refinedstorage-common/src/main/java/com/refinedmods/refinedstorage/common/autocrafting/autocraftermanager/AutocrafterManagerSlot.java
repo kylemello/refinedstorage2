@@ -1,25 +1,28 @@
 package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternSlot;
 
-class AutocrafterManagerSlot extends Slot {
+import it.unimi.dsi.fastutil.ints.IntIntPair;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.Level;
+
+class AutocrafterManagerSlot extends PatternSlot {
     private final int originalY;
     private final int startY;
     private final int endY;
     private final boolean active;
 
     AutocrafterManagerSlot(final Container container,
+                           final Level level,
                            final int slot,
                            final int x,
                            final int y,
-                           final int startY,
-                           final int endY,
+                           final IntIntPair startEndY,
                            final boolean active) {
-        super(container, slot, x, y);
+        super(container, slot, x, y, level);
         this.originalY = y;
-        this.startY = startY;
-        this.endY = endY;
+        this.startY = startEndY.firstInt();
+        this.endY = startEndY.secondInt();
         this.active = active;
     }
 

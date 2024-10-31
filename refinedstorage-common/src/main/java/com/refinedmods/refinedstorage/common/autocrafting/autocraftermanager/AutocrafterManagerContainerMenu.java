@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.autocrafting.PatternInventory;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
@@ -19,10 +20,9 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import net.minecraft.network.chat.Component;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -32,7 +32,7 @@ import net.minecraft.world.level.Level;
 public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu implements ScreenSizeListener,
     AutocrafterManagerWatcher {
     private final Inventory playerInventory;
-    private final List<Group> groups;
+    private final List<ViewGroup> groups;
     private final List<AutocrafterManagerSlot> autocrafterSlots = new ArrayList<>();
 
     @Nullable
@@ -48,15 +48,15 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         super(Menus.INSTANCE.getAutocrafterManager(), syncId);
         this.playerInventory = playerInventory;
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
-        this.groups = data.groups().stream().map(group -> Group.from(playerInventory.player.level(), group)).toList();
+        this.groups = data.groups().stream().map(g -> ViewGroup.from(playerInventory.player.level(), g)).toList();
         this.active = data.active();
         resized(0, 0, 0);
     }
 
-    public AutocrafterManagerContainerMenu(final int syncId,
-                                           final Inventory playerInventory,
-                                           final AutocrafterManagerBlockEntity autocrafterManager,
-                                           final List<Container> containers) {
+    AutocrafterManagerContainerMenu(final int syncId,
+                                    final Inventory playerInventory,
+                                    final AutocrafterManagerBlockEntity autocrafterManager,
+                                    final List<AutocrafterManagerBlockEntity.Group> groups) {
         super(Menus.INSTANCE.getAutocrafterManager(), syncId);
         this.playerInventory = playerInventory;
         this.autocrafterManager = autocrafterManager;
@@ -67,7 +67,7 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
             autocrafterManager::setRedstoneMode
         ));
         this.groups = Collections.emptyList();
-        addServerSideSlots(containers);
+        addServerSideSlots(groups);
     }
 
     @Override
@@ -93,13 +93,20 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         }
     }
 
-    private void addServerSideSlots(final List<Container> containers) {
-        for (final Container container : containers) {
+    private void addServerSideSlots(final List<AutocrafterManagerBlockEntity.Group> serverGroups) {
+        for (final AutocrafterManagerBlockEntity.Group group : serverGroups) {
+            addServerSideSlots(group);
+        }
+        addPlayerInventory(playerInventory, 0, 0);
+    }
+
+    private void addServerSideSlots(final AutocrafterManagerBlockEntity.Group group) {
+        for (final AutocrafterManagerBlockEntity.SubGroup subGroup : group.subGroups()) {
+            final Container container = subGroup.container();
             for (int i = 0; i < container.getContainerSize(); i++) {
                 addSlot(new Slot(container, i, 0, 0));
             }
         }
-        addPlayerInventory(playerInventory, 0, 0);
     }
 
     public boolean containsPattern(final ItemStack stack) {
@@ -113,58 +120,76 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
 
     @Override
     public void resized(final int playerInventoryY, final int topYStart, final int topYEnd) {
-        addSlots(playerInventoryY, topYStart, topYEnd);
+        initializeGroups(playerInventoryY, topYStart, topYEnd);
     }
 
-    private void addSlots(final int playerInventoryY, final int topYStart, final int topYEnd) {
+    private void initializeGroups(final int playerInventoryY, final int topYStart, final int topYEnd) {
         resetSlots();
         autocrafterSlots.clear();
         final int rowX = 7 + 1;
         final int startY = topYStart - 18;
         int rowY = topYStart;
-        for (final Group group : getGroups()) {
-            rowY += addSlots(group, rowX, rowY, startY, topYEnd);
+        for (final ViewGroup group : groups) {
+            rowY += initializeGroup(group, rowX, rowY, startY, topYEnd);
         }
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }
 
-    private int addSlots(final Group group, final int rowX, final int rowY, final int startY, final int topYEnd) {
-        int j = 0;
-        for (int i = 0; i < group.slotCount; i++) {
-            final int slotX = rowX + ((j % 9) * 18);
-            final int slotY = rowY + 18 + ((j / 9) * 18);
-            final boolean visible = active && isSlotVisible(group, i);
-            final AutocrafterManagerSlot slot = new AutocrafterManagerSlot(
-                group.backingInventory,
-                i,
-                slotX,
-                slotY,
-                startY,
-                topYEnd,
-                visible
-            );
-            addSlot(slot);
-            if (visible) {
-                autocrafterSlots.add(slot);
-                ++j;
+    private int initializeGroup(final ViewGroup group,
+                                final int rowX,
+                                final int rowY,
+                                final int startY,
+                                final int topYEnd) {
+        int slotsWithinGroup = 0;
+        for (final SubViewGroup subGroup : group.subViewGroups) {
+            int slotsWithinSubGroup = 0;
+            final boolean visible = active && isVisible(subGroup);
+            for (int i = 0; i < subGroup.backingInventory.getContainerSize(); i++) {
+                final int slotX = rowX + ((slotsWithinGroup % 9) * 18);
+                final int slotY = rowY + 18 + ((slotsWithinGroup / 9) * 18);
+                final boolean slotVisible = visible && isSlotVisible(playerInventory.player.level(), group, i);
+                final AutocrafterManagerSlot slot = new AutocrafterManagerSlot(
+                    subGroup.backingInventory,
+                    playerInventory.player.level(),
+                    i,
+                    slotX,
+                    slotY,
+                    IntIntPair.of(startY, topYEnd),
+                    slotVisible
+                );
+                addSlot(slot);
+                if (slotVisible) {
+                    autocrafterSlots.add(slot);
+                    ++slotsWithinGroup;
+                    ++slotsWithinSubGroup;
+                }
             }
+            subGroup.visibleSlots = slotsWithinSubGroup;
         }
-        group.visibleSlots = j;
-        if (j == 0) {
+        group.visibleSlots = slotsWithinGroup;
+        if (slotsWithinGroup == 0) {
             return 0;
         }
         return (group.getVisibleRows() + 1) * 18;
     }
 
-    private boolean isSlotVisible(final Group group, final int index) {
+    private boolean isVisible(final SubViewGroup subGroup) {
+        return switch (getViewType()) {
+            case VISIBLE -> subGroup.visibleToTheAutocrafterManager;
+            case NOT_FULL -> !subGroup.full;
+            case ALL -> true;
+        };
+    }
+
+    private boolean isSlotVisible(final Level level, final ViewGroup group, final int index) {
         final String normalizedQuery = query.trim().toLowerCase(Locale.ROOT);
         if (normalizedQuery.isEmpty()) {
             return true;
         }
-        return getSearchMode().isSlotVisible(group, normalizedQuery, index);
+        return getSearchMode().isSlotVisible(group, level, normalizedQuery, index);
     }
 
-    List<Group> getGroups() {
+    List<ViewGroup> getGroups() {
         return groups;
     }
 
@@ -206,49 +231,41 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         }
     }
 
-    static class Group {
-        final Component name;
-        final int slotCount;
-        final Container backingInventory;
-
-        private final Level level;
+    static class SubViewGroup {
+        private final boolean visibleToTheAutocrafterManager;
+        private final Container backingInventory;
+        private final boolean full;
         private int visibleSlots;
 
-        Group(final Level level, final Component name, final int slotCount, final Container backingInventory) {
-            this.level = level;
-            this.name = name;
-            this.slotCount = slotCount;
+        private SubViewGroup(final boolean visibleToTheAutocrafterManager,
+                             final Container backingInventory,
+                             final boolean full) {
+            this.visibleToTheAutocrafterManager = visibleToTheAutocrafterManager;
             this.backingInventory = backingInventory;
+            this.full = full;
         }
 
-        private static Group from(final Level level, final AutocrafterManagerData.Group group) {
-            return new Group(level, group.name(), group.slotCount(), new SimpleContainer(group.slotCount()));
-        }
-
-        boolean isVisible() {
-            return visibleSlots > 0;
-        }
-
-        int getVisibleRows() {
-            return Math.ceilDiv(visibleSlots, 9);
+        private static SubViewGroup from(final AutocrafterManagerData.SubGroup subGroup, final Level level) {
+            final PatternInventory backingInventory = new PatternInventory(subGroup.slotCount(), () -> level);
+            return new SubViewGroup(
+                subGroup.visibleToTheAutocrafterManager(),
+                backingInventory,
+                subGroup.full()
+            );
         }
 
         int getVisibleSlots() {
             return visibleSlots;
         }
 
-        boolean nameContains(final String normalizedQuery) {
-            return name.getString().toLowerCase(Locale.ROOT).trim().contains(normalizedQuery);
-        }
-
-        boolean hasPatternInput(final String normalizedQuery, final int index) {
+        boolean hasPatternInput(final Level level, final String normalizedQuery, final int index) {
             final ItemStack patternStack = backingInventory.getItem(index);
             return RefinedStorageApi.INSTANCE.getPattern(patternStack, level).map(
                 pattern -> hasResource(pattern.getInputResources(), normalizedQuery)
             ).orElse(false);
         }
 
-        boolean hasPatternOutput(final String normalizedQuery, final int index) {
+        boolean hasPatternOutput(final Level level, final String normalizedQuery, final int index) {
             final ItemStack patternStack = backingInventory.getItem(index);
             return RefinedStorageApi.INSTANCE.getPattern(patternStack, level).map(
                 pattern -> hasResource(pattern.getOutputResources(), normalizedQuery)
@@ -263,6 +280,58 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
                     .toLowerCase(Locale.ROOT)
                     .trim()
                     .contains(normalizedQuery));
+        }
+    }
+
+    static class ViewGroup {
+        private final String name;
+        private final List<SubViewGroup> subViewGroups;
+        private final List<SubViewGroup> subViewGroupsView;
+        private int visibleSlots;
+
+        private ViewGroup(final String name, final List<SubViewGroup> subViewGroups) {
+            this.name = name;
+            this.subViewGroups = subViewGroups;
+            this.subViewGroupsView = Collections.unmodifiableList(subViewGroups);
+        }
+
+        private static ViewGroup from(final Level level, final AutocrafterManagerData.Group group) {
+            return new ViewGroup(
+                group.name(),
+                group.subGroups().stream().map(subGroup -> SubViewGroup.from(subGroup, level)).toList()
+            );
+        }
+
+        String getName() {
+            return name;
+        }
+
+        List<SubViewGroup> getSubViewGroups() {
+            return subViewGroupsView;
+        }
+
+        boolean isVisible() {
+            return visibleSlots > 0;
+        }
+
+        int getVisibleRows() {
+            return Math.ceilDiv(visibleSlots, 9);
+        }
+
+        boolean nameContains(final String normalizedQuery) {
+            return name.toLowerCase(Locale.ROOT).trim().contains(normalizedQuery);
+        }
+
+        boolean hasPatternInput(final Level level, final String normalizedQuery, final int index) {
+            return subViewGroups.stream().anyMatch(
+                subGroup -> subGroup.hasPatternInput(level, normalizedQuery, index)
+            );
+        }
+
+        boolean hasPatternOutput(final Level level, final String normalizedQuery, final int index) {
+            return subViewGroups.stream().anyMatch(
+                subGroup -> subGroup.hasPatternOutput(level, normalizedQuery, index)
+            );
         }
     }
 }

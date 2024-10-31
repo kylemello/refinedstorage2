@@ -1,5 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
+import net.minecraft.world.level.Level;
+
 public enum AutocrafterManagerSearchMode {
     ALL,
     PATTERN_INPUTS,
@@ -15,15 +17,16 @@ public enum AutocrafterManagerSearchMode {
         };
     }
 
-    boolean isSlotVisible(final AutocrafterManagerContainerMenu.Group group,
+    boolean isSlotVisible(final AutocrafterManagerContainerMenu.ViewGroup group,
+                          final Level level,
                           final String normalizedQuery,
                           final int index) {
         return switch (this) {
             case ALL -> group.nameContains(normalizedQuery)
-                || group.hasPatternInput(normalizedQuery, index)
-                || group.hasPatternOutput(normalizedQuery, index);
-            case PATTERN_INPUTS -> group.hasPatternInput(normalizedQuery, index);
-            case PATTERN_OUTPUTS -> group.hasPatternOutput(normalizedQuery, index);
+                || group.hasPatternInput(level, normalizedQuery, index)
+                || group.hasPatternOutput(level, normalizedQuery, index);
+            case PATTERN_INPUTS -> group.hasPatternInput(level, normalizedQuery, index);
+            case PATTERN_OUTPUTS -> group.hasPatternOutput(level, normalizedQuery, index);
             case AUTOCRAFTER_NAMES -> group.nameContains(normalizedQuery);
         };
     }
