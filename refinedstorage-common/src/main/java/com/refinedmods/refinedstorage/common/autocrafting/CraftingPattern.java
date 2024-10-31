@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 class CraftingPattern implements Pattern {
     private final UUID id;
     private final List<List<PlatformResourceKey>> inputs;
     private final ResourceAmount output;
     private final List<ResourceAmount> byproducts;
+    private final Set<ResourceKey> inputResources;
     private final Set<ResourceKey> outputResources;
 
     CraftingPattern(final UUID id,
@@ -24,6 +26,7 @@ class CraftingPattern implements Pattern {
         this.id = id;
         this.inputs = inputs;
         this.output = output;
+        this.inputResources = inputs.stream().flatMap(List::stream).collect(Collectors.toSet());
         this.outputResources = Set.of(output.resource());
         this.byproducts = byproducts;
     }
@@ -31,6 +34,11 @@ class CraftingPattern implements Pattern {
     @Override
     public Set<ResourceKey> getOutputResources() {
         return outputResources;
+    }
+
+    @Override
+    public Set<ResourceKey> getInputResources() {
+        return inputResources;
     }
 
     List<List<PlatformResourceKey>> getInputs() {

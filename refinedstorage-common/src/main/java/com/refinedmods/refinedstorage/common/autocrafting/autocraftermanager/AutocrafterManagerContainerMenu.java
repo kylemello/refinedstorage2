@@ -1,5 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
@@ -11,6 +14,10 @@ import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListen
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -18,11 +25,16 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu implements ScreenSizeListener {
     private final Inventory playerInventory;
-    private final List<Item> items;
+    private final List<Group> groups;
     private final List<AutocrafterManagerSlot> autocrafterSlots = new ArrayList<>();
+
+    @Nullable
+    private AutocrafterManagerListener listener;
+    private String query = "";
 
     public AutocrafterManagerContainerMenu(final int syncId,
                                            final Inventory playerInventory,
@@ -30,7 +42,7 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         super(Menus.INSTANCE.getAutocrafterManager(), syncId);
         this.playerInventory = playerInventory;
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
-        this.items = data.items().stream().map(item -> Item.from(item, new SimpleContainer(item.slotCount()))).toList();
+        this.groups = data.groups().stream().map(group -> Group.from(playerInventory.player.level(), group)).toList();
         resized(0, 0, 0);
     }
 
@@ -45,8 +57,23 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
             autocrafterManager::getRedstoneMode,
             autocrafterManager::setRedstoneMode
         ));
-        this.items = Collections.emptyList();
+        this.groups = Collections.emptyList();
         addServerSideSlots(containers);
+    }
+
+    void setListener(final AutocrafterManagerListener listener) {
+        this.listener = listener;
+    }
+
+    void setQuery(final String query) {
+        this.query = query;
+        notifyListener();
+    }
+
+    private void notifyListener() {
+        if (listener != null) {
+            listener.slotsChanged();
+        }
     }
 
     private void addServerSideSlots(final List<Container> containers) {
@@ -69,39 +96,131 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
 
     @Override
     public void resized(final int playerInventoryY, final int topYStart, final int topYEnd) {
+        addSlots(playerInventoryY, topYStart, topYEnd);
+    }
+
+    private void addSlots(final int playerInventoryY, final int topYStart, final int topYEnd) {
         resetSlots();
         autocrafterSlots.clear();
         final int rowX = 7 + 1;
         final int startY = topYStart - 18;
         int rowY = topYStart;
-        for (final AutocrafterManagerContainerMenu.Item item : getViewItems()) {
-            for (int i = 0; i < item.slotCount(); i++) {
-                final int slotX = rowX + ((i % 9) * 18);
-                final int slotY = rowY + 18 + ((i / 9) * 18);
-                final var slot = new AutocrafterManagerSlot(item.backingInventory, i, slotX, slotY, startY, topYEnd);
-                addSlot(slot);
-                autocrafterSlots.add(slot);
-            }
-            rowY += item.getRowsIncludingTitle() * 18;
+        for (final Group group : getGroups()) {
+            rowY += addSlots(group, rowX, rowY, startY, topYEnd);
         }
         addPlayerInventory(playerInventory, 8, playerInventoryY);
     }
 
-    List<Item> getViewItems() {
-        return items;
+    private int addSlots(final Group group, final int rowX, final int rowY, final int startY, final int topYEnd) {
+        int j = 0;
+        for (int i = 0; i < group.slotCount; i++) {
+            final int slotX = rowX + ((j % 9) * 18);
+            final int slotY = rowY + 18 + ((j / 9) * 18);
+            final boolean visible = isSlotVisible(group, i);
+            final AutocrafterManagerSlot slot = new AutocrafterManagerSlot(
+                group.backingInventory,
+                i,
+                slotX,
+                slotY,
+                startY,
+                topYEnd,
+                visible
+            );
+            addSlot(slot);
+            if (visible) {
+                autocrafterSlots.add(slot);
+                ++j;
+            }
+        }
+        group.visibleSlots = j;
+        if (j == 0) {
+            return 0;
+        }
+        return (group.getVisibleRows() + 1) * 18;
+    }
+
+    private boolean isSlotVisible(final Group group, final int index) {
+        final String normalizedQuery = query.trim().toLowerCase(Locale.ROOT);
+        if (normalizedQuery.isEmpty()) {
+            return true;
+        }
+        return getSearchMode().isSlotVisible(group, normalizedQuery, index);
+    }
+
+    List<Group> getGroups() {
+        return groups;
     }
 
     List<AutocrafterManagerSlot> getAutocrafterSlots() {
         return autocrafterSlots;
     }
 
-    record Item(Component name, int slotCount, Container backingInventory) {
-        private static Item from(final AutocrafterManagerData.Item item, final Container backingInventory) {
-            return new Item(item.name(), item.slotCount(), backingInventory);
+    AutocrafterManagerSearchMode getSearchMode() {
+        return Platform.INSTANCE.getConfig().getAutocrafterManager().getSearchMode();
+    }
+
+    void setSearchMode(final AutocrafterManagerSearchMode searchMode) {
+        Platform.INSTANCE.getConfig().getAutocrafterManager().setSearchMode(searchMode);
+        notifyListener();
+    }
+
+    static class Group {
+        final Component name;
+        final int slotCount;
+        final Container backingInventory;
+
+        private final Level level;
+        private int visibleSlots;
+
+        Group(final Level level, final Component name, final int slotCount, final Container backingInventory) {
+            this.level = level;
+            this.name = name;
+            this.slotCount = slotCount;
+            this.backingInventory = backingInventory;
         }
 
-        int getRowsIncludingTitle() {
-            return 1 + Math.ceilDiv(slotCount, 9);
+        private static Group from(final Level level, final AutocrafterManagerData.Group group) {
+            return new Group(level, group.name(), group.slotCount(), new SimpleContainer(group.slotCount()));
+        }
+
+        boolean isVisible() {
+            return visibleSlots > 0;
+        }
+
+        int getVisibleRows() {
+            return Math.ceilDiv(visibleSlots, 9);
+        }
+
+        int getVisibleSlots() {
+            return visibleSlots;
+        }
+
+        boolean nameContains(final String normalizedQuery) {
+            return name.getString().toLowerCase(Locale.ROOT).trim().contains(normalizedQuery);
+        }
+
+        boolean hasPatternInput(final String normalizedQuery, final int index) {
+            final ItemStack patternStack = backingInventory.getItem(index);
+            return RefinedStorageApi.INSTANCE.getPattern(patternStack, level).map(
+                pattern -> hasResource(pattern.getInputResources(), normalizedQuery)
+            ).orElse(false);
+        }
+
+        boolean hasPatternOutput(final String normalizedQuery, final int index) {
+            final ItemStack patternStack = backingInventory.getItem(index);
+            return RefinedStorageApi.INSTANCE.getPattern(patternStack, level).map(
+                pattern -> hasResource(pattern.getOutputResources(), normalizedQuery)
+            ).orElse(false);
+        }
+
+        private static boolean hasResource(final Set<ResourceKey> resources, final String normalizedQuery) {
+            return resources.stream().anyMatch(key ->
+                RefinedStorageApi.INSTANCE.getResourceRendering(key.getClass())
+                    .getDisplayName(key)
+                    .getString()
+                    .toLowerCase(Locale.ROOT)
+                    .trim()
+                    .contains(normalizedQuery));
         }
     }
 }

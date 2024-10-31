@@ -24,12 +24,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class AutocrafterManagerBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<AutocrafterManagerData> {
-    private final List<AutocrafterManagerData.Item> items = List.of(
-        new AutocrafterManagerData.Item(Component.literal("testing"), 10),
-        new AutocrafterManagerData.Item(Component.literal(
+    private final List<AutocrafterManagerData.Group> groups = List.of(
+        new AutocrafterManagerData.Group(Component.literal("testing"), 10),
+        new AutocrafterManagerData.Group(Component.literal(
             "HELLO WORLD!!! HELLO WORLD!!!HELLO WORLD!!!HELLO WORLD!!!HELLO WORLD!!!HELLO WORLD!!!HELLO WORLD!!!HELLO WORLD!!!"),
             8),
-        new AutocrafterManagerData.Item(Component.literal("testing"), 10)
+        new AutocrafterManagerData.Group(Component.literal("testing"), 10)
     );
     private final List<Container> inventories = List.of(
         new SimpleContainer(10),
@@ -56,7 +56,7 @@ public class AutocrafterManagerBlockEntity extends AbstractBaseNetworkNodeContai
 
     @Override
     public AutocrafterManagerData getMenuData() {
-        return new AutocrafterManagerData(items);
+        return new AutocrafterManagerData(groups);
     }
 
     @Override

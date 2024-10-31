@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerSearchMode;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
 import com.refinedmods.refinedstorage.common.grid.GridViewType;
@@ -75,7 +76,7 @@ public interface Config {
 
     AutocrafterEntry getAutocrafter();
 
-    SimpleEnergyUsageEntry getAutocrafterManager();
+    AutocrafterManagerEntry getAutocrafterManager();
 
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
@@ -213,5 +214,11 @@ public interface Config {
 
     interface AutocrafterEntry extends SimpleEnergyUsageEntry {
         long getEnergyUsagePerPattern();
+    }
+
+    interface AutocrafterManagerEntry extends SimpleEnergyUsageEntry {
+        void setSearchMode(AutocrafterManagerSearchMode searchMode);
+
+        AutocrafterManagerSearchMode getSearchMode();
     }
 }

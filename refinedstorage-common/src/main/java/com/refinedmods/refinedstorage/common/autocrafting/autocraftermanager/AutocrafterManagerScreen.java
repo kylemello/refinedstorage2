@@ -38,6 +38,7 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         this.inventoryLabelY = 75;
         this.imageWidth = 193;
         this.imageHeight = 176;
+        getMenu().setListener(this::resize);
     }
 
     @Override
@@ -59,14 +60,16 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         updateScrollbar();
 
         addWidget(searchField);
+        searchField.setResponder(value -> getMenu().setQuery(value));
 
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
+        addSideButton(new SearchModeSideButtonWidget(getMenu()));
     }
 
     private void updateScrollbar() {
-        final int totalRows = menu.getViewItems()
+        final int totalRows = menu.getGroups()
             .stream()
-            .map(AutocrafterManagerContainerMenu.Item::getRowsIncludingTitle)
+            .map(group -> group.isVisible() ? group.getVisibleRows() + 1 : 0)
             .reduce(0, Integer::sum);
         updateScrollbar(totalRows);
     }
@@ -128,19 +131,22 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
                                          final int rows) {
         final int rowX = x + 7;
         int rowY = y + topHeight - getScrollbarOffset();
-        for (final AutocrafterManagerContainerMenu.Item item : menu.getViewItems()) {
+        for (final AutocrafterManagerContainerMenu.Group group : menu.getGroups()) {
+            if (!group.isVisible()) {
+                continue;
+            }
             if (!isOutOfFrame(y, topHeight, rows, rowY)) {
                 graphics.blitSprite(AUTOCRAFTER_NAME, rowX, rowY, 162, ROW_SIZE);
-                graphics.drawString(font, item.name(), rowX + 4, rowY + 6, 4210752, false);
+                graphics.drawString(font, group.name, rowX + 4, rowY + 6, 4210752, false);
             }
-            for (int i = 0; i < item.slotCount(); i++) {
+            for (int i = 0; i < group.getVisibleSlots(); i++) {
                 final int slotX = rowX + ((i % COLUMNS) * 18);
                 final int slotY = rowY + 18 + ((i / COLUMNS) * 18);
                 if (!isOutOfFrame(y, topHeight, rows, slotY)) {
                     graphics.blitSprite(Sprites.SLOT, slotX, slotY, 18, 18);
                 }
             }
-            rowY += item.getRowsIncludingTitle() * ROW_SIZE;
+            rowY += (group.getVisibleRows() + 1) * ROW_SIZE;
         }
     }
 
@@ -161,7 +167,7 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
                 && mouseX < slot.x + leftPos + 16
                 && mouseY >= slot.y + topPos
                 && mouseY < slot.y + topPos + 16;
-            if (hovering) {
+            if (slot.isActive() && hovering) {
                 renderSlotHighlight(graphics, slot.x, slot.y, 0);
             }
         }

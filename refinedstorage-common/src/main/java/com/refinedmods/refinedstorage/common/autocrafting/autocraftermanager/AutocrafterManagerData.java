@@ -9,16 +9,18 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record AutocrafterManagerData(List<Item> items) {
-    private static final StreamCodec<RegistryFriendlyByteBuf, Item> ITEM_STREAM_CODEC = StreamCodec.composite(
-        ComponentSerialization.STREAM_CODEC, Item::name,
-        ByteBufCodecs.INT, Item::slotCount,
-        Item::new
+public record AutocrafterManagerData(List<Group> groups) {
+    private static final StreamCodec<RegistryFriendlyByteBuf, Group> GROUP_STREAM_CODEC = StreamCodec.composite(
+        ComponentSerialization.STREAM_CODEC, Group::name,
+        ByteBufCodecs.INT, Group::slotCount,
+        Group::new
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, AutocrafterManagerData> STREAM_CODEC = StreamCodec
-        .composite(ByteBufCodecs.collection(ArrayList::new, ITEM_STREAM_CODEC), AutocrafterManagerData::items,
-            AutocrafterManagerData::new);
+        .composite(
+            ByteBufCodecs.collection(ArrayList::new, GROUP_STREAM_CODEC), AutocrafterManagerData::groups,
+            AutocrafterManagerData::new
+        );
 
-    public record Item(Component name, int slotCount) {
+    public record Group(Component name, int slotCount) {
     }
 }
