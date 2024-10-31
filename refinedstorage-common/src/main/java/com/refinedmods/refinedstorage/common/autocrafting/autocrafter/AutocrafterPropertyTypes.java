@@ -16,6 +16,10 @@ final class AutocrafterPropertyTypes {
         createIdentifier("crafter_priority")
     );
 
+    static final PropertyType<Boolean> VISIBLE_TO_THE_AUTOCRAFTER_MANAGER = PropertyTypes.createBooleanProperty(
+        createIdentifier("visible_to_the_autocrafter_manager")
+    );
+
     private AutocrafterPropertyTypes() {
     }
 }

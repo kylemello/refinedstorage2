@@ -42,6 +42,7 @@ public class AutocrafterContainerMenu extends AbstractBaseContainerMenu {
         this.player = playerInventory.player;
         registerProperty(new ClientProperty<>(AutocrafterPropertyTypes.LOCK_MODE, LockMode.NEVER));
         registerProperty(new ClientProperty<>(AutocrafterPropertyTypes.PRIORITY, 0));
+        registerProperty(new ClientProperty<>(AutocrafterPropertyTypes.VISIBLE_TO_THE_AUTOCRAFTER_MANAGER, true));
         addSlots(
             new PatternInventory(playerInventory.player::level),
             new UpgradeContainer(UpgradeDestinations.AUTOCRAFTER)
@@ -69,6 +70,11 @@ public class AutocrafterContainerMenu extends AbstractBaseContainerMenu {
             AutocrafterPropertyTypes.PRIORITY,
             autocrafter::getPriority,
             autocrafter::setPriority
+        ));
+        registerProperty(new ServerProperty<>(
+            AutocrafterPropertyTypes.VISIBLE_TO_THE_AUTOCRAFTER_MANAGER,
+            autocrafter::isVisibleToTheAutocrafterManager,
+            autocrafter::setVisibleToTheAutocrafterManager
         ));
         addSlots(autocrafter.getPatternContainer(), autocrafter.getUpgradeContainer());
     }

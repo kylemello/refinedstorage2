@@ -48,11 +48,13 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
     private static final String TAG_PATTERNS = "patterns";
     private static final String TAG_LOCK_MODE = "lm";
     private static final String TAG_PRIORITY = "pri";
+    private static final String TAG_VISIBLE_TO_THE_AUTOCRAFTER_MANAGER = "vaum";
 
     private final PatternInventory patternContainer = new PatternInventory(this::getLevel);
     private final UpgradeContainer upgradeContainer;
     private LockMode lockMode = LockMode.NEVER;
     private int priority;
+    private boolean visibleToTheAutocrafterManager = true;
 
     public AutocrafterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
@@ -199,6 +201,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
         super.writeConfiguration(tag, provider);
         tag.putInt(TAG_LOCK_MODE, LockModeSettings.getLockMode(lockMode));
         tag.putInt(TAG_PRIORITY, priority);
+        tag.putBoolean(TAG_VISIBLE_TO_THE_AUTOCRAFTER_MANAGER, visibleToTheAutocrafterManager);
     }
 
     @Override
@@ -220,6 +223,9 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
         }
         if (tag.contains(TAG_PRIORITY)) {
             priority = tag.getInt(TAG_PRIORITY);
+        }
+        if (tag.contains(TAG_VISIBLE_TO_THE_AUTOCRAFTER_MANAGER)) {
+            visibleToTheAutocrafterManager = tag.getBoolean(TAG_VISIBLE_TO_THE_AUTOCRAFTER_MANAGER);
         }
     }
 
@@ -271,6 +277,15 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
 
     void setPriority(final int priority) {
         this.priority = priority;
+        setChanged();
+    }
+
+    boolean isVisibleToTheAutocrafterManager() {
+        return visibleToTheAutocrafterManager;
+    }
+
+    void setVisibleToTheAutocrafterManager(final boolean visibleToTheAutocrafterManager) {
+        this.visibleToTheAutocrafterManager = visibleToTheAutocrafterManager;
         setChanged();
     }
 

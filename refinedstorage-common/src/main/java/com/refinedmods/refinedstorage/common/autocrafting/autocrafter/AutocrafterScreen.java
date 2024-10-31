@@ -112,6 +112,9 @@ public class AutocrafterScreen extends AbstractBaseScreen<AutocrafterContainerMe
             playerInventory,
             this
         ));
+        addSideButton(new VisibleToTheAutocrafterManagerSideButtonWidget(
+            getMenu().getProperty(AutocrafterPropertyTypes.VISIBLE_TO_THE_AUTOCRAFTER_MANAGER)
+        ));
 
         nameField = new SearchFieldWidget(
             font,

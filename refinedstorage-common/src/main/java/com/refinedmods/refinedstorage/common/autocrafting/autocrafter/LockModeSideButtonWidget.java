@@ -13,21 +13,21 @@ class LockModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final String PREFIX = "autocrafter.lock_mode";
 
     private static final MutableComponent TITLE = createTranslation("gui", PREFIX);
-    private static final ResourceLocation NEVER = createIdentifier("widget/side_button/autocrafter_lock_mode/never");
+    private static final ResourceLocation NEVER = createIdentifier("widget/side_button/autocrafter/lock_mode/never");
     private static final ResourceLocation LOCK_UNTIL_REDSTONE_PULSE_RECEIVED = createIdentifier(
-        "widget/side_button/autocrafter_lock_mode/lock_until_redstone_pulse_is_received"
+        "widget/side_button/autocrafter/lock_mode/lock_until_redstone_pulse_is_received"
     );
     private static final ResourceLocation LOCK_UNTIL_CONNECTED_MACHINE_IS_EMPTY = createIdentifier(
-        "widget/side_button/autocrafter_lock_mode/lock_until_connected_machine_is_empty"
+        "widget/side_button/autocrafter/lock_mode/lock_until_connected_machine_is_empty"
     );
     private static final ResourceLocation LOCK_UNTIL_ALL_OUTPUTS_ARE_RECEIVED = createIdentifier(
-        "widget/side_button/autocrafter_lock_mode/lock_until_all_outputs_are_received"
+        "widget/side_button/autocrafter/lock_mode/lock_until_all_outputs_are_received"
     );
     private static final ResourceLocation LOCK_UNTIL_HIGH_REDSTONE_SIGNAL = createIdentifier(
-        "widget/side_button/autocrafter_lock_mode/lock_until_high_redstone_signal"
+        "widget/side_button/autocrafter/lock_mode/lock_until_high_redstone_signal"
     );
     private static final ResourceLocation LOCK_UNTIL_LOW_REDSTONE_SIGNAL = createIdentifier(
-        "widget/side_button/autocrafter_lock_mode/lock_until_low_redstone_signal"
+        "widget/side_button/autocrafter/lock_mode/lock_until_low_redstone_signal"
     );
 
     private static final MutableComponent NEVER_TITLE = createTranslation("gui", PREFIX + ".never");

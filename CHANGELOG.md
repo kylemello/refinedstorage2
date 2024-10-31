@@ -19,6 +19,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     - Autocrafter names
     - All of the above (by default)
 -    Due to technical limitations and the new filtering options listed above being client-side only, you can no longer shift-click patterns in the Autocrafter Manager.
+-    In the Autocrafter, you can now configure whether it is visible to the Autocrafter Manager.
 
 ## [2.0.0-milestone.4.8] - 2024-10-12
 

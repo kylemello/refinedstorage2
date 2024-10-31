@@ -203,6 +203,8 @@
   "gui.refinedstorage.autocrafter.lock_mode.lock_until_all_outputs_are_received": "Lock until all outputs are received",
   "gui.refinedstorage.autocrafter.lock_mode.lock_until_high_redstone_signal": "Lock until high redstone signal",
   "gui.refinedstorage.autocrafter.lock_mode.lock_until_low_redstone_signal": "Lock until low redstone signal",
+  "gui.refinedstorage.autocrafter.visible_to_the_autocrafter_manager": "Visible to the Autocrafter Manager",
+  "gui.refinedstorage.autocrafter.visible_to_the_autocrafter_manager.help": "If this is enabled, you will be able to manage this autocrafter in the Autocrafter Manager.",
   "gui.refinedstorage.autocrafter.edit_name": "Edit",
   "gui.refinedstorage.autocrafter.chained": "Chained",
   "gui.refinedstorage.autocrafter.chained.help": "This autocrafter is part of a chain.",
