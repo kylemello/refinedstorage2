@@ -63,6 +63,7 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         searchField.setResponder(value -> getMenu().setQuery(value));
 
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
+        addSideButton(new ViewTypeSideButtonWidget(getMenu()));
         addSideButton(new SearchModeSideButtonWidget(getMenu()));
     }
 

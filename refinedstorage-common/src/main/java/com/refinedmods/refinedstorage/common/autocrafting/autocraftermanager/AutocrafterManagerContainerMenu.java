@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
@@ -161,6 +160,15 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
 
     void setSearchMode(final AutocrafterManagerSearchMode searchMode) {
         Platform.INSTANCE.getConfig().getAutocrafterManager().setSearchMode(searchMode);
+        notifyListener();
+    }
+
+    AutocrafterManagerViewType getViewType() {
+        return Platform.INSTANCE.getConfig().getAutocrafterManager().getViewType();
+    }
+
+    void setViewType(final AutocrafterManagerViewType toggle) {
+        Platform.INSTANCE.getConfig().getAutocrafterManager().setViewType(toggle);
         notifyListener();
     }
 

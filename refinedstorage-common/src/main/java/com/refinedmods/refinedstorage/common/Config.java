@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerSearchMode;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerViewType;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
 import com.refinedmods.refinedstorage.common.grid.GridViewType;
@@ -220,5 +221,9 @@ public interface Config {
         void setSearchMode(AutocrafterManagerSearchMode searchMode);
 
         AutocrafterManagerSearchMode getSearchMode();
+
+        void setViewType(AutocrafterManagerViewType viewType);
+
+        AutocrafterManagerViewType getViewType();
     }
 }

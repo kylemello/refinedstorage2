@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.neoforge;
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerSearchMode;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerViewType;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
@@ -963,6 +964,7 @@ public class ConfigImpl implements Config {
     private class AutocrafterManagerEntryImpl implements AutocrafterManagerEntry {
         private final ModConfigSpec.LongValue energyUsage;
         private final ModConfigSpec.EnumValue<AutocrafterManagerSearchMode> searchMode;
+        private final ModConfigSpec.EnumValue<AutocrafterManagerViewType> viewType;
 
         AutocrafterManagerEntryImpl() {
             builder.translation(translationKey("autocrafterManager")).push("autocrafterManager");
@@ -972,6 +974,9 @@ public class ConfigImpl implements Config {
             searchMode = builder
                 .translation(translationKey("autocrafterManager.searchMode"))
                 .defineEnum("searchMode", AutocrafterManagerSearchMode.ALL);
+            viewType = builder
+                .translation(translationKey("autocrafterManager.viewType"))
+                .defineEnum("viewType", AutocrafterManagerViewType.VISIBLE);
             builder.pop();
         }
 
@@ -986,6 +991,19 @@ public class ConfigImpl implements Config {
         @Override
         public AutocrafterManagerSearchMode getSearchMode() {
             return searchMode.get();
+        }
+
+        @Override
+        public void setViewType(final AutocrafterManagerViewType viewType) {
+            if (viewType != this.viewType.get()) {
+                this.viewType.set(viewType);
+                ConfigImpl.this.spec.save();
+            }
+        }
+
+        @Override
+        public AutocrafterManagerViewType getViewType() {
+            return viewType.get();
         }
 
         @Override
