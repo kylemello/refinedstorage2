@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.containermenu.ServerProperty;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
 import com.refinedmods.refinedstorage.common.support.stretching.ScreenSizeListener;
 
 import java.util.ArrayList;
@@ -19,21 +20,27 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu implements ScreenSizeListener {
+public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu implements ScreenSizeListener,
+    AutocrafterManagerWatcher {
     private final Inventory playerInventory;
     private final List<Group> groups;
     private final List<AutocrafterManagerSlot> autocrafterSlots = new ArrayList<>();
 
     @Nullable
     private AutocrafterManagerListener listener;
+    @Nullable
+    private AutocrafterManagerBlockEntity autocrafterManager;
     private String query = "";
+    private boolean active;
 
     public AutocrafterManagerContainerMenu(final int syncId,
                                            final Inventory playerInventory,
@@ -42,6 +49,7 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         this.playerInventory = playerInventory;
         registerProperty(new ClientProperty<>(PropertyTypes.REDSTONE_MODE, RedstoneMode.IGNORE));
         this.groups = data.groups().stream().map(group -> Group.from(playerInventory.player.level(), group)).toList();
+        this.active = data.active();
         resized(0, 0, 0);
     }
 
@@ -51,6 +59,8 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
                                            final List<Container> containers) {
         super(Menus.INSTANCE.getAutocrafterManager(), syncId);
         this.playerInventory = playerInventory;
+        this.autocrafterManager = autocrafterManager;
+        this.autocrafterManager.addWatcher(this);
         registerProperty(new ServerProperty<>(
             PropertyTypes.REDSTONE_MODE,
             autocrafterManager::getRedstoneMode,
@@ -58,6 +68,14 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         ));
         this.groups = Collections.emptyList();
         addServerSideSlots(containers);
+    }
+
+    @Override
+    public void removed(final Player playerEntity) {
+        super.removed(playerEntity);
+        if (autocrafterManager != null) {
+            autocrafterManager.removeWatcher(this);
+        }
     }
 
     void setListener(final AutocrafterManagerListener listener) {
@@ -115,7 +133,7 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
         for (int i = 0; i < group.slotCount; i++) {
             final int slotX = rowX + ((j % 9) * 18);
             final int slotY = rowY + 18 + ((j / 9) * 18);
-            final boolean visible = isSlotVisible(group, i);
+            final boolean visible = active && isSlotVisible(group, i);
             final AutocrafterManagerSlot slot = new AutocrafterManagerSlot(
                 group.backingInventory,
                 i,
@@ -170,6 +188,22 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
     void setViewType(final AutocrafterManagerViewType toggle) {
         Platform.INSTANCE.getConfig().getAutocrafterManager().setViewType(toggle);
         notifyListener();
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
+        notifyListener();
+    }
+
+    boolean isActive() {
+        return active;
+    }
+
+    @Override
+    public void activeChanged(final boolean newActive) {
+        if (playerInventory.player instanceof ServerPlayer serverPlayerEntity) {
+            S2CPackets.sendAutocrafterManagerActive(serverPlayerEntity, newActive);
+        }
     }
 
     static class Group {

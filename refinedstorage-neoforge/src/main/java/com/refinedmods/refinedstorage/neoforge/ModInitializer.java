@@ -55,6 +55,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
@@ -590,6 +591,11 @@ public class ModInitializer extends AbstractModInitializer {
             GridActivePacket.PACKET_TYPE,
             GridActivePacket.STREAM_CODEC,
             wrapHandler(GridActivePacket::handle)
+        );
+        registrar.playToClient(
+            AutocrafterManagerActivePacket.PACKET_TYPE,
+            AutocrafterManagerActivePacket.STREAM_CODEC,
+            wrapHandler(AutocrafterManagerActivePacket::handle)
         );
         registrar.playToClient(
             GridClearPacket.PACKET_TYPE,

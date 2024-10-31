@@ -278,7 +278,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     public void onActiveChanged(final boolean newActive) {
         this.active = newActive;
         if (this.playerInventory.player instanceof ServerPlayer serverPlayerEntity) {
-            S2CPackets.sendGridActiveness(serverPlayerEntity, newActive);
+            S2CPackets.sendGridActive(serverPlayerEntity, newActive);
         }
     }
 

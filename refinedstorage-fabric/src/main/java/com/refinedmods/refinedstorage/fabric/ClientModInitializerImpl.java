@@ -19,6 +19,7 @@ import com.refinedmods.refinedstorage.common.security.SecurityCardItemPropertyFu
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntityRenderer;
 import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPropertyFunction;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
@@ -265,6 +266,10 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         ClientPlayNetworking.registerGlobalReceiver(
             GridActivePacket.PACKET_TYPE,
             wrapHandler(GridActivePacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocrafterManagerActivePacket.PACKET_TYPE,
+            wrapHandler(AutocrafterManagerActivePacket::handle)
         );
         ClientPlayNetworking.registerGlobalReceiver(
             EnergyInfoPacket.PACKET_TYPE,

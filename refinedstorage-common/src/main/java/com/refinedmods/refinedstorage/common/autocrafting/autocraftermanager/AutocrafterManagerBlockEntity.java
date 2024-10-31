@@ -8,7 +8,9 @@ import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -37,10 +39,26 @@ public class AutocrafterManagerBlockEntity extends AbstractBaseNetworkNodeContai
         new SimpleContainer(10)
     );
 
+    private final Set<AutocrafterManagerWatcher> watchers = new HashSet<>();
+
     public AutocrafterManagerBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getAutocrafterManager(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getAutocrafterManager().getEnergyUsage()
         ));
+    }
+
+    void addWatcher(final AutocrafterManagerWatcher watcher) {
+        watchers.add(watcher);
+    }
+
+    void removeWatcher(final AutocrafterManagerWatcher watcher) {
+        watchers.remove(watcher);
+    }
+
+    @Override
+    protected void activenessChanged(final boolean newActive) {
+        super.activenessChanged(newActive);
+        watchers.forEach(watcher -> watcher.activeChanged(newActive));
     }
 
     @Override
@@ -56,7 +74,7 @@ public class AutocrafterManagerBlockEntity extends AbstractBaseNetworkNodeContai
 
     @Override
     public AutocrafterManagerData getMenuData() {
-        return new AutocrafterManagerData(groups);
+        return new AutocrafterManagerData(groups, mainNetworkNode.isActive());
     }
 
     @Override

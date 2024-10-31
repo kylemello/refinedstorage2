@@ -15,8 +15,8 @@ import net.minecraft.world.entity.player.Inventory;
 public abstract class AbstractStretchingScreen<T extends AbstractBaseContainerMenu & ScreenSizeListener>
     extends AbstractBaseScreen<T> {
     protected static final int ROW_SIZE = 18;
+    protected static final int TOP_HEIGHT = 19;
 
-    private static final int TOP_HEIGHT = 19;
     private static final int INVENTORY_INCLUDING_TITLE_HEIGHT = 99;
     private static final int COLUMNS = 9;
     private static final int MIN_ROWS = 3;

@@ -14,6 +14,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,6 +28,7 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
     private static final List<String> SEARCH_FIELD_HISTORY = new ArrayList<>();
     private static final ResourceLocation AUTOCRAFTER_NAME = createIdentifier("autocrafter_manager/autocrafter_name");
     private static final int COLUMNS = 9;
+    private static final int INACTIVE_COLOR = 0xFF5B5B5B;
 
     @Nullable
     private SearchFieldWidget searchField;
@@ -38,7 +40,10 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         this.inventoryLabelY = 75;
         this.imageWidth = 193;
         this.imageHeight = 176;
-        getMenu().setListener(this::resize);
+        getMenu().setListener(() -> {
+            resize();
+            updateScrollbar();
+        });
     }
 
     @Override
@@ -121,6 +126,17 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
                               final int rows,
                               final int mouseX,
                               final int mouseY) {
+        if (!menu.isActive()) {
+            graphics.fill(
+                RenderType.guiOverlay(),
+                x + 7 + 1,
+                y + TOP_HEIGHT + 1,
+                x + 7 + (ROW_SIZE * COLUMNS) - 1,
+                y + TOP_HEIGHT + 1 + (ROW_SIZE * rows) - 2,
+                INACTIVE_COLOR
+            );
+            return;
+        }
         renderRowTitlesAndSlots(graphics, x, y, topHeight, rows);
         renderSlotContents(graphics, mouseX, mouseY, y, topHeight, rows);
     }
