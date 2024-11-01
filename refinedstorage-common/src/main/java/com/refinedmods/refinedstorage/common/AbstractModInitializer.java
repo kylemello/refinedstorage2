@@ -13,18 +13,21 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApiProxy;
 import com.refinedmods.refinedstorage.common.api.security.PlatformSecurityNetworkComponent;
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterBlockEntity;
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterData;
 import com.refinedmods.refinedstorage.common.autocrafting.CraftingPatternState;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridBlockEntity;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridData;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.ProcessingPatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.SmithingTablePatternState;
 import com.refinedmods.refinedstorage.common.autocrafting.StonecutterPatternState;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterData;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerData;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardItem;
 import com.refinedmods.refinedstorage.common.configurationcard.ConfigurationCardState;
 import com.refinedmods.refinedstorage.common.constructordestructor.BlockBreakDestructorStrategyFactory;
@@ -343,6 +346,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getRelay().registerBlocks(callback);
         Blocks.INSTANCE.setDiskInterface(blockEntityProviders.diskInterface()).registerBlocks(callback);
         Blocks.INSTANCE.getAutocrafter().registerBlocks(callback);
+        Blocks.INSTANCE.getAutocrafterManager().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -366,6 +370,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getRelay().registerItems(callback, Items.INSTANCE::addRelay);
         Blocks.INSTANCE.getDiskInterface().registerItems(callback, Items.INSTANCE::addDiskInterface);
         Blocks.INSTANCE.getAutocrafter().registerItems(callback, Items.INSTANCE::addAutocrafter);
+        Blocks.INSTANCE.getAutocrafterManager().registerItems(callback, Items.INSTANCE::addAutocrafterManager);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -668,6 +673,11 @@ public abstract class AbstractModInitializer {
             ContentIds.AUTOCRAFTER,
             () -> typeFactory.create(AutocrafterBlockEntity::new, Blocks.INSTANCE.getAutocrafter().toArray())
         ));
+        BlockEntities.INSTANCE.setAutocrafterManager(callback.register(
+            ContentIds.AUTOCRAFTER_MANAGER,
+            () -> typeFactory.create(AutocrafterManagerBlockEntity::new,
+                Blocks.INSTANCE.getAutocrafterManager().toArray())
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -790,6 +800,13 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setAutocrafter(callback.register(
             ContentIds.AUTOCRAFTER,
             () -> extendedMenuTypeFactory.create(AutocrafterContainerMenu::new, AutocrafterData.STREAM_CODEC)
+        ));
+        Menus.INSTANCE.setAutocrafterManager(callback.register(
+            ContentIds.AUTOCRAFTER_MANAGER,
+            () -> extendedMenuTypeFactory.create(
+                AutocrafterManagerContainerMenu::new,
+                AutocrafterManagerData.STREAM_CODEC
+            )
         ));
     }
 

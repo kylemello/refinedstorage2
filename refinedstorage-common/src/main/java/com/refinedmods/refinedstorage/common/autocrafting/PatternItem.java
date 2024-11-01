@@ -76,7 +76,7 @@ public class PatternItem extends Item implements PatternProviderItem {
         }
     }
 
-    boolean hasMapping(final ItemStack stack) {
+    public boolean hasMapping(final ItemStack stack) {
         return stack.has(DataComponents.INSTANCE.getPatternState());
     }
 

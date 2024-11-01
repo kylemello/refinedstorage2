@@ -21,12 +21,3 @@ project.extensions.getByType<SonarExtension>().apply {
         )
     }
 }
-
-allprojects {
-    apply(plugin = "publishing")
-    publishing {
-        repositories {
-            mavenLocal()
-        }
-    }
-}

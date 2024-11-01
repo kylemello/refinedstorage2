@@ -84,7 +84,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
 
     @Override
     protected void init(final int rows) {
-        LOGGER.info("Initializing grid screen");
+        LOGGER.info("Initializing grid screen - this shouldn't happen too much!");
 
         if (searchField == null) {
             searchField = new GridSearchBoxWidget(
@@ -365,9 +365,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     }
 
     private void renderDisabledSlot(final GuiGraphics graphics, final int slotX, final int slotY) {
-        graphics.fillGradient(
-            RenderType.guiOverlay(), slotX, slotY, slotX + 16, slotY + 16, DISABLED_SLOT_COLOR, DISABLED_SLOT_COLOR, 0
-        );
+        graphics.fill(RenderType.guiOverlay(), slotX, slotY, slotX + 16, slotY + 16, DISABLED_SLOT_COLOR);
     }
 
     @Override

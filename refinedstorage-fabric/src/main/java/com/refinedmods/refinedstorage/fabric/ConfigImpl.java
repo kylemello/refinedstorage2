@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage.fabric;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerSearchMode;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerViewType;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
@@ -121,6 +123,9 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
     @ConfigEntry.Gui.CollapsibleObject
     private AutocrafterEntryImpl autocrafter = new AutocrafterEntryImpl();
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private AutocrafterManagerEntryImpl autocrafterManager = new AutocrafterManagerEntryImpl();
 
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
@@ -285,6 +290,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public AutocrafterEntry getAutocrafter() {
         return autocrafter;
+    }
+
+    @Override
+    public AutocrafterManagerEntry getAutocrafterManager() {
+        return autocrafterManager;
     }
 
     private static class GridEntryImpl implements GridEntry {
@@ -737,6 +747,45 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public long getEnergyUsage() {
             return energyUsage;
+        }
+    }
+
+    private static class AutocrafterManagerEntryImpl implements AutocrafterManagerEntry {
+        private long energyUsage = DefaultEnergyUsage.AUTOCRAFTER_MANAGER;
+
+        private AutocrafterManagerSearchMode searchMode = AutocrafterManagerSearchMode.ALL;
+
+        private AutocrafterManagerViewType viewType = AutocrafterManagerViewType.VISIBLE;
+
+        @Override
+        public void setSearchMode(final AutocrafterManagerSearchMode searchMode) {
+            this.searchMode = searchMode;
+            save();
+        }
+
+        @Override
+        public AutocrafterManagerSearchMode getSearchMode() {
+            return searchMode;
+        }
+
+        @Override
+        public void setViewType(final AutocrafterManagerViewType viewType) {
+            this.viewType = viewType;
+            save();
+        }
+
+        @Override
+        public AutocrafterManagerViewType getViewType() {
+            return viewType;
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage;
+        }
+
+        private static void save() {
+            AutoConfig.getConfigHolder(ConfigImpl.class).save();
         }
     }
 }

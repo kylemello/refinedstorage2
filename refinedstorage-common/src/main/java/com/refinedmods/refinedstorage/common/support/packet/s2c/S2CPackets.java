@@ -29,8 +29,12 @@ public final class S2CPackets {
         Platform.INSTANCE.sendPacketToClient(player, new WirelessTransmitterDataPacket(range, active));
     }
 
-    public static void sendGridActiveness(final ServerPlayer player, final boolean active) {
+    public static void sendGridActive(final ServerPlayer player, final boolean active) {
         Platform.INSTANCE.sendPacketToClient(player, new GridActivePacket(active));
+    }
+
+    public static void sendAutocrafterManagerActive(final ServerPlayer player, final boolean active) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocrafterManagerActivePacket(active));
     }
 
     public static void sendGridUpdate(final ServerPlayer player,

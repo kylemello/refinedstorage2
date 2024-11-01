@@ -145,20 +145,20 @@ public class UpgradeContainer extends SimpleContainer implements UpgradeState {
         return usage;
     }
 
-    public List<ItemStack> getUpgradeItems() {
-        final List<ItemStack> upgradeItems = new ArrayList<>();
+    public List<ItemStack> getUpgrades() {
+        final List<ItemStack> upgrades = new ArrayList<>();
         for (int i = 0; i < getContainerSize(); ++i) {
-            final ItemStack itemStack = getItem(i);
-            if (itemStack.isEmpty()) {
+            final ItemStack stack = getItem(i);
+            if (stack.isEmpty()) {
                 continue;
             }
-            upgradeItems.add(itemStack.copy());
+            upgrades.add(stack.copy());
         }
-        return upgradeItems;
+        return upgrades;
     }
 
-    public boolean addUpgradeItem(final ItemStack upgradeItem) {
-        return addItem(upgradeItem).isEmpty();
+    public boolean addUpgrade(final ItemStack upgrade) {
+        return addItem(upgrade).isEmpty();
     }
 
     public NonNullList<ItemStack> getDrops() {

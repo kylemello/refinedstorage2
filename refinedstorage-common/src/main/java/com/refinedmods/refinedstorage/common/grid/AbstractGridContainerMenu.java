@@ -254,7 +254,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Override
-    public void onScreenReady(final int playerInventoryY) {
+    public void resized(final int playerInventoryY, final int topYStart, final int topYEnd) {
         resetSlots();
         addPlayerInventory(playerInventory, 8, playerInventoryY, (before, after) -> {
             final Pattern beforePattern = RefinedStorageApi.INSTANCE.getPattern(before, playerInventory.player.level())
@@ -278,7 +278,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     public void onActiveChanged(final boolean newActive) {
         this.active = newActive;
         if (this.playerInventory.player instanceof ServerPlayer serverPlayerEntity) {
-            S2CPackets.sendGridActiveness(serverPlayerEntity, newActive);
+            S2CPackets.sendGridActive(serverPlayerEntity, newActive);
         }
     }
 

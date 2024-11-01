@@ -55,6 +55,7 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.SecurityCardRese
 import com.refinedmods.refinedstorage.common.support.packet.c2s.SingleAmountChangePacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
@@ -421,6 +422,10 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             WirelessTransmitterDataPacket.STREAM_CODEC
         );
         PayloadTypeRegistry.playS2C().register(GridActivePacket.PACKET_TYPE, GridActivePacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(
+            AutocrafterManagerActivePacket.PACKET_TYPE,
+            AutocrafterManagerActivePacket.STREAM_CODEC
+        );
         PayloadTypeRegistry.playS2C().register(GridClearPacket.PACKET_TYPE, GridClearPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(GridUpdatePacket.PACKET_TYPE, GridUpdatePacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(
@@ -692,6 +697,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getStorageMonitor());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getWirelessTransmitter());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocrafter());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocrafterManager());
         registerItemStorage(
             AbstractDiskDriveBlockEntity.class::isInstance,
             AbstractDiskDriveBlockEntity.class::cast,

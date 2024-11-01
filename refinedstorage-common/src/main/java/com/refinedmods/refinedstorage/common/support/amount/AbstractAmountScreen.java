@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.amount;
 
-import com.refinedmods.refinedstorage.common.autocrafting.AlternativesScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.AlternativesScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 
 import java.util.Optional;

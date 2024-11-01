@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternType;
 import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
 import java.util.UUID;
