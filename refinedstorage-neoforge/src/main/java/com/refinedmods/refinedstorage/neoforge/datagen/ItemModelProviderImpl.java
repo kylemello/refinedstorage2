@@ -52,6 +52,7 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         registerRelays();
         registerDiskInterfaces();
         registerAutocrafters();
+        registerAutocrafterManagers();
     }
 
     private void registerCables() {
@@ -224,6 +225,14 @@ public class ItemModelProviderImpl extends ItemModelProvider {
         blocks.forEach((color, id, block) -> withExistingParent(
             id.getPath(),
             createIdentifier("block/autocrafter/" + color.getName())
+        ));
+    }
+
+    private void registerAutocrafterManagers() {
+        final var blocks = Blocks.INSTANCE.getAutocrafterManager();
+        blocks.forEach((color, id, block) -> withExistingParent(
+            id.getPath(),
+            createIdentifier("block/autocrafter_manager/" + color.getName())
         ));
     }
 

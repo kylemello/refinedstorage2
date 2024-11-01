@@ -59,6 +59,7 @@ public final class CreativeModeTabItems {
         Items.INSTANCE.getRelays().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getDiskInterfaces().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getAutocrafters().stream().map(Supplier::get).forEach(itemConsumer);
+        Items.INSTANCE.getAutocrafterManagers().stream().map(Supplier::get).forEach(itemConsumer);
     }
 
     private static void appendBlockColors(final Consumer<ItemStack> consumer, final BlockColorMap<?, ?> map) {

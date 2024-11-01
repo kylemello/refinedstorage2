@@ -14,6 +14,7 @@ class SmithingTablePattern implements Pattern {
     private final ItemResource base;
     private final ItemResource addition;
     private final ItemResource output;
+    private final Set<ResourceKey> inputResources;
     private final Set<ResourceKey> outputResources;
 
     SmithingTablePattern(final UUID id,
@@ -26,12 +27,18 @@ class SmithingTablePattern implements Pattern {
         this.base = base;
         this.addition = addition;
         this.output = output;
+        this.inputResources = Set.of(template, base, addition);
         this.outputResources = Set.of(output);
     }
 
     @Override
     public Set<ResourceKey> getOutputResources() {
         return outputResources;
+    }
+
+    @Override
+    public Set<ResourceKey> getInputResources() {
+        return inputResources;
     }
 
     ItemResource getTemplate() {

@@ -12,6 +12,11 @@ import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.4.6")
 public interface PatternProviderItem {
+    static boolean isValid(final ItemStack stack, final Level level) {
+        return stack.getItem() instanceof PatternProviderItem patternProviderItem
+            && patternProviderItem.getPattern(stack, level).isPresent();
+    }
+
     @Nullable
     UUID getId(ItemStack stack);
 

@@ -1,7 +1,8 @@
 package com.refinedmods.refinedstorage.common.content;
 
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterContainerMenu;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.DestructorContainerMenu;
@@ -95,6 +96,8 @@ public final class Menus {
     private Supplier<MenuType<DiskInterfaceContainerMenu>> diskInterface;
     @Nullable
     private Supplier<MenuType<AutocrafterContainerMenu>> autocrafter;
+    @Nullable
+    private Supplier<MenuType<AutocrafterManagerContainerMenu>> autocrafterManager;
 
     private Menus() {
     }
@@ -325,5 +328,13 @@ public final class Menus {
 
     public void setAutocrafter(final Supplier<MenuType<AutocrafterContainerMenu>> autocrafter) {
         this.autocrafter = autocrafter;
+    }
+
+    public MenuType<AutocrafterManagerContainerMenu> getAutocrafterManager() {
+        return requireNonNull(autocrafterManager).get();
+    }
+
+    public void setAutocrafterManager(final Supplier<MenuType<AutocrafterManagerContainerMenu>> autocrafterManager) {
+        this.autocrafterManager = autocrafterManager;
     }
 }

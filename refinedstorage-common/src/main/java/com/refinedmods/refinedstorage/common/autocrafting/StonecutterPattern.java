@@ -12,18 +12,25 @@ class StonecutterPattern implements Pattern {
     private final UUID id;
     private final ItemResource input;
     private final ItemResource output;
+    private final Set<ResourceKey> inputResources;
     private final Set<ResourceKey> outputResources;
 
     StonecutterPattern(final UUID id, final ItemResource input, final ItemResource output) {
         this.id = id;
         this.input = input;
         this.output = output;
+        this.inputResources = Set.of(input);
         this.outputResources = Set.of(output);
     }
 
     @Override
     public Set<ResourceKey> getOutputResources() {
         return outputResources;
+    }
+
+    @Override
+    public Set<ResourceKey> getInputResources() {
+        return inputResources;
     }
 
     ItemResource getInput() {

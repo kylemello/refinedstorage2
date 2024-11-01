@@ -12,6 +12,11 @@ class SimplePattern implements Pattern {
     }
 
     @Override
+    public Set<ResourceKey> getInputResources() {
+        return Set.of();
+    }
+
+    @Override
     public Set<ResourceKey> getOutputResources() {
         return outputs;
     }

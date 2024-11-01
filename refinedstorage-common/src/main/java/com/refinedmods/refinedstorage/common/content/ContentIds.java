@@ -68,6 +68,7 @@ public final class ContentIds {
     public static final ResourceLocation DISK_INTERFACE = createIdentifier("disk_interface");
     public static final ResourceLocation PATTERN = createIdentifier("pattern");
     public static final ResourceLocation AUTOCRAFTER = createIdentifier("autocrafter");
+    public static final ResourceLocation AUTOCRAFTER_MANAGER = createIdentifier("autocrafter_manager");
 
     private ContentIds() {
     }

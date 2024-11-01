@@ -51,6 +51,7 @@ public class BlockModelProviderImpl extends BlockModelProvider {
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getGrid(), "grid", "");
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid", "");
         registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getPatternGrid(), "pattern_grid", "");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getAutocrafterManager(), "autocrafter_manager", "");
         registerDetectors();
         registerWirelessTransmitters();
         registerNetworkReceivers();

@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.neoforge;
 
 import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.Config;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerSearchMode;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerViewType;
 import com.refinedmods.refinedstorage.common.content.DefaultEnergyUsage;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.grid.GridSortingTypes;
@@ -53,6 +55,7 @@ public class ConfigImpl implements Config {
     private final SimpleEnergyUsageEntry securityManager;
     private final RelayEntry relay;
     private final AutocrafterEntryImpl autocrafter;
+    private final AutocrafterManagerEntryImpl autocrafterManager;
 
     public ConfigImpl() {
         screenSize = builder
@@ -98,6 +101,7 @@ public class ConfigImpl implements Config {
         securityManager = new SimpleEnergyUsageEntryImpl("securityManager", DefaultEnergyUsage.SECURITY_MANAGER);
         relay = new RelayEntryImpl();
         autocrafter = new AutocrafterEntryImpl();
+        autocrafterManager = new AutocrafterManagerEntryImpl();
         spec = builder.build();
     }
 
@@ -264,8 +268,13 @@ public class ConfigImpl implements Config {
     }
 
     @Override
-    public AutocrafterEntryImpl getAutocrafter() {
+    public AutocrafterEntry getAutocrafter() {
         return autocrafter;
+    }
+
+    @Override
+    public AutocrafterManagerEntry getAutocrafterManager() {
+        return autocrafterManager;
     }
 
     private static String translationKey(final String value) {
@@ -944,6 +953,57 @@ public class ConfigImpl implements Config {
         @Override
         public long getEnergyUsagePerPattern() {
             return energyUsagePerPattern.get();
+        }
+
+        @Override
+        public long getEnergyUsage() {
+            return energyUsage.get();
+        }
+    }
+
+    private class AutocrafterManagerEntryImpl implements AutocrafterManagerEntry {
+        private final ModConfigSpec.LongValue energyUsage;
+        private final ModConfigSpec.EnumValue<AutocrafterManagerSearchMode> searchMode;
+        private final ModConfigSpec.EnumValue<AutocrafterManagerViewType> viewType;
+
+        AutocrafterManagerEntryImpl() {
+            builder.translation(translationKey("autocrafterManager")).push("autocrafterManager");
+            energyUsage = builder
+                .translation(translationKey("autocrafterManager." + ENERGY_USAGE))
+                .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.AUTOCRAFTER_MANAGER, 0, Long.MAX_VALUE);
+            searchMode = builder
+                .translation(translationKey("autocrafterManager.searchMode"))
+                .defineEnum("searchMode", AutocrafterManagerSearchMode.ALL);
+            viewType = builder
+                .translation(translationKey("autocrafterManager.viewType"))
+                .defineEnum("viewType", AutocrafterManagerViewType.VISIBLE);
+            builder.pop();
+        }
+
+        @Override
+        public void setSearchMode(final AutocrafterManagerSearchMode searchMode) {
+            if (searchMode != this.searchMode.get()) {
+                this.searchMode.set(searchMode);
+                ConfigImpl.this.spec.save();
+            }
+        }
+
+        @Override
+        public AutocrafterManagerSearchMode getSearchMode() {
+            return searchMode.get();
+        }
+
+        @Override
+        public void setViewType(final AutocrafterManagerViewType viewType) {
+            if (viewType != this.viewType.get()) {
+                this.viewType.set(viewType);
+                ConfigImpl.this.spec.save();
+            }
+        }
+
+        @Override
+        public AutocrafterManagerViewType getViewType() {
+            return viewType.get();
         }
 
         @Override

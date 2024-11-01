@@ -3,8 +3,9 @@ package com.refinedmods.refinedstorage.common;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
-import com.refinedmods.refinedstorage.common.autocrafting.AutocrafterScreen;
-import com.refinedmods.refinedstorage.common.autocrafting.PatternGridScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorScreen;
@@ -104,6 +105,7 @@ public abstract class AbstractClientModInitializer {
                     return new AutocraftingPreviewScreen(menu, inventory, title);
                 }
             });
+        registration.register(Menus.INSTANCE.getAutocrafterManager(), AutocrafterManagerScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {

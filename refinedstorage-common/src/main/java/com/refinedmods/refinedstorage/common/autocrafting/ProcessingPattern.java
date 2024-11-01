@@ -14,18 +14,25 @@ class ProcessingPattern implements Pattern {
     private final UUID id;
     private final List<ResourceAmount> inputs;
     private final List<ResourceAmount> outputs;
+    private final Set<ResourceKey> inputResources;
     private final Set<ResourceKey> outputResources;
 
     ProcessingPattern(final UUID id, final List<ResourceAmount> inputs, final List<ResourceAmount> outputs) {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.inputResources = inputs.stream().map(ResourceAmount::resource).collect(Collectors.toSet());
         this.outputResources = outputs.stream().map(ResourceAmount::resource).collect(Collectors.toSet());
     }
 
     @Override
     public Set<ResourceKey> getOutputResources() {
         return outputResources;
+    }
+
+    @Override
+    public Set<ResourceKey> getInputResources() {
+        return inputResources;
     }
 
     List<ResourceAmount> getOutputs() {

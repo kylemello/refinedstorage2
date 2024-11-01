@@ -7,6 +7,24 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-   Autocrafter Manager
+-   You can now configure the view type of the Autocrafter Manager:
+    - Visible (only show autocrafters that are configured to be visible to the Autocrafter Manager)
+    - Not full (only show autocrafters that are not full yet)
+    - All (show all autocrafters)
+
+### Changed
+
+-   The search field in the Autocrafter Manager can now search in:
+    - Pattern inputs
+    - Pattern outputs
+    - Autocrafter names
+    - All of the above (by default)
+-    Due to technical limitations and the new filtering options listed above being client-side only, you can no longer shift-click patterns in the Autocrafter Manager.
+-    In the Autocrafter, you can now configure whether it is visible to the Autocrafter Manager (by default it's visible).
+
 ## [2.0.0-milestone.4.8] - 2024-10-12
 
 ### Added

@@ -42,6 +42,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         Blocks.INSTANCE.getRelay().forEach((color, id, block) -> drop(block.get()));
         Blocks.INSTANCE.getDiskInterface().forEach((color, id, block) -> drop(block.get()));
         Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) -> drop(block.get()));
+        Blocks.INSTANCE.getAutocrafterManager().forEach((color, id, block) -> drop(block.get()));
     }
 
     private void drop(final Block block) {
@@ -73,6 +74,7 @@ public class BlockDropProvider extends BlockLootSubProvider {
         blocks.addAll(Blocks.INSTANCE.getRelay().values());
         blocks.addAll(Blocks.INSTANCE.getDiskInterface().values());
         blocks.addAll(Blocks.INSTANCE.getAutocrafter().values());
+        blocks.addAll(Blocks.INSTANCE.getAutocrafterManager().values());
         return blocks;
     }
 }
