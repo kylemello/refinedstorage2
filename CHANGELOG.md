@@ -7,30 +7,32 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.9] - 2024-11-01
+
 ### Added
 
 -   Autocrafter Manager
 -   You can now configure the view type of the Autocrafter Manager:
-    - Visible (only show autocrafters that are configured to be visible to the Autocrafter Manager)
-    - Not full (only show autocrafters that are not full yet)
-    - All (show all autocrafters)
+    -   Visible (only show autocrafters that are configured to be visible to the Autocrafter Manager)
+    -   Not full (only show autocrafters that are not full yet)
+    -   All (show all autocrafters)
 
 ### Changed
 
 -   The search field in the Autocrafter Manager can now search in:
-    - Pattern inputs
-    - Pattern outputs
-    - Autocrafter names
-    - All of the above (by default)
--    Due to technical limitations and the new filtering options listed above being client-side only, you can no longer shift-click patterns in the Autocrafter Manager.
--    In the Autocrafter, you can now configure whether it is visible to the Autocrafter Manager (by default it's visible).
+    -   Pattern inputs
+    -   Pattern outputs
+    -   Autocrafter names
+    -   All of the above (by default)
+-   Due to technical limitations and the new filtering options listed above being client-side only, you can no longer shift-click patterns in the Autocrafter Manager.
+-   In the Autocrafter, you can now configure whether it is visible to the Autocrafter Manager (by default it's visible).
 
 ## [2.0.0-milestone.4.8] - 2024-10-12
 
 ### Added
 
 -   Autocrafter
-    - Note: autocrafting itself hasn't been implemented yet. This is the in-game content, but not the autocrafting engine itself yet. 
+    -   Note: autocrafting itself hasn't been implemented yet. This is the in-game content, but not the autocrafting engine itself yet. 
 -   The Relay now has support for propagating autocrafting when not in pass-through mode.
 
 ### Changed
@@ -794,7 +796,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.8...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.9...HEAD
+
+[2.0.0-milestone.4.9]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.8...v2.0.0-milestone.4.9
 
 [2.0.0-milestone.4.8]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.7...v2.0.0-milestone.4.8
 
