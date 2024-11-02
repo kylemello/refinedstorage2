@@ -25,6 +25,7 @@ import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.Autocrafte
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerData;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
@@ -347,6 +348,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.setDiskInterface(blockEntityProviders.diskInterface()).registerBlocks(callback);
         Blocks.INSTANCE.getAutocrafter().registerBlocks(callback);
         Blocks.INSTANCE.getAutocrafterManager().registerBlocks(callback);
+        Blocks.INSTANCE.getAutocraftingMonitor().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -371,6 +373,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getDiskInterface().registerItems(callback, Items.INSTANCE::addDiskInterface);
         Blocks.INSTANCE.getAutocrafter().registerItems(callback, Items.INSTANCE::addAutocrafter);
         Blocks.INSTANCE.getAutocrafterManager().registerItems(callback, Items.INSTANCE::addAutocrafterManager);
+        Blocks.INSTANCE.getAutocraftingMonitor().registerItems(callback, Items.INSTANCE::addAutocraftingMonitor);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -677,6 +680,11 @@ public abstract class AbstractModInitializer {
             ContentIds.AUTOCRAFTER_MANAGER,
             () -> typeFactory.create(AutocrafterManagerBlockEntity::new,
                 Blocks.INSTANCE.getAutocrafterManager().toArray())
+        ));
+        BlockEntities.INSTANCE.setAutocraftingMonitor(callback.register(
+            ContentIds.AUTOCRAFTING_MONITOR,
+            () -> typeFactory.create(AutocraftingMonitorBlockEntity::new,
+                Blocks.INSTANCE.getAutocraftingMonitor().toArray())
         ));
     }
 

@@ -48,10 +48,11 @@ public class BlockModelProviderImpl extends BlockModelProvider {
     protected void registerModels() {
         registerCables();
         registerControllers();
-        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getGrid(), "grid", "");
-        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid", "");
-        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getPatternGrid(), "pattern_grid", "");
-        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getAutocrafterManager(), "autocrafter_manager", "");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getGrid(), "grid");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getCraftingGrid(), "crafting_grid");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getPatternGrid(), "pattern_grid");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getAutocrafterManager(), "autocrafter_manager");
+        registerRightLeftBackFrontTopModel(Blocks.INSTANCE.getAutocraftingMonitor(), "autocrafting_monitor");
         registerDetectors();
         registerWirelessTransmitters();
         registerNetworkReceivers();
@@ -94,6 +95,10 @@ public class BlockModelProviderImpl extends BlockModelProvider {
                 .texture("all", on)
                 .texture(CUTOUT_TEXTURE, cutout);
         });
+    }
+
+    private void registerRightLeftBackFrontTopModel(final BlockColorMap<?, ?> blockMap, final String name) {
+        registerRightLeftBackFrontTopModel(blockMap, name, "");
     }
 
     private void registerRightLeftBackFrontTopModel(final BlockColorMap<?, ?> blockMap,

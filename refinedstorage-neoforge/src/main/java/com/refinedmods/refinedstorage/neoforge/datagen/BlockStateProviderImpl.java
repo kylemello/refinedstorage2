@@ -60,6 +60,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         registerDiskInterfaces();
         registerAutocrafters();
         registerAutocrafterManagers();
+        registerAutocraftingMonitors();
     }
 
     private void registerCables() {
@@ -331,6 +332,14 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             color,
             block,
             "autocrafter_manager"
+        ));
+    }
+
+    private void registerAutocraftingMonitors() {
+        Blocks.INSTANCE.getAutocraftingMonitor().forEach((color, id, block) -> configureActiveColoredDirectionalBlock(
+            color,
+            block,
+            "autocrafting_monitor"
         ));
     }
 

@@ -25,6 +25,7 @@ public final class DefaultEnergyUsage {
     public static final long AUTOCRAFTER = 4;
     public static final long AUTOCRAFTER_PER_PATTERN = 2;
     public static final long AUTOCRAFTER_MANAGER = 16;
+    public static final long AUTOCRAFTING_MONITOR = 16;
 
     public static final long CONTROLLER_CAPACITY = 1000;
 

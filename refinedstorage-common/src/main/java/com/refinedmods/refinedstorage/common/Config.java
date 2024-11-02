@@ -79,6 +79,8 @@ public interface Config {
 
     AutocrafterManagerEntry getAutocrafterManager();
 
+    SimpleEnergyUsageEntry getAutocraftingMonitor();
+
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
     }

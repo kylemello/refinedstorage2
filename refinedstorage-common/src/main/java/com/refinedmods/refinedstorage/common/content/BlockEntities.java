@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
@@ -94,6 +95,8 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<AutocrafterBlockEntity>> autocrafter;
     @Nullable
     private Supplier<BlockEntityType<AutocrafterManagerBlockEntity>> autocrafterManager;
+    @Nullable
+    private Supplier<BlockEntityType<AutocraftingMonitorBlockEntity>> autocraftingMonitor;
 
     private BlockEntities() {
     }
@@ -314,5 +317,13 @@ public final class BlockEntities {
 
     public void setAutocrafterManager(final Supplier<BlockEntityType<AutocrafterManagerBlockEntity>> supplier) {
         this.autocrafterManager = supplier;
+    }
+
+    public BlockEntityType<AutocraftingMonitorBlockEntity> getAutocraftingMonitor() {
+        return requireNonNull(autocraftingMonitor).get();
+    }
+
+    public void setAutocraftingMonitor(final Supplier<BlockEntityType<AutocraftingMonitorBlockEntity>> supplier) {
+        this.autocraftingMonitor = supplier;
     }
 }

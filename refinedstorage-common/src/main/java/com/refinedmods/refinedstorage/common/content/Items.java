@@ -53,6 +53,7 @@ public final class Items {
     private final List<Supplier<BaseBlockItem>> allDiskInterfaces = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allAutocrafters = new ArrayList<>();
     private final List<Supplier<BaseBlockItem>> allAutocrafterManagers = new ArrayList<>();
+    private final List<Supplier<BaseBlockItem>> allAutocraftingMonitors = new ArrayList<>();
     @Nullable
     private Supplier<Item> quartzEnrichedIron;
     @Nullable
@@ -454,6 +455,14 @@ public final class Items {
 
     public List<Supplier<BaseBlockItem>> getAutocrafterManagers() {
         return Collections.unmodifiableList(allAutocrafterManagers);
+    }
+
+    public void addAutocraftingMonitor(final Supplier<BaseBlockItem> supplier) {
+        allAutocraftingMonitors.add(supplier);
+    }
+
+    public List<Supplier<BaseBlockItem>> getAutocraftingMonitors() {
+        return Collections.unmodifiableList(allAutocraftingMonitors);
     }
 
     public Item getNetworkCard() {

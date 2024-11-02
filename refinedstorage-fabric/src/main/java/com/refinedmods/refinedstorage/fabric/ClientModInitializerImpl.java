@@ -130,6 +130,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getDiskInterface());
         setCutout(Blocks.INSTANCE.getAutocrafter());
         setCutout(Blocks.INSTANCE.getAutocrafterManager());
+        setCutout(Blocks.INSTANCE.getAutocraftingMonitor());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -160,6 +161,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         Blocks.INSTANCE.getRelay().forEach((color, id, block) -> registerEmissiveRelayModels(color, id));
         Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) -> registerEmissiveAutocrafterModels(color, id));
         registerColoredEmissiveModels(Blocks.INSTANCE.getAutocrafterManager(), "autocrafter_manager");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getAutocraftingMonitor(), "autocrafting_monitor");
     }
 
     private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
