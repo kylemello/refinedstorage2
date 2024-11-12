@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.api.network.impl.autocrafting;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewItem;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewType;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewItem;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
 import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;

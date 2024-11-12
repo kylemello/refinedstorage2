@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewItem;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewType;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewItem;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceCodecs;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;

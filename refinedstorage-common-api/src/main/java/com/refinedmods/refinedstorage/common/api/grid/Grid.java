@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.storage.Actor;

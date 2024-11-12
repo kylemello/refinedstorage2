@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
 
 import javax.annotation.Nullable;
 
