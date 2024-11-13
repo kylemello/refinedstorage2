@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-import static com.refinedmods.refinedstorage.common.support.amount.ConfirmButton.ERROR_SIZE;
+import static com.refinedmods.refinedstorage.common.support.Sprites.ERROR_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N extends Number>

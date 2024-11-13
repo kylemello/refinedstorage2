@@ -4,15 +4,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+import static com.refinedmods.refinedstorage.common.support.Sprites.ERROR;
+import static com.refinedmods.refinedstorage.common.support.Sprites.ERROR_SIZE;
 
 public class ConfirmButton extends Button {
-    static final int ERROR_SIZE = 12;
-
-    private static final ResourceLocation ERROR_ICON = createIdentifier("error");
-
     private boolean error;
 
     public ConfirmButton(final int x,
@@ -31,7 +27,7 @@ public class ConfirmButton extends Button {
                                 final float partialTick) {
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
         if (error) {
-            graphics.blitSprite(ERROR_ICON, getX() + 4, getY() + 4, ERROR_SIZE, ERROR_SIZE);
+            graphics.blitSprite(ERROR, getX() + 4, getY() + 4, ERROR_SIZE, ERROR_SIZE);
         }
     }
 

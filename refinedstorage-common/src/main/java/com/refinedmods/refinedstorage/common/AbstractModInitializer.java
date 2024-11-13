@@ -26,6 +26,8 @@ import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.Aut
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerData;
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorData;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
@@ -814,6 +816,13 @@ public abstract class AbstractModInitializer {
             () -> extendedMenuTypeFactory.create(
                 AutocrafterManagerContainerMenu::new,
                 AutocrafterManagerData.STREAM_CODEC
+            )
+        ));
+        Menus.INSTANCE.setAutocraftingMonitor(callback.register(
+            ContentIds.AUTOCRAFTING_MONITOR,
+            () -> extendedMenuTypeFactory.create(
+                (syncId, player, data) -> new AutocraftingMonitorContainerMenu(syncId, data),
+                AutocraftingMonitorData.STREAM_CODEC
             )
         ));
     }

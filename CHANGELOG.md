@@ -11,6 +11,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 -   Autocrafting Monitor
 
+### Changed
+
+-   The Autocrafting Monitor now has a sidebar with all tasks instead of using tabs.
+
 ## [2.0.0-milestone.4.9] - 2024-11-01
 
 ### Added

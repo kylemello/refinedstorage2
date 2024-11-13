@@ -8,7 +8,10 @@ import java.util.UUID;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.4.10")
-public record AutocraftingStatus(UUID id, List<Element> elements) {
+public record AutocraftingTaskStatus(Id id, List<Element> elements) {
+    public record Id(UUID id, ResourceKey resource, long amount, long startTime) {
+    }
+
     public record Element(
         ElementType type,
         ResourceKey resource,
@@ -22,8 +25,8 @@ public record AutocraftingStatus(UUID id, List<Element> elements) {
 
     public enum ElementType {
         NORMAL,
-        MACHINE_DOES_NOT_ACCEPT,
-        MACHINE_NONE,
-        LOCKED
+        MACHINE_DOES_NOT_ACCEPT_RESOURCE,
+        NO_MACHINE_FOUND,
+        AUTOCRAFTER_IS_LOCKED
     }
 }
