@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.network.Network;
@@ -101,7 +101,7 @@ public abstract class AbstractGridBlockEntity extends AbstractBaseNetworkNodeCon
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return Optional.ofNullable(mainNetworkNode.getNetwork())
             .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
             .flatMap(component -> component.getPreview(resource, amount));

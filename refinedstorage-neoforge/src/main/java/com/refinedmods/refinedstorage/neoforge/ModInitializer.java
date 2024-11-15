@@ -30,6 +30,8 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridTy
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocrafterNameChangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingMonitorCancelAllPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingMonitorCancelPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
@@ -57,6 +59,9 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoReque
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskAddedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskRemovedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskStatusChangedPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
@@ -653,6 +658,21 @@ public class ModInitializer extends AbstractModInitializer {
             AutocraftingResponsePacket.STREAM_CODEC,
             wrapHandler((packet, ctx) -> AutocraftingResponsePacket.handle(packet))
         );
+        registrar.playToClient(
+            AutocraftingMonitorTaskAddedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskAddedPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingMonitorTaskAddedPacket::handle)
+        );
+        registrar.playToClient(
+            AutocraftingMonitorTaskRemovedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskRemovedPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingMonitorTaskRemovedPacket::handle)
+        );
+        registrar.playToClient(
+            AutocraftingMonitorTaskStatusChangedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskStatusChangedPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingMonitorTaskStatusChangedPacket::handle)
+        );
     }
 
     private static void registerClientToServerPackets(final PayloadRegistrar registrar) {
@@ -785,6 +805,16 @@ public class ModInitializer extends AbstractModInitializer {
             AutocraftingRequestPacket.PACKET_TYPE,
             AutocraftingRequestPacket.STREAM_CODEC,
             wrapHandler(AutocraftingRequestPacket::handle)
+        );
+        registrar.playToServer(
+            AutocraftingMonitorCancelPacket.PACKET_TYPE,
+            AutocraftingMonitorCancelPacket.STREAM_CODEC,
+            wrapHandler(AutocraftingMonitorCancelPacket::handle)
+        );
+        registrar.playToServer(
+            AutocraftingMonitorCancelAllPacket.PACKET_TYPE,
+            AutocraftingMonitorCancelAllPacket.STREAM_CODEC,
+            wrapHandler((packet, ctx) -> AutocraftingMonitorCancelAllPacket.handle(ctx))
         );
     }
 

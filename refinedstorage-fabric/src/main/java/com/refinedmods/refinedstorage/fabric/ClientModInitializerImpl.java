@@ -21,6 +21,9 @@ import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPro
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskAddedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskRemovedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskStatusChangedPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
@@ -308,6 +311,18 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         ClientPlayNetworking.registerGlobalReceiver(
             AutocraftingResponsePacket.PACKET_TYPE,
             wrapHandler((packet, ctx) -> AutocraftingResponsePacket.handle(packet))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskAddedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskAddedPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskRemovedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskRemovedPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskStatusChangedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskStatusChangedPacket::handle)
         );
     }
 

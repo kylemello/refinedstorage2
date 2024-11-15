@@ -1,10 +1,11 @@
 package com.refinedmods.refinedstorage.api.network.impl.autocrafting;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewItem;
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewType;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewItem;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewType;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.autocrafting.ParentContainer;
 import com.refinedmods.refinedstorage.api.network.autocrafting.PatternListener;
@@ -62,20 +63,20 @@ public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComp
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
-        final List<AutocraftingPreviewItem> items = new ArrayList<>();
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
+        final List<PreviewItem> items = new ArrayList<>();
         final boolean missing = amount == 404;
         for (int i = 0; i < 31; ++i) {
-            items.add(new AutocraftingPreviewItem(
+            items.add(new PreviewItem(
                 resource,
                 (i + 1),
                 (i % 2 == 0 && missing) ? amount : 0,
                 i % 2 == 0 ? 0 : amount
             ));
         }
-        return Optional.of(new AutocraftingPreview(missing
-            ? AutocraftingPreviewType.MISSING_RESOURCES
-            : AutocraftingPreviewType.SUCCESS, items));
+        return Optional.of(new Preview(missing
+            ? PreviewType.MISSING_RESOURCES
+            : PreviewType.SUCCESS, items));
     }
 
     @Override

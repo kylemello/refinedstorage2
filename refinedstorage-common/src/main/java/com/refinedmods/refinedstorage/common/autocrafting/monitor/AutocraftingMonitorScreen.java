@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
-import com.refinedmods.refinedstorage.api.autocrafting.status.AutocraftingTaskStatus;
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
@@ -34,7 +35,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     private static final int ROWS_VISIBLE = 6;
     private static final int COLUMNS = 3;
-    private static final int ELEMENTS_AREA_HEIGHT = 179;
+    private static final int ITEMS_AREA_HEIGHT = 179;
 
     private static final int PROCESSING_COLOR = 0xFFD9EDF7;
     private static final int MISSING_COLOR = 0xFFF2DEDE;
@@ -71,7 +72,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     private static final int TASKS_VISIBLE = 7;
 
     @Nullable
-    private ScrollbarWidget taskElementsScrollbar;
+    private ScrollbarWidget taskItemsScrollbar;
     @Nullable
     private ScrollbarWidget taskButtonsScrollbar;
 
@@ -93,13 +94,13 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     @Override
     protected void init() {
         super.init();
-        taskElementsScrollbar = new ScrollbarWidget(
+        taskItemsScrollbar = new ScrollbarWidget(
             leftPos + 235,
             topPos + 20,
             ScrollbarWidget.Type.NORMAL,
-            ELEMENTS_AREA_HEIGHT
+            ITEMS_AREA_HEIGHT
         );
-        taskElementsScrollbar.setEnabled(false);
+        taskItemsScrollbar.setEnabled(false);
         initTaskButtons();
         getMenu().setListener(this);
         getExclusionZones().add(new Rect2i(
@@ -126,7 +127,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
             leftPos - 17 + 4,
             getTaskButtonsInnerY(),
             ScrollbarWidget.Type.NORMAL,
-            96
+            168
         );
         taskButtonsScrollbar.setListener(value -> {
             final int scrollOffset = taskButtonsScrollbar.isSmoothScrolling()
@@ -141,13 +142,14 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         });
         updateTaskButtonsScrollbar();
         for (int i = 0; i < getMenu().getTasks().size(); ++i) {
-            final AutocraftingTaskStatus.Id taskId = getMenu().getTasks().get(i);
+            final TaskStatus.TaskInfo taskId = getMenu().getTasks().get(i);
             final int buttonY = getTaskButtonY(i);
             final AutocraftingTaskButton button = new AutocraftingTaskButton(
                 getTaskButtonsInnerX(),
                 buttonY,
                 taskId,
-                menu::setCurrentTaskId
+                menu::setCurrentTaskId,
+                menu::getPercentageCompleted
             );
             button.visible = isTaskButtonVisible(buttonY);
             taskButtons.add(addWidget(button));
@@ -166,8 +168,8 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
-        if (taskElementsScrollbar != null) {
-            taskElementsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
+        if (taskItemsScrollbar != null) {
+            taskItemsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
         }
         if (taskButtonsScrollbar != null) {
             taskButtonsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
@@ -191,20 +193,20 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
         super.renderBg(graphics, delta, mouseX, mouseY);
         graphics.blitSprite(TASKS, leftPos - TASKS_WIDTH + 4, topPos, TASKS_WIDTH, TASKS_HEIGHT);
-        final List<AutocraftingTaskStatus.Element> elements = getMenu().getCurrentElements();
-        if (elements.isEmpty() || taskElementsScrollbar == null) {
+        final List<TaskStatus.Item> items = getMenu().getCurrentItems();
+        if (items.isEmpty() || taskItemsScrollbar == null) {
             return;
         }
         final int x = leftPos + 8;
         final int y = topPos + 20;
-        graphics.enableScissor(x, y, x + 221, y + ELEMENTS_AREA_HEIGHT);
-        final int rows = Math.ceilDiv(elements.size(), COLUMNS);
+        graphics.enableScissor(x, y, x + 221, y + ITEMS_AREA_HEIGHT);
+        final int rows = Math.ceilDiv(items.size(), COLUMNS);
         for (int i = 0; i < rows; ++i) {
-            final int scrollOffset = taskElementsScrollbar.isSmoothScrolling()
-                ? (int) taskElementsScrollbar.getOffset()
-                : (int) taskElementsScrollbar.getOffset() * ROW_HEIGHT;
+            final int scrollOffset = taskItemsScrollbar.isSmoothScrolling()
+                ? (int) taskItemsScrollbar.getOffset()
+                : (int) taskItemsScrollbar.getOffset() * ROW_HEIGHT;
             final int yy = y + (i * ROW_HEIGHT) - scrollOffset;
-            renderRow(graphics, x, yy, i, elements, mouseX, mouseY);
+            renderRow(graphics, x, yy, i, items, mouseX, mouseY);
         }
         graphics.disableScissor();
     }
@@ -213,69 +215,69 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
                            final int x,
                            final int y,
                            final int i,
-                           final List<AutocraftingTaskStatus.Element> elements,
+                           final List<TaskStatus.Item> items,
                            final double mouseX,
                            final double mouseY) {
-        if (y <= topPos + 20 - ROW_HEIGHT || y > topPos + 20 + ELEMENTS_AREA_HEIGHT) {
+        if (y <= topPos + 20 - ROW_HEIGHT || y > topPos + 20 + ITEMS_AREA_HEIGHT) {
             return;
         }
         graphics.blitSprite(ROW, x, y, ROW_WIDTH, ROW_HEIGHT);
-        for (int column = i * COLUMNS; column < Math.min(i * COLUMNS + COLUMNS, elements.size()); ++column) {
-            final AutocraftingTaskStatus.Element element = elements.get(column);
+        for (int column = i * COLUMNS; column < Math.min(i * COLUMNS + COLUMNS, items.size()); ++column) {
+            final TaskStatus.Item item = items.get(column);
             final int xx = x + (column % COLUMNS) * 74;
-            renderElement(graphics, xx, y, element, mouseX, mouseY);
+            renderItem(graphics, xx, y, item, mouseX, mouseY);
         }
     }
 
-    private static int getElementColor(final AutocraftingTaskStatus.Element element) {
-        if (element.missing() > 0) {
+    private static int getItemColor(final TaskStatus.Item item) {
+        if (item.missing() > 0) {
             return MISSING_COLOR;
         }
-        return getElementColor2(element);
+        return getItemColor2(item);
     }
 
-    private static int getElementColor2(final AutocraftingTaskStatus.Element element) {
-        if (element.processing() > 0) {
+    private static int getItemColor2(final TaskStatus.Item item) {
+        if (item.processing() > 0) {
             return PROCESSING_COLOR;
         }
-        if (element.scheduled() > 0) {
+        if (item.scheduled() > 0) {
             return SCHEDULED_COLOR;
         }
-        if (element.crafting() > 0) {
+        if (item.crafting() > 0) {
             return CRAFTING_COLOR;
         }
         return 0;
     }
 
-    private void renderElement(final GuiGraphics graphics,
-                               final int x,
-                               final int y,
-                               final AutocraftingTaskStatus.Element elem,
-                               final double mouseX,
-                               final double mouseY) {
-        final int color = getElementColor(elem);
+    private void renderItem(final GuiGraphics graphics,
+                            final int x,
+                            final int y,
+                            final TaskStatus.Item item,
+                            final double mouseX,
+                            final double mouseY) {
+        final int color = getItemColor(item);
         if (color != 0) {
             graphics.fill(x, y, x + 73, y + 29, color);
         }
-        if (elem.type() != AutocraftingTaskStatus.ElementType.NORMAL) {
-            renderElementErrorIcon(graphics, x, y);
+        if (item.type() != TaskStatus.ItemType.NORMAL) {
+            renderItemErrorIcon(graphics, x, y);
         }
         int xx = x + 2;
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(elem.resource().getClass());
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(item.resource().getClass());
         int yy = y + 7;
-        rendering.render(elem.resource(), graphics, xx, yy);
+        rendering.render(item.resource(), graphics, xx, yy);
         if (isHovering(x - leftPos, y - topPos, 73, 29, mouseX, mouseY)
-            && isHoveringOverTaskElements(mouseX, mouseY)) {
-            setTooltipForNextRenderPass(getElementTooltip(elem, rendering));
+            && isHoveringOverItems(mouseX, mouseY)) {
+            setTooltipForNextRenderPass(getItemTooltip(item, rendering));
         }
         if (!SmallText.isSmall()) {
             yy -= 2;
         }
         xx += 16 + 3;
-        renderElementText(graphics, elem, rendering, xx, yy);
+        renderItemText(graphics, item, rendering, xx, yy);
     }
 
-    private static void renderElementErrorIcon(final GuiGraphics graphics, final int x, final int y) {
+    private static void renderItemErrorIcon(final GuiGraphics graphics, final int x, final int y) {
         graphics.blitSprite(
             ERROR,
             x + 73 - ERROR_SIZE - 3,
@@ -285,18 +287,17 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         );
     }
 
-    private List<FormattedCharSequence> getElementTooltip(final AutocraftingTaskStatus.Element element,
-                                                          final ResourceRendering rendering) {
-        final List<FormattedCharSequence> tooltip = rendering.getTooltip(element.resource()).stream()
+    private List<FormattedCharSequence> getItemTooltip(final TaskStatus.Item item, final ResourceRendering rendering) {
+        final List<FormattedCharSequence> tooltip = rendering.getTooltip(item.resource()).stream()
             .map(Component::getVisualOrderText)
             .collect(Collectors.toList());
-        if (element.type() != AutocraftingTaskStatus.ElementType.NORMAL) {
-            tooltip.add(getErrorTooltip(element.type()).getVisualOrderText());
+        if (item.type() != TaskStatus.ItemType.NORMAL) {
+            tooltip.add(getErrorTooltip(item.type()).getVisualOrderText());
         }
         return tooltip;
     }
 
-    private Component getErrorTooltip(final AutocraftingTaskStatus.ElementType type) {
+    private Component getErrorTooltip(final TaskStatus.ItemType type) {
         return switch (type) {
             case MACHINE_DOES_NOT_ACCEPT_RESOURCE -> MACHINE_DOES_NOT_ACCEPT_RESOURCE;
             case NO_MACHINE_FOUND -> NO_MACHINE_FOUND;
@@ -305,39 +306,39 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         };
     }
 
-    private void renderElementText(final GuiGraphics graphics,
-                                   final AutocraftingTaskStatus.Element element,
-                                   final ResourceRendering rendering,
-                                   final int x,
-                                   final int y) {
+    private void renderItemText(final GuiGraphics graphics,
+                                final TaskStatus.Item item,
+                                final ResourceRendering rendering,
+                                final int x,
+                                final int y) {
         int yy = y;
-        if (element.stored() > 0) {
-            renderElementText(graphics, "stored", rendering, x, yy, element.missing());
+        if (item.stored() > 0) {
+            renderItemText(graphics, "stored", rendering, x, yy, item.missing());
             yy += 7;
         }
-        if (element.missing() > 0) {
-            renderElementText(graphics, "missing", rendering, x, yy, element.missing());
+        if (item.missing() > 0) {
+            renderItemText(graphics, "missing", rendering, x, yy, item.missing());
             yy += 7;
         }
-        if (element.processing() > 0) {
-            renderElementText(graphics, "processing", rendering, x, yy, element.processing());
+        if (item.processing() > 0) {
+            renderItemText(graphics, "processing", rendering, x, yy, item.processing());
             yy += 7;
         }
-        if (element.scheduled() > 0) {
-            renderElementText(graphics, "scheduled", rendering, x, yy, element.scheduled());
+        if (item.scheduled() > 0) {
+            renderItemText(graphics, "scheduled", rendering, x, yy, item.scheduled());
             yy += 7;
         }
-        if (element.crafting() > 0) {
-            renderElementText(graphics, "crafting", rendering, x, yy, element.crafting());
+        if (item.crafting() > 0) {
+            renderItemText(graphics, "crafting", rendering, x, yy, item.crafting());
         }
     }
 
-    private void renderElementText(final GuiGraphics graphics,
-                                   final String type,
-                                   final ResourceRendering rendering,
-                                   final int x,
-                                   final int y,
-                                   final long amount) {
+    private void renderItemText(final GuiGraphics graphics,
+                                final String type,
+                                final ResourceRendering rendering,
+                                final int x,
+                                final int y,
+                                final long amount) {
         SmallText.render(
             graphics,
             font,
@@ -352,8 +353,8 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     @Override
     public boolean mouseClicked(final double mouseX, final double mouseY, final int clickedButton) {
-        if (taskElementsScrollbar != null
-            && taskElementsScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
+        if (taskItemsScrollbar != null
+            && taskItemsScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
             return true;
         }
         if (taskButtonsScrollbar != null && taskButtonsScrollbar.mouseClicked(mouseX, mouseY, clickedButton)) {
@@ -364,8 +365,8 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     @Override
     public void mouseMoved(final double mx, final double my) {
-        if (taskElementsScrollbar != null) {
-            taskElementsScrollbar.mouseMoved(mx, my);
+        if (taskItemsScrollbar != null) {
+            taskItemsScrollbar.mouseMoved(mx, my);
         }
         if (taskButtonsScrollbar != null) {
             taskButtonsScrollbar.mouseMoved(mx, my);
@@ -375,7 +376,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     @Override
     public boolean mouseReleased(final double mx, final double my, final int button) {
-        if (taskElementsScrollbar != null && taskElementsScrollbar.mouseReleased(mx, my, button)) {
+        if (taskItemsScrollbar != null && taskItemsScrollbar.mouseReleased(mx, my, button)) {
             return true;
         }
         if (taskButtonsScrollbar != null && taskButtonsScrollbar.mouseReleased(mx, my, button)) {
@@ -386,24 +387,24 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     @Override
     public boolean mouseScrolled(final double x, final double y, final double z, final double delta) {
-        final boolean didTaskElementsScrollbar = taskElementsScrollbar != null
-            && isHoveringOverTaskElements(x, y)
-            && taskElementsScrollbar.mouseScrolled(x, y, z, delta);
-        final boolean didTaskButtonsScrollbar = !didTaskElementsScrollbar
+        final boolean didTaskItemsScrollbar = taskItemsScrollbar != null
+            && isHoveringOverItems(x, y)
+            && taskItemsScrollbar.mouseScrolled(x, y, z, delta);
+        final boolean didTaskButtonsScrollbar = !didTaskItemsScrollbar
             && taskButtonsScrollbar != null
             && isHoveringOverTaskButtons(x, y)
             && taskButtonsScrollbar.mouseScrolled(x, y, z, delta);
-        return didTaskElementsScrollbar || didTaskButtonsScrollbar || super.mouseScrolled(x, y, z, delta);
+        return didTaskItemsScrollbar || didTaskButtonsScrollbar || super.mouseScrolled(x, y, z, delta);
     }
 
-    private boolean isHoveringOverTaskElements(final double x, final double y) {
-        return isHovering(8, 20, 221, ELEMENTS_AREA_HEIGHT, x, y);
+    private boolean isHoveringOverItems(final double x, final double y) {
+        return isHovering(8, 20, 221, ITEMS_AREA_HEIGHT, x, y);
     }
 
     private boolean isHoveringOverTaskButtons(final double x, final double y) {
         final int tasksInnerX = getTaskButtonsInnerX() - 1;
         final int tasksInnerY = getTaskButtonsInnerY() - 1;
-        return isHovering(tasksInnerX - leftPos, tasksInnerY - topPos, 80, 98, x, y);
+        return isHovering(tasksInnerX - leftPos, tasksInnerY - topPos, 80, 170, x, y);
     }
 
     private int getTaskButtonsInnerY() {
@@ -437,28 +438,56 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     }
 
     @Override
-    public void taskChanged(@Nullable final AutocraftingTaskStatus.Id taskId,
-                            final List<AutocraftingTaskStatus.Element> elements) {
+    public void currentTaskChanged(@Nullable final TaskStatus taskStatus) {
         if (cancelButton != null) {
-            cancelButton.active = taskId != null;
+            cancelButton.active = taskStatus != null;
         }
         if (cancelAllButton != null) {
-            cancelAllButton.active = taskId != null;
+            cancelAllButton.active = !menu.getTasks().isEmpty();
         }
         for (final AutocraftingTaskButton taskButton : taskButtons) {
-            taskButton.active = taskButton.getTaskId() != taskId;
+            taskButton.active = taskStatus == null || !taskButton.getTaskId().equals(taskStatus.info().id());
         }
-        if (taskElementsScrollbar == null) {
+        if (taskItemsScrollbar == null) {
             return;
         }
-        if (taskId == null) {
-            taskElementsScrollbar.setEnabled(false);
-            taskElementsScrollbar.setMaxOffset(0);
+        if (taskStatus == null) {
+            taskItemsScrollbar.setEnabled(false);
+            taskItemsScrollbar.setMaxOffset(0);
             return;
         }
-        final int items = elements.size();
+        final int items = taskStatus.items().size();
         final int rows = Math.ceilDiv(items, COLUMNS) - ROWS_VISIBLE;
-        taskElementsScrollbar.setMaxOffset(taskElementsScrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
-        taskElementsScrollbar.setEnabled(rows > 0);
+        taskItemsScrollbar.setMaxOffset(taskItemsScrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
+        taskItemsScrollbar.setEnabled(rows > 0);
+    }
+
+    @Override
+    public void taskAdded(final TaskStatus taskStatus) {
+        updateTaskButtonsScrollbar();
+        final int buttonY = getTaskButtonY(getMenu().getTasks().size() - 1);
+        final AutocraftingTaskButton button = new AutocraftingTaskButton(
+            getTaskButtonsInnerX(),
+            buttonY,
+            taskStatus.info(),
+            menu::setCurrentTaskId,
+            menu::getPercentageCompleted
+        );
+        button.visible = isTaskButtonVisible(buttonY);
+        taskButtons.add(addWidget(button));
+    }
+
+    @Override
+    public void taskRemoved(final TaskId taskId) {
+        updateTaskButtonsScrollbar();
+        taskButtons.stream().filter(b -> b.getTaskId().equals(taskId)).findFirst().ifPresent(button -> {
+            removeWidget(button);
+            taskButtons.remove(button);
+        });
+        for (int i = 0; i < taskButtons.size(); i++) {
+            final AutocraftingTaskButton button = taskButtons.get(i);
+            button.setY(getTaskButtonY(i));
+            button.visible = isTaskButtonVisible(button.getY());
+        }
     }
 }

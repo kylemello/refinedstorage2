@@ -1,9 +1,11 @@
 package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
-import com.refinedmods.refinedstorage.api.autocrafting.status.AutocraftingTaskStatus;
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
@@ -21,30 +23,33 @@ import static com.refinedmods.refinedstorage.common.autocrafting.monitor.Autocra
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 class AutocraftingTaskButton extends AbstractButton {
-    private final AutocraftingTaskStatus.Id taskId;
+    private final TaskStatus.TaskInfo task;
     private final TextMarquee text;
-    private final Consumer<AutocraftingTaskStatus.Id> onPress;
+    private final Consumer<TaskId> onPress;
+    private final PercentageCompletedProvider percentageCompletedProvider;
 
     AutocraftingTaskButton(final int x,
                            final int y,
-                           final AutocraftingTaskStatus.Id taskId,
-                           final Consumer<AutocraftingTaskStatus.Id> onPress) {
+                           final TaskStatus.TaskInfo task,
+                           final Consumer<TaskId> onPress,
+                           final PercentageCompletedProvider percentageCompletedProvider) {
         super(x, y, TASK_BUTTON_WIDTH, TASK_BUTTON_HEIGHT, Component.empty());
-        this.taskId = taskId;
-        final ResourceKey resource = taskId.resource();
+        this.task = task;
+        final ResourceKey resource = task.resource();
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
-        this.text = new TextMarquee(Component.literal(rendering.formatAmount(taskId.amount(), true))
-            .append(" ")
-            .append(rendering.getDisplayName(resource)),
+        this.text = new TextMarquee(
+            rendering.getDisplayName(resource),
             TASK_BUTTON_WIDTH - 16 - 4 - 4 - 4,
             0xFFFFFF,
             true,
-            true);
+            true
+        );
         this.onPress = onPress;
+        this.percentageCompletedProvider = percentageCompletedProvider;
     }
 
-    AutocraftingTaskStatus.Id getTaskId() {
-        return taskId;
+    TaskId getTaskId() {
+        return task.id();
     }
 
     @Override
@@ -53,16 +58,25 @@ class AutocraftingTaskButton extends AbstractButton {
                                 final int mouseY,
                                 final float partialTick) {
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
-        final ResourceKey resource = taskId.resource();
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
-        rendering.render(resource, graphics, getX() + 3, getY() + 4);
+        renderResourceIcon(graphics);
         final int yOffset = SmallText.isSmall() ? 5 : 3;
         final int textX = getX() + 3 + 16 + 3;
         final int textY = getY() + yOffset;
         text.render(graphics, textX, textY, Minecraft.getInstance().font, isHovered);
         final int ySpacing = SmallText.isSmall() ? 7 : 8;
-        SmallText.render(graphics, Minecraft.getInstance().font, "69%", textX, textY + ySpacing, 0xFFFFFF, true);
+        final int percentageCompleted = Math.round(percentageCompletedProvider.getPercentageCompleted(task.id()) * 100);
+        SmallText.render(graphics, Minecraft.getInstance().font, percentageCompleted + "%", textX, textY + ySpacing,
+            0xFFFFFF, true);
         updateTooltip();
+    }
+
+    private void renderResourceIcon(final GuiGraphics graphics) {
+        final ResourceKey resource = task.resource();
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
+        final int resourceX = getX() + 3;
+        final int resourceY = getY() + 4;
+        rendering.render(resource, graphics, resourceX, resourceY);
+        ResourceSlotRendering.renderAmount(graphics, resourceX, resourceY, task.amount(), rendering);
     }
 
     private void updateTooltip() {
@@ -77,7 +91,7 @@ class AutocraftingTaskButton extends AbstractButton {
     }
 
     private String getRunningTimeText() {
-        final int totalSecs = (int) (System.currentTimeMillis() - taskId.startTime()) / 1000;
+        final int totalSecs = (int) (System.currentTimeMillis() - task.startTime()) / 1000;
         final int hours = totalSecs / 3600;
         final int minutes = (totalSecs % 3600) / 60;
         final int seconds = totalSecs % 60;
@@ -92,11 +106,15 @@ class AutocraftingTaskButton extends AbstractButton {
 
     @Override
     public void onPress() {
-        onPress.accept(taskId);
+        onPress.accept(task.id());
     }
 
     @Override
     protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
         // no op
+    }
+
+    interface PercentageCompletedProvider {
+        float getPercentageCompleted(TaskId taskId);
     }
 }

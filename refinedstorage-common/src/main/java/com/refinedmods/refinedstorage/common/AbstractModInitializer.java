@@ -821,7 +821,7 @@ public abstract class AbstractModInitializer {
         Menus.INSTANCE.setAutocraftingMonitor(callback.register(
             ContentIds.AUTOCRAFTING_MONITOR,
             () -> extendedMenuTypeFactory.create(
-                (syncId, player, data) -> new AutocraftingMonitorContainerMenu(syncId, data),
+                AutocraftingMonitorContainerMenu::new,
                 AutocraftingMonitorData.STREAM_CODEC
             )
         ));

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.operations.NoopGridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
@@ -105,7 +105,7 @@ class WirelessGrid implements Grid {
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return context.resolveNetwork()
             .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
             .flatMap(component -> component.getPreview(resource, amount));

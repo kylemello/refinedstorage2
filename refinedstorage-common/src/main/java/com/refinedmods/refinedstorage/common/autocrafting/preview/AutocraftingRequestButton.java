@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
+import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
@@ -30,17 +31,14 @@ class AutocraftingRequestButton extends AbstractButton {
         super(x, y, REQUEST_BUTTON_WIDTH, REQUEST_BUTTON_HEIGHT, Component.empty());
         this.request = request;
         final ResourceKey resource = request.getResource();
-        final long normalizedAmount = resource instanceof PlatformResourceKey platformResourceKey
-            ? platformResourceKey.getResourceType().normalizeAmount(request.getAmount())
-            : 0;
         final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
-        this.text = new TextMarquee(Component.literal(rendering.formatAmount(normalizedAmount, true))
-            .append(" ")
-            .append(rendering.getDisplayName(resource)),
+        this.text = new TextMarquee(
+            rendering.getDisplayName(resource),
             REQUEST_BUTTON_WIDTH - 16 - 4 - 4 - 4,
             0xFFFFFF,
             true,
-            true);
+            true
+        );
         this.onPress = onPress;
     }
 
@@ -54,11 +52,21 @@ class AutocraftingRequestButton extends AbstractButton {
                                 final int mouseY,
                                 final float partialTick) {
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
-        final ResourceKey resource = request.getResource();
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
-        rendering.render(resource, graphics, getX() + 3, getY() + 4);
+        renderResourceIcon(graphics);
         final int yOffset = SmallText.isSmall() ? 8 : 5;
         text.render(graphics, getX() + 3 + 16 + 3, getY() + yOffset, Minecraft.getInstance().font, isHovered);
+    }
+
+    private void renderResourceIcon(final GuiGraphics graphics) {
+        final ResourceKey resource = request.getResource();
+        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
+        final int resourceX = getX() + 3;
+        final int resourceY = getY() + 4;
+        rendering.render(resource, graphics, resourceX, resourceY);
+        final long normalizedAmount = resource instanceof PlatformResourceKey platformResourceKey
+            ? platformResourceKey.getResourceType().normalizeAmount(request.getAmount())
+            : 0;
+        ResourceSlotRendering.renderAmount(graphics, resourceX, resourceY, normalizedAmount, rendering);
     }
 
     @Override

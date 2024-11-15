@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.storage.portablegrid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.operations.NoopGridOperations;
@@ -131,7 +131,7 @@ class PortableGrid implements Grid {
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return Optional.empty();
     }
 

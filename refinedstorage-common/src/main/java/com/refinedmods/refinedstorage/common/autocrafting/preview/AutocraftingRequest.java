@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -14,7 +14,7 @@ public class AutocraftingRequest {
     private final ResourceKey resource;
     private final double amount;
     @Nullable
-    private AutocraftingPreview preview;
+    private Preview preview;
     private long pendingPreviewAmount;
 
     private AutocraftingRequest(final UUID id, final ResourceKey resource, final double amount) {
@@ -44,7 +44,7 @@ public class AutocraftingRequest {
         return true;
     }
 
-    void previewResponseReceived(final AutocraftingPreview previewReceived) {
+    void previewResponseReceived(final Preview previewReceived) {
         this.pendingPreviewAmount = 0;
         this.preview = previewReceived;
     }
@@ -70,7 +70,7 @@ public class AutocraftingRequest {
     }
 
     @Nullable
-    AutocraftingPreview getPreview() {
+    Preview getPreview() {
         return preview;
     }
 

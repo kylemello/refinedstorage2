@@ -1,12 +1,14 @@
 package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
-import com.refinedmods.refinedstorage.api.autocrafting.status.AutocraftingTaskStatus;
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 
-import java.util.List;
 import javax.annotation.Nullable;
 
-@FunctionalInterface
 interface AutocraftingMonitorListener {
-    void taskChanged(@Nullable AutocraftingTaskStatus.Id id,
-                     List<AutocraftingTaskStatus.Element> elements);
+    void currentTaskChanged(@Nullable TaskStatus taskStatus);
+
+    void taskAdded(TaskStatus taskStatus);
+
+    void taskRemoved(TaskId taskId);
 }

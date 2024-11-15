@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.api.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.preview.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.api.grid.operations.GridOperations;
 import com.refinedmods.refinedstorage.api.grid.watcher.GridWatcher;
 import com.refinedmods.refinedstorage.api.storage.Actor;
@@ -16,7 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.apiguardian.api.API;
 
 @API(status = API.Status.STABLE, since = "2.0.0-milestone.3.0")
-public interface Grid extends AutocraftingPreviewProvider {
+public interface Grid extends PreviewProvider {
     void addWatcher(GridWatcher watcher, Class<? extends Actor> actorType);
 
     void removeWatcher(GridWatcher watcher);
