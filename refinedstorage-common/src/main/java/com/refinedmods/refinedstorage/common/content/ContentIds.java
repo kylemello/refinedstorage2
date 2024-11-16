@@ -69,6 +69,7 @@ public final class ContentIds {
     public static final ResourceLocation PATTERN = createIdentifier("pattern");
     public static final ResourceLocation AUTOCRAFTER = createIdentifier("autocrafter");
     public static final ResourceLocation AUTOCRAFTER_MANAGER = createIdentifier("autocrafter_manager");
+    public static final ResourceLocation AUTOCRAFTING_MONITOR = createIdentifier("autocrafting_monitor");
 
     private ContentIds() {
     }

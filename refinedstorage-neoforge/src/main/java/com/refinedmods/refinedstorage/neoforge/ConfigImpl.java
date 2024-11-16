@@ -56,6 +56,7 @@ public class ConfigImpl implements Config {
     private final RelayEntry relay;
     private final AutocrafterEntryImpl autocrafter;
     private final AutocrafterManagerEntryImpl autocrafterManager;
+    private final SimpleEnergyUsageEntry autocraftingMonitor;
 
     public ConfigImpl() {
         screenSize = builder
@@ -102,6 +103,10 @@ public class ConfigImpl implements Config {
         relay = new RelayEntryImpl();
         autocrafter = new AutocrafterEntryImpl();
         autocrafterManager = new AutocrafterManagerEntryImpl();
+        autocraftingMonitor = new SimpleEnergyUsageEntryImpl(
+            "autocraftingMonitor",
+            DefaultEnergyUsage.AUTOCRAFTING_MONITOR
+        );
         spec = builder.build();
     }
 
@@ -275,6 +280,11 @@ public class ConfigImpl implements Config {
     @Override
     public AutocrafterManagerEntry getAutocrafterManager() {
         return autocrafterManager;
+    }
+
+    @Override
+    public SimpleEnergyUsageEntry getAutocraftingMonitor() {
+        return autocraftingMonitor;
     }
 
     private static String translationKey(final String value) {

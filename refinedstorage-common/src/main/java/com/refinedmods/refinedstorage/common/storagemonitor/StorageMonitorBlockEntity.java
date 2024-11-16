@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.storagemonitor;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.api.network.Network;
 import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.impl.node.SimpleNetworkNode;
@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
-    implements NetworkNodeExtendedMenuProvider<ResourceContainerData>, AutocraftingPreviewProvider {
+    implements NetworkNodeExtendedMenuProvider<ResourceContainerData>, PreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageMonitorBlockEntity.class);
 
     private static final String TAG_CLIENT_FILTER = "cf";
@@ -367,7 +367,7 @@ public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerB
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return Optional.ofNullable(mainNetworkNode.getNetwork())
             .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
             .flatMap(component -> component.getPreview(resource, amount));

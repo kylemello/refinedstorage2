@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
@@ -24,16 +24,15 @@ public record AutocraftingRequestPacket(UUID id,
         createIdentifier("autocrafting_request")
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, AutocraftingRequestPacket> STREAM_CODEC =
-        StreamCodec
-            .composite(
-                UUIDUtil.STREAM_CODEC, AutocraftingRequestPacket::id,
-                ResourceCodecs.STREAM_CODEC, AutocraftingRequestPacket::resource,
-                ByteBufCodecs.VAR_LONG, AutocraftingRequestPacket::amount,
-                AutocraftingRequestPacket::new
-            );
+        StreamCodec.composite(
+            UUIDUtil.STREAM_CODEC, AutocraftingRequestPacket::id,
+            ResourceCodecs.STREAM_CODEC, AutocraftingRequestPacket::resource,
+            ByteBufCodecs.VAR_LONG, AutocraftingRequestPacket::amount,
+            AutocraftingRequestPacket::new
+        );
 
     public static void handle(final AutocraftingRequestPacket packet, final PacketContext ctx) {
-        if (ctx.getPlayer().containerMenu instanceof AutocraftingPreviewProvider provider) {
+        if (ctx.getPlayer().containerMenu instanceof PreviewProvider provider) {
             final boolean started = provider.startTask(packet.resource(), packet.amount());
             S2CPackets.sendAutocraftingResponse((ServerPlayer) ctx.getPlayer(), packet.id, started);
         }

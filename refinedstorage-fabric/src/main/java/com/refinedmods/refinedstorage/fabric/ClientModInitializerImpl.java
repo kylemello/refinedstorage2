@@ -21,6 +21,10 @@ import com.refinedmods.refinedstorage.common.support.network.item.NetworkItemPro
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorActivePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskAddedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskRemovedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskStatusChangedPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
@@ -130,6 +134,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         setCutout(Blocks.INSTANCE.getDiskInterface());
         setCutout(Blocks.INSTANCE.getAutocrafter());
         setCutout(Blocks.INSTANCE.getAutocrafterManager());
+        setCutout(Blocks.INSTANCE.getAutocraftingMonitor());
     }
 
     private void setCutout(final BlockColorMap<?, ?> blockMap) {
@@ -160,6 +165,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         Blocks.INSTANCE.getRelay().forEach((color, id, block) -> registerEmissiveRelayModels(color, id));
         Blocks.INSTANCE.getAutocrafter().forEach((color, id, block) -> registerEmissiveAutocrafterModels(color, id));
         registerColoredEmissiveModels(Blocks.INSTANCE.getAutocrafterManager(), "autocrafter_manager");
+        registerColoredEmissiveModels(Blocks.INSTANCE.getAutocraftingMonitor(), "autocrafting_monitor");
     }
 
     private void registerColoredEmissiveModels(final BlockColorMap<?, ?> blockMap,
@@ -306,6 +312,22 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         ClientPlayNetworking.registerGlobalReceiver(
             AutocraftingResponsePacket.PACKET_TYPE,
             wrapHandler((packet, ctx) -> AutocraftingResponsePacket.handle(packet))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskAddedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskAddedPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskRemovedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskRemovedPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorTaskStatusChangedPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorTaskStatusChangedPacket::handle)
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorActivePacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorActivePacket::handle)
         );
     }
 

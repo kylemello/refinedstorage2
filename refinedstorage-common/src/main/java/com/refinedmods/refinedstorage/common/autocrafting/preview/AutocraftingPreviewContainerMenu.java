@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
 import com.refinedmods.refinedstorage.common.support.containermenu.AbstractResourceContainerMenu;
@@ -70,7 +70,7 @@ public class AutocraftingPreviewContainerMenu extends AbstractResourceContainerM
         }
     }
 
-    public void previewResponseReceived(final UUID id, final AutocraftingPreview preview) {
+    public void previewResponseReceived(final UUID id, final Preview preview) {
         if (!currentRequest.getId().equals(id)) {
             return;
         }

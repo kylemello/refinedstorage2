@@ -1,10 +1,10 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.query.GridQueryParserException;
@@ -62,7 +62,7 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
     implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener,
-    AutocraftingPreviewProvider {
+    PreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -489,7 +489,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return requireNonNull(grid).getPreview(resource, amount);
     }
 

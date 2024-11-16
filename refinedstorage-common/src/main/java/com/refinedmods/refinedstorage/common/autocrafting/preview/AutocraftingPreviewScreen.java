@@ -1,8 +1,8 @@
 package com.refinedmods.refinedstorage.common.autocrafting.preview;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewItem;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewType;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewItem;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewType;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
@@ -192,7 +192,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         setPreview(request.getPreview());
     }
 
-    private void setPreview(@Nullable final AutocraftingPreview preview) {
+    private void setPreview(@Nullable final Preview preview) {
         if (previewItemsScrollbar == null || confirmButton == null) {
             return;
         }
@@ -207,9 +207,9 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         previewItemsScrollbar.setMaxOffset(previewItemsScrollbar.isSmoothScrolling() ? rows * ROW_HEIGHT : rows);
         previewItemsScrollbar.setEnabled(rows > 0);
         confirmButton.setMessage(START);
-        confirmButton.active = preview.type() == AutocraftingPreviewType.SUCCESS;
-        confirmButton.setError(preview.type() != AutocraftingPreviewType.SUCCESS);
-        confirmButton.setTooltip(preview.type() == AutocraftingPreviewType.MISSING_RESOURCES
+        confirmButton.active = preview.type() == PreviewType.SUCCESS;
+        confirmButton.setError(preview.type() != PreviewType.SUCCESS);
+        confirmButton.setTooltip(preview.type() == PreviewType.MISSING_RESOURCES
             ? Tooltip.create(MISSING_RESOURCES)
             : null);
     }
@@ -247,14 +247,14 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
                 REQUESTS_HEIGHT);
         }
         final AutocraftingRequest request = getMenu().getCurrentRequest();
-        final AutocraftingPreview preview = request.getPreview();
+        final Preview preview = request.getPreview();
         if (preview == null || previewItemsScrollbar == null) {
             return;
         }
         final int x = leftPos + 8;
         final int y = topPos + 98;
         graphics.enableScissor(x, y, x + 221, y + PREVIEW_AREA_HEIGHT);
-        final List<AutocraftingPreviewItem> items = preview.items();
+        final List<PreviewItem> items = preview.items();
         final int rows = Math.ceilDiv(items.size(), COLUMNS);
         for (int i = 0; i < rows; ++i) {
             final int scrollOffset = previewItemsScrollbar.isSmoothScrolling()
@@ -270,7 +270,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
                            final int x,
                            final int y,
                            final int i,
-                           final List<AutocraftingPreviewItem> items,
+                           final List<PreviewItem> items,
                            final double mouseX,
                            final double mouseY) {
         if (y <= topPos + 98 - ROW_HEIGHT || y > topPos + 98 + PREVIEW_AREA_HEIGHT) {
@@ -278,7 +278,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         }
         graphics.blitSprite(ROW, x, y, ROW_WIDTH, ROW_HEIGHT);
         for (int column = i * COLUMNS; column < Math.min(i * COLUMNS + COLUMNS, items.size()); ++column) {
-            final AutocraftingPreviewItem item = items.get(column);
+            final PreviewItem item = items.get(column);
             final int xx = x + (column % COLUMNS) * 74;
             renderCell(graphics, xx, y, item, mouseX, mouseY);
         }
@@ -287,7 +287,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     private void renderCell(final GuiGraphics graphics,
                             final int x,
                             final int y,
-                            final AutocraftingPreviewItem item,
+                            final PreviewItem item,
                             final double mouseX,
                             final double mouseY) {
         if (item.missing() > 0) {
@@ -462,7 +462,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
     }
 
     @Override
-    public void previewChanged(@Nullable final AutocraftingPreview preview) {
+    public void previewChanged(@Nullable final Preview preview) {
         setPreview(preview);
     }
 
@@ -472,7 +472,10 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
             close();
             return;
         }
-        requestButtons.removeIf(requestButton -> requestButton.getRequest() == request);
+        requestButtons.stream().filter(btn -> btn.getRequest() == request).findFirst().ifPresent(btn -> {
+            removeWidget(btn);
+            requestButtons.remove(btn);
+        });
         updateRequestsScrollbar();
         for (int i = 0; i < requestButtons.size(); ++i) {
             final AutocraftingRequestButton requestButton = requestButtons.get(i);

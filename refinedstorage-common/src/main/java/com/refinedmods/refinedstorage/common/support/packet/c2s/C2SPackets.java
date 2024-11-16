@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
@@ -142,5 +143,13 @@ public final class C2SPackets {
                                                final PlatformResourceKey resource,
                                                final long amount) {
         Platform.INSTANCE.sendPacketToServer(new AutocraftingRequestPacket(id, resource, amount));
+    }
+
+    public static void sendAutocraftingMonitorCancel(final TaskId taskId) {
+        Platform.INSTANCE.sendPacketToServer(new AutocraftingMonitorCancelPacket(taskId));
+    }
+
+    public static void sendAutocraftingMonitorCancelAll() {
+        Platform.INSTANCE.sendPacketToServer(AutocraftingMonitorCancelAllPacket.INSTANCE);
     }
 }

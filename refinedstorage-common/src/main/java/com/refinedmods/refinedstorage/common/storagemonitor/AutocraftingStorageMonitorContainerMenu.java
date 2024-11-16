@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.storagemonitor;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import static java.util.Objects.requireNonNull;
 
 public class AutocraftingStorageMonitorContainerMenu extends AutocraftingPreviewContainerMenu
-    implements AutocraftingPreviewProvider {
+    implements PreviewProvider {
     @Nullable
     private final StorageMonitorBlockEntity storageMonitor;
 
@@ -39,7 +39,7 @@ public class AutocraftingStorageMonitorContainerMenu extends AutocraftingPreview
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return requireNonNull(storageMonitor).getPreview(resource, amount);
     }
 
