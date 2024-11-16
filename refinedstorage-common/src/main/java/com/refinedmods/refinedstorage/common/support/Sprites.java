@@ -11,8 +11,6 @@ public final class Sprites {
     public static final int LIGHT_ARROW_HEIGHT = 15;
     public static final ResourceLocation WARNING = createIdentifier("warning");
     public static final int WARNING_SIZE = 10;
-    public static final ResourceLocation SEARCH = createIdentifier("search");
-    public static final int SEARCH_SIZE = 12;
     public static final int ERROR_SIZE = 12;
     public static final ResourceLocation ERROR = createIdentifier("error");
 

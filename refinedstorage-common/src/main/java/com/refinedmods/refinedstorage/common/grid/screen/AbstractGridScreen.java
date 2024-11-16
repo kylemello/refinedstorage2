@@ -16,7 +16,6 @@ import com.refinedmods.refinedstorage.common.grid.AutocraftableResourceHint;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
 import com.refinedmods.refinedstorage.common.grid.view.ItemGridResource;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
-import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.containermenu.DisabledSlot;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
@@ -26,6 +25,7 @@ import com.refinedmods.refinedstorage.common.support.tooltip.SmallTextClientTool
 import com.refinedmods.refinedstorage.common.support.widget.AutoSelectedSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.SearchIconWidget;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighter;
 import com.refinedmods.refinedstorage.query.lexer.SyntaxHighlighterColors;
@@ -51,7 +51,6 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationKey;
@@ -66,6 +65,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
     private static final int COLUMNS = 9;
     private static final int DISABLED_SLOT_COLOR = 0xFF5B5B5B;
     private static final List<String> SEARCH_FIELD_HISTORY = new ArrayList<>();
+    private static final Component SEARCH_HELP = createTranslation("gui", "grid.search_help")
+        .append("\n")
+        .append(createTranslation("gui", "grid.search_help.mod_search").withStyle(ChatFormatting.GRAY))
+        .append("\n")
+        .append(createTranslation("gui", "grid.search_help.tag_search").withStyle(ChatFormatting.GRAY))
+        .append("\n")
+        .append(createTranslation("gui", "grid.search_help.tooltip_search").withStyle(ChatFormatting.GRAY));
 
     protected final int bottomHeight;
 
@@ -116,6 +122,13 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         addSideButton(new SortingTypeSideButtonWidget(getMenu()));
         addSideButton(new AutoSelectedSideButtonWidget(searchField));
 
+        addRenderableWidget(new SearchIconWidget(
+            leftPos + 79,
+            topPos + 5,
+            () -> SEARCH_HELP,
+            searchField
+        ));
+
         final boolean onlyHasNoopSynchronizer = RefinedStorageApi.INSTANCE.getGridSynchronizerRegistry()
             .getAll()
             .stream()
@@ -158,12 +171,6 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         return relativeMouseX >= 7
             && relativeMouseX <= 168
             && isInStretchedArea(relativeMouseY);
-    }
-
-    @Override
-    protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
-        super.renderBg(graphics, delta, mouseX, mouseY);
-        graphics.blitSprite(Sprites.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
     }
 
     @Override
