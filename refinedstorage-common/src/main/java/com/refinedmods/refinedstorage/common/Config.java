@@ -19,6 +19,10 @@ public interface Config {
 
     boolean isSmoothScrolling();
 
+    boolean isSearchBoxAutoSelected();
+
+    void setSearchBoxAutoSelected(boolean searchBoxAutoSelected);
+
     int getMaxRowsStretch();
 
     GridEntry getGrid();
@@ -93,10 +97,6 @@ public interface Config {
         boolean isDetailedTooltip();
 
         boolean isRememberSearchQuery();
-
-        boolean isAutoSelected();
-
-        void setAutoSelected(boolean autoSelected);
 
         Optional<ResourceLocation> getSynchronizer();
 

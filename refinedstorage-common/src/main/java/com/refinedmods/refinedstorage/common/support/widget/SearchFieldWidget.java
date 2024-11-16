@@ -18,8 +18,9 @@ public class SearchFieldWidget extends EditBox {
                              final History history) {
         super(font, x, y, width, font.lineHeight, Component.empty());
         this.history = history;
-        this.setBordered(false);
-        this.setMaxLength(256);
+        setBordered(false);
+        setMaxLength(256);
+        setAutoSelected(Platform.INSTANCE.getConfig().isSearchBoxAutoSelected());
     }
 
     @Override
@@ -81,6 +82,11 @@ public class SearchFieldWidget extends EditBox {
     private void toggleFocus() {
         setFocused(!isFocused());
         saveHistory();
+    }
+
+    public void setAutoSelected(final boolean autoSelected) {
+        setFocused(autoSelected);
+        setCanLoseFocus(!autoSelected);
     }
 
     private void saveHistory() {

@@ -96,7 +96,7 @@ class TaskStatusProviderImpl implements TaskStatusProvider {
         final TaskStatus.TaskInfo taskInfo = new TaskStatus.TaskInfo(
             new TaskId(UUID.randomUUID()),
             ItemResource.ofItemStack(new ItemStack(ITEM_SET[r.nextInt(ITEM_SET.length)])),
-            5 + r.nextInt(32),
+            5 + r.nextLong(32),
             System.currentTimeMillis()
         );
         final float pct = r.nextFloat();

@@ -27,6 +27,7 @@ public class ConfigImpl implements Config {
     private final ModConfigSpec.EnumValue<ScreenSize> screenSize;
     private final ModConfigSpec.BooleanValue smoothScrolling;
     private final ModConfigSpec.IntValue maxRowsStretch;
+    private final ModConfigSpec.BooleanValue searchBoxAutoSelected;
     private final SimpleEnergyUsageEntry cable;
     private final ControllerEntry controller;
     private final DiskDriveEntry diskDrive;
@@ -68,6 +69,9 @@ public class ConfigImpl implements Config {
         maxRowsStretch = builder
             .translation(translationKey("maxRowsStretch"))
             .defineInRange("maxRowsStretch", 256, 3, 256);
+        searchBoxAutoSelected = builder
+            .translation(translationKey("searchBoxAutoSelected"))
+            .define("searchBoxAutoSelected", false);
         cable = new SimpleEnergyUsageEntryImpl("cable", DefaultEnergyUsage.CABLE);
         controller = new ControllerEntryImpl();
         diskDrive = new DiskDriveEntryImpl();
@@ -134,6 +138,19 @@ public class ConfigImpl implements Config {
         if (screenSize != this.screenSize.get()) {
             this.screenSize.set(screenSize);
             this.spec.save();
+        }
+    }
+
+    @Override
+    public boolean isSearchBoxAutoSelected() {
+        return searchBoxAutoSelected.get();
+    }
+
+    @Override
+    public void setSearchBoxAutoSelected(final boolean searchBoxAutoSelected) {
+        if (searchBoxAutoSelected != Boolean.TRUE.equals(this.searchBoxAutoSelected.get())) {
+            this.searchBoxAutoSelected.set(searchBoxAutoSelected);
+            ConfigImpl.this.spec.save();
         }
     }
 
@@ -384,7 +401,6 @@ public class ConfigImpl implements Config {
         private final ModConfigSpec.BooleanValue detailedTooltip;
         private final ModConfigSpec.BooleanValue rememberSearchQuery;
         private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.BooleanValue autoSelected;
         private final ModConfigSpec.ConfigValue<String> synchronizer;
         private final ModConfigSpec.ConfigValue<String> resourceType;
         private final ModConfigSpec.EnumValue<GridSortingDirection> sortingDirection;
@@ -408,9 +424,6 @@ public class ConfigImpl implements Config {
             energyUsage = builder
                 .translation(translationKey("grid." + ENERGY_USAGE))
                 .defineInRange(ENERGY_USAGE, DefaultEnergyUsage.GRID, 0, Long.MAX_VALUE);
-            autoSelected = builder
-                .translation(translationKey("grid.autoSelected"))
-                .define("autoSelected", false);
             synchronizer = builder
                 .translation(translationKey("grid.synchronizer"))
                 .define("synchronizer", "");
@@ -452,19 +465,6 @@ public class ConfigImpl implements Config {
         @Override
         public long getEnergyUsage() {
             return energyUsage.get();
-        }
-
-        @Override
-        public boolean isAutoSelected() {
-            return autoSelected.get();
-        }
-
-        @Override
-        public void setAutoSelected(final boolean autoSelected) {
-            if (autoSelected != Boolean.TRUE.equals(this.autoSelected.get())) {
-                this.autoSelected.set(autoSelected);
-                ConfigImpl.this.spec.save();
-            }
         }
 
         @Override

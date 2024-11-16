@@ -91,10 +91,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     private GridSynchronizer synchronizer;
     @Nullable
     private ResourceType resourceTypeFilter;
-    private boolean autoSelected;
     private boolean active;
-    @Nullable
-    private GridSearchBox searchBox;
 
     protected AbstractGridContainerMenu(
         final MenuType<? extends AbstractGridContainerMenu> menuType,
@@ -126,7 +123,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         this.insertionStrategy = new ClientGridInsertionStrategy();
         this.extractionStrategy = new ClientGridExtractionStrategy();
         this.scrollingStrategy = new ClientGridScrollingStrategy();
-        this.autoSelected = loadAutoSelected();
     }
 
     protected AbstractGridContainerMenu(
@@ -211,7 +207,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     public void setSearchBox(final GridSearchBox searchBox) {
-        this.searchBox = searchBox;
         registerViewUpdatingListener(searchBox);
         configureSearchBox(searchBox);
     }
@@ -234,7 +229,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     private void configureSearchBox(final GridSearchBox theSearchBox) {
-        theSearchBox.setAutoSelected(isAutoSelected());
         if (Platform.INSTANCE.getConfig().getGrid().isRememberSearchQuery()) {
             theSearchBox.setValue(lastSearchQuery);
             theSearchBox.addListener(AbstractGridContainerMenu::updateLastSearchQuery);
@@ -328,22 +322,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     public boolean isActive() {
         return active;
-    }
-
-    public void setAutoSelected(final boolean autoSelected) {
-        this.autoSelected = autoSelected;
-        Platform.INSTANCE.getConfig().getGrid().setAutoSelected(autoSelected);
-        if (searchBox != null) {
-            searchBox.setAutoSelected(autoSelected);
-        }
-    }
-
-    private boolean loadAutoSelected() {
-        return Platform.INSTANCE.getConfig().getGrid().isAutoSelected();
-    }
-
-    public boolean isAutoSelected() {
-        return autoSelected;
     }
 
     private GridSynchronizer loadSynchronizer() {

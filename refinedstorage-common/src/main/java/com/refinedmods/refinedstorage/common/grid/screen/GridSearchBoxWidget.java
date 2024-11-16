@@ -71,12 +71,6 @@ class GridSearchBoxWidget extends SearchFieldWidget implements GridSearchBox {
     }
 
     @Override
-    public void setAutoSelected(final boolean autoSelected) {
-        setFocused(autoSelected);
-        setCanLoseFocus(!autoSelected);
-    }
-
-    @Override
     public void addListener(final Consumer<String> listener) {
         this.listeners.add(listener);
     }

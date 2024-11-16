@@ -14,6 +14,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 -   The Autocrafting Monitor now has a sidebar with all tasks instead of using tabs.
+-   The auto-selected search box mode is now a global option used in the Autocrafter Manager as well.
 
 ## [2.0.0-milestone.4.9] - 2024-11-01
 

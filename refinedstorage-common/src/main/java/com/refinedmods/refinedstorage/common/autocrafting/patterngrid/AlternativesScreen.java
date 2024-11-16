@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.common.support.containermenu.ResourceSlot;
 import com.refinedmods.refinedstorage.common.support.widget.CustomCheckboxWidget;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
+import com.refinedmods.refinedstorage.common.support.widget.SearchIconWidget;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -30,7 +32,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.joml.Vector3f;
 
-import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
@@ -42,6 +43,8 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
     private static final MutableComponent TITLE = createTranslation("gui", "configure_amount");
     private static final MutableComponent ALTERNATIVES = createTranslation("gui", "pattern_grid.alternatives");
     private static final MutableComponent EXPAND = createTranslation("gui", "pattern_grid.alternatives.expand");
+    private static final Component SEARCH_HELP = createTranslation("gui", "pattern_grid.alternatives.search_help")
+        .withStyle(ChatFormatting.GRAY);
     private static final WidgetSprites EXPAND_SPRITES = new WidgetSprites(
         createIdentifier("widget/expand"),
         createIdentifier("widget/expand_disabled"),
@@ -137,6 +140,13 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
         searchField.setFocused(false);
         searchField.setResponder(query -> getMenu().filter(query));
         addRenderableWidget(searchField);
+
+        addRenderableWidget(new SearchIconWidget(
+            leftPos + 7,
+            topPos + 107,
+            () -> SEARCH_HELP,
+            searchField
+        ));
     }
 
     private int getInsetY() {
@@ -300,7 +310,6 @@ public class AlternativesScreen extends AbstractAmountScreen<AlternativeContaine
     @Override
     protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
         super.renderBg(graphics, delta, mouseX, mouseY);
-        graphics.blitSprite(Sprites.SEARCH, leftPos + 7, topPos + 107, SEARCH_SIZE, SEARCH_SIZE);
         final int x = getInsetX();
         final int y = getInsetY();
         graphics.enableScissor(x, y, x + INSET_WIDTH, y + INSET_HEIGHT);

@@ -33,7 +33,7 @@ class FabricStorageImporterSource<T> implements ImporterSource {
 
     FabricStorageImporterSource(final BlockApiLookup<Storage<T>, Direction> lookup,
                                 final Function<T, ResourceKey> fromPlatformMapper,
-                                @NullableType final Function<ResourceKey, T> toPlatformMapper,
+                                final Function<ResourceKey, @NullableType T> toPlatformMapper,
                                 final ServerLevel serverLevel,
                                 final BlockPos pos,
                                 final Direction direction,

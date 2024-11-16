@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.function.Supplier;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -12,20 +14,12 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 class SearchModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "autocrafter_manager.search_mode");
     private static final MutableComponent SUBTEXT_ALL = createTranslation("gui", "autocrafter_manager.search_mode.all");
-    private static final MutableComponent HELP_ALL =
-        createTranslation("gui", "autocrafter_manager.search_mode.all.help");
     private static final MutableComponent SUBTEXT_PATTERN_INPUTS =
         createTranslation("gui", "autocrafter_manager.search_mode.pattern_inputs");
-    private static final MutableComponent HELP_PATTERN_INPUTS =
-        createTranslation("gui", "autocrafter_manager.search_mode.pattern_inputs.help");
     private static final MutableComponent SUBTEXT_PATTERN_OUTPUTS =
         createTranslation("gui", "autocrafter_manager.search_mode.pattern_outputs");
-    private static final MutableComponent HELP_PATTERN_OUTPUTS =
-        createTranslation("gui", "autocrafter_manager.search_mode.pattern_outputs.help");
     private static final MutableComponent SUBTEXT_AUTOCRAFTER_NAMES =
         createTranslation("gui", "autocrafter_manager.search_mode.autocrafter_names");
-    private static final MutableComponent HELP_AUTOCRAFTER_NAMES =
-        createTranslation("gui", "autocrafter_manager.search_mode.autocrafter_names.help");
     private static final ResourceLocation SPRITE_ALL =
         createIdentifier("widget/side_button/autocrafter_manager/search_mode/all");
     private static final ResourceLocation SPRITE_PATTERN_INPUTS =
@@ -36,10 +30,13 @@ class SearchModeSideButtonWidget extends AbstractSideButtonWidget {
         createIdentifier("widget/side_button/autocrafter_manager/search_mode/autocrafter_names");
 
     private final AutocrafterManagerContainerMenu containerMenu;
+    private final Supplier<Component> helpTextSupplier;
 
-    SearchModeSideButtonWidget(final AutocrafterManagerContainerMenu containerMenu) {
+    SearchModeSideButtonWidget(final AutocrafterManagerContainerMenu containerMenu,
+                               final Supplier<Component> helpTextSupplier) {
         super(createPressAction(containerMenu));
         this.containerMenu = containerMenu;
+        this.helpTextSupplier = helpTextSupplier;
     }
 
     private static OnPress createPressAction(final AutocrafterManagerContainerMenu containerMenu) {
@@ -73,11 +70,6 @@ class SearchModeSideButtonWidget extends AbstractSideButtonWidget {
 
     @Override
     protected Component getHelpText() {
-        return switch (containerMenu.getSearchMode()) {
-            case ALL -> HELP_ALL;
-            case PATTERN_INPUTS -> HELP_PATTERN_INPUTS;
-            case PATTERN_OUTPUTS -> HELP_PATTERN_OUTPUTS;
-            case AUTOCRAFTER_NAMES -> HELP_AUTOCRAFTER_NAMES;
-        };
+        return helpTextSupplier.get();
     }
 }
