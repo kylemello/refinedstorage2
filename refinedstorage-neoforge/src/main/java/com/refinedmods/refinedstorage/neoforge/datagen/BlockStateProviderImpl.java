@@ -68,8 +68,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
             final var builder = getVariantBuilder(block.get());
             builder.addModels(
                 builder.partialState(),
-                ConfiguredModel.builder().modelFile(modelFile(createIdentifier("block/cable/" + color.getName())))
-                    .build()
+                ConfiguredModel.builder().modelFile(getCableModel(color)).build()
             );
         });
     }
@@ -79,8 +78,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         blockMap.forEach((color, id, block) -> {
             final MultiPartBlockStateBuilder builder = getMultipartBuilder(block.get());
             final var cablePart = builder.part();
-            cablePart.modelFile(modelFile(createIdentifier("block/cable/" + color.getName())))
-                .addModel();
+            cablePart.modelFile(getCableModel(color)).addModel();
             for (final Direction direction : Direction.values()) {
                 final var part = builder.part();
                 addDirectionalRotation(direction, part);
@@ -188,8 +186,7 @@ public class BlockStateProviderImpl extends BlockStateProvider {
         blockMap.forEach((color, id, block) -> {
             final MultiPartBlockStateBuilder builder = getMultipartBuilder(block.get());
             final var cablePart = builder.part();
-            cablePart.modelFile(modelFile(createIdentifier("block/cable/" + color.getName())))
-                .addModel();
+            cablePart.modelFile(getCableModel(color)).addModel();
             for (final Direction direction : Direction.values()) {
                 final var part = builder.part();
                 addDirectionalRotation(direction, part);
@@ -205,6 +202,10 @@ public class BlockStateProviderImpl extends BlockStateProvider {
                     .end();
             }
         });
+    }
+
+    private ModelFile getCableModel(final DyeColor color) {
+        return modelFile(createIdentifier("block/cable/" + color.getName()));
     }
 
     private ConfiguredModel[] registerDetector(final ModelFile unpowered,

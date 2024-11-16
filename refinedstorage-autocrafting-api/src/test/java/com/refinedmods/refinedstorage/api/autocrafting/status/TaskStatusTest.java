@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-public class TaskStatusTest {
+class TaskStatusTest {
     @Test
     void dummyTest() {
         new TaskStatus(

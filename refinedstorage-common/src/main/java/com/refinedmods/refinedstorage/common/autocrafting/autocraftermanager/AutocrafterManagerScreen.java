@@ -23,7 +23,6 @@ import net.minecraft.world.inventory.Slot;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-// TODO: fix sonar issues
 // TODO: search box autoselected mode make generic.
 // TODO: tooltip on search icon
 public class AutocrafterManagerScreen extends AbstractStretchingScreen<AutocrafterManagerContainerMenu> {
