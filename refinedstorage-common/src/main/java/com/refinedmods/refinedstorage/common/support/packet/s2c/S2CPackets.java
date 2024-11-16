@@ -117,4 +117,8 @@ public final class S2CPackets {
                                                                 final TaskStatus taskStatus) {
         Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorTaskStatusChangedPacket(taskStatus));
     }
+
+    public static void sendAutocraftingMonitorActive(final ServerPlayer player, final boolean active) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorActivePacket(active));
+    }
 }

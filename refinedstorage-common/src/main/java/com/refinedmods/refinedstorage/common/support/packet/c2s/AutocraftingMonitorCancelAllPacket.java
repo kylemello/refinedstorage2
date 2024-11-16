@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
-import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AbstractAutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -18,7 +18,7 @@ public record AutocraftingMonitorCancelAllPacket() implements CustomPacketPayloa
         StreamCodec.unit(INSTANCE);
 
     public static void handle(final PacketContext ctx) {
-        if (ctx.getPlayer().containerMenu instanceof AutocraftingMonitorContainerMenu containerMenu) {
+        if (ctx.getPlayer().containerMenu instanceof AbstractAutocraftingMonitorContainerMenu containerMenu) {
             containerMenu.cancelAllTasks();
         }
     }

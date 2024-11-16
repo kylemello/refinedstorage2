@@ -84,6 +84,10 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         return 6;
     }
 
+    protected int getSideButtonX() {
+        return leftPos - AbstractSideButtonWidget.SIZE - 2;
+    }
+
     @Override
     protected void init() {
         clearWidgets();
@@ -144,7 +148,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     }
 
     public void addSideButton(final AbstractSideButtonWidget button) {
-        button.setX(leftPos - button.getWidth() - 2);
+        button.setX(getSideButtonX());
         button.setY(topPos + sideButtonY);
         exclusionZones.add(new Rect2i(button.getX(), button.getY(), button.getWidth(), button.getHeight()));
         sideButtonY += button.getHeight() + 2;

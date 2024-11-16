@@ -5,7 +5,9 @@ import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
+import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
+import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.ScrollbarWidget;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.ERROR_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMonitorContainerMenu>
+public class AutocraftingMonitorScreen extends AbstractBaseScreen<AbstractAutocraftingMonitorContainerMenu>
     implements AutocraftingMonitorListener {
     static final int TASK_BUTTON_HEIGHT = 168 / 7;
     static final int TASK_BUTTON_WIDTH = 64;
@@ -83,7 +85,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     private final List<AutocraftingTaskButton> taskButtons = new ArrayList<>();
 
-    public AutocraftingMonitorScreen(final AutocraftingMonitorContainerMenu menu,
+    public AutocraftingMonitorScreen(final AbstractAutocraftingMonitorContainerMenu menu,
                                      final Inventory playerInventory,
                                      final Component title) {
         super(menu, playerInventory, title);
@@ -119,6 +121,14 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
             .size(font.width(CANCEL_ALL) + 14, 20).build());
         cancelAllButton.active = false;
         getMenu().loadCurrentTask();
+        if (getMenu().hasProperty(PropertyTypes.REDSTONE_MODE)) {
+            addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
+        }
+    }
+
+    @Override
+    protected int getSideButtonX() {
+        return leftPos + imageWidth + 2;
     }
 
     private void initTaskButtons() {
@@ -141,8 +151,8 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
             }
         });
         updateTaskButtonsScrollbar();
-        for (int i = 0; i < getMenu().getTasks().size(); ++i) {
-            final TaskStatus.TaskInfo taskId = getMenu().getTasks().get(i);
+        for (int i = 0; i < getMenu().getTasksView().size(); ++i) {
+            final TaskStatus.TaskInfo taskId = getMenu().getTasksView().get(i);
             final int buttonY = getTaskButtonY(i);
             final AutocraftingTaskButton button = new AutocraftingTaskButton(
                 getTaskButtonsInnerX(),
@@ -157,6 +167,9 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     }
 
     private boolean isTaskButtonVisible(final int y) {
+        if (!getMenu().isActive()) {
+            return false;
+        }
         final int innerY = getTaskButtonsInnerY();
         return y >= innerY - TASK_BUTTON_HEIGHT && y <= innerY + TASKS_INNER_HEIGHT;
     }
@@ -174,19 +187,6 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         if (taskButtonsScrollbar != null) {
             taskButtonsScrollbar.render(graphics, mouseX, mouseY, partialTicks);
         }
-
-        final int tasksInnerX = getTaskButtonsInnerX();
-        final int tasksInnerY = getTaskButtonsInnerY();
-        graphics.enableScissor(
-            tasksInnerX,
-            tasksInnerY,
-            tasksInnerX + TASKS_INNER_WIDTH,
-            tasksInnerY + TASKS_INNER_HEIGHT
-        );
-        for (final AutocraftingTaskButton taskButton : taskButtons) {
-            taskButton.render(graphics, mouseX, mouseY, partialTicks);
-        }
-        graphics.disableScissor();
     }
 
     @Override
@@ -194,7 +194,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         super.renderBg(graphics, delta, mouseX, mouseY);
         graphics.blitSprite(TASKS, leftPos - TASKS_WIDTH + 4, topPos, TASKS_WIDTH, TASKS_HEIGHT);
         final List<TaskStatus.Item> items = getMenu().getCurrentItems();
-        if (items.isEmpty() || taskItemsScrollbar == null) {
+        if (items.isEmpty() || taskItemsScrollbar == null || !getMenu().isActive()) {
             return;
         }
         final int x = leftPos + 8;
@@ -207,6 +207,19 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
                 : (int) taskItemsScrollbar.getOffset() * ROW_HEIGHT;
             final int yy = y + (i * ROW_HEIGHT) - scrollOffset;
             renderRow(graphics, x, yy, i, items, mouseX, mouseY);
+        }
+        graphics.disableScissor();
+
+        final int tasksInnerX = getTaskButtonsInnerX();
+        final int tasksInnerY = getTaskButtonsInnerY();
+        graphics.enableScissor(
+            tasksInnerX,
+            tasksInnerY,
+            tasksInnerX + TASKS_INNER_WIDTH,
+            tasksInnerY + TASKS_INNER_HEIGHT
+        );
+        for (final AutocraftingTaskButton taskButton : taskButtons) {
+            taskButton.render(graphics, mouseX, mouseY, delta);
         }
         graphics.disableScissor();
     }
@@ -415,18 +428,6 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
         return leftPos - 83 + 4;
     }
 
-    private void updateTaskButtonsScrollbar() {
-        if (taskButtonsScrollbar == null) {
-            return;
-        }
-        final int totalTaskButtons = getMenu().getTasks().size() - TASKS_VISIBLE;
-        final int maxOffset = taskButtonsScrollbar.isSmoothScrolling()
-            ? totalTaskButtons * TASK_BUTTON_HEIGHT
-            : totalTaskButtons;
-        taskButtonsScrollbar.setEnabled(maxOffset > 0);
-        taskButtonsScrollbar.setMaxOffset(maxOffset);
-    }
-
     @Override
     public void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
         graphics.drawString(font, title, titleLabelX, titleLabelY, 4210752, false);
@@ -439,19 +440,38 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
 
     @Override
     public void currentTaskChanged(@Nullable final TaskStatus taskStatus) {
+        updateTaskItemsScrollbar(taskStatus);
+        updateTaskButtonsScrollbar();
         if (cancelButton != null) {
-            cancelButton.active = taskStatus != null;
+            cancelButton.active = getMenu().isActive() && taskStatus != null;
         }
         if (cancelAllButton != null) {
-            cancelAllButton.active = !menu.getTasks().isEmpty();
+            cancelAllButton.active = getMenu().isActive() && !menu.getTasksView().isEmpty();
         }
         for (final AutocraftingTaskButton taskButton : taskButtons) {
-            taskButton.active = taskStatus == null || !taskButton.getTaskId().equals(taskStatus.info().id());
+            taskButton.active = taskStatus == null
+                || !taskButton.getTaskId().equals(taskStatus.info().id());
+            taskButton.visible = getMenu().isActive();
         }
+    }
+
+    private void updateTaskButtonsScrollbar() {
+        if (taskButtonsScrollbar == null) {
+            return;
+        }
+        final int totalTaskButtons = getMenu().isActive() ? getMenu().getTasksView().size() - TASKS_VISIBLE : 0;
+        final int maxOffset = taskButtonsScrollbar.isSmoothScrolling()
+            ? totalTaskButtons * TASK_BUTTON_HEIGHT
+            : totalTaskButtons;
+        taskButtonsScrollbar.setEnabled(maxOffset > 0);
+        taskButtonsScrollbar.setMaxOffset(maxOffset);
+    }
+
+    private void updateTaskItemsScrollbar(@Nullable final TaskStatus taskStatus) {
         if (taskItemsScrollbar == null) {
             return;
         }
-        if (taskStatus == null) {
+        if (taskStatus == null || !getMenu().isActive()) {
             taskItemsScrollbar.setEnabled(false);
             taskItemsScrollbar.setMaxOffset(0);
             return;
@@ -465,7 +485,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AutocraftingMo
     @Override
     public void taskAdded(final TaskStatus taskStatus) {
         updateTaskButtonsScrollbar();
-        final int buttonY = getTaskButtonY(getMenu().getTasks().size() - 1);
+        final int buttonY = getTaskButtonY(getMenu().getTasksView().size() - 1);
         final AutocraftingTaskButton button = new AutocraftingTaskButton(
             getTaskButtonsInnerX(),
             buttonY,

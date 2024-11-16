@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.packet.c2s;
 
 import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
-import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AbstractAutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorStreamCodecs;
 import com.refinedmods.refinedstorage.common.support.packet.PacketContext;
 
@@ -22,7 +22,7 @@ public record AutocraftingMonitorCancelPacket(TaskId taskId) implements CustomPa
         );
 
     public static void handle(final AutocraftingMonitorCancelPacket packet, final PacketContext ctx) {
-        if (ctx.getPlayer().containerMenu instanceof AutocraftingMonitorContainerMenu containerMenu) {
+        if (ctx.getPlayer().containerMenu instanceof AbstractAutocraftingMonitorContainerMenu containerMenu) {
             containerMenu.cancelTask(packet.taskId());
         }
     }

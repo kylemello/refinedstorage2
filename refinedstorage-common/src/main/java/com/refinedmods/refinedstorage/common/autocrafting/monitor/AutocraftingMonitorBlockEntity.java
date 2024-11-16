@@ -8,6 +8,9 @@ import com.refinedmods.refinedstorage.common.support.AbstractDirectionalBlock;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -19,10 +22,26 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode>
     implements NetworkNodeExtendedMenuProvider<AutocraftingMonitorData> {
+    private final Set<AutocraftingMonitorWatcher> watchers = new HashSet<>();
+
     public AutocraftingMonitorBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getAutocraftingMonitor(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getAutocraftingMonitor().getEnergyUsage()
         ));
+    }
+
+    void addWatcher(final AutocraftingMonitorWatcher watcher) {
+        watchers.add(watcher);
+    }
+
+    void removeWatcher(final AutocraftingMonitorWatcher watcher) {
+        watchers.remove(watcher);
+    }
+
+    @Override
+    protected void activenessChanged(final boolean newActive) {
+        super.activenessChanged(newActive);
+        watchers.forEach(watcher -> watcher.activeChanged(newActive));
     }
 
     @Override
@@ -38,7 +57,7 @@ public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeConta
 
     @Override
     public AutocraftingMonitorData getMenuData() {
-        return new AutocraftingMonitorData(new TaskStatusProviderImpl().getStatuses());
+        return new AutocraftingMonitorData(new TaskStatusProviderImpl().getStatuses(), mainNetworkNode.isActive());
     }
 
     @Override
@@ -48,6 +67,6 @@ public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeConta
 
     @Override
     public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
-        return new AutocraftingMonitorContainerMenu(syncId, player, new TaskStatusProviderImpl());
+        return new AutocraftingMonitorContainerMenu(syncId, player, new TaskStatusProviderImpl(), this);
     }
 }

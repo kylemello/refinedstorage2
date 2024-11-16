@@ -9,11 +9,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record AutocraftingMonitorData(List<TaskStatus> statuses) {
+public record AutocraftingMonitorData(List<TaskStatus> statuses, boolean active) {
     public static final StreamCodec<RegistryFriendlyByteBuf, AutocraftingMonitorData> STREAM_CODEC =
         StreamCodec.composite(
             ByteBufCodecs.collection(ArrayList::new, AutocraftingMonitorStreamCodecs.STATUS_STREAM_CODEC),
             AutocraftingMonitorData::statuses,
+            ByteBufCodecs.BOOL, AutocraftingMonitorData::active,
             AutocraftingMonitorData::new
         );
 }
