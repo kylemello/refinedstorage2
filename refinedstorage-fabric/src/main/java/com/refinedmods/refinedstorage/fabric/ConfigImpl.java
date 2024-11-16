@@ -25,6 +25,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
     private boolean smoothScrolling = true;
 
+    private boolean searchBoxAutoSelected = false;
+
     @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
     private int maxRowsStretch = 256;
 
@@ -150,6 +152,17 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public boolean isSmoothScrolling() {
         return smoothScrolling;
+    }
+
+    @Override
+    public boolean isSearchBoxAutoSelected() {
+        return searchBoxAutoSelected;
+    }
+
+    @Override
+    public void setSearchBoxAutoSelected(final boolean searchBoxAutoSelected) {
+        this.searchBoxAutoSelected = searchBoxAutoSelected;
+        AutoConfig.getConfigHolder(ConfigImpl.class).save();
     }
 
     @Override
@@ -318,8 +331,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
         private boolean rememberSearchQuery = false;
 
-        private boolean autoSelected = false;
-
         private String synchronizer = "";
 
         private String resourceType = "";
@@ -353,17 +364,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public long getEnergyUsage() {
             return energyUsage;
-        }
-
-        @Override
-        public boolean isAutoSelected() {
-            return autoSelected;
-        }
-
-        @Override
-        public void setAutoSelected(final boolean autoSelected) {
-            this.autoSelected = autoSelected;
-            save();
         }
 
         @Override

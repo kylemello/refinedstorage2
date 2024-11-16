@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.stretching.AbstractStretchingScreen;
+import com.refinedmods.refinedstorage.common.support.widget.AutoSelectedSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
@@ -23,7 +24,6 @@ import net.minecraft.world.inventory.Slot;
 import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-// TODO: search box autoselected mode make generic.
 // TODO: tooltip on search icon
 public class AutocrafterManagerScreen extends AbstractStretchingScreen<AutocrafterManagerContainerMenu> {
     private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/autocrafter_manager.png");
@@ -72,6 +72,7 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
         addSideButton(new ViewTypeSideButtonWidget(getMenu()));
         addSideButton(new SearchModeSideButtonWidget(getMenu()));
+        addSideButton(new AutoSelectedSideButtonWidget(searchField));
     }
 
     private void updateScrollbar() {
