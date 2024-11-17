@@ -2,9 +2,13 @@ package com.refinedmods.refinedstorage.api.network.impl.autocrafting;
 
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewItem;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewType;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatusListener;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatusProvider;
 import com.refinedmods.refinedstorage.api.network.autocrafting.AutocraftingNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.autocrafting.ParentContainer;
 import com.refinedmods.refinedstorage.api.network.autocrafting.PatternListener;
@@ -22,6 +26,11 @@ public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComp
     private final Set<PatternProvider> providers = new HashSet<>();
     private final Set<PatternListener> listeners = new HashSet<>();
     private final PatternRepositoryImpl patternRepository = new PatternRepositoryImpl();
+    private final TaskStatusProvider taskStatusProvider;
+
+    public AutocraftingNetworkComponentImpl(final TaskStatusProvider taskStatusProvider) {
+        this.taskStatusProvider = taskStatusProvider;
+    }
 
     @Override
     public void onContainerAdded(final NetworkNodeContainer container) {
@@ -89,12 +98,42 @@ public class AutocraftingNetworkComponentImpl implements AutocraftingNetworkComp
     }
 
     @Override
+    public void addListener(final TaskStatusListener listener) {
+        taskStatusProvider.addListener(listener);
+    }
+
+    @Override
     public void removeListener(final PatternListener listener) {
         listeners.remove(listener);
     }
 
     @Override
+    public void removeListener(final TaskStatusListener listener) {
+        taskStatusProvider.removeListener(listener);
+    }
+
+    @Override
     public Set<Pattern> getPatterns() {
         return patternRepository.getAll();
+    }
+
+    @Override
+    public List<TaskStatus> getStatuses() {
+        return taskStatusProvider.getStatuses();
+    }
+
+    @Override
+    public void cancel(final TaskId taskId) {
+        taskStatusProvider.cancel(taskId);
+    }
+
+    @Override
+    public void cancelAll() {
+        taskStatusProvider.cancelAll();
+    }
+
+    @Override
+    public void testUpdate() {
+        taskStatusProvider.testUpdate();
     }
 }

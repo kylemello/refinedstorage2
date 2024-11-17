@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.api.network.impl.autocrafting;
 
 import com.refinedmods.refinedstorage.api.network.impl.node.patternprovider.PatternProviderNetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.container.NetworkNodeContainer;
+import com.refinedmods.refinedstorage.network.test.fixtures.FakeTaskStatusProvider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class AutocraftingNetworkComponentImplTest {
 
     @BeforeEach
     void setUp() {
-        sut = new AutocraftingNetworkComponentImpl();
+        sut = new AutocraftingNetworkComponentImpl(new FakeTaskStatusProvider());
     }
 
     @Test
