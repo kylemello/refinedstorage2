@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.api.upgrade.AbstractUpgradeItem;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternItem;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorItem;
 import com.refinedmods.refinedstorage.common.controller.ControllerBlockItem;
 import com.refinedmods.refinedstorage.common.controller.CreativeControllerBlockItem;
 import com.refinedmods.refinedstorage.common.grid.WirelessGridItem;
@@ -109,6 +110,10 @@ public final class Items {
     private Supplier<FallbackSecurityCardItem> fallbackSecurityCard;
     @Nullable
     private Supplier<PatternItem> pattern;
+    @Nullable
+    private Supplier<WirelessAutocraftingMonitorItem> wirelessAutocraftingMonitor;
+    @Nullable
+    private Supplier<WirelessAutocraftingMonitorItem> creativeWirelessAutocraftingMonitor;
 
     private Items() {
     }
@@ -511,5 +516,21 @@ public final class Items {
 
     public void setPattern(final Supplier<PatternItem> supplier) {
         this.pattern = supplier;
+    }
+
+    public WirelessAutocraftingMonitorItem getWirelessAutocraftingMonitor() {
+        return requireNonNull(wirelessAutocraftingMonitor).get();
+    }
+
+    public void setWirelessAutocraftingMonitor(final Supplier<WirelessAutocraftingMonitorItem> supplier) {
+        this.wirelessAutocraftingMonitor = supplier;
+    }
+
+    public WirelessAutocraftingMonitorItem getCreativeWirelessAutocraftingMonitor() {
+        return requireNonNull(creativeWirelessAutocraftingMonitor).get();
+    }
+
+    public void setCreativeWirelessAutocraftingMonitor(final Supplier<WirelessAutocraftingMonitorItem> supplier) {
+        this.creativeWirelessAutocraftingMonitor = supplier;
     }
 }

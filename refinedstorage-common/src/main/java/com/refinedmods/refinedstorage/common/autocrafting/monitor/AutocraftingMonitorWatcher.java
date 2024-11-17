@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
 @FunctionalInterface
-interface AutocraftingMonitorWatcher {
+public interface AutocraftingMonitorWatcher {
     void activeChanged(boolean active);
 }

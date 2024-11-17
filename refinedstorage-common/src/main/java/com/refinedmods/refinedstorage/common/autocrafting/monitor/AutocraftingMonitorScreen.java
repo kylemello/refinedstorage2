@@ -326,7 +326,7 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AbstractAutocr
                                 final int y) {
         int yy = y;
         if (item.stored() > 0) {
-            renderItemText(graphics, "stored", rendering, x, yy, item.missing());
+            renderItemText(graphics, "stored", rendering, x, yy, item.stored());
             yy += 7;
         }
         if (item.missing() > 0) {

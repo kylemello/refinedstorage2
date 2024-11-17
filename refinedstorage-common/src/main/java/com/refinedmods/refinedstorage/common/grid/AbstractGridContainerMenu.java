@@ -207,15 +207,14 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     public void setSearchBox(final GridSearchBox searchBox) {
-        registerViewUpdatingListener(searchBox);
-        configureSearchBox(searchBox);
-    }
-
-    private void registerViewUpdatingListener(final GridSearchBox theSearchBox) {
-        theSearchBox.addListener(text -> {
+        searchBox.addListener(text -> {
             final boolean valid = onSearchTextChanged(text);
-            theSearchBox.setValid(valid);
+            searchBox.setValid(valid);
         });
+        if (Platform.INSTANCE.getConfig().getGrid().isRememberSearchQuery()) {
+            searchBox.setValue(lastSearchQuery);
+            searchBox.addListener(AbstractGridContainerMenu::updateLastSearchQuery);
+        }
     }
 
     private boolean onSearchTextChanged(final String text) {
@@ -225,13 +224,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         } catch (GridQueryParserException e) {
             view.setFilterAndSort((v, resource) -> false);
             return false;
-        }
-    }
-
-    private void configureSearchBox(final GridSearchBox theSearchBox) {
-        if (Platform.INSTANCE.getConfig().getGrid().isRememberSearchQuery()) {
-            theSearchBox.setValue(lastSearchQuery);
-            theSearchBox.addListener(AbstractGridContainerMenu::updateLastSearchQuery);
         }
     }
 

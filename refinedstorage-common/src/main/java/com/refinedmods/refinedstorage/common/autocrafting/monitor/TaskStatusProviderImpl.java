@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-class TaskStatusProviderImpl implements TaskStatusProvider {
+public class TaskStatusProviderImpl implements TaskStatusProvider {
     private static final Item[] ITEM_SET = new Item[] {
         Items.DIRT,
         Items.DIAMOND,
@@ -66,12 +66,13 @@ class TaskStatusProviderImpl implements TaskStatusProvider {
         copy.forEach(s -> listeners.forEach(l -> l.taskRemoved(s.info().id())));
     }
 
-    void testTick() {
+    @Override
+    public void testUpdate() {
         if (ticks++ % 10 != 0) {
             return;
         }
         final int chance = r.nextInt(100);
-        if (chance < 50) {
+        if (chance < 50 && statuses.size() < 100) {
             final TaskStatus status = generateTaskStatus();
             statuses.add(status);
             listeners.forEach(l -> l.taskAdded(status));

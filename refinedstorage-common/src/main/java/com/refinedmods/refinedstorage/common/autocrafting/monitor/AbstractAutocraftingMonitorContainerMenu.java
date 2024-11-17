@@ -3,7 +3,6 @@ package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
 import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatusListener;
-import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatusProvider;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.C2SPackets;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.S2CPackets;
@@ -25,7 +24,7 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
     private final List<TaskStatus.TaskInfo> tasks;
     private final List<TaskStatus.TaskInfo> tasksView;
     @Nullable
-    private final TaskStatusProvider taskStatusProvider;
+    private final AutocraftingMonitor autocraftingMonitor;
     private final Player player;
 
     @Nullable
@@ -46,38 +45,40 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
         this.tasks = data.statuses().stream().map(TaskStatus::info).collect(Collectors.toList());
         this.tasksView = Collections.unmodifiableList(tasks);
         this.currentTaskId = data.statuses().isEmpty() ? null : data.statuses().getFirst().info().id();
-        this.taskStatusProvider = null;
+        this.autocraftingMonitor = null;
         this.active = data.active();
         this.player = playerInventory.player;
     }
 
-    protected AbstractAutocraftingMonitorContainerMenu(final MenuType<?> menuType,
-                                                       final int syncId,
-                                                       final Player player,
-                                                       final TaskStatusProvider taskStatusProvider) {
+    AbstractAutocraftingMonitorContainerMenu(final MenuType<?> menuType,
+                                             final int syncId,
+                                             final Player player,
+                                             final AutocraftingMonitor autocraftingMonitor) {
         super(menuType, syncId);
         this.statusByTaskId = Collections.emptyMap();
         this.tasks = Collections.emptyList();
         this.tasksView = Collections.emptyList();
         this.currentTaskId = null;
-        this.taskStatusProvider = taskStatusProvider;
+        this.autocraftingMonitor = autocraftingMonitor;
         this.player = player;
-        taskStatusProvider.addListener(this);
+        this.autocraftingMonitor.addListener(this);
+        this.autocraftingMonitor.addWatcher(this);
     }
 
     @Override
     public void removed(final Player removedPlayer) {
         super.removed(removedPlayer);
-        if (taskStatusProvider != null) {
-            taskStatusProvider.removeListener(this);
+        if (autocraftingMonitor != null) {
+            autocraftingMonitor.removeListener(this);
+            autocraftingMonitor.removeWatcher(this);
         }
     }
 
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
-        if (taskStatusProvider instanceof TaskStatusProviderImpl taskStatusProviderImpl) {
-            taskStatusProviderImpl.testTick();
+        if (autocraftingMonitor != null) {
+            autocraftingMonitor.testUpdate();
         }
     }
 
@@ -115,7 +116,7 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
 
     @Override
     public void taskStatusChanged(final TaskStatus status) {
-        if (taskStatusProvider != null && player instanceof ServerPlayer serverPlayer) {
+        if (autocraftingMonitor != null && player instanceof ServerPlayer serverPlayer) {
             S2CPackets.sendAutocraftingMonitorTaskStatusChanged(serverPlayer, status);
             return;
         }
@@ -124,7 +125,7 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
 
     @Override
     public void taskRemoved(final TaskId id) {
-        if (taskStatusProvider != null && player instanceof ServerPlayer serverPlayer) {
+        if (autocraftingMonitor != null && player instanceof ServerPlayer serverPlayer) {
             S2CPackets.sendAutocraftingMonitorTaskRemoved(serverPlayer, id);
             return;
         }
@@ -141,7 +142,7 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
 
     @Override
     public void taskAdded(final TaskStatus status) {
-        if (taskStatusProvider != null && player instanceof ServerPlayer serverPlayer) {
+        if (autocraftingMonitor != null && player instanceof ServerPlayer serverPlayer) {
             S2CPackets.sendAutocraftingMonitorTaskAdded(serverPlayer, status);
             return;
         }
@@ -157,8 +158,8 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
     }
 
     public void cancelTask(final TaskId taskId) {
-        if (taskStatusProvider != null) {
-            taskStatusProvider.cancel(taskId);
+        if (autocraftingMonitor != null) {
+            autocraftingMonitor.cancel(taskId);
         }
     }
 
@@ -169,8 +170,8 @@ public abstract class AbstractAutocraftingMonitorContainerMenu extends AbstractB
     }
 
     public void cancelAllTasks() {
-        if (taskStatusProvider != null) {
-            taskStatusProvider.cancelAll();
+        if (autocraftingMonitor != null) {
+            autocraftingMonitor.cancelAll();
         } else {
             C2SPackets.sendAutocraftingMonitorCancelAll();
         }

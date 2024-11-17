@@ -85,6 +85,8 @@ public interface Config {
 
     SimpleEnergyUsageEntry getAutocraftingMonitor();
 
+    WirelessAutocraftingMonitorEntry getWirelessAutocraftingMonitor();
+
     interface SimpleEnergyUsageEntry {
         long getEnergyUsage();
     }
@@ -227,5 +229,15 @@ public interface Config {
         void setViewType(AutocrafterManagerViewType viewType);
 
         AutocrafterManagerViewType getViewType();
+    }
+
+    interface WirelessAutocraftingMonitorEntry {
+        long getEnergyCapacity();
+
+        long getOpenEnergyUsage();
+
+        long getCancelEnergyUsage();
+
+        long getCancelAllEnergyUsage();
     }
 }

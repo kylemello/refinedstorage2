@@ -167,6 +167,15 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
         );
         e.register(openPortableGrid);
         KeyMappings.INSTANCE.setOpenPortableGrid(openPortableGrid);
+
+        final KeyMapping openWirelessAutocraftingMonitor = new KeyMapping(
+            ContentNames.OPEN_WIRELESS_AUTOCRAFTING_MONITOR_TRANSLATION_KEY,
+            KeyConflictContext.IN_GAME,
+            InputConstants.UNKNOWN,
+            ContentNames.MOD_TRANSLATION_KEY
+        );
+        e.register(openWirelessAutocraftingMonitor);
+        KeyMappings.INSTANCE.setOpenWirelessAutocraftingMonitor(openWirelessAutocraftingMonitor);
     }
 
     private static void registerBlockEntityRenderer() {
@@ -259,6 +268,16 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             Items.INSTANCE.getSecurityCard(),
             SecurityCardItemPropertyFunction.NAME,
             new SecurityCardItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getWirelessAutocraftingMonitor(),
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getCreativeWirelessAutocraftingMonitor(),
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
         );
     }
 }

@@ -67,6 +67,11 @@ public final class DefaultEnergyUsage {
     public static final long PORTABLE_GRID_INSERT = 5;
     public static final long PORTABLE_GRID_EXTRACT = 5;
 
+    public static final long WIRELESS_AUTOCRAFTING_MONITOR_CAPACITY = 1000;
+    public static final long WIRELESS_AUTOCRAFTING_MONITOR_OPEN = 5;
+    public static final long WIRELESS_AUTOCRAFTING_MONITOR_CANCEL = 5;
+    public static final long WIRELESS_AUTOCRAFTING_MONITOR_CANCEL_ALL = 5;
+
     private DefaultEnergyUsage() {
     }
 }

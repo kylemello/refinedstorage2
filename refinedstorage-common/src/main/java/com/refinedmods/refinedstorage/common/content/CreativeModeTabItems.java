@@ -115,5 +115,8 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getSecurityCard());
         itemConsumer.accept(Items.INSTANCE.getFallbackSecurityCard());
         itemConsumer.accept(Items.INSTANCE.getPattern());
+        itemConsumer.accept(Items.INSTANCE.getWirelessAutocraftingMonitor());
+        consumer.accept(Items.INSTANCE.getWirelessAutocraftingMonitor().createAtEnergyCapacity());
+        itemConsumer.accept(Items.INSTANCE.getCreativeWirelessAutocraftingMonitor());
     }
 }
