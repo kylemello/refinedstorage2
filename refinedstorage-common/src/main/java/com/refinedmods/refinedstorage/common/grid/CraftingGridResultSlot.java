@@ -28,9 +28,9 @@ class CraftingGridResultSlot extends ResultSlot {
         final ItemStack singleResultStack = getItem().copy();
         final int maxCrafted = singleResultStack.getMaxStackSize();
         int crafted = 0;
-        try (CraftingGridRefillContext refillContext = craftingGrid.openSnapshotRefillContext(player)) {
+        try (ExtractTransaction transaction = craftingGrid.startExtractTransaction(player, false)) {
             while (ItemStack.isSameItemSameComponents(singleResultStack, getItem()) && crafted < maxCrafted) {
-                doTake(player, refillContext);
+                doTake(player, transaction);
                 crafted += singleResultStack.getCount();
             }
         }
@@ -43,12 +43,12 @@ class CraftingGridResultSlot extends ResultSlot {
         if (player.level().isClientSide()) {
             return;
         }
-        try (CraftingGridRefillContext refillContext = craftingGrid.openRefillContext()) {
-            doTake(player, refillContext);
+        try (ExtractTransaction transaction = craftingGrid.startExtractTransaction(player, true)) {
+            doTake(player, transaction);
         }
     }
 
-    private void doTake(final Player player, final CraftingGridRefillContext refillContext) {
+    private void doTake(final Player player, final ExtractTransaction transaction) {
         fireCraftingEvents(player, getItem().copy());
         final CraftingInput.Positioned positioned = craftingGrid.getCraftingMatrix().asPositionedCraftInput();
         final CraftingInput input = positioned.input();
@@ -64,7 +64,7 @@ class CraftingGridResultSlot extends ResultSlot {
                 if (!remainingItem.isEmpty()) {
                     useIngredientWithRemainingItem(player, index, remainingItem);
                 } else if (!matrixStack.isEmpty()) {
-                    useIngredient(player, refillContext, index, matrixStack);
+                    useIngredient(player, transaction, index, matrixStack);
                 }
             }
         }
@@ -86,10 +86,10 @@ class CraftingGridResultSlot extends ResultSlot {
     }
 
     private void useIngredient(final Player player,
-                               final CraftingGridRefillContext refillContext,
+                               final ExtractTransaction transaction,
                                final int index,
                                final ItemStack matrixStack) {
-        if (matrixStack.getCount() > 1 || !refillContext.extract(ItemResource.ofItemStack(matrixStack), player)) {
+        if (matrixStack.getCount() > 1 || !transaction.extract(ItemResource.ofItemStack(matrixStack), player)) {
             decrementMatrixSlot(index);
         }
     }

@@ -103,7 +103,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
                 MenuScreens.register(type, factory::create);
             }
         });
-        registerKeyBindings();
+        registerKeyMappings();
         registerModelPredicates();
         registerResourceRendering();
         registerAlternativeGridHints();
@@ -496,7 +496,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
         });
     }
 
-    private void registerKeyBindings() {
+    private void registerKeyMappings() {
         KeyMappings.INSTANCE.setFocusSearchBar(KeyBindingHelper.registerKeyBinding(new KeyMapping(
             ContentNames.FOCUS_SEARCH_BAR_TRANSLATION_KEY,
             InputConstants.Type.KEYSYM,
