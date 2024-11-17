@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorItem;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
@@ -152,11 +153,13 @@ import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.PORTABLE_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.REGULATOR_UPGRADE;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.fabric.support.resource.VariantUtil.toFluidVariant;
@@ -393,6 +396,30 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         Items.INSTANCE.setFallbackSecurityCard(callback.register(
             FALLBACK_SECURITY_CARD,
             () -> new FallbackSecurityCardItem() {
+                @Override
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
+            WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(false) {
+                @Override
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setCreativeWirelessAutocraftingMonitor(callback.register(
+            CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(true) {
                 @Override
                 public boolean allowComponentsUpdateAnimation(final Player player,
                                                               final InteractionHand hand,
@@ -811,6 +838,11 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         EnergyStorage.ITEM.registerForItems(
             (stack, context) -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack)),
             Items.INSTANCE.getPortableGrid()
+        );
+        EnergyStorage.ITEM.registerForItems(
+            (stack, context) ->
+                new EnergyStorageAdapter(Items.INSTANCE.getWirelessAutocraftingMonitor().createEnergyStorage(stack)),
+            Items.INSTANCE.getWirelessAutocraftingMonitor()
         );
     }
 

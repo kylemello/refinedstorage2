@@ -134,6 +134,10 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         DefaultEnergyUsage.AUTOCRAFTING_MONITOR
     );
 
+    @ConfigEntry.Gui.CollapsibleObject
+    private WirelessAutocraftingMonitorEntryImpl wirelessAutocraftingMonitor =
+        new WirelessAutocraftingMonitorEntryImpl();
+
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
     }
@@ -318,6 +322,11 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public SimpleEnergyUsageEntry getAutocraftingMonitor() {
         return autocraftingMonitor;
+    }
+
+    @Override
+    public WirelessAutocraftingMonitorEntry getWirelessAutocraftingMonitor() {
+        return wirelessAutocraftingMonitor;
     }
 
     private static class GridEntryImpl implements GridEntry {
@@ -796,6 +805,36 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
         private static void save() {
             AutoConfig.getConfigHolder(ConfigImpl.class).save();
+        }
+    }
+
+    private static class WirelessAutocraftingMonitorEntryImpl implements WirelessAutocraftingMonitorEntry {
+        private long energyCapacity = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CAPACITY;
+
+        private long openEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_OPEN;
+
+        private long cancelEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CANCEL;
+
+        private long cancelAllEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CANCEL_ALL;
+
+        @Override
+        public long getEnergyCapacity() {
+            return energyCapacity;
+        }
+
+        @Override
+        public long getOpenEnergyUsage() {
+            return openEnergyUsage;
+        }
+
+        @Override
+        public long getCancelEnergyUsage() {
+            return cancelEnergyUsage;
+        }
+
+        @Override
+        public long getCancelAllEnergyUsage() {
+            return cancelAllEnergyUsage;
         }
     }
 }

@@ -6,4 +6,6 @@ interface AutocraftingMonitor extends TaskStatusProvider {
     void addWatcher(AutocraftingMonitorWatcher watcher);
 
     void removeWatcher(AutocraftingMonitorWatcher watcher);
+
+    boolean isAutocraftingMonitorActive();
 }

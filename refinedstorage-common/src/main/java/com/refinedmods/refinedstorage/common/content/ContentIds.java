@@ -70,6 +70,12 @@ public final class ContentIds {
     public static final ResourceLocation AUTOCRAFTER = createIdentifier("autocrafter");
     public static final ResourceLocation AUTOCRAFTER_MANAGER = createIdentifier("autocrafter_manager");
     public static final ResourceLocation AUTOCRAFTING_MONITOR = createIdentifier("autocrafting_monitor");
+    public static final ResourceLocation WIRELESS_AUTOCRAFTING_MONITOR = createIdentifier(
+        "wireless_autocrafting_monitor"
+    );
+    public static final ResourceLocation CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR = createIdentifier(
+        "creative_wireless_autocrafting_monitor"
+    );
 
     private ContentIds() {
     }

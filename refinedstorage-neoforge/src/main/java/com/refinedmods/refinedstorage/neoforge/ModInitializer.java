@@ -6,6 +6,7 @@ import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorItem;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
@@ -154,11 +155,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.PORTABLE_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.REGULATOR_UPGRADE;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
@@ -366,6 +369,28 @@ public class ModInitializer extends AbstractModInitializer {
                 }
             }
         ));
+        Items.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
+            WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(false) {
+                @Override
+                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                           final ItemStack newStack,
+                                                           final boolean slotChanged) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setCreativeWirelessAutocraftingMonitor(callback.register(
+            CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(true) {
+                @Override
+                public boolean shouldCauseReequipAnimation(final ItemStack oldStack,
+                                                           final ItemStack newStack,
+                                                           final boolean slotChanged) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
     }
 
     private void registerBlockEntities(final IEventBus eventBus) {
@@ -478,6 +503,13 @@ public class ModInitializer extends AbstractModInitializer {
             Capabilities.EnergyStorage.ITEM,
             (stack, ctx) -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack)),
             Items.INSTANCE.getPortableGrid()
+        );
+        event.registerItem(
+            Capabilities.EnergyStorage.ITEM,
+            (stack, ctx) -> new EnergyStorageAdapter(
+                Items.INSTANCE.getWirelessAutocraftingMonitor().createEnergyStorage(stack)
+            ),
+            Items.INSTANCE.getWirelessAutocraftingMonitor()
         );
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK,

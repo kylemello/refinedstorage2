@@ -1,10 +1,9 @@
-package com.refinedmods.refinedstorage.common.grid;
+package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.impl.energy.EnergyStorageImpl;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
-import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.security.SecurityHelper;
 import com.refinedmods.refinedstorage.common.api.support.energy.AbstractNetworkEnergyItem;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemContext;
@@ -21,10 +20,10 @@ import net.minecraft.world.item.ItemStack;
 
 import static java.util.Objects.requireNonNullElse;
 
-public class WirelessGridItem extends AbstractNetworkEnergyItem {
+public class WirelessAutocraftingMonitorItem extends AbstractNetworkEnergyItem {
     private final boolean creative;
 
-    public WirelessGridItem(final boolean creative) {
+    public WirelessAutocraftingMonitorItem(final boolean creative) {
         super(
             new Item.Properties().stacksTo(1),
             RefinedStorageApi.INSTANCE.getEnergyItemHelper(),
@@ -35,7 +34,7 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
 
     public EnergyStorage createEnergyStorage(final ItemStack stack) {
         final EnergyStorage energyStorage = new EnergyStorageImpl(
-            Platform.INSTANCE.getConfig().getWirelessGrid().getEnergyCapacity()
+            Platform.INSTANCE.getConfig().getWirelessAutocraftingMonitor().getEnergyCapacity()
         );
         return RefinedStorageApi.INSTANCE.asItemEnergyStorage(energyStorage, stack);
     }
@@ -49,15 +48,18 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
             .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
             .orElse(true);
         if (!isAllowed) {
-            RefinedStorageApi.INSTANCE.sendNoPermissionToOpenMessage(player, ContentNames.WIRELESS_GRID);
+            RefinedStorageApi.INSTANCE.sendNoPermissionToOpenMessage(
+                player,
+                ContentNames.WIRELESS_AUTOCRAFTING_MONITOR
+            );
             return;
         }
-        final Grid grid = new WirelessGrid(context);
+        final WirelessAutocraftingMonitor autocraftingMonitor = new WirelessAutocraftingMonitor(context);
         final Component correctedName = requireNonNullElse(
             name,
-            creative ? ContentNames.CREATIVE_WIRELESS_GRID : ContentNames.WIRELESS_GRID
+            creative ? ContentNames.CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR : ContentNames.WIRELESS_AUTOCRAFTING_MONITOR
         );
-        final var provider = new WirelessGridExtendedMenuProvider(correctedName, grid, slotReference);
+        final var provider = new WirelessAutocraftingMonitorExtendedMenuProvider(correctedName, autocraftingMonitor);
         Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
     }
 }

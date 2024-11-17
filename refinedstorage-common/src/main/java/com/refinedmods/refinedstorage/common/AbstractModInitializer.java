@@ -29,6 +29,7 @@ import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMo
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorData;
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.TaskStatusProviderImpl;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
@@ -823,6 +824,13 @@ public abstract class AbstractModInitializer {
             ContentIds.AUTOCRAFTING_MONITOR,
             () -> extendedMenuTypeFactory.create(
                 AutocraftingMonitorContainerMenu::new,
+                AutocraftingMonitorData.STREAM_CODEC
+            )
+        ));
+        Menus.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
+            ContentIds.WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> extendedMenuTypeFactory.create(
+                WirelessAutocraftingMonitorContainerMenu::new,
                 AutocraftingMonitorData.STREAM_CODEC
             )
         ));

@@ -515,6 +515,12 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             InputConstants.UNKNOWN.getValue(),
             ContentNames.MOD_TRANSLATION_KEY
         )));
+        KeyMappings.INSTANCE.setOpenWirelessAutocraftingMonitor(KeyBindingHelper.registerKeyBinding(new KeyMapping(
+            ContentNames.OPEN_WIRELESS_AUTOCRAFTING_MONITOR_TRANSLATION_KEY,
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            ContentNames.MOD_TRANSLATION_KEY
+        )));
         ClientTickEvents.END_CLIENT_TICK.register(client -> handleInputEvents());
     }
 
@@ -551,6 +557,16 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
             Items.INSTANCE.getSecurityCard(),
             SecurityCardItemPropertyFunction.NAME,
             new SecurityCardItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getWirelessAutocraftingMonitor(),
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
+        );
+        ItemProperties.register(
+            Items.INSTANCE.getCreativeWirelessAutocraftingMonitor(),
+            NetworkItemPropertyFunction.NAME,
+            new NetworkItemPropertyFunction()
         );
     }
 

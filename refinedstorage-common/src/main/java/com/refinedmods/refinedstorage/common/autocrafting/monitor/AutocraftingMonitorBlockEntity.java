@@ -57,7 +57,7 @@ public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeConta
 
     @Override
     public AutocraftingMonitorData getMenuData() {
-        return new AutocraftingMonitorData(getStatuses(), mainNetworkNode.isActive());
+        return new AutocraftingMonitorData(getStatuses(), isAutocraftingMonitorActive());
     }
 
     @Override
@@ -116,5 +116,10 @@ public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeConta
     @Override
     public void removeWatcher(final AutocraftingMonitorWatcher watcher) {
         watchers.remove(watcher);
+    }
+
+    @Override
+    public boolean isAutocraftingMonitorActive() {
+        return mainNetworkNode.isActive();
     }
 }
