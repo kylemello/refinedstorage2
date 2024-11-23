@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
+import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -496,7 +497,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     void transferCraftingRecipe(final Player player, final List<List<ItemResource>> recipe) {
         final Comparator<ResourceKey> sorter = ResourceSorters.create(
-            mainNetworkNode.getNetwork(),
+            mainNetworkNode.getNetwork() != null
+                ? mainNetworkNode.getNetwork().getComponent(StorageNetworkComponent.class)
+                : null,
             player.getInventory()
         );
         getCraftingMatrix().clearContent();
@@ -517,7 +520,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
                                   final List<List<ResourceAmount>> inputs,
                                   final List<List<ResourceAmount>> outputs) {
         final Comparator<ResourceAmount> sorter = ResourceSorters.create(
-            mainNetworkNode.getNetwork(),
+            mainNetworkNode.getNetwork() != null
+                ? mainNetworkNode.getNetwork().getComponent(StorageNetworkComponent.class)
+                : null,
             player.getInventory(),
             ResourceAmount::resource
         );
@@ -556,7 +561,9 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
             return;
         }
         final Comparator<ItemResource> sorter = ResourceSorters.create(
-            mainNetworkNode.getNetwork(),
+            mainNetworkNode.getNetwork() != null
+                ? mainNetworkNode.getNetwork().getComponent(StorageNetworkComponent.class)
+                : null,
             player.getInventory(),
             r -> r
         );

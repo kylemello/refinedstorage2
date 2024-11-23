@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.grid.screen;
 
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.content.KeyMappings;
-import com.refinedmods.refinedstorage.common.grid.CraftingGridContainerMenu;
+import com.refinedmods.refinedstorage.common.grid.AbstractCraftingGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.CraftingGridMatrixCloseBehavior;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.HoveredImageButton;
@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainerMenu> {
+public class CraftingGridScreen extends AbstractGridScreen<AbstractCraftingGridContainerMenu> {
     private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/crafting_grid.png");
 
     private static final WidgetSprites CLEAR_BUTTON_TO_PLAYER_INVENTORY_SPRITES = new WidgetSprites(
@@ -51,7 +51,9 @@ public class CraftingGridScreen extends AbstractGridScreen<CraftingGridContainer
 
     private boolean filteringBasedOnCraftingMatrixItems;
 
-    public CraftingGridScreen(final CraftingGridContainerMenu menu, final Inventory inventory, final Component title) {
+    public CraftingGridScreen(final AbstractCraftingGridContainerMenu menu,
+                              final Inventory inventory,
+                              final Component title) {
         super(menu, inventory, title, 156);
         this.inventoryLabelY = 134;
         this.imageWidth = 193;

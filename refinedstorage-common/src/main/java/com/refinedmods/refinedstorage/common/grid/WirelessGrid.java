@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.server.level.ServerPlayer;
 
@@ -43,6 +44,10 @@ class WirelessGrid implements Grid {
 
     private Optional<PlatformSecurityNetworkComponent> getSecurity() {
         return context.resolveNetwork().map(network -> network.getComponent(PlatformSecurityNetworkComponent.class));
+    }
+
+    private Optional<AutocraftingNetworkComponent> getAutocrafting() {
+        return context.resolveNetwork().map(network -> network.getComponent(AutocraftingNetworkComponent.class));
     }
 
     @Override
@@ -70,9 +75,9 @@ class WirelessGrid implements Grid {
 
     @Override
     public boolean isGridActive() {
-        final boolean networkActive = context.resolveNetwork().map(
-            network -> network.getComponent(EnergyNetworkComponent.class).getStored() > 0
-        ).orElse(false);
+        final boolean networkActive = context.resolveNetwork()
+            .map(network -> network.getComponent(EnergyNetworkComponent.class).getStored() > 0)
+            .orElse(false);
         return networkActive && context.isActive();
     }
 
@@ -83,15 +88,21 @@ class WirelessGrid implements Grid {
 
     @Override
     public Set<PlatformResourceKey> getAutocraftableResources() {
-        return Collections.emptySet();
+        return getAutocrafting()
+            .map(AutocraftingNetworkComponent::getOutputs)
+            .map(outputs -> outputs.stream()
+                .filter(PlatformResourceKey.class::isInstance)
+                .map(PlatformResourceKey.class::cast)
+                .collect(Collectors.toSet()))
+            .orElse(Collections.emptySet());
     }
 
     @Override
     public GridOperations createOperations(final ResourceType resourceType, final ServerPlayer player) {
         return getStorage()
-            .flatMap(rootStorage ->
-                getSecurity().map(security -> createGridOperations(resourceType, player, rootStorage, security)))
-            .map(gridOperations -> (GridOperations) new WirelessGridOperations(gridOperations, context, watchers))
+            .flatMap(rootStorage -> getSecurity()
+                .map(security -> createGridOperations(resourceType, player, rootStorage, security)))
+            .map(operations -> (GridOperations) new WirelessGridOperations(operations, context, watchers))
             .orElseGet(NoopGridOperations::new);
     }
 
@@ -106,15 +117,11 @@ class WirelessGrid implements Grid {
 
     @Override
     public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
-        return context.resolveNetwork()
-            .map(network -> network.getComponent(AutocraftingNetworkComponent.class))
-            .flatMap(component -> component.getPreview(resource, amount));
+        return getAutocrafting().flatMap(component -> component.getPreview(resource, amount));
     }
 
     @Override
     public boolean startTask(final ResourceKey resource, final long amount) {
-        return context.resolveNetwork()
-            .map(network -> network.getComponent(AutocraftingNetworkComponent.class).startTask(resource, amount))
-            .orElse(false);
+        return getAutocrafting().map(autocrafting -> autocrafting.startTask(resource, amount)).orElse(false);
     }
 }
