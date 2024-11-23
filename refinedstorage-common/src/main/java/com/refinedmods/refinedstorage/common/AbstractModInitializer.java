@@ -300,10 +300,6 @@ public abstract class AbstractModInitializer {
 
     protected final void registerBlocks(final RegistryCallback<Block> callback,
                                         final BlockEntityProviders blockEntityProviders) {
-        Blocks.INSTANCE.setQuartzEnrichedIronBlock(callback.register(
-            ContentIds.QUARTZ_ENRICHED_IRON_BLOCK, SimpleBlock::new));
-        Blocks.INSTANCE.setQuartzEnrichedCopperBlock(
-            callback.register(ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK, SimpleBlock::new));
         Blocks.INSTANCE.setDiskDrive(callback.register(
             ContentIds.DISK_DRIVE,
             () -> new DiskDriveBlock(blockEntityProviders.diskDrive())
@@ -385,14 +381,6 @@ public abstract class AbstractModInitializer {
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(ContentIds.QUARTZ_ENRICHED_IRON, SimpleItem::new));
         Items.INSTANCE.setQuartzEnrichedCopper(callback.register(ContentIds.QUARTZ_ENRICHED_COPPER, SimpleItem::new));
-        callback.register(
-            ContentIds.QUARTZ_ENRICHED_IRON_BLOCK,
-            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
-        );
-        callback.register(
-            ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK,
-            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedCopperBlock())
-        );
         Items.INSTANCE.setSilicon(callback.register(ContentIds.SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(ContentIds.PROCESSOR_BINDING, SimpleItem::new));
         callback.register(ContentIds.DISK_DRIVE, () -> Blocks.INSTANCE.getDiskDrive().createBlockItem());

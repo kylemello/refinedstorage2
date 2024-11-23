@@ -167,10 +167,6 @@ public final class Blocks {
     );
 
     @Nullable
-    private Supplier<SimpleBlock> quartzEnrichedIronBlock;
-    @Nullable
-    private Supplier<SimpleBlock> quartzEnrichedCopperBlock;
-    @Nullable
     private Supplier<DiskDriveBlock> diskDrive;
     @Nullable
     private Supplier<SimpleBlock> machineCasing;
@@ -205,14 +201,6 @@ public final class Blocks {
         return requireNonNull(cable);
     }
 
-    public SimpleBlock getQuartzEnrichedIronBlock() {
-        return requireNonNull(quartzEnrichedIronBlock).get();
-    }
-
-    public SimpleBlock getQuartzEnrichedCopperBlock() {
-        return requireNonNull(quartzEnrichedCopperBlock).get();
-    }
-
     public DiskDriveBlock getDiskDrive() {
         return requireNonNull(diskDrive).get();
     }
@@ -241,14 +229,6 @@ public final class Blocks {
         AbstractControllerBlock<CreativeControllerBlockItem>,
         CreativeControllerBlockItem> getCreativeController() {
         return creativeController;
-    }
-
-    public void setQuartzEnrichedIronBlock(final Supplier<SimpleBlock> quartzEnrichedIronBlockSupplier) {
-        this.quartzEnrichedIronBlock = quartzEnrichedIronBlockSupplier;
-    }
-
-    public void setQuartzEnrichedCopperBlock(final Supplier<SimpleBlock> quartzEnrichedCopperBlockSupplier) {
-        this.quartzEnrichedCopperBlock = quartzEnrichedCopperBlockSupplier;
     }
 
     public void setDiskDrive(final Supplier<DiskDriveBlock> diskDriveSupplier) {

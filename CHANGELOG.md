@@ -18,6 +18,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Autocrafting Monitor now has a sidebar with all tasks instead of using tabs.
 -   The auto-selected search box mode is now a global option used in the Autocrafter Manager as well.
 
+### Removed
+
+-   Block of Quartz Enriched Iron (has been moved to addon mod)
+-   Block of Quartz Enriched Copper (has been moved to addon mod)
+
 ## [2.0.0-milestone.4.9] - 2024-11-01
 
 ### Added
