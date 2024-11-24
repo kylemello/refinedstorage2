@@ -83,6 +83,9 @@ public class RecoloringRecipeProvider extends RecipeProvider {
         Blocks.INSTANCE.getAutocrafterManager().forEach((color, id, block) ->
             recipe(Tags.AUTOCRAFTER_MANAGERS, block.get().asItem(), color)
                 .save(output, recipeId(color, "autocrafter_manager")));
+        Blocks.INSTANCE.getAutocraftingMonitor().forEach((color, id, block) ->
+            recipe(Tags.AUTOCRAFTING_MONITORS, block.get().asItem(), color)
+                .save(output, recipeId(color, "autocrafting_monitor")));
     }
 
     private ResourceLocation recipeId(final DyeColor color, final String suffix) {

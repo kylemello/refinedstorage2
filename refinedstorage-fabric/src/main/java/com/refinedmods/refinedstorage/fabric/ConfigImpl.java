@@ -25,6 +25,8 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
     private boolean smoothScrolling = true;
 
+    private boolean searchBoxAutoSelected = false;
+
     @ConfigEntry.BoundedDiscrete(min = 3L, max = 256)
     private int maxRowsStretch = 256;
 
@@ -127,6 +129,15 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @ConfigEntry.Gui.CollapsibleObject
     private AutocrafterManagerEntryImpl autocrafterManager = new AutocrafterManagerEntryImpl();
 
+    @ConfigEntry.Gui.CollapsibleObject
+    private SimpleEnergyUsageEntryImpl autocraftingMonitor = new SimpleEnergyUsageEntryImpl(
+        DefaultEnergyUsage.AUTOCRAFTING_MONITOR
+    );
+
+    @ConfigEntry.Gui.CollapsibleObject
+    private WirelessAutocraftingMonitorEntryImpl wirelessAutocraftingMonitor =
+        new WirelessAutocraftingMonitorEntryImpl();
+
     public static ConfigImpl get() {
         return AutoConfig.getConfigHolder(ConfigImpl.class).getConfig();
     }
@@ -145,6 +156,17 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
     @Override
     public boolean isSmoothScrolling() {
         return smoothScrolling;
+    }
+
+    @Override
+    public boolean isSearchBoxAutoSelected() {
+        return searchBoxAutoSelected;
+    }
+
+    @Override
+    public void setSearchBoxAutoSelected(final boolean searchBoxAutoSelected) {
+        this.searchBoxAutoSelected = searchBoxAutoSelected;
+        AutoConfig.getConfigHolder(ConfigImpl.class).save();
     }
 
     @Override
@@ -297,6 +319,16 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         return autocrafterManager;
     }
 
+    @Override
+    public SimpleEnergyUsageEntry getAutocraftingMonitor() {
+        return autocraftingMonitor;
+    }
+
+    @Override
+    public WirelessAutocraftingMonitorEntry getWirelessAutocraftingMonitor() {
+        return wirelessAutocraftingMonitor;
+    }
+
     private static class GridEntryImpl implements GridEntry {
         private boolean largeFont = false;
 
@@ -307,8 +339,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         private boolean detailedTooltip = true;
 
         private boolean rememberSearchQuery = false;
-
-        private boolean autoSelected = false;
 
         private String synchronizer = "";
 
@@ -343,17 +373,6 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
         @Override
         public long getEnergyUsage() {
             return energyUsage;
-        }
-
-        @Override
-        public boolean isAutoSelected() {
-            return autoSelected;
-        }
-
-        @Override
-        public void setAutoSelected(final boolean autoSelected) {
-            this.autoSelected = autoSelected;
-            save();
         }
 
         @Override
@@ -786,6 +805,36 @@ public class ConfigImpl implements ConfigData, com.refinedmods.refinedstorage.co
 
         private static void save() {
             AutoConfig.getConfigHolder(ConfigImpl.class).save();
+        }
+    }
+
+    private static class WirelessAutocraftingMonitorEntryImpl implements WirelessAutocraftingMonitorEntry {
+        private long energyCapacity = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CAPACITY;
+
+        private long openEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_OPEN;
+
+        private long cancelEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CANCEL;
+
+        private long cancelAllEnergyUsage = DefaultEnergyUsage.WIRELESS_AUTOCRAFTING_MONITOR_CANCEL_ALL;
+
+        @Override
+        public long getEnergyCapacity() {
+            return energyCapacity;
+        }
+
+        @Override
+        public long getOpenEnergyUsage() {
+            return openEnergyUsage;
+        }
+
+        @Override
+        public long getCancelEnergyUsage() {
+            return cancelEnergyUsage;
+        }
+
+        @Override
+        public long getCancelAllEnergyUsage() {
+            return cancelAllEnergyUsage;
         }
     }
 }

@@ -50,8 +50,6 @@ public final class CreativeModeTabItems {
             Blocks.INSTANCE.getFluidStorageBlock(variant)
         ));
         itemConsumer.accept(Blocks.INSTANCE.getMachineCasing());
-        itemConsumer.accept(Blocks.INSTANCE.getQuartzEnrichedIronBlock());
-        itemConsumer.accept(Blocks.INSTANCE.getQuartzEnrichedCopperBlock());
         itemConsumer.accept(Blocks.INSTANCE.getStorageMonitor());
         Items.INSTANCE.getNetworkTransmitters().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getNetworkReceivers().stream().map(Supplier::get).forEach(itemConsumer);
@@ -60,6 +58,7 @@ public final class CreativeModeTabItems {
         Items.INSTANCE.getDiskInterfaces().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getAutocrafters().stream().map(Supplier::get).forEach(itemConsumer);
         Items.INSTANCE.getAutocrafterManagers().stream().map(Supplier::get).forEach(itemConsumer);
+        Items.INSTANCE.getAutocraftingMonitors().stream().map(Supplier::get).forEach(itemConsumer);
     }
 
     private static void appendBlockColors(final Consumer<ItemStack> consumer, final BlockColorMap<?, ?> map) {
@@ -114,5 +113,8 @@ public final class CreativeModeTabItems {
         itemConsumer.accept(Items.INSTANCE.getSecurityCard());
         itemConsumer.accept(Items.INSTANCE.getFallbackSecurityCard());
         itemConsumer.accept(Items.INSTANCE.getPattern());
+        itemConsumer.accept(Items.INSTANCE.getWirelessAutocraftingMonitor());
+        consumer.accept(Items.INSTANCE.getWirelessAutocraftingMonitor().createAtEnergyCapacity());
+        itemConsumer.accept(Items.INSTANCE.getCreativeWirelessAutocraftingMonitor());
     }
 }

@@ -4,6 +4,7 @@ import com.refinedmods.refinedstorage.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorItem;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProvider;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
@@ -30,6 +31,8 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridTy
 import com.refinedmods.refinedstorage.common.support.AbstractBaseBlock;
 import com.refinedmods.refinedstorage.common.support.packet.PacketHandler;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocrafterNameChangePacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingMonitorCancelAllPacket;
+import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingMonitorCancelPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingPreviewRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.AutocraftingRequestPacket;
 import com.refinedmods.refinedstorage.common.support.packet.c2s.CraftingGridClearPacket;
@@ -57,6 +60,10 @@ import com.refinedmods.refinedstorage.common.support.packet.c2s.StorageInfoReque
 import com.refinedmods.refinedstorage.common.support.packet.c2s.UseSlotReferencedItemPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterManagerActivePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocrafterNameUpdatePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorActivePacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskAddedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskRemovedPacket;
+import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingMonitorTaskStatusChangedPacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingPreviewResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.AutocraftingResponsePacket;
 import com.refinedmods.refinedstorage.common.support.packet.s2c.EnergyInfoPacket;
@@ -146,11 +153,13 @@ import org.slf4j.LoggerFactory;
 import team.reborn.energy.api.EnergyStorage;
 
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_PORTABLE_GRID;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.CREATIVE_WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.FALLBACK_SECURITY_CARD;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.PORTABLE_GRID;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.REGULATOR_UPGRADE;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.SECURITY_CARD;
+import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_AUTOCRAFTING_MONITOR;
 import static com.refinedmods.refinedstorage.common.content.ContentIds.WIRELESS_GRID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.fabric.support.resource.VariantUtil.toFluidVariant;
@@ -396,6 +405,30 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 }
             }
         ));
+        Items.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
+            WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(false) {
+                @Override
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
+        Items.INSTANCE.setCreativeWirelessAutocraftingMonitor(callback.register(
+            CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> new WirelessAutocraftingMonitorItem(true) {
+                @Override
+                public boolean allowComponentsUpdateAnimation(final Player player,
+                                                              final InteractionHand hand,
+                                                              final ItemStack oldStack,
+                                                              final ItemStack newStack) {
+                    return AbstractModInitializer.allowComponentsUpdateAnimation(oldStack, newStack);
+                }
+            }
+        ));
     }
 
     private void registerCreativeModeTab() {
@@ -459,6 +492,22 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playS2C().register(
             AutocraftingResponsePacket.PACKET_TYPE,
             AutocraftingResponsePacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            AutocraftingMonitorTaskAddedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskAddedPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            AutocraftingMonitorTaskRemovedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskRemovedPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            AutocraftingMonitorTaskStatusChangedPacket.PACKET_TYPE,
+            AutocraftingMonitorTaskStatusChangedPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+            AutocraftingMonitorActivePacket.PACKET_TYPE,
+            AutocraftingMonitorActivePacket.STREAM_CODEC
         );
     }
 
@@ -554,6 +603,14 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         PayloadTypeRegistry.playC2S().register(
             AutocraftingRequestPacket.PACKET_TYPE,
             AutocraftingRequestPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            AutocraftingMonitorCancelPacket.PACKET_TYPE,
+            AutocraftingMonitorCancelPacket.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playC2S().register(
+            AutocraftingMonitorCancelAllPacket.PACKET_TYPE,
+            AutocraftingMonitorCancelAllPacket.STREAM_CODEC
         );
     }
 
@@ -662,6 +719,14 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
             AutocraftingRequestPacket.PACKET_TYPE,
             wrapHandler(AutocraftingRequestPacket::handle)
         );
+        ServerPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorCancelPacket.PACKET_TYPE,
+            wrapHandler(AutocraftingMonitorCancelPacket::handle)
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            AutocraftingMonitorCancelAllPacket.PACKET_TYPE,
+            wrapHandler((packet, ctx) -> AutocraftingMonitorCancelAllPacket.handle(ctx))
+        );
     }
 
     private static <T extends CustomPacketPayload> ServerPlayNetworking.PlayPayloadHandler<T> wrapHandler(
@@ -698,6 +763,7 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getWirelessTransmitter());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocrafter());
         registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocrafterManager());
+        registerNetworkNodeContainerProvider(BlockEntities.INSTANCE.getAutocraftingMonitor());
         registerItemStorage(
             AbstractDiskDriveBlockEntity.class::isInstance,
             AbstractDiskDriveBlockEntity.class::cast,
@@ -772,6 +838,11 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
         EnergyStorage.ITEM.registerForItems(
             (stack, context) -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack)),
             Items.INSTANCE.getPortableGrid()
+        );
+        EnergyStorage.ITEM.registerForItems(
+            (stack, context) ->
+                new EnergyStorageAdapter(Items.INSTANCE.getWirelessAutocraftingMonitor().createEnergyStorage(stack)),
+            Items.INSTANCE.getWirelessAutocraftingMonitor()
         );
     }
 

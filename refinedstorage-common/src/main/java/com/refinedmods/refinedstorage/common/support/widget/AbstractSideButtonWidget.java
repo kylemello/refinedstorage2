@@ -25,11 +25,12 @@ import static com.refinedmods.refinedstorage.common.support.Sprites.WARNING_SIZE
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractSideButtonWidget extends Button {
+    public static final int SIZE = 18;
+
     private static final ResourceLocation SPRITE = createIdentifier("widget/side_button/base");
     private static final ResourceLocation HOVERED_SPRITE = createIdentifier("widget/side_button/hovered");
     private static final ResourceLocation HOVER_OVERLAY_SPRITE = createIdentifier("widget/side_button/hover_overlay");
 
-    private static final int SIZE = 18;
     private static final int ICON_SIZE = 16;
 
     @Nullable

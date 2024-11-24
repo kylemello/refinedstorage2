@@ -39,7 +39,7 @@ public final class NetworkTestFixtures {
         );
         NETWORK_COMPONENT_MAP_FACTORY.addFactory(
             AutocraftingNetworkComponent.class,
-            network -> new AutocraftingNetworkComponentImpl()
+            network -> new AutocraftingNetworkComponentImpl(new FakeTaskStatusProvider())
         );
     }
 

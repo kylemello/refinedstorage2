@@ -1,10 +1,10 @@
 package com.refinedmods.refinedstorage.common.grid;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreviewProvider;
 import com.refinedmods.refinedstorage.api.autocrafting.Pattern;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepository;
 import com.refinedmods.refinedstorage.api.autocrafting.PatternRepositoryImpl;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewProvider;
 import com.refinedmods.refinedstorage.api.grid.operations.GridExtractMode;
 import com.refinedmods.refinedstorage.api.grid.operations.GridInsertMode;
 import com.refinedmods.refinedstorage.api.grid.query.GridQueryParserException;
@@ -62,7 +62,7 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractGridContainerMenu extends AbstractResourceContainerMenu
     implements GridWatcher, GridInsertionStrategy, GridExtractionStrategy, GridScrollingStrategy, ScreenSizeListener,
-    AutocraftingPreviewProvider {
+    PreviewProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGridContainerMenu.class);
     private static final GridQueryParserImpl QUERY_PARSER = new GridQueryParserImpl(
         LexerTokenMappings.DEFAULT_MAPPINGS,
@@ -91,10 +91,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     private GridSynchronizer synchronizer;
     @Nullable
     private ResourceType resourceTypeFilter;
-    private boolean autoSelected;
     private boolean active;
-    @Nullable
-    private GridSearchBox searchBox;
 
     protected AbstractGridContainerMenu(
         final MenuType<? extends AbstractGridContainerMenu> menuType,
@@ -126,7 +123,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         this.insertionStrategy = new ClientGridInsertionStrategy();
         this.extractionStrategy = new ClientGridExtractionStrategy();
         this.scrollingStrategy = new ClientGridScrollingStrategy();
-        this.autoSelected = loadAutoSelected();
     }
 
     protected AbstractGridContainerMenu(
@@ -211,16 +207,14 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     public void setSearchBox(final GridSearchBox searchBox) {
-        this.searchBox = searchBox;
-        registerViewUpdatingListener(searchBox);
-        configureSearchBox(searchBox);
-    }
-
-    private void registerViewUpdatingListener(final GridSearchBox theSearchBox) {
-        theSearchBox.addListener(text -> {
+        searchBox.addListener(text -> {
             final boolean valid = onSearchTextChanged(text);
-            theSearchBox.setValid(valid);
+            searchBox.setValid(valid);
         });
+        if (Platform.INSTANCE.getConfig().getGrid().isRememberSearchQuery()) {
+            searchBox.setValue(lastSearchQuery);
+            searchBox.addListener(AbstractGridContainerMenu::updateLastSearchQuery);
+        }
     }
 
     private boolean onSearchTextChanged(final String text) {
@@ -230,14 +224,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
         } catch (GridQueryParserException e) {
             view.setFilterAndSort((v, resource) -> false);
             return false;
-        }
-    }
-
-    private void configureSearchBox(final GridSearchBox theSearchBox) {
-        theSearchBox.setAutoSelected(isAutoSelected());
-        if (Platform.INSTANCE.getConfig().getGrid().isRememberSearchQuery()) {
-            theSearchBox.setValue(lastSearchQuery);
-            theSearchBox.addListener(AbstractGridContainerMenu::updateLastSearchQuery);
         }
     }
 
@@ -328,22 +314,6 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
 
     public boolean isActive() {
         return active;
-    }
-
-    public void setAutoSelected(final boolean autoSelected) {
-        this.autoSelected = autoSelected;
-        Platform.INSTANCE.getConfig().getGrid().setAutoSelected(autoSelected);
-        if (searchBox != null) {
-            searchBox.setAutoSelected(autoSelected);
-        }
-    }
-
-    private boolean loadAutoSelected() {
-        return Platform.INSTANCE.getConfig().getGrid().isAutoSelected();
-    }
-
-    public boolean isAutoSelected() {
-        return autoSelected;
     }
 
     private GridSynchronizer loadSynchronizer() {
@@ -489,7 +459,7 @@ public abstract class AbstractGridContainerMenu extends AbstractResourceContaine
     }
 
     @Override
-    public Optional<AutocraftingPreview> getPreview(final ResourceKey resource, final long amount) {
+    public Optional<Preview> getPreview(final ResourceKey resource, final long amount) {
         return requireNonNull(grid).getPreview(resource, amount);
     }
 

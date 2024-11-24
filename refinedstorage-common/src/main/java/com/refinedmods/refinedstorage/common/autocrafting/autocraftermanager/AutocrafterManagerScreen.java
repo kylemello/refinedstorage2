@@ -4,24 +4,28 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.stretching.AbstractStretchingScreen;
+import com.refinedmods.refinedstorage.common.support.widget.AutoSelectedSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.History;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
+import com.refinedmods.refinedstorage.common.support.widget.SearchIconWidget;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-import static com.refinedmods.refinedstorage.common.support.Sprites.SEARCH_SIZE;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
 public class AutocrafterManagerScreen extends AbstractStretchingScreen<AutocrafterManagerContainerMenu> {
     private static final ResourceLocation TEXTURE = createIdentifier("textures/gui/autocrafter_manager.png");
@@ -29,6 +33,15 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
     private static final ResourceLocation AUTOCRAFTER_NAME = createIdentifier("autocrafter_manager/autocrafter_name");
     private static final int COLUMNS = 9;
     private static final int INACTIVE_COLOR = 0xFF5B5B5B;
+
+    private static final MutableComponent HELP_ALL =
+        createTranslation("gui", "autocrafter_manager.search_mode.all.help");
+    private static final MutableComponent HELP_PATTERN_INPUTS =
+        createTranslation("gui", "autocrafter_manager.search_mode.pattern_inputs.help");
+    private static final MutableComponent HELP_PATTERN_OUTPUTS =
+        createTranslation("gui", "autocrafter_manager.search_mode.pattern_outputs.help");
+    private static final MutableComponent HELP_AUTOCRAFTER_NAMES =
+        createTranslation("gui", "autocrafter_manager.search_mode.autocrafter_names.help");
 
     @Nullable
     private SearchFieldWidget searchField;
@@ -67,9 +80,26 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
         addWidget(searchField);
         searchField.setResponder(value -> getMenu().setQuery(value));
 
+        addRenderableWidget(new SearchIconWidget(
+            leftPos + 79,
+            topPos + 5,
+            () -> getSearchModeHelp().copy().withStyle(ChatFormatting.GRAY),
+            searchField
+        ));
+
         addSideButton(new RedstoneModeSideButtonWidget(getMenu().getProperty(PropertyTypes.REDSTONE_MODE)));
         addSideButton(new ViewTypeSideButtonWidget(getMenu()));
-        addSideButton(new SearchModeSideButtonWidget(getMenu()));
+        addSideButton(new SearchModeSideButtonWidget(getMenu(), this::getSearchModeHelp));
+        addSideButton(new AutoSelectedSideButtonWidget(searchField));
+    }
+
+    private Component getSearchModeHelp() {
+        return switch (menu.getSearchMode()) {
+            case ALL -> HELP_ALL;
+            case PATTERN_INPUTS -> HELP_PATTERN_INPUTS;
+            case PATTERN_OUTPUTS -> HELP_PATTERN_OUTPUTS;
+            case AUTOCRAFTER_NAMES -> HELP_AUTOCRAFTER_NAMES;
+        };
     }
 
     private void updateScrollbar() {
@@ -88,12 +118,6 @@ public class AutocrafterManagerScreen extends AbstractStretchingScreen<Autocraft
             final AutocrafterManagerSlot slot = menu.getAutocrafterSlots().get(i);
             Platform.INSTANCE.setSlotY(slot, slot.getOriginalY() - scrollbarOffset);
         }
-    }
-
-    @Override
-    protected void renderBg(final GuiGraphics graphics, final float delta, final int mouseX, final int mouseY) {
-        super.renderBg(graphics, delta, mouseX, mouseY);
-        graphics.blitSprite(Sprites.SEARCH, leftPos + 79, topPos + 5, SEARCH_SIZE, SEARCH_SIZE);
     }
 
     @Override

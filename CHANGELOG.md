@@ -7,6 +7,24 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.10] - 2024-11-24
+
+### Added
+
+-   Autocrafting Monitor
+-   Wireless Autocrafting Monitor
+-   Creative Wireless Autocrafting Monitor
+
+### Changed
+
+-   The Autocrafting Monitor now has a sidebar with all tasks instead of using tabs.
+-   The auto-selected search box mode is now a global option used in the Autocrafter Manager as well.
+
+### Removed
+
+-   Block of Quartz Enriched Iron (has been moved to addon mod)
+-   Block of Quartz Enriched Copper (has been moved to addon mod)
+
 ## [2.0.0-milestone.4.9] - 2024-11-01
 
 ### Added
@@ -796,7 +814,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.9...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.10...HEAD
+
+[2.0.0-milestone.4.10]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.9...v2.0.0-milestone.4.10
 
 [2.0.0-milestone.4.9]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.8...v2.0.0-milestone.4.9
 

@@ -1,11 +1,10 @@
 package com.refinedmods.refinedstorage.common.support.network;
 
-import com.refinedmods.refinedstorage.api.network.Network;
-import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.resource.list.MutableResourceList;
 import com.refinedmods.refinedstorage.api.resource.list.MutableResourceListImpl;
 import com.refinedmods.refinedstorage.api.resource.list.ResourceList;
+import com.refinedmods.refinedstorage.api.storage.root.RootStorage;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
 import java.util.Comparator;
@@ -19,22 +18,24 @@ public final class ResourceSorters {
     private ResourceSorters() {
     }
 
-    public static Comparator<ResourceKey> create(@Nullable final Network network, final Inventory playerInventory) {
-        return create(network, playerInventory, Function.identity());
+    public static Comparator<ResourceKey> create(@Nullable final RootStorage rootStorage,
+                                                 final Inventory playerInventory) {
+        return create(rootStorage, playerInventory, Function.identity());
     }
 
-    public static <T> Comparator<T> create(@Nullable final Network network,
+    public static <T> Comparator<T> create(@Nullable final RootStorage rootStorage,
                                            final Inventory playerInventory,
                                            final Function<T, ResourceKey> resourceExtractor) {
         final MutableResourceList available = MutableResourceListImpl.create();
-        addNetworkItemsIntoList(network, available);
+        addRootStorageItemsIntoList(rootStorage, available);
         addPlayerInventoryItemsIntoList(playerInventory, available);
         return sortByHighestAvailableFirst(available, resourceExtractor);
     }
 
-    private static void addNetworkItemsIntoList(@Nullable final Network network, final MutableResourceList list) {
-        if (network != null) {
-            network.getComponent(StorageNetworkComponent.class).getAll().forEach(list::add);
+    private static void addRootStorageItemsIntoList(@Nullable final RootStorage rootStorage,
+                                                    final MutableResourceList list) {
+        if (rootStorage != null) {
+            rootStorage.getAll().forEach(list::add);
         }
     }
 

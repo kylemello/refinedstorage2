@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.grid;
 
+import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.support.RecipeMatrixContainer;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -11,16 +12,14 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
-interface CraftingGrid {
+public interface CraftingGrid extends Grid {
     RecipeMatrixContainer getCraftingMatrix();
 
     ResultContainer getCraftingResult();
 
     NonNullList<ItemStack> getRemainingItems(Player player, CraftingInput input);
 
-    CraftingGridRefillContext openRefillContext();
-
-    CraftingGridRefillContext openSnapshotRefillContext(Player player);
+    ExtractTransaction startExtractTransaction(Player player, boolean directCommit);
 
     boolean clearMatrix(Player player, boolean toPlayerInventory);
 

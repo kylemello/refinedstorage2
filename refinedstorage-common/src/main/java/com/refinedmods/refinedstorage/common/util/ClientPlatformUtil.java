@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.util;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingRequest;
@@ -40,7 +40,7 @@ public final class ClientPlatformUtil {
         );
     }
 
-    public static void autocraftingPreviewResponseReceived(final UUID id, final AutocraftingPreview preview) {
+    public static void autocraftingPreviewResponseReceived(final UUID id, final Preview preview) {
         if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
             screen.getMenu().previewResponseReceived(id, preview);
         }

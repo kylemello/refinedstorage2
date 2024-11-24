@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.constructordestructor.ConstructorContainerMenu;
@@ -98,6 +100,10 @@ public final class Menus {
     private Supplier<MenuType<AutocrafterContainerMenu>> autocrafter;
     @Nullable
     private Supplier<MenuType<AutocrafterManagerContainerMenu>> autocrafterManager;
+    @Nullable
+    private Supplier<MenuType<AutocraftingMonitorContainerMenu>> autocraftingMonitor;
+    @Nullable
+    private Supplier<MenuType<WirelessAutocraftingMonitorContainerMenu>> wirelessAutocraftingMonitor;
 
     private Menus() {
     }
@@ -336,5 +342,23 @@ public final class Menus {
 
     public void setAutocrafterManager(final Supplier<MenuType<AutocrafterManagerContainerMenu>> autocrafterManager) {
         this.autocrafterManager = autocrafterManager;
+    }
+
+    public MenuType<AutocraftingMonitorContainerMenu> getAutocraftingMonitor() {
+        return requireNonNull(autocraftingMonitor).get();
+    }
+
+    public void setAutocraftingMonitor(final Supplier<MenuType<AutocraftingMonitorContainerMenu>> autocraftingMonitor) {
+        this.autocraftingMonitor = autocraftingMonitor;
+    }
+
+    public MenuType<WirelessAutocraftingMonitorContainerMenu> getWirelessAutocraftingMonitor() {
+        return requireNonNull(wirelessAutocraftingMonitor).get();
+    }
+
+    public void setWirelessAutocraftingMonitor(
+        final Supplier<MenuType<WirelessAutocraftingMonitorContainerMenu>> wirelessAutocraftingMonitor
+    ) {
+        this.wirelessAutocraftingMonitor = wirelessAutocraftingMonitor;
     }
 }

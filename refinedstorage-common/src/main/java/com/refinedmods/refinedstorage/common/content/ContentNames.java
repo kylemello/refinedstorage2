@@ -41,6 +41,15 @@ public final class ContentNames {
     public static final MutableComponent DISK_INTERFACE = name("disk_interface");
     public static final MutableComponent AUTOCRAFTER = name("autocrafter");
     public static final MutableComponent AUTOCRAFTER_MANAGER = name("autocrafter_manager");
+    public static final MutableComponent AUTOCRAFTING_MONITOR = name("autocrafting_monitor");
+    public static final MutableComponent WIRELESS_AUTOCRAFTING_MONITOR = createTranslation(
+        "item",
+        "wireless_autocrafting_monitor"
+    );
+    public static final MutableComponent CREATIVE_WIRELESS_AUTOCRAFTING_MONITOR = createTranslation(
+        "item",
+        "creative_wireless_autocrafting_monitor"
+    );
 
     public static final String CLEAR_CRAFTING_MATRIX_TO_NETWORK_TRANSLATION_KEY =
         createTranslationKey("key", "clear_crafting_grid_matrix_to_network");
@@ -49,6 +58,10 @@ public final class ContentNames {
     public static final String FOCUS_SEARCH_BAR_TRANSLATION_KEY = createTranslationKey("key", "focus_search_bar");
     public static final String OPEN_WIRELESS_GRID_TRANSLATION_KEY = createTranslationKey("key", "open_wireless_grid");
     public static final String OPEN_PORTABLE_GRID_TRANSLATION_KEY = createTranslationKey("key", "open_portable_grid");
+    public static final String OPEN_WIRELESS_AUTOCRAFTING_MONITOR_TRANSLATION_KEY = createTranslationKey(
+        "key",
+        "open_wireless_autocrafting_monitor"
+    );
 
     private ContentNames() {
     }

@@ -65,4 +65,18 @@ public final class SmallText {
         graphics.drawString(font, text, (int) (x / scale), (int) (y / scale) + 1, color, dropShadow);
         graphics.pose().popPose();
     }
+
+    public static void render(final GuiGraphics graphics,
+                              final Font font,
+                              final String text,
+                              final int x,
+                              final int y,
+                              final int color,
+                              final boolean dropShadow) {
+        final float scale = getScale();
+        graphics.pose().pushPose();
+        graphics.pose().scale(scale, scale, 1);
+        graphics.drawString(font, text, (int) (x / scale), (int) (y / scale) + 1, color, dropShadow);
+        graphics.pose().popPose();
+    }
 }

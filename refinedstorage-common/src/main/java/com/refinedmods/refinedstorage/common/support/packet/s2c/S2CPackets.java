@@ -1,6 +1,8 @@
 package com.refinedmods.refinedstorage.common.support.packet.s2c;
 
-import com.refinedmods.refinedstorage.api.autocrafting.AutocraftingPreview;
+import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
+import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
+import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
@@ -93,7 +95,7 @@ public final class S2CPackets {
 
     public static void sendAutocraftingPreviewResponse(final ServerPlayer player,
                                                        final UUID id,
-                                                       final AutocraftingPreview preview) {
+                                                       final Preview preview) {
         Platform.INSTANCE.sendPacketToClient(player, new AutocraftingPreviewResponsePacket(id, preview));
     }
 
@@ -101,5 +103,22 @@ public final class S2CPackets {
                                                 final UUID id,
                                                 final boolean started) {
         Platform.INSTANCE.sendPacketToClient(player, new AutocraftingResponsePacket(id, started));
+    }
+
+    public static void sendAutocraftingMonitorTaskAdded(final ServerPlayer player, final TaskStatus taskStatus) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorTaskAddedPacket(taskStatus));
+    }
+
+    public static void sendAutocraftingMonitorTaskRemoved(final ServerPlayer player, final TaskId taskId) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorTaskRemovedPacket(taskId));
+    }
+
+    public static void sendAutocraftingMonitorTaskStatusChanged(final ServerPlayer player,
+                                                                final TaskStatus taskStatus) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorTaskStatusChangedPacket(taskStatus));
+    }
+
+    public static void sendAutocraftingMonitorActive(final ServerPlayer player, final boolean active) {
+        Platform.INSTANCE.sendPacketToClient(player, new AutocraftingMonitorActivePacket(active));
     }
 }

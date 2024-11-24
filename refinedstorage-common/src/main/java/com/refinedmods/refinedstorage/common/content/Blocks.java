@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common.content;
 
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlock;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlock;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlock;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlock;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractConstructorBlockEntity;
 import com.refinedmods.refinedstorage.common.constructordestructor.AbstractDestructorBlockEntity;
@@ -158,11 +159,13 @@ public final class Blocks {
         ContentNames.AUTOCRAFTER_MANAGER,
         COLOR
     );
+    private final BlockColorMap<AutocraftingMonitorBlock, BaseBlockItem> autocraftingMonitor = new BlockColorMap<>(
+        AutocraftingMonitorBlock::new,
+        ContentIds.AUTOCRAFTING_MONITOR,
+        ContentNames.AUTOCRAFTING_MONITOR,
+        COLOR
+    );
 
-    @Nullable
-    private Supplier<SimpleBlock> quartzEnrichedIronBlock;
-    @Nullable
-    private Supplier<SimpleBlock> quartzEnrichedCopperBlock;
     @Nullable
     private Supplier<DiskDriveBlock> diskDrive;
     @Nullable
@@ -198,14 +201,6 @@ public final class Blocks {
         return requireNonNull(cable);
     }
 
-    public SimpleBlock getQuartzEnrichedIronBlock() {
-        return requireNonNull(quartzEnrichedIronBlock).get();
-    }
-
-    public SimpleBlock getQuartzEnrichedCopperBlock() {
-        return requireNonNull(quartzEnrichedCopperBlock).get();
-    }
-
     public DiskDriveBlock getDiskDrive() {
         return requireNonNull(diskDrive).get();
     }
@@ -234,14 +229,6 @@ public final class Blocks {
         AbstractControllerBlock<CreativeControllerBlockItem>,
         CreativeControllerBlockItem> getCreativeController() {
         return creativeController;
-    }
-
-    public void setQuartzEnrichedIronBlock(final Supplier<SimpleBlock> quartzEnrichedIronBlockSupplier) {
-        this.quartzEnrichedIronBlock = quartzEnrichedIronBlockSupplier;
-    }
-
-    public void setQuartzEnrichedCopperBlock(final Supplier<SimpleBlock> quartzEnrichedCopperBlockSupplier) {
-        this.quartzEnrichedCopperBlock = quartzEnrichedCopperBlockSupplier;
     }
 
     public void setDiskDrive(final Supplier<DiskDriveBlock> diskDriveSupplier) {
@@ -432,5 +419,9 @@ public final class Blocks {
 
     public BlockColorMap<AutocrafterManagerBlock, BaseBlockItem> getAutocrafterManager() {
         return autocrafterManager;
+    }
+
+    public BlockColorMap<AutocraftingMonitorBlock, BaseBlockItem> getAutocraftingMonitor() {
+        return autocraftingMonitor;
     }
 }

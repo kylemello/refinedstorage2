@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerScreen;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.preview.AutocraftingPreviewScreen;
@@ -106,6 +107,8 @@ public abstract class AbstractClientModInitializer {
                 }
             });
         registration.register(Menus.INSTANCE.getAutocrafterManager(), AutocrafterManagerScreen::new);
+        registration.register(Menus.INSTANCE.getAutocraftingMonitor(), AutocraftingMonitorScreen::new);
+        registration.register(Menus.INSTANCE.getWirelessAutocraftingMonitor(), AutocraftingMonitorScreen::new);
     }
 
     protected static void registerAlternativeGridHints() {
@@ -138,6 +141,14 @@ public abstract class AbstractClientModInitializer {
                 player,
                 Items.INSTANCE.getPortableGrid(),
                 Items.INSTANCE.getCreativePortableGrid()
+            );
+        }
+        final KeyMapping openWirelessAutocraftingMonitor = KeyMappings.INSTANCE.getOpenWirelessAutocraftingMonitor();
+        while (openWirelessAutocraftingMonitor != null && openWirelessAutocraftingMonitor.consumeClick()) {
+            RefinedStorageApi.INSTANCE.useSlotReferencedItem(
+                player,
+                Items.INSTANCE.getWirelessAutocraftingMonitor(),
+                Items.INSTANCE.getCreativeWirelessAutocraftingMonitor()
             );
         }
     }

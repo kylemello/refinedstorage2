@@ -47,14 +47,16 @@ public class WirelessGridItem extends AbstractNetworkEnergyItem {
                        final NetworkItemContext context) {
         final boolean isAllowed = context.resolveNetwork()
             .map(network -> SecurityHelper.isAllowed(player, BuiltinPermission.OPEN, network))
-            .orElse(true); // if the network can't be resolved that will be apparent later in the UI.
+            .orElse(true);
         if (!isAllowed) {
             RefinedStorageApi.INSTANCE.sendNoPermissionToOpenMessage(player, ContentNames.WIRELESS_GRID);
             return;
         }
         final Grid grid = new WirelessGrid(context);
-        final Component correctedName = requireNonNullElse(name,
-            creative ? ContentNames.CREATIVE_WIRELESS_GRID : ContentNames.WIRELESS_GRID);
+        final Component correctedName = requireNonNullElse(
+            name,
+            creative ? ContentNames.CREATIVE_WIRELESS_GRID : ContentNames.WIRELESS_GRID
+        );
         final var provider = new WirelessGridExtendedMenuProvider(correctedName, grid, slotReference);
         Platform.INSTANCE.getMenuOpener().openMenu(player, provider);
     }

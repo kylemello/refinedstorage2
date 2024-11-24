@@ -25,6 +25,11 @@ import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.Autocrafte
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerData;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorContainerMenu;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorData;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.TaskStatusProviderImpl;
+import com.refinedmods.refinedstorage.common.autocrafting.monitor.WirelessAutocraftingMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridContainerMenu;
 import com.refinedmods.refinedstorage.common.autocrafting.patterngrid.PatternGridData;
@@ -273,7 +278,7 @@ public abstract class AbstractModInitializer {
         );
         RefinedStorageApi.INSTANCE.getNetworkComponentMapFactory().addFactory(
             AutocraftingNetworkComponent.class,
-            network -> new AutocraftingNetworkComponentImpl()
+            network -> new AutocraftingNetworkComponentImpl(new TaskStatusProviderImpl())
         );
     }
 
@@ -295,10 +300,6 @@ public abstract class AbstractModInitializer {
 
     protected final void registerBlocks(final RegistryCallback<Block> callback,
                                         final BlockEntityProviders blockEntityProviders) {
-        Blocks.INSTANCE.setQuartzEnrichedIronBlock(callback.register(
-            ContentIds.QUARTZ_ENRICHED_IRON_BLOCK, SimpleBlock::new));
-        Blocks.INSTANCE.setQuartzEnrichedCopperBlock(
-            callback.register(ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK, SimpleBlock::new));
         Blocks.INSTANCE.setDiskDrive(callback.register(
             ContentIds.DISK_DRIVE,
             () -> new DiskDriveBlock(blockEntityProviders.diskDrive())
@@ -347,6 +348,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.setDiskInterface(blockEntityProviders.diskInterface()).registerBlocks(callback);
         Blocks.INSTANCE.getAutocrafter().registerBlocks(callback);
         Blocks.INSTANCE.getAutocrafterManager().registerBlocks(callback);
+        Blocks.INSTANCE.getAutocraftingMonitor().registerBlocks(callback);
     }
 
     protected final void registerItems(final RegistryCallback<Item> callback) {
@@ -371,6 +373,7 @@ public abstract class AbstractModInitializer {
         Blocks.INSTANCE.getDiskInterface().registerItems(callback, Items.INSTANCE::addDiskInterface);
         Blocks.INSTANCE.getAutocrafter().registerItems(callback, Items.INSTANCE::addAutocrafter);
         Blocks.INSTANCE.getAutocrafterManager().registerItems(callback, Items.INSTANCE::addAutocrafterManager);
+        Blocks.INSTANCE.getAutocraftingMonitor().registerItems(callback, Items.INSTANCE::addAutocraftingMonitor);
         registerStorageItems(callback);
         registerUpgrades(callback);
     }
@@ -378,14 +381,6 @@ public abstract class AbstractModInitializer {
     private void registerSimpleItems(final RegistryCallback<Item> callback) {
         Items.INSTANCE.setQuartzEnrichedIron(callback.register(ContentIds.QUARTZ_ENRICHED_IRON, SimpleItem::new));
         Items.INSTANCE.setQuartzEnrichedCopper(callback.register(ContentIds.QUARTZ_ENRICHED_COPPER, SimpleItem::new));
-        callback.register(
-            ContentIds.QUARTZ_ENRICHED_IRON_BLOCK,
-            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedIronBlock())
-        );
-        callback.register(
-            ContentIds.QUARTZ_ENRICHED_COPPER_BLOCK,
-            () -> new BaseBlockItem(Blocks.INSTANCE.getQuartzEnrichedCopperBlock())
-        );
         Items.INSTANCE.setSilicon(callback.register(ContentIds.SILICON, SimpleItem::new));
         Items.INSTANCE.setProcessorBinding(callback.register(ContentIds.PROCESSOR_BINDING, SimpleItem::new));
         callback.register(ContentIds.DISK_DRIVE, () -> Blocks.INSTANCE.getDiskDrive().createBlockItem());
@@ -678,6 +673,11 @@ public abstract class AbstractModInitializer {
             () -> typeFactory.create(AutocrafterManagerBlockEntity::new,
                 Blocks.INSTANCE.getAutocrafterManager().toArray())
         ));
+        BlockEntities.INSTANCE.setAutocraftingMonitor(callback.register(
+            ContentIds.AUTOCRAFTING_MONITOR,
+            () -> typeFactory.create(AutocraftingMonitorBlockEntity::new,
+                Blocks.INSTANCE.getAutocraftingMonitor().toArray())
+        ));
     }
 
     protected final void registerMenus(final RegistryCallback<MenuType<?>> callback,
@@ -806,6 +806,20 @@ public abstract class AbstractModInitializer {
             () -> extendedMenuTypeFactory.create(
                 AutocrafterManagerContainerMenu::new,
                 AutocrafterManagerData.STREAM_CODEC
+            )
+        ));
+        Menus.INSTANCE.setAutocraftingMonitor(callback.register(
+            ContentIds.AUTOCRAFTING_MONITOR,
+            () -> extendedMenuTypeFactory.create(
+                AutocraftingMonitorContainerMenu::new,
+                AutocraftingMonitorData.STREAM_CODEC
+            )
+        ));
+        Menus.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
+            ContentIds.WIRELESS_AUTOCRAFTING_MONITOR,
+            () -> extendedMenuTypeFactory.create(
+                WirelessAutocraftingMonitorContainerMenu::new,
+                AutocraftingMonitorData.STREAM_CODEC
             )
         ));
     }
