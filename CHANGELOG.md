@@ -20,6 +20,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Autocrafting Monitor now has a sidebar with all tasks instead of using tabs.
 -   The auto-selected search box mode is now a global option used in the Autocrafter Manager as well.
 
+### Fixed
+
+-   Fixed External Fluid not connecting properly to fluid storages.
+-   Fixed Interface filter not respecting maximum stack size of a resource.
+-   Fixed potential crash when trying to build cable shapes.
+
 ### Removed
 
 -   Block of Quartz Enriched Iron (has been moved to addon mod)

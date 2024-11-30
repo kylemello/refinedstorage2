@@ -55,17 +55,25 @@ public class ResourceContainerImpl implements ResourceContainer {
     public void change(final int index, final ItemStack stack, final boolean tryAlternatives) {
         if (tryAlternatives) {
             for (final ResourceFactory resourceFactory : alternativeResourceFactories) {
-                final var result = resourceFactory.create(stack);
+                final var result = resourceFactory.create(stack).map(this::respectMaxAmount);
                 if (result.isPresent()) {
                     set(index, result.get());
                     return;
                 }
             }
         }
-        primaryResourceFactory.create(stack).ifPresentOrElse(
+        primaryResourceFactory.create(stack).map(this::respectMaxAmount).ifPresentOrElse(
             resource -> set(index, resource),
             () -> remove(index)
         );
+    }
+
+    private ResourceAmount respectMaxAmount(final ResourceAmount resourceAmount) {
+        final long maxAmount = getMaxAmount(resourceAmount.resource());
+        if (resourceAmount.amount() > maxAmount) {
+            return new ResourceAmount(resourceAmount.resource(), maxAmount);
+        }
+        return resourceAmount;
     }
 
     @Override

@@ -279,7 +279,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 ItemStorage.SIDED,
                 VariantUtil::ofItemVariant,
                 resource -> resource instanceof ItemResource itemResource
-                    ? toItemVariant(itemResource) : null
+                    ? toItemVariant(itemResource) : null,
+                0
             )
         );
         RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
@@ -287,7 +288,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 FluidStorage.SIDED,
                 VariantUtil::ofFluidVariant,
                 resource -> resource instanceof FluidResource fluidResource
-                    ? toFluidVariant(fluidResource) : null
+                    ? toFluidVariant(fluidResource) : null,
+                -1
             )
         );
     }

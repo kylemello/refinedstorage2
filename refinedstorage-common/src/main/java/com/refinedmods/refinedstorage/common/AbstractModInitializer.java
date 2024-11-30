@@ -420,8 +420,8 @@ public abstract class AbstractModInitializer {
         if (variant != ItemStorageVariant.CREATIVE) {
             Items.INSTANCE.setItemStoragePart(variant, callback.register(
                 ContentIds.forItemStoragePart(variant),
-                SimpleItem::new)
-            );
+                SimpleItem::new
+            ));
         }
         Items.INSTANCE.setItemStorageDisk(variant, callback.register(
             ContentIds.forStorageDisk(variant),
