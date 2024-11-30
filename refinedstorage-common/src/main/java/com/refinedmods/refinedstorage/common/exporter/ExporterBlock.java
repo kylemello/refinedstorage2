@@ -13,7 +13,6 @@ import com.refinedmods.refinedstorage.common.support.DirectionalCableBlockShapes
 import com.refinedmods.refinedstorage.common.support.NetworkNodeBlockItem;
 import com.refinedmods.refinedstorage.common.support.network.NetworkNodeBlockEntityTicker;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
@@ -35,7 +34,8 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 public class ExporterBlock extends AbstractDirectionalCableBlock
     implements ColorableBlock<ExporterBlock, BaseBlockItem>, EntityBlock, BlockItemProvider<BaseBlockItem> {
     private static final Component HELP = createTranslation("item", "exporter.help");
-    private static final Map<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<DirectionalCacheShapeCacheKey, VoxelShape> SHAPE_CACHE =
+        new ConcurrentHashMap<>();
     private static final AbstractBlockEntityTicker<AbstractExporterBlockEntity> TICKER =
         new NetworkNodeBlockEntityTicker<>(BlockEntities.INSTANCE::getExporter);
 

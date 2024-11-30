@@ -2,8 +2,8 @@ package com.refinedmods.refinedstorage.common.support;
 
 import com.refinedmods.refinedstorage.common.networking.CableConnections;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -18,7 +18,7 @@ public final class CableShapes {
     private static final VoxelShape WEST = box(0, 6, 6, 6, 10, 10);
     private static final VoxelShape UP = box(6, 10, 6, 10, 16, 10);
     private static final VoxelShape DOWN = box(6, 0, 6, 10, 6, 10);
-    private static final Map<CableConnections, VoxelShape> CACHE = new HashMap<>();
+    private static final Map<CableConnections, VoxelShape> CACHE = new ConcurrentHashMap<>();
 
     private CableShapes() {
     }

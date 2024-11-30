@@ -29,8 +29,7 @@ public class StorageContainerUpgradeRecipe<T extends StorageVariant> extends Sha
             CraftingBookCategory.MISC,
             containerProvider.apply(to).asItem().getDefaultInstance(),
             NonNullList.of(
-                Ingredient.of(getValidSourceContainers(to, variants, containerProvider)
-                    .stream().map(ItemLike::asItem).map(Item::getDefaultInstance)),
+                Ingredient.of(getValidSourceContainers(to, variants, containerProvider).toArray(new Item[0])),
                 Ingredient.of(to.getStoragePart())
             )
         );
