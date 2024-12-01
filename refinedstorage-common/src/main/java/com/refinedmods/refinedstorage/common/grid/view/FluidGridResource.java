@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.api.grid.view.GridResourceAttributeKey;
 import com.refinedmods.refinedstorage.api.grid.view.GridView;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategy;
@@ -43,7 +43,7 @@ public class FluidGridResource extends AbstractPlatformGridResource<FluidResourc
                              final boolean autocraftable) {
         super(resource, name, attributes, autocraftable);
         this.id = BuiltInRegistries.FLUID.getId(resource.fluid());
-        this.rendering = RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class);
+        this.rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(FluidResource.class);
     }
 
     @Override

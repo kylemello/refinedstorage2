@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting.patterngrid;
 
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceTag;
@@ -69,7 +69,9 @@ class ProcessingMatrixInputClientTooltipComponent implements ClientTooltipCompon
             final PlatformResourceKey resource = alternative.resources().get(
                 currentCycle % alternative.resources().size()
             );
-            final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
+            final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
+                resource.getClass()
+            );
             rendering.render(resource, graphics, x, y + 9 + PADDING + i * 18);
             graphics.drawString(
                 font,

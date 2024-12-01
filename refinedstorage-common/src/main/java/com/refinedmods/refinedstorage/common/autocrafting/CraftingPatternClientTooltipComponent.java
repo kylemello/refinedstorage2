@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -99,7 +99,7 @@ class CraftingPatternClientTooltipComponent implements ClientTooltipComponent {
         if (!inputs.isEmpty()) {
             final int idx = currentCycle % inputs.size();
             final PlatformResourceKey resource = inputs.get(idx);
-            RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass()).render(
+            RefinedStorageClientApi.INSTANCE.getResourceRendering(resource.getClass()).render(
                 resource,
                 graphics,
                 x + sx * 18 + 1,

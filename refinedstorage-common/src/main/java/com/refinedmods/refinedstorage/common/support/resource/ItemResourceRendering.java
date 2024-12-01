@@ -25,8 +25,11 @@ import org.joml.Matrix4f;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.formatWithUnits;
 
-public class ItemResourceRendering implements ResourceRendering {
-    public static final Matrix4f IN_WORLD_SCALE = new Matrix4f().scale(0.3F, 0.3F, 0.001f);
+public enum ItemResourceRendering implements ResourceRendering {
+    INSTANCE;
+
+    public static final Matrix4f IN_WORLD_SCALE = new Matrix4f().scale(0.3F, 0.3F, 0.001F);
+
     private final Map<ItemResource, ItemStack> stackCache = new HashMap<>();
 
     private ItemStack getStack(final ItemResource itemResource) {

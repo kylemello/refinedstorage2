@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
 import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
 import com.refinedmods.refinedstorage.common.support.tooltip.SmallText;
@@ -36,7 +36,7 @@ class AutocraftingTaskButton extends AbstractButton {
         super(x, y, TASK_BUTTON_WIDTH, TASK_BUTTON_HEIGHT, Component.empty());
         this.task = task;
         final ResourceKey resource = task.resource();
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(resource.getClass());
         this.text = new TextMarquee(
             rendering.getDisplayName(resource),
             TASK_BUTTON_WIDTH - 16 - 4 - 4 - 4,
@@ -72,7 +72,7 @@ class AutocraftingTaskButton extends AbstractButton {
 
     private void renderResourceIcon(final GuiGraphics graphics) {
         final ResourceKey resource = task.resource();
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass());
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(resource.getClass());
         final int resourceX = getX() + 3;
         final int resourceY = getY() + 4;
         rendering.render(resource, graphics, resourceX, resourceY);

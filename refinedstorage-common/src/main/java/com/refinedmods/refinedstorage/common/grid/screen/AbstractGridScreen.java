@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.api.storage.tracked.TrackedResource;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridScrollMode;
 import com.refinedmods.refinedstorage.common.api.grid.view.PlatformGridResource;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
@@ -420,7 +421,8 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (carried.isEmpty()) {
             return;
         }
-        final List<ClientTooltipComponent> hints = RefinedStorageApi.INSTANCE.getGridInsertionHints().getHints(carried);
+        final List<ClientTooltipComponent> hints = RefinedStorageClientApi.INSTANCE.getGridInsertionHints()
+            .getHints(carried);
         Platform.INSTANCE.renderTooltip(graphics, hints, x, y);
     }
 
@@ -541,7 +543,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (request == null) {
             return false;
         }
-        RefinedStorageApi.INSTANCE.openAutocraftingPreview(List.of(request), this);
+        RefinedStorageClientApi.INSTANCE.openAutocraftingPreview(List.of(request), this);
         return true;
     }
 

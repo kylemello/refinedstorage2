@@ -37,8 +37,6 @@ import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterface
 import com.refinedmods.refinedstorage.common.storage.externalstorage.AbstractExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageBlock;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlock;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlock;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlock;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlock;
 import com.refinedmods.refinedstorage.common.support.BaseBlockItem;
 import com.refinedmods.refinedstorage.common.support.SimpleBlock;
@@ -49,6 +47,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Block;
 
 import static java.util.Objects.requireNonNull;
 
@@ -170,9 +169,8 @@ public final class Blocks {
     private Supplier<DiskDriveBlock> diskDrive;
     @Nullable
     private Supplier<SimpleBlock> machineCasing;
-    private final Map<ItemStorageVariant, Supplier<ItemStorageBlock>> itemStorageBlocks =
-        new EnumMap<>(ItemStorageVariant.class);
-    private final Map<FluidStorageVariant, Supplier<FluidStorageBlock>> fluidStorageBlocks =
+    private final Map<ItemStorageVariant, Supplier<Block>> itemStorageBlocks = new EnumMap<>(ItemStorageVariant.class);
+    private final Map<FluidStorageVariant, Supplier<Block>> fluidStorageBlocks =
         new EnumMap<>(FluidStorageVariant.class);
     @Nullable
     private Supplier<InterfaceBlock> iface;
@@ -239,20 +237,19 @@ public final class Blocks {
         this.machineCasing = machineCasingSupplier;
     }
 
-    public void setItemStorageBlock(final ItemStorageVariant variant, final Supplier<ItemStorageBlock> supplier) {
+    public void setItemStorageBlock(final ItemStorageVariant variant, final Supplier<Block> supplier) {
         itemStorageBlocks.put(variant, supplier);
     }
 
-    public ItemStorageBlock getItemStorageBlock(final ItemStorageVariant variant) {
+    public Block getItemStorageBlock(final ItemStorageVariant variant) {
         return itemStorageBlocks.get(variant).get();
     }
 
-    public void setFluidStorageBlock(final FluidStorageVariant variant,
-                                     final Supplier<FluidStorageBlock> supplier) {
+    public void setFluidStorageBlock(final FluidStorageVariant variant, final Supplier<Block> supplier) {
         fluidStorageBlocks.put(variant, supplier);
     }
 
-    public FluidStorageBlock getFluidStorageBlock(final FluidStorageVariant variant) {
+    public Block getFluidStorageBlock(final FluidStorageVariant variant) {
         return fluidStorageBlocks.get(variant).get();
     }
 
@@ -310,7 +307,7 @@ public final class Blocks {
     }
 
     public BlockColorMap<ExternalStorageBlock, BaseBlockItem> getExternalStorage() {
-        return externalStorage;
+        return requireNonNull(externalStorage);
     }
 
     public BlockColorMap<DetectorBlock, BaseBlockItem> getDetector() {

@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.Sprites;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -31,7 +31,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
         graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         final int slotsY = y + 9 + 2;
         graphics.blitSprite(Sprites.SLOT, x, slotsY, 18, 18);
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(ItemResource.class);
         rendering.render(pattern.getTemplate(), graphics, x + 1, slotsY + 1);
         graphics.blitSprite(Sprites.SLOT, x + 18, slotsY, 18, 18);
         rendering.render(pattern.getBase(), graphics, x + 18 + 1, slotsY + 1);
@@ -63,7 +63,7 @@ class SmithingTablePatternClientTooltipComponent implements ClientTooltipCompone
     }
 
     private static Component getOutputText(final ItemResource output) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(ItemResource.class);
         return Component.literal("1x ")
             .append(rendering.getDisplayName(output))
             .withStyle(ChatFormatting.GRAY);

@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.support;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
@@ -208,7 +209,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
     }
 
     protected List<ClientTooltipComponent> getResourceSlotTooltip(final ResourceKey resource, final ResourceSlot slot) {
-        final List<ClientTooltipComponent> tooltip = RefinedStorageApi.INSTANCE
+        final List<ClientTooltipComponent> tooltip = RefinedStorageClientApi.INSTANCE
             .getResourceRendering(resource.getClass())
             .getTooltip(resource)
             .stream()

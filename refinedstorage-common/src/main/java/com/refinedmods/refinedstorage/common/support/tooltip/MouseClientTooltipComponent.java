@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.support.tooltip;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 
 import javax.annotation.Nullable;
@@ -102,7 +102,7 @@ public class MouseClientTooltipComponent implements ClientTooltipComponent {
                                                   @Nullable final String amount) {
         return new MouseClientTooltipComponent(
             type,
-            (graphics, x, y) -> RefinedStorageApi.INSTANCE.getResourceRendering(resource.getClass())
+            (graphics, x, y) -> RefinedStorageClientApi.INSTANCE.getResourceRendering(resource.getClass())
                 .render(resource, graphics, x, y),
             amount
         );

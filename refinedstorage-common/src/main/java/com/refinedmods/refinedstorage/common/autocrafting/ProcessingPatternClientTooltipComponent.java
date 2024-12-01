@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.ResourceSlotRendering;
@@ -75,7 +75,7 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
     }
 
     private static Component getOutputText(final ResourceAmount resourceAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
             resourceAmount.resource().getClass()
         );
         final String displayAmount = rendering.formatAmount(resourceAmount.amount());
@@ -147,7 +147,7 @@ class ProcessingPatternClientTooltipComponent implements ClientTooltipComponent 
             return;
         }
         final ResourceAmount resourceAmount = possibilities.get(currentCycle % possibilities.size());
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
             resourceAmount.resource().getClass()
         );
         rendering.render(resourceAmount.resource(), graphics, slotX + 1, slotY + 1);

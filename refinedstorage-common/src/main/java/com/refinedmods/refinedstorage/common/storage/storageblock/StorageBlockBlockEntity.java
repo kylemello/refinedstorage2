@@ -5,10 +5,11 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storage.StorageNetwo
 import com.refinedmods.refinedstorage.api.storage.Storage;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
+import com.refinedmods.refinedstorage.common.api.storage.StorageBlockData;
 import com.refinedmods.refinedstorage.common.api.storage.StorageBlockEntity;
+import com.refinedmods.refinedstorage.common.api.storage.StorageBlockProvider;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainer;
-import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
 import com.refinedmods.refinedstorage.common.storage.StorageConfigurationContainerImpl;
 import com.refinedmods.refinedstorage.common.support.FilterWithFuzzyMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.NetworkNodeExtendedMenuProvider;
@@ -24,35 +25,37 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractStorageBlockBlockEntity
-    extends AbstractBaseNetworkNodeContainerBlockEntity<StorageNetworkNode>
+public class StorageBlockBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<StorageNetworkNode>
     implements NetworkNodeExtendedMenuProvider<StorageBlockData>, StorageBlockEntity,
     AbstractStorageContainerNetworkNode.Provider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageBlockBlockEntity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageBlockBlockEntity.class);
 
     private static final String TAG_STORAGE_ID = "sid";
 
     protected final StorageConfigurationContainerImpl configContainer;
     private final FilterWithFuzzyMode filter;
+    private final Component displayName;
+    private final StorageBlockProvider storageBlockProvider;
 
     @Nullable
     private UUID storageId;
 
-    protected AbstractStorageBlockBlockEntity(final BlockEntityType<?> type,
-                                              final BlockPos pos,
-                                              final BlockState state,
-                                              final StorageNetworkNode node,
-                                              final ResourceFactory resourceFactory) {
-        super(type, pos, state, node);
+    public StorageBlockBlockEntity(final BlockPos pos,
+                                   final BlockState state,
+                                   final StorageBlockProvider provider) {
+        super(provider.getBlockEntityType(), pos, state, new StorageNetworkNode(provider.getEnergyUsage(), 0, 1));
         this.filter = FilterWithFuzzyMode.createAndListenForUniqueFilters(
-            ResourceContainerImpl.createForFilter(resourceFactory),
+            ResourceContainerImpl.createForFilter(provider.getResourceFactory()),
             this::setChanged,
             mainNetworkNode.getStorageConfiguration()::setFilters
         );
@@ -64,9 +67,9 @@ abstract class AbstractStorageBlockBlockEntity
             this::setRedstoneMode
         );
         mainNetworkNode.getStorageConfiguration().setNormalizer(filter.createNormalizer());
+        this.displayName = provider.getDisplayName();
+        this.storageBlockProvider = provider;
     }
-
-    protected abstract SerializableStorage createStorage(Runnable listener);
 
     @Override
     public void setLevel(final Level level) {
@@ -83,7 +86,7 @@ abstract class AbstractStorageBlockBlockEntity
             // In both cases listed above we need to clean up the storage we create here.
             storageId = UUID.randomUUID();
             final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getStorageRepository(level);
-            final SerializableStorage storage = createStorage(storageRepository::markAsChanged);
+            final SerializableStorage storage = storageBlockProvider.createStorage(storageRepository::markAsChanged);
             storageRepository.set(storageId, storage);
         }
         mainNetworkNode.setProvider(this);
@@ -156,13 +159,13 @@ abstract class AbstractStorageBlockBlockEntity
         return new StorageBlockData(
             mainNetworkNode.getStored(),
             mainNetworkNode.getCapacity(),
-            ResourceContainerData.of(filter.getFilterContainer())
+            ResourceContainerData.of(filter.getFilterContainer()).resources()
         );
     }
 
     @Override
     public StreamEncoder<RegistryFriendlyByteBuf, StorageBlockData> getMenuCodec() {
-        return StorageBlockData.STREAM_CODEC;
+        return RefinedStorageApi.INSTANCE.getStorageBlockDataStreamCodec();
     }
 
     @Override
@@ -172,5 +175,21 @@ abstract class AbstractStorageBlockBlockEntity
         }
         final StorageRepository storageRepository = RefinedStorageApi.INSTANCE.getStorageRepository(level);
         return storageRepository.get(storageId).map(Storage.class::cast);
+    }
+
+    @Override
+    public Component getName() {
+        return overrideName(displayName);
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(final int syncId, final Inventory inventory, final Player player) {
+        return new StorageBlockContainerMenu(
+            storageBlockProvider.getMenuType(),
+            syncId,
+            player,
+            filter.getFilterContainer(),
+            configContainer
+        );
     }
 }
