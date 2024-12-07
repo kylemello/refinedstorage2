@@ -29,7 +29,8 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
     @Nullable
     private StorageNetworkComponent delegate;
     private AccessMode accessMode = AccessMode.INSERT_EXTRACT;
-    private int priority;
+    private int insertPriority;
+    private int extractPriority;
 
     boolean hasDelegate() {
         return delegate != null;
@@ -39,8 +40,12 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
         this.accessMode = accessMode;
     }
 
-    void setPriority(final int priority) {
-        this.priority = priority;
+    void setInsertPriority(final int insertPriority) {
+        this.insertPriority = insertPriority;
+    }
+
+    void setExtractPriority(final int extractPriority) {
+        this.extractPriority = extractPriority;
     }
 
     void setFilters(final Set<ResourceKey> filters) {
@@ -175,7 +180,12 @@ class RelayOutputStorage implements CompositeAwareChild, ResourceListListener, P
     }
 
     @Override
-    public int getPriority() {
-        return priority;
+    public int getInsertPriority() {
+        return insertPriority;
+    }
+
+    @Override
+    public int getExtractPriority() {
+        return extractPriority;
     }
 }

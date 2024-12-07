@@ -281,8 +281,8 @@ class ExtractCompositeStorageImplTest {
     @Test
     void shouldRespectPriorityWhenExtracting() {
         // Arrange
-        final PriorityStorage lowestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 5);
-        final PriorityStorage highestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 10);
+        final PriorityStorage lowestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 10, 5);
+        final PriorityStorage highestPriority = PriorityStorage.of(new LimitedStorageImpl(10), 5, 10);
 
         lowestPriority.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
         highestPriority.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);

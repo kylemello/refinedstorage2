@@ -2,6 +2,9 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -11,16 +14,19 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "autocrafter_manager.view_type");
-    private static final MutableComponent SUBTEXT_VISIBLE =
-        createTranslation("gui", "autocrafter_manager.view_type.visible");
+    private static final List<MutableComponent> SUBTEXT_VISIBLE = List.of(
+        createTranslation("gui", "autocrafter_manager.view_type.visible").withStyle(ChatFormatting.GRAY)
+    );
     private static final MutableComponent HELP_VISIBLE =
         createTranslation("gui", "autocrafter_manager.view_type.visible.help");
-    private static final MutableComponent SUBTEXT_NOT_FULL =
-        createTranslation("gui", "autocrafter_manager.view_type.not_full");
+    private static final List<MutableComponent> SUBTEXT_NOT_FULL = List.of(
+        createTranslation("gui", "autocrafter_manager.view_type.not_full").withStyle(ChatFormatting.GRAY)
+    );
     private static final MutableComponent HELP_NOT_FULL =
         createTranslation("gui", "autocrafter_manager.view_type.not_full.help");
-    private static final MutableComponent SUBTEXT_ALL =
-        createTranslation("gui", "autocrafter_manager.view_type.all");
+    private static final List<MutableComponent> SUBTEXT_ALL = List.of(
+        createTranslation("gui", "autocrafter_manager.view_type.all").withStyle(ChatFormatting.GRAY)
+    );
     private static final MutableComponent HELP_ALL =
         createTranslation("gui", "autocrafter_manager.view_type.all.help");
     private static final ResourceLocation SPRITE_VISIBLE =
@@ -56,7 +62,7 @@ class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (containerMenu.getViewType()) {
             case VISIBLE -> SUBTEXT_VISIBLE;
             case NOT_FULL -> SUBTEXT_NOT_FULL;

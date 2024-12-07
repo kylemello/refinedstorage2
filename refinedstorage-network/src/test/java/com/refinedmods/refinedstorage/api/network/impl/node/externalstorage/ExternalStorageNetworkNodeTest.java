@@ -58,7 +58,7 @@ class ExternalStorageNetworkNodeTest {
         assertThat(extracted).isZero();
         assertThat(sut.getStorageConfiguration().getAccessMode()).isEqualTo(AccessMode.INSERT_EXTRACT);
         assertThat(sut.getEnergyUsage()).isEqualTo(ENERGY_USAGE);
-        assertThat(sut.getStorageConfiguration().getPriority()).isZero();
+        assertThat(sut.getStorageConfiguration().getInsertPriority()).isZero();
         assertThat(sut.getStorageConfiguration().getFilterMode()).isEqualTo(FilterMode.BLOCK);
         assertThat(networkStorage.getAll()).isEmpty();
         assertThat(networkStorage.getStored()).isZero();
@@ -649,11 +649,11 @@ class ExternalStorageNetworkNodeTest {
             otherStorage.initialize(new ExternalStorageProviderFactoryImpl(provider2));
 
             if (oneHasPriority) {
-                sut.getStorageConfiguration().setPriority(5);
-                otherStorage.getStorageConfiguration().setPriority(2);
+                sut.getStorageConfiguration().setInsertPriority(5);
+                otherStorage.getStorageConfiguration().setInsertPriority(2);
             } else {
-                sut.getStorageConfiguration().setPriority(2);
-                otherStorage.getStorageConfiguration().setPriority(5);
+                sut.getStorageConfiguration().setInsertPriority(2);
+                otherStorage.getStorageConfiguration().setInsertPriority(5);
             }
 
             // Act

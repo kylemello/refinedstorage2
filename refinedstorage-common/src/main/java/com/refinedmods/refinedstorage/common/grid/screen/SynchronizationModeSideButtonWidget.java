@@ -3,6 +3,9 @@ package com.refinedmods.refinedstorage.common.grid.screen;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -34,8 +37,8 @@ class SynchronizationModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
-        return menu.getSynchronizer().getTitle();
+    protected List<MutableComponent> getSubText() {
+        return List.of(menu.getSynchronizer().getTitle().withStyle(ChatFormatting.GRAY));
     }
 
     @Override

@@ -3,6 +3,9 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocrafter;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -30,22 +33,24 @@ class LockModeSideButtonWidget extends AbstractSideButtonWidget {
         "widget/side_button/autocrafter/lock_mode/lock_until_low_redstone_signal"
     );
 
-    private static final MutableComponent NEVER_TITLE = createTranslation("gui", PREFIX + ".never");
-    private static final MutableComponent LOCK_UNTIL_REDSTONE_PULSE_RECEIVED_TITLE = createTranslation(
+    private static final List<MutableComponent> NEVER_TITLE = List.of(
+        createTranslation("gui", PREFIX + ".never").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> LOCK_UNTIL_REDSTONE_PULSE_RECEIVED_TITLE = List.of(createTranslation(
         "gui", PREFIX + ".lock_until_redstone_pulse_received"
-    );
-    private static final MutableComponent LOCK_UNTIL_CONNECTED_MACHINE_IS_EMPTY_TITLE = createTranslation(
+    ).withStyle(ChatFormatting.GRAY));
+    private static final List<MutableComponent> LOCK_UNTIL_CONNECTED_MACHINE_IS_EMPTY_TITLE = List.of(createTranslation(
         "gui", PREFIX + ".lock_until_connected_machine_is_empty"
-    );
-    private static final MutableComponent LOCK_UNTIL_ALL_OUTPUTS_ARE_RECEIVED_TITLE = createTranslation(
+    ).withStyle(ChatFormatting.GRAY));
+    private static final List<MutableComponent> LOCK_UNTIL_ALL_OUTPUTS_ARE_RECEIVED_TITLE = List.of(createTranslation(
         "gui", PREFIX + ".lock_until_all_outputs_are_received"
-    );
-    private static final MutableComponent LOCK_UNTIL_HIGH_REDSTONE_SIGNAL_TITLE = createTranslation(
+    ).withStyle(ChatFormatting.GRAY));
+    private static final List<MutableComponent> LOCK_UNTIL_HIGH_REDSTONE_SIGNAL_TITLE = List.of(createTranslation(
         "gui", PREFIX + ".lock_until_high_redstone_signal"
-    );
-    private static final MutableComponent LOCK_UNTIL_LOW_REDSTONE_SIGNAL_TITLE = createTranslation(
+    ).withStyle(ChatFormatting.GRAY));
+    private static final List<MutableComponent> LOCK_UNTIL_LOW_REDSTONE_SIGNAL_TITLE = List.of(createTranslation(
         "gui", PREFIX + ".lock_until_low_redstone_signal"
-    );
+    ).withStyle(ChatFormatting.GRAY));
 
     private final ClientProperty<LockMode> property;
 
@@ -76,7 +81,7 @@ class LockModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (property.getValue()) {
             case NEVER -> NEVER_TITLE;
             case LOCK_UNTIL_REDSTONE_PULSE_RECEIVED -> LOCK_UNTIL_REDSTONE_PULSE_RECEIVED_TITLE;

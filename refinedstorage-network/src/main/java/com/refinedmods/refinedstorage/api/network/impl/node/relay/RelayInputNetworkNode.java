@@ -73,9 +73,15 @@ public class RelayInputNetworkNode extends AbstractNetworkNode {
         }
     }
 
-    public void setPriority(final int priority) {
+    public void setInsertPriority(final int insertPriority) {
         if (outputNode != null) {
-            outputNode.setPriority(priority);
+            outputNode.setInsertPriority(insertPriority);
+        }
+    }
+
+    public void setExtractPriority(final int extractPriority) {
+        if (outputNode != null) {
+            outputNode.setExtractPriority(extractPriority);
         }
     }
 
