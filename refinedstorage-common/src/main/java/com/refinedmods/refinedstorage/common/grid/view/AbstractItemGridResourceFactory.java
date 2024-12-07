@@ -17,8 +17,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractItemGridResourceFactory implements GridResourceFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractItemGridResourceFactory.class);
+
     @Override
     public Optional<GridResource> apply(final ResourceKey resource, final boolean autocraftable) {
         if (!(resource instanceof ItemResource itemResource)) {
@@ -46,11 +50,16 @@ public abstract class AbstractItemGridResourceFactory implements GridResourceFac
     }
 
     private String getTooltip(final ItemStack itemStack) {
-        return itemStack
-            .getTooltipLines(Item.TooltipContext.EMPTY, null, TooltipFlag.ADVANCED)
-            .stream()
-            .map(Component::getString)
-            .collect(Collectors.joining("\n"));
+        try {
+            return itemStack
+                .getTooltipLines(Item.TooltipContext.EMPTY, null, TooltipFlag.ADVANCED)
+                .stream()
+                .map(Component::getString)
+                .collect(Collectors.joining("\n"));
+        } catch (final Throwable t) {
+            LOGGER.warn("Failed to get tooltip for item {}", itemStack, t);
+            return "";
+        }
     }
 
     private Set<String> getTags(final Item item) {
