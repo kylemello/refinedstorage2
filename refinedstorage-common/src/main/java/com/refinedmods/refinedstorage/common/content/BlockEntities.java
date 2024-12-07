@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.common.content;
 
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerBlockEntity;
 import com.refinedmods.refinedstorage.common.autocrafting.monitor.AutocraftingMonitorBlockEntity;
@@ -25,8 +26,6 @@ import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDrive
 import com.refinedmods.refinedstorage.common.storage.diskinterface.AbstractDiskInterfaceBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.AbstractExternalStorageBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.AbstractPortableGridBlockEntity;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockBlockEntity;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorBlockEntity;
 
 import java.util.EnumMap;
@@ -55,9 +54,9 @@ public final class BlockEntities {
     private Supplier<BlockEntityType<ControllerBlockEntity>> controller;
     @Nullable
     private Supplier<BlockEntityType<ControllerBlockEntity>> creativeController;
-    private final Map<ItemStorageVariant, Supplier<BlockEntityType<ItemStorageBlockBlockEntity>>>
+    private final Map<ItemStorageVariant, Supplier<BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>>>>
         itemStorageBlocks = new EnumMap<>(ItemStorageVariant.class);
-    private final Map<FluidStorageVariant, Supplier<BlockEntityType<FluidStorageBlockBlockEntity>>>
+    private final Map<FluidStorageVariant, Supplier<BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>>>>
         fluidStorageBlocks = new EnumMap<>(FluidStorageVariant.class);
     @Nullable
     private Supplier<BlockEntityType<AbstractImporterBlockEntity>> importer;
@@ -157,21 +156,28 @@ public final class BlockEntities {
         this.creativeController = supplier;
     }
 
-    public void setItemStorageBlock(final ItemStorageVariant variant,
-                                    final Supplier<BlockEntityType<ItemStorageBlockBlockEntity>> supplier) {
+    public void setItemStorageBlock(
+        final ItemStorageVariant variant,
+        final Supplier<BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>>> supplier
+    ) {
         itemStorageBlocks.put(variant, supplier);
     }
 
-    public BlockEntityType<ItemStorageBlockBlockEntity> getItemStorageBlock(final ItemStorageVariant variant) {
+    public BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>> getItemStorageBlock(
+        final ItemStorageVariant variant
+    ) {
         return itemStorageBlocks.get(variant).get();
     }
 
-    public void setFluidStorageBlock(final FluidStorageVariant variant,
-                                     final Supplier<BlockEntityType<FluidStorageBlockBlockEntity>> supplier) {
+    public void setFluidStorageBlock(
+        final FluidStorageVariant variant,
+        final Supplier<BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>>> supplier
+    ) {
         fluidStorageBlocks.put(variant, supplier);
     }
 
-    public BlockEntityType<FluidStorageBlockBlockEntity> getFluidStorageBlock(final FluidStorageVariant variant) {
+    public BlockEntityType<AbstractNetworkNodeContainerBlockEntity<?>> getFluidStorageBlock(
+        final FluidStorageVariant variant) {
         return fluidStorageBlocks.get(variant).get();
     }
 

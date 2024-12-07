@@ -10,16 +10,12 @@ import com.refinedmods.refinedstorage.api.network.impl.NetworkBuilderImpl;
 import com.refinedmods.refinedstorage.api.network.impl.NetworkFactory;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.security.SecurityPolicy;
-import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderItem;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.ConstructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.constructordestructor.DestructorStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.exporter.ExporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.grid.Grid;
-import com.refinedmods.refinedstorage.common.api.grid.GridInsertionHint;
-import com.refinedmods.refinedstorage.common.api.grid.GridInsertionHints;
 import com.refinedmods.refinedstorage.common.api.grid.GridSynchronizer;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStrategyFactory;
@@ -29,6 +25,8 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStra
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.importer.ImporterTransferStrategyFactory;
 import com.refinedmods.refinedstorage.common.api.security.PlatformPermission;
+import com.refinedmods.refinedstorage.common.api.storage.StorageBlockData;
+import com.refinedmods.refinedstorage.common.api.storage.StorageBlockProvider;
 import com.refinedmods.refinedstorage.common.api.storage.StorageContainerItemHelper;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.api.storage.StorageType;
@@ -36,6 +34,7 @@ import com.refinedmods.refinedstorage.common.api.storage.externalstorage.Platfor
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemHelper;
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.InWorldNetworkNodeContainer;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.network.item.NetworkItemHelper;
@@ -43,7 +42,6 @@ import com.refinedmods.refinedstorage.common.api.support.registry.PlatformRegist
 import com.refinedmods.refinedstorage.common.api.support.resource.RecipeModIngredientConverter;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceContainerInsertStrategy;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceFactory;
-import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceType;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReference;
 import com.refinedmods.refinedstorage.common.api.support.slotreference.SlotReferenceFactory;
@@ -52,9 +50,6 @@ import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeRegistry;
 import com.refinedmods.refinedstorage.common.api.wirelesstransmitter.WirelessTransmitterRangeModifier;
 import com.refinedmods.refinedstorage.common.content.ContentIds;
 import com.refinedmods.refinedstorage.common.grid.NoopGridSynchronizer;
-import com.refinedmods.refinedstorage.common.grid.screen.hint.GridInsertionHintsImpl;
-import com.refinedmods.refinedstorage.common.grid.screen.hint.ItemGridInsertionHint;
-import com.refinedmods.refinedstorage.common.grid.screen.hint.SingleItemGridInsertionHint;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridExtractionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.grid.strategy.CompositeGridScrollingStrategy;
@@ -63,6 +58,10 @@ import com.refinedmods.refinedstorage.common.storage.ClientStorageRepository;
 import com.refinedmods.refinedstorage.common.storage.StorageContainerItemHelperImpl;
 import com.refinedmods.refinedstorage.common.storage.StorageRepositoryImpl;
 import com.refinedmods.refinedstorage.common.storage.StorageTypes;
+import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlock;
+import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockBlockEntity;
+import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockCodecs;
+import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockContainerMenu;
 import com.refinedmods.refinedstorage.common.storagemonitor.CompositeStorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.storagemonitor.CompositeStorageMonitorInsertionStrategy;
 import com.refinedmods.refinedstorage.common.support.energy.EnergyItemHelperImpl;
@@ -81,7 +80,6 @@ import com.refinedmods.refinedstorage.common.support.resource.ItemResourceFactor
 import com.refinedmods.refinedstorage.common.support.slotreference.CompositeSlotReferenceProvider;
 import com.refinedmods.refinedstorage.common.support.slotreference.InventorySlotReference;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeRegistryImpl;
-import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
 import com.refinedmods.refinedstorage.common.util.ServerEventQueue;
 
@@ -104,18 +102,23 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -155,16 +158,11 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
         new CompositeRecipeModIngredientConverter();
     private final StorageContainerItemHelper storageContainerItemHelper = new StorageContainerItemHelperImpl();
     private final List<GridInsertionStrategyFactory> gridInsertionStrategyFactories = new ArrayList<>();
-    private final GridInsertionHintsImpl gridInsertionHints = new GridInsertionHintsImpl(
-        new ItemGridInsertionHint(),
-        new SingleItemGridInsertionHint()
-    );
     private final List<GridExtractionStrategyFactory> gridExtractionStrategyFactories = new ArrayList<>();
     private final List<GridScrollingStrategyFactory> gridScrollingStrategyFactories = new ArrayList<>();
     private final ResourceFactory itemResourceFactory = new ItemResourceFactory();
     private final ResourceFactory fluidResourceFactory = new FluidResourceFactory();
     private final Set<ResourceFactory> resourceFactories = new HashSet<>();
-    private final Map<Class<?>, ResourceRendering> resourceRenderingMap = new HashMap<>();
     private final CompositeWirelessTransmitterRangeModifier wirelessTransmitterRangeModifier =
         new CompositeWirelessTransmitterRangeModifier();
     private final EnergyItemHelper energyItemHelper = new EnergyItemHelperImpl();
@@ -382,16 +380,6 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public void addAlternativeGridInsertionHint(final GridInsertionHint hint) {
-        gridInsertionHints.addAlternativeHint(hint);
-    }
-
-    @Override
-    public GridInsertionHints getGridInsertionHints() {
-        return gridInsertionHints;
-    }
-
-    @Override
     public GridExtractionStrategy createGridExtractionStrategy(final AbstractContainerMenu containerMenu,
                                                                final ServerPlayer player,
                                                                final Grid grid) {
@@ -451,17 +439,6 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     @Override
     public Set<ResourceFactory> getAlternativeResourceFactories() {
         return resourceFactories;
-    }
-
-    @Override
-    public <T extends ResourceKey> void registerResourceRendering(final Class<T> resourceClass,
-                                                                  final ResourceRendering rendering) {
-        resourceRenderingMap.put(resourceClass, rendering);
-    }
-
-    @Override
-    public <T extends ResourceKey> ResourceRendering getResourceRendering(final Class<T> resourceClass) {
-        return resourceRenderingMap.get(resourceClass);
     }
 
     @Override
@@ -601,15 +578,39 @@ public class RefinedStorageApiImpl implements RefinedStorageApi {
     }
 
     @Override
-    public void openAutocraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
-        if (requests.isEmpty()) {
-            return;
-        }
-        ClientPlatformUtil.openCraftingPreview(requests, parentScreen);
+    public ResourceLocation getCreativeModeTabId() {
+        return ContentIds.CREATIVE_MODE_TAB;
     }
 
     @Override
-    public ResourceLocation getCreativeModeTabId() {
-        return ContentIds.CREATIVE_MODE_TAB;
+    public AbstractNetworkNodeContainerBlockEntity<?> createStorageBlockEntity(final BlockPos pos,
+                                                                               final BlockState state,
+                                                                               final StorageBlockProvider provider) {
+        return new StorageBlockBlockEntity(pos, state, provider);
+    }
+
+    @Override
+    public Block createStorageBlock(final BlockBehaviour.Properties properties, final StorageBlockProvider provider) {
+        return new StorageBlock<>(properties, provider);
+    }
+
+    @Override
+    public AbstractContainerMenu createStorageBlockContainerMenu(final int syncId,
+                                                                 final Player player,
+                                                                 final StorageBlockData data,
+                                                                 final ResourceFactory resourceFactory,
+                                                                 final MenuType<?> menuType) {
+        return new StorageBlockContainerMenu(
+            menuType,
+            syncId,
+            player,
+            data,
+            resourceFactory
+        );
+    }
+
+    @Override
+    public StreamCodec<RegistryFriendlyByteBuf, StorageBlockData> getStorageBlockDataStreamCodec() {
+        return StorageBlockCodecs.STREAM_CODEC;
     }
 }

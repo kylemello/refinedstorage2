@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.support.tooltip;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 
 import net.minecraft.client.gui.Font;
@@ -30,7 +30,7 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
 
     @Override
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
-        RefinedStorageApi.INSTANCE.getResourceRendering(resourceAmount.resource().getClass()).render(
+        RefinedStorageClientApi.INSTANCE.getResourceRendering(resourceAmount.resource().getClass()).render(
             resourceAmount.resource(),
             graphics,
             x,
@@ -46,7 +46,7 @@ public class ResourceClientTooltipComponent implements ClientTooltipComponent {
     }
 
     private static Component getNameWithAmount(final ResourceAmount resourceAmount) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
             resourceAmount.resource().getClass()
         );
         final String amount = rendering.formatAmount(resourceAmount.amount());

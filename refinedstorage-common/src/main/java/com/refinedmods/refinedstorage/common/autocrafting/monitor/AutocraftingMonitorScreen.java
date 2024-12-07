@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common.autocrafting.monitor;
 
 import com.refinedmods.refinedstorage.api.autocrafting.TaskId;
 import com.refinedmods.refinedstorage.api.autocrafting.status.TaskStatus;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
@@ -276,7 +276,9 @@ public class AutocraftingMonitorScreen extends AbstractBaseScreen<AbstractAutocr
             renderItemErrorIcon(graphics, x, y);
         }
         int xx = x + 2;
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(item.resource().getClass());
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
+            item.resource().getClass()
+        );
         int yy = y + 7;
         rendering.render(item.resource(), graphics, xx, yy);
         if (isHovering(x - leftPos, y - topPos, 73, 29, mouseX, mouseY)

@@ -27,14 +27,13 @@ import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterface
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageContainerMenu;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBlockContainerMenu;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridItemContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockContainerMenu;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorContainerMenu;
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeContainerMenu;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
 import static java.util.Objects.requireNonNull;
@@ -55,9 +54,9 @@ public final class Menus {
     @Nullable
     private Supplier<MenuType<ControllerContainerMenu>> controller;
     @Nullable
-    private Supplier<MenuType<ItemStorageBlockContainerMenu>> itemStorage;
+    private Supplier<MenuType<AbstractContainerMenu>> itemStorage;
     @Nullable
-    private Supplier<MenuType<FluidStorageBlockContainerMenu>> fluidStorage;
+    private Supplier<MenuType<AbstractContainerMenu>> fluidStorage;
     @Nullable
     private Supplier<MenuType<ImporterContainerMenu>> importer;
     @Nullable
@@ -156,19 +155,19 @@ public final class Menus {
         this.controller = supplier;
     }
 
-    public MenuType<ItemStorageBlockContainerMenu> getItemStorage() {
+    public MenuType<AbstractContainerMenu> getItemStorage() {
         return requireNonNull(itemStorage).get();
     }
 
-    public void setItemStorage(final Supplier<MenuType<ItemStorageBlockContainerMenu>> supplier) {
+    public void setItemStorage(final Supplier<MenuType<AbstractContainerMenu>> supplier) {
         this.itemStorage = supplier;
     }
 
-    public MenuType<FluidStorageBlockContainerMenu> getFluidStorage() {
+    public MenuType<AbstractContainerMenu> getFluidStorage() {
         return requireNonNull(fluidStorage).get();
     }
 
-    public void setFluidStorage(final Supplier<MenuType<FluidStorageBlockContainerMenu>> supplier) {
+    public void setFluidStorage(final Supplier<MenuType<AbstractContainerMenu>> supplier) {
         this.fluidStorage = supplier;
     }
 

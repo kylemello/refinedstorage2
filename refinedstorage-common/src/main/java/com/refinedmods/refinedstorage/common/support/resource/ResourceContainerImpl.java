@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.ToLongFunction;
 import javax.annotation.Nullable;
@@ -381,7 +382,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public static ResourceContainer createForFilter(final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(data.resources().size());
-        setResourceContainerData(data, resourceContainer);
+        setResourceContainerData(data.resources(), resourceContainer);
         return resourceContainer;
     }
 
@@ -410,15 +411,22 @@ public class ResourceContainerImpl implements ResourceContainer {
     public static ResourceContainer createForFilter(final ResourceFactory resourceFactory,
                                                     final ResourceContainerData data) {
         final ResourceContainer resourceContainer = createForFilter(resourceFactory, data.resources().size());
-        setResourceContainerData(data, resourceContainer);
+        setResourceContainerData(data.resources(), resourceContainer);
         return resourceContainer;
     }
 
-    public static void setResourceContainerData(final ResourceContainerData data,
+    public static ResourceContainer createForFilter(final ResourceFactory resourceFactory,
+                                                    final List<Optional<ResourceAmount>> resources) {
+        final ResourceContainer resourceContainer = createForFilter(resourceFactory, resources.size());
+        setResourceContainerData(resources, resourceContainer);
+        return resourceContainer;
+    }
+
+    public static void setResourceContainerData(final List<Optional<ResourceAmount>> resources,
                                                 final ResourceContainer resourceContainer) {
-        for (int i = 0; i < data.resources().size(); ++i) {
+        for (int i = 0; i < resources.size(); ++i) {
             final int ii = i;
-            data.resources().get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
+            resources.get(i).ifPresent(resource -> resourceContainer.set(ii, resource));
         }
     }
 }

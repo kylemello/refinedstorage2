@@ -1,6 +1,6 @@
 package com.refinedmods.refinedstorage.common.autocrafting;
 
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
@@ -33,7 +33,7 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
     public void renderImage(final Font font, final int x, final int y, final GuiGraphics graphics) {
         graphics.drawString(font, outputText, x, y, 0xAAAAAA);
         graphics.blitSprite(SLOT, x, y + 9 + 2, 18, 18);
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(ItemResource.class);
         rendering.render(input, graphics, x + 1, y + 9 + 2 + 1);
         graphics.blitSprite(
             LIGHT_ARROW,
@@ -58,7 +58,7 @@ class StonecutterPatternClientTooltipComponent implements ClientTooltipComponent
     }
 
     private static Component getOutputText(final ItemResource output) {
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(ItemResource.class);
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(ItemResource.class);
         return Component.literal("1x ")
             .append(rendering.getDisplayName(output))
             .withStyle(ChatFormatting.GRAY);
