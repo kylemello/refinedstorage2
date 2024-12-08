@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+-  Ability to differentiate between insert and extract storage priorities. By default, the extract priority will match the insert priority unless configured otherwise.
+
 ### Fixed
 
 -   Fixed External Fluid not connecting properly to fluid storages.

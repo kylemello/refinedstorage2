@@ -258,30 +258,39 @@ class RootStorageImplTest {
     @Test
     void shouldSortSources() {
         // Arrange
-        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
-        final PriorityStorage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
-        final PriorityStorage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 0);
+        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 0, 0);
+        final PriorityStorage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 0, 0);
+        final PriorityStorage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 0, 0);
 
         sut.addSource(storage1);
         sut.addSource(storage2);
         sut.addSource(storage3);
 
-        storage1.setPriority(8);
-        storage2.setPriority(15);
-        storage3.setPriority(2);
+        storage1.setInsertPriority(8);
+        storage2.setInsertPriority(15);
+        storage3.setInsertPriority(2);
 
-        // Act
+        storage1.setExtractPriority(8);
+        storage2.setExtractPriority(2);
+        storage3.setExtractPriority(15);
+
+        // Act & assert
         sut.sortSources();
 
         sut.insert(A, 15, Action.EXECUTE, EmptyActor.INSTANCE);
-
-        // Assert
         assertThat(storage2.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
         );
         assertThat(storage1.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 5)
         );
+        assertThat(storage3.getAll()).isEmpty();
+
+        sut.extract(A, 12, Action.EXECUTE, EmptyActor.INSTANCE);
+        assertThat(storage2.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 3)
+        );
+        assertThat(storage1.getAll()).isEmpty();
         assertThat(storage3.getAll()).isEmpty();
     }
 }

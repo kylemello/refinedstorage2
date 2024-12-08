@@ -278,36 +278,67 @@ class RelayStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldRespectPriorityOfOutput(
+    void shouldRespectInsertPriorityOfOutput(
         @InjectNetworkStorageComponent(networkId = "input") final StorageNetworkComponent inputStorage,
         @InjectNetworkStorageComponent(networkId = "output") final StorageNetworkComponent outputStorage
     ) {
         // Arrange
         input.setActive(true);
         input.setOutputNode(output);
-        input.setPriority(3);
+        input.setInsertPriority(3);
+        input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
+        inputStorage.addSource(new LimitedStorageImpl(10));
+
+        final Storage fallbackStorage1 = PriorityStorage.of(new LimitedStorageImpl(10), 2, 1);
+        outputStorage.addSource(fallbackStorage1);
+
+        final Storage fallbackStorage2 = PriorityStorage.of(new LimitedStorageImpl(10), 1, 2);
+        outputStorage.addSource(fallbackStorage2);
+
+        // Act
+        final long inserted = outputStorage.insert(A, 12, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        // Assert
+        assertThat(inserted).isEqualTo(12);
+
+        assertThat(inputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 10)
+        );
+        assertThat(fallbackStorage1.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 2)
+        );
+        assertThat(fallbackStorage2.getAll()).usingRecursiveFieldByFieldElementComparator().isEmpty();
+    }
+
+    @Test
+    void shouldRespectExtractPriorityOfOutput(
+        @InjectNetworkStorageComponent(networkId = "input") final StorageNetworkComponent inputStorage,
+        @InjectNetworkStorageComponent(networkId = "output") final StorageNetworkComponent outputStorage
+    ) {
+        // Arrange
+        input.setActive(true);
+        input.setOutputNode(output);
+        input.setExtractPriority(3);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
         inputStorage.addSource(new StorageImpl());
         inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
 
-        final Storage fallbackStorage1 = PriorityStorage.of(new StorageImpl(), 2);
+        final Storage fallbackStorage1 = PriorityStorage.of(new StorageImpl(), 2, 1);
         fallbackStorage1.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         outputStorage.addSource(fallbackStorage1);
 
-        final Storage fallbackStorage2 = PriorityStorage.of(new StorageImpl(), 1);
+        final Storage fallbackStorage2 = PriorityStorage.of(new StorageImpl(), 1, 2);
         fallbackStorage2.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
         outputStorage.addSource(fallbackStorage2);
 
         // Act
-        final long inserted = outputStorage.insert(A, 2, Action.EXECUTE, EmptyActor.INSTANCE);
         final long extracted = outputStorage.extract(A, 3, Action.EXECUTE, EmptyActor.INSTANCE);
 
         // Assert
-        assertThat(inserted).isEqualTo(2);
         assertThat(extracted).isEqualTo(3);
 
         assertThat(inputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
-            new ResourceAmount(A, 9)
+            new ResourceAmount(A, 7)
         );
         assertThat(fallbackStorage1.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 10)
@@ -318,25 +349,25 @@ class RelayStorageNetworkNodeTest {
     }
 
     @Test
-    void shouldModifyPriorityOfOutput(
+    void shouldModifyInsertPriorityOfOutput(
         @InjectNetworkStorageComponent(networkId = "input") final StorageNetworkComponent inputStorage,
         @InjectNetworkStorageComponent(networkId = "output") final StorageNetworkComponent outputStorage
     ) {
         // Arrange
         input.setActive(true);
         input.setOutputNode(output);
-        input.setPriority(3);
+        input.setInsertPriority(3);
         input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
         inputStorage.addSource(new LimitedStorageImpl(10));
 
-        final Storage fallbackStorage1 = PriorityStorage.of(new LimitedStorageImpl(5), 1);
+        final Storage fallbackStorage1 = PriorityStorage.of(new LimitedStorageImpl(5), 1, 3);
         outputStorage.addSource(fallbackStorage1);
 
-        final Storage fallbackStorage2 = PriorityStorage.of(new LimitedStorageImpl(5), 3);
+        final Storage fallbackStorage2 = PriorityStorage.of(new LimitedStorageImpl(5), 3, 1);
         outputStorage.addSource(fallbackStorage2);
 
         // Act
-        input.setPriority(2);
+        input.setInsertPriority(2);
 
         // Assert
         final long inserted = outputStorage.insert(A, 7, Action.EXECUTE, EmptyActor.INSTANCE);
@@ -351,6 +382,43 @@ class RelayStorageNetworkNodeTest {
         assertThat(fallbackStorage1.getAll()).usingRecursiveFieldByFieldElementComparator().isEmpty();
         assertThat(fallbackStorage2.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
             new ResourceAmount(A, 2)
+        );
+    }
+
+    @Test
+    void shouldModifyExtractPriorityOfOutput(
+        @InjectNetworkStorageComponent(networkId = "input") final StorageNetworkComponent inputStorage,
+        @InjectNetworkStorageComponent(networkId = "output") final StorageNetworkComponent outputStorage
+    ) {
+        // Arrange
+        input.setActive(true);
+        input.setOutputNode(output);
+        input.setExtractPriority(4);
+        input.setComponentTypes(Set.of(RelayComponentType.STORAGE));
+        inputStorage.addSource(new LimitedStorageImpl(10));
+        inputStorage.insert(A, 10, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        final Storage fallbackStorage1 = PriorityStorage.of(new LimitedStorageImpl(5), 1, 3);
+        fallbackStorage1.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
+        outputStorage.addSource(fallbackStorage1);
+
+        final Storage fallbackStorage2 = PriorityStorage.of(new LimitedStorageImpl(5), 3, 1);
+        fallbackStorage2.insert(A, 5, Action.EXECUTE, EmptyActor.INSTANCE);
+        outputStorage.addSource(fallbackStorage2);
+
+        // Act
+        input.setExtractPriority(2);
+        final long extracted = outputStorage.extract(A, 6, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        // Assert
+        assertThat(extracted).isEqualTo(6);
+
+        assertThat(inputStorage.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 9)
+        );
+        assertThat(fallbackStorage1.getAll()).usingRecursiveFieldByFieldElementComparator().isEmpty();
+        assertThat(fallbackStorage2.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+            new ResourceAmount(A, 5)
         );
     }
 

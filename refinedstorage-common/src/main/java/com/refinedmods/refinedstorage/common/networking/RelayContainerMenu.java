@@ -100,7 +100,8 @@ public class RelayContainerMenu extends AbstractSimpleFilterContainerMenu<RelayB
         });
         registerProperty(new ClientProperty<>(PropertyTypes.FILTER_MODE, FilterMode.BLOCK));
         registerProperty(new ClientProperty<>(StoragePropertyTypes.ACCESS_MODE, AccessMode.INSERT_EXTRACT));
-        registerProperty(new ClientProperty<>(StoragePropertyTypes.PRIORITY, 0));
+        registerProperty(new ClientProperty<>(StoragePropertyTypes.INSERT_PRIORITY, 0));
+        registerProperty(new ClientProperty<>(StoragePropertyTypes.EXTRACT_PRIORITY, 0));
         registerProperty(new ClientProperty<>(PropertyTypes.FUZZY_MODE, false));
     }
 
@@ -147,9 +148,14 @@ public class RelayContainerMenu extends AbstractSimpleFilterContainerMenu<RelayB
             blockEntity::setAccessMode
         ));
         registerProperty(new ServerProperty<>(
-            StoragePropertyTypes.PRIORITY,
-            blockEntity::getPriority,
-            blockEntity::setPriority
+            StoragePropertyTypes.INSERT_PRIORITY,
+            blockEntity::getInsertPriority,
+            blockEntity::setInsertPriority
+        ));
+        registerProperty(new ServerProperty<>(
+            StoragePropertyTypes.EXTRACT_PRIORITY,
+            blockEntity::getExtractPriority,
+            blockEntity::setExtractPriority
         ));
         registerProperty(new ServerProperty<>(
             PropertyTypes.FUZZY_MODE,

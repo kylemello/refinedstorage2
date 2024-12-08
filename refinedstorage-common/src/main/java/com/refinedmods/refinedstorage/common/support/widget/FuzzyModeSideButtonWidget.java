@@ -2,8 +2,10 @@ package com.refinedmods.refinedstorage.common.support.widget;
 
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -13,8 +15,12 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public class FuzzyModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "fuzzy_mode");
-    private static final MutableComponent SUBTEXT_ON = createTranslation("gui", "fuzzy_mode.on");
-    private static final MutableComponent SUBTEXT_OFF = createTranslation("gui", "fuzzy_mode.off");
+    private static final List<MutableComponent> SUBTEXT_ON = List.of(
+        createTranslation("gui", "fuzzy_mode.on").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_OFF = List.of(
+        createTranslation("gui", "fuzzy_mode.off").withStyle(ChatFormatting.GRAY)
+    );
     private static final ResourceLocation ON = createIdentifier("widget/side_button/fuzzy_mode/on");
     private static final ResourceLocation OFF = createIdentifier("widget/side_button/fuzzy_mode/off");
 
@@ -42,7 +48,7 @@ public class FuzzyModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return Boolean.TRUE.equals(property.getValue()) ? SUBTEXT_ON : SUBTEXT_OFF;
     }
 

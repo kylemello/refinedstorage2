@@ -86,7 +86,7 @@ class RelayNetworkNodeTest {
         addPattern(inputAutocrafting, A);
 
         input.setAccessMode(AccessMode.INSERT_EXTRACT);
-        input.setPriority(5);
+        input.setInsertPriority(5);
         input.setFilters(Set.of(A, B, C));
 
         // Act

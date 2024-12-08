@@ -96,10 +96,7 @@ public abstract class AbstractSideButtonWidget extends Button {
             getTitle().getVisualOrderText()
         );
         lines.add(title);
-        final ClientTooltipComponent subText = ClientTooltipComponent.create(
-            getSubText().withStyle(ChatFormatting.GRAY).getVisualOrderText()
-        );
-        lines.add(subText);
+        getSubText().forEach(line -> lines.add(ClientTooltipComponent.create(line.getVisualOrderText())));
         if (warning != null) {
             lines.add(warning);
         }
@@ -112,7 +109,7 @@ public abstract class AbstractSideButtonWidget extends Button {
 
     protected abstract MutableComponent getTitle();
 
-    protected abstract MutableComponent getSubText();
+    protected abstract List<MutableComponent> getSubText();
 
     @Nullable
     protected Component getHelpText() {

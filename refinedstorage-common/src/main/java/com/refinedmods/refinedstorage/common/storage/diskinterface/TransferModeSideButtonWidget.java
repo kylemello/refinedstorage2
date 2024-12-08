@@ -4,6 +4,9 @@ import com.refinedmods.refinedstorage.api.network.impl.node.storagetransfer.Stor
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -13,10 +16,12 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 class TransferModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "disk_interface.transfer_mode");
-    private static final MutableComponent SUBTEXT_INSERT_INTO_NETWORK =
-        createTranslation("gui", "disk_interface.transfer_mode.insert_into_network");
-    private static final MutableComponent SUBTEXT_EXTRACT_FROM_NETWORK =
-        createTranslation("gui", "disk_interface.transfer_mode.extract_from_network");
+    private static final List<MutableComponent> SUBTEXT_INSERT_INTO_NETWORK = List.of(
+        createTranslation("gui", "disk_interface.transfer_mode.insert_into_network").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_EXTRACT_FROM_NETWORK = List.of(
+        createTranslation("gui", "disk_interface.transfer_mode.extract_from_network").withStyle(ChatFormatting.GRAY)
+    );
     private static final Component HELP_INSERT_INTO_NETWORK =
         createTranslation("gui", "disk_interface.transfer_mode.insert_into_network.help");
     private static final Component HELP_EXTRACT_FROM_NETWORK =
@@ -58,7 +63,7 @@ class TransferModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (property.getValue()) {
             case INSERT_INTO_NETWORK -> SUBTEXT_INSERT_INTO_NETWORK;
             case EXTRACT_FROM_NETWORK -> SUBTEXT_EXTRACT_FROM_NETWORK;

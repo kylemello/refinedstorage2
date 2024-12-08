@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.FuzzyModeSideButtonWidget;
-import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.StoragePrioritySideButtonWidget;
 
 import javax.annotation.Nullable;
 
@@ -114,8 +114,9 @@ public class RelayScreen extends AbstractFilterScreen<RelayContainerMenu>
         accessModeButton.visible = visible;
         addSideButton(accessModeButton);
 
-        priorityButton = PrioritySideButtonWidget.forStorage(
-            getMenu().getProperty(StoragePropertyTypes.PRIORITY),
+        priorityButton = new StoragePrioritySideButtonWidget(
+            getMenu().getProperty(StoragePropertyTypes.INSERT_PRIORITY),
+            getMenu().getProperty(StoragePropertyTypes.EXTRACT_PRIORITY),
             playerInventory,
             this
         );

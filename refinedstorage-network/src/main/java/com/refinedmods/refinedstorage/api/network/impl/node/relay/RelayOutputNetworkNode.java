@@ -57,8 +57,15 @@ public class RelayOutputNetworkNode extends AbstractNetworkNode
         this.storage.setAccessMode(accessMode);
     }
 
-    void setPriority(final int priority) {
-        this.storage.setPriority(priority);
+    void setInsertPriority(final int insertPriority) {
+        this.storage.setInsertPriority(insertPriority);
+        if (network != null) {
+            network.getComponent(StorageNetworkComponent.class).sortSources();
+        }
+    }
+
+    void setExtractPriority(final int extractPriority) {
+        this.storage.setExtractPriority(extractPriority);
         if (network != null) {
             network.getComponent(StorageNetworkComponent.class).sortSources();
         }
