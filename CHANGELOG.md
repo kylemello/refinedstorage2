@@ -15,7 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
--   Fixed External Fluid not connecting properly to fluid storages.
+-   Fixed External Storage not connecting properly to fluid storages.
 -   Fixed Interface filter not respecting maximum stack size of a resource.
 -   Fixed potential crash when trying to build cable shapes.
 -   Fixed storage disk upgrade recipes not showing properly in recipe viewers.
