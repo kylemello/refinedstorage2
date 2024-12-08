@@ -3,7 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting.preview;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.Preview;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewItem;
 import com.refinedmods.refinedstorage.api.autocrafting.preview.PreviewType;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.support.resource.ResourceRendering;
 import com.refinedmods.refinedstorage.common.support.amount.AbstractAmountScreen;
 import com.refinedmods.refinedstorage.common.support.amount.AmountScreenConfiguration;
@@ -294,7 +294,9 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
             graphics.fill(x, y, x + 73, y + 29, 0xFFF2DEDE);
         }
         int xx = x + 2;
-        final ResourceRendering rendering = RefinedStorageApi.INSTANCE.getResourceRendering(item.resource().getClass());
+        final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(
+            item.resource().getClass()
+        );
         int yy = y + 7;
         rendering.render(item.resource(), graphics, xx, yy);
         if (isHovering(xx - leftPos, yy - topPos, 16, 16, mouseX, mouseY)

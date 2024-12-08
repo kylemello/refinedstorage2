@@ -10,13 +10,8 @@ import com.refinedmods.refinedstorage.common.api.storage.StorageInfo;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
 import com.refinedmods.refinedstorage.common.content.DataComponents;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.LongFunction;
@@ -25,13 +20,11 @@ import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -40,9 +33,6 @@ import org.slf4j.LoggerFactory;
 
 public class StorageContainerItemHelperImpl implements StorageContainerItemHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageContainerItemHelperImpl.class);
-
-    private final Map<Item, ResourceLocation> diskModelsByItem = new HashMap<>();
-    private final Set<ResourceLocation> diskModels = new HashSet<>();
 
     @Override
     public Optional<SerializableStorage> resolveStorage(final StorageRepository storageRepository,
@@ -198,22 +188,6 @@ public class StorageContainerItemHelperImpl implements StorageContainerItemHelpe
         } else {
             LOGGER.warn("Could not transfer storage {} to stack, there is no storage ID!", blockEntity);
         }
-    }
-
-    @Override
-    public void registerDiskModel(final Item item, final ResourceLocation model) {
-        diskModelsByItem.put(item, model);
-        diskModels.add(model);
-    }
-
-    @Override
-    public Set<ResourceLocation> getDiskModels() {
-        return diskModels;
-    }
-
-    @Override
-    public Map<Item, ResourceLocation> getDiskModelsByItem() {
-        return Collections.unmodifiableMap(diskModelsByItem);
     }
 
     @Override

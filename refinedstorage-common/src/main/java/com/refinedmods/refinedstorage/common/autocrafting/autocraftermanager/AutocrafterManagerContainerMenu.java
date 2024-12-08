@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.autocrafting.PatternInventory;
 import com.refinedmods.refinedstorage.common.content.Menus;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseContainerMenu;
@@ -274,7 +275,7 @@ public class AutocrafterManagerContainerMenu extends AbstractBaseContainerMenu i
 
         private static boolean hasResource(final Set<ResourceKey> resources, final String normalizedQuery) {
             return resources.stream().anyMatch(key ->
-                RefinedStorageApi.INSTANCE.getResourceRendering(key.getClass())
+                RefinedStorageClientApi.INSTANCE.getResourceRendering(key.getClass())
                     .getDisplayName(key)
                     .getString()
                     .toLowerCase(Locale.ROOT)

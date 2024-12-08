@@ -3,8 +3,8 @@ package com.refinedmods.refinedstorage.common.storage;
 import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.containermenu.PropertyTypes;
 import com.refinedmods.refinedstorage.common.support.widget.FuzzyModeSideButtonWidget;
-import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.RedstoneModeSideButtonWidget;
+import com.refinedmods.refinedstorage.common.support.widget.StoragePrioritySideButtonWidget;
 
 import javax.annotation.Nullable;
 
@@ -48,8 +48,9 @@ public abstract class AbstractStorageScreen<T extends AbstractStorageContainerMe
             () -> FuzzyModeSideButtonWidget.Type.STORAGE
         ));
         addSideButton(new AccessModeSideButtonWidget(getMenu().getProperty(StoragePropertyTypes.ACCESS_MODE)));
-        addSideButton(PrioritySideButtonWidget.forStorage(
-            getMenu().getProperty(StoragePropertyTypes.PRIORITY),
+        addSideButton(new StoragePrioritySideButtonWidget(
+            getMenu().getProperty(StoragePropertyTypes.INSERT_PRIORITY),
+            getMenu().getProperty(StoragePropertyTypes.EXTRACT_PRIORITY),
             playerInventory,
             this
         ));

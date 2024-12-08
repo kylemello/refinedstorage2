@@ -167,7 +167,7 @@ public abstract class AbstractExternalStorageBlockEntity
     }
 
     void setPriority(final int priority) {
-        mainNetworkNode.getStorageConfiguration().setPriority(priority);
+        mainNetworkNode.getStorageConfiguration().setInsertPriority(priority);
     }
 
     void setVoidExcess(final boolean voidExcess) {

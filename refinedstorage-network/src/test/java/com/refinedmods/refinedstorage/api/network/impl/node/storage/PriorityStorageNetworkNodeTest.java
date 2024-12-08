@@ -54,11 +54,11 @@ class PriorityStorageNetworkNodeTest {
         b.setActive(true);
 
         if (storageAHasPriority) {
-            a.getStorageConfiguration().setPriority(5);
-            b.getStorageConfiguration().setPriority(2);
+            a.getStorageConfiguration().setInsertPriority(5);
+            b.getStorageConfiguration().setInsertPriority(2);
         } else {
-            a.getStorageConfiguration().setPriority(2);
-            b.getStorageConfiguration().setPriority(5);
+            a.getStorageConfiguration().setInsertPriority(2);
+            b.getStorageConfiguration().setInsertPriority(5);
         }
 
         // Act

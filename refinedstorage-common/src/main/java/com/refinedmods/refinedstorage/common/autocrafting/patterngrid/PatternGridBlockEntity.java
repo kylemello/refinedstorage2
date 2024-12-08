@@ -592,7 +592,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     static ProcessingMatrixInputResourceContainer createProcessingMatrixInputContainer(final ProcessingInputData data) {
         final ProcessingMatrixInputResourceContainer filterContainer = createProcessingMatrixInputContainer();
-        setResourceContainerData(data.resourceContainerData(), filterContainer);
+        setResourceContainerData(data.resourceContainerData().resources(), filterContainer);
         for (int i = 0; i < data.allowedTagIds().size(); ++i) {
             filterContainer.setAllowedTagIds(i, data.allowedTagIds().get(i));
         }
@@ -610,7 +610,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity implements B
 
     static ResourceContainer createProcessingMatrixOutputContainer(final ResourceContainerData data) {
         final ResourceContainer filterContainer = createProcessingMatrixOutputContainer();
-        setResourceContainerData(data, filterContainer);
+        setResourceContainerData(data.resources(), filterContainer);
         return filterContainer;
     }
 

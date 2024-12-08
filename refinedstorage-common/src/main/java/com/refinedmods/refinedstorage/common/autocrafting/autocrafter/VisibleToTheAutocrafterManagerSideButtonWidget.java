@@ -3,8 +3,6 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocrafter;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractYesNoSideButtonWidget;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +24,6 @@ class VisibleToTheAutocrafterManagerSideButtonWidget extends AbstractYesNoSideBu
         super(property, TITLE, YES, NO);
     }
 
-    @Nullable
     @Override
     protected Component getHelpText() {
         return HELP;

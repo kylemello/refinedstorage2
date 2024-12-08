@@ -1,7 +1,7 @@
 package com.refinedmods.refinedstorage.common.grid.screen.hint;
 
 import com.refinedmods.refinedstorage.common.Platform;
-import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.grid.GridInsertionHint;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
@@ -22,9 +22,8 @@ public class FluidGridInsertionHint implements GridInsertionHint {
         return MouseClientTooltipComponent.fluid(
             MouseClientTooltipComponent.Type.RIGHT,
             (FluidResource) result.fluid(),
-            result.amount() == Platform.INSTANCE.getBucketAmount()
-                ? null
-                : RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(result.amount())
+            result.amount() == Platform.INSTANCE.getBucketAmount() ? null : RefinedStorageClientApi.INSTANCE
+                .getResourceRendering(FluidResource.class).formatAmount(result.amount())
         );
     }
 }

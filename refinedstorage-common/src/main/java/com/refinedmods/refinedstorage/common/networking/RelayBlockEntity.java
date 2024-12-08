@@ -48,7 +48,8 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
     private static final String TAG_PASS_AUTOCRAFTING = "passautocrafting";
     private static final String TAG_FILTER_MODE = "fim";
     private static final String TAG_ACCESS_MODE = "am";
-    private static final String TAG_PRIORITY = "pri";
+    private static final String TAG_INSERT_PRIORITY = "pri";
+    private static final String TAG_EXTRACT_PRIORITY = "epri";
 
     private final FilterWithFuzzyMode filter;
     private final RelayOutputNetworkNode outputNode;
@@ -56,7 +57,8 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
     private boolean passThrough = true;
     private FilterMode filterMode = FilterMode.BLOCK;
     private AccessMode accessMode = AccessMode.INSERT_EXTRACT;
-    private int priority = 0;
+    private int insertPriority = 0;
+    private int extractPriority = 0;
 
     public RelayBlockEntity(final BlockPos pos, final BlockState state) {
         super(BlockEntities.INSTANCE.getRelay(), pos, state, new RelayInputNetworkNode(
@@ -101,13 +103,23 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         setChanged();
     }
 
-    int getPriority() {
-        return priority;
+    int getInsertPriority() {
+        return insertPriority;
     }
 
-    void setPriority(final int priority) {
-        this.priority = priority;
-        this.mainNetworkNode.setPriority(priority);
+    void setInsertPriority(final int insertPriority) {
+        this.insertPriority = insertPriority;
+        this.mainNetworkNode.setInsertPriority(insertPriority);
+        setChanged();
+    }
+
+    int getExtractPriority() {
+        return extractPriority;
+    }
+
+    void setExtractPriority(final int extractPriority) {
+        this.extractPriority = extractPriority;
+        this.mainNetworkNode.setExtractPriority(extractPriority);
         setChanged();
     }
 
@@ -233,7 +245,8 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
         tag.putBoolean(TAG_PASS_SECURITY, mainNetworkNode.hasComponentType(RelayComponentType.SECURITY));
         tag.putBoolean(TAG_PASS_AUTOCRAFTING, mainNetworkNode.hasComponentType(RelayComponentType.AUTOCRAFTING));
         tag.putInt(TAG_ACCESS_MODE, AccessModeSettings.getAccessMode(accessMode));
-        tag.putInt(TAG_PRIORITY, priority);
+        tag.putInt(TAG_INSERT_PRIORITY, insertPriority);
+        tag.putInt(TAG_EXTRACT_PRIORITY, extractPriority);
     }
 
     @Override
@@ -252,10 +265,16 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
             accessMode = AccessModeSettings.getAccessMode(tag.getInt(TAG_ACCESS_MODE));
         }
         mainNetworkNode.setAccessMode(accessMode);
-        if (tag.contains(TAG_PRIORITY)) {
-            priority = tag.getInt(TAG_PRIORITY);
+        if (tag.contains(TAG_INSERT_PRIORITY)) {
+            insertPriority = tag.getInt(TAG_INSERT_PRIORITY);
         }
-        mainNetworkNode.setPriority(priority);
+        mainNetworkNode.setInsertPriority(insertPriority);
+        if (tag.contains(TAG_EXTRACT_PRIORITY)) {
+            extractPriority = tag.getInt(TAG_EXTRACT_PRIORITY);
+        } else {
+            extractPriority = insertPriority; // bit of compat
+        }
+        mainNetworkNode.setExtractPriority(extractPriority);
     }
 
     private Set<RelayComponentType<?>> getComponentTypes(final CompoundTag tag) {

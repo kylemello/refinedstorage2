@@ -1,19 +1,15 @@
 package com.refinedmods.refinedstorage.common.api.storage;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.LongFunction;
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -51,12 +47,6 @@ public interface StorageContainerItemHelper {
     void transferToBlockEntity(ItemStack stack, StorageBlockEntity blockEntity);
 
     void transferFromBlockEntity(ItemStack stack, StorageBlockEntity blockEntity);
-
-    void registerDiskModel(Item item, ResourceLocation model);
-
-    Set<ResourceLocation> getDiskModels();
-
-    Map<Item, ResourceLocation> getDiskModelsByItem();
 
     void markAsToTransfer(ItemStack from, ItemStack to);
 }

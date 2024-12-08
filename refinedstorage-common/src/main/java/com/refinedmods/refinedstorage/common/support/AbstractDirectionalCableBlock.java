@@ -7,7 +7,7 @@ import com.refinedmods.refinedstorage.common.support.direction.DefaultDirectionT
 import com.refinedmods.refinedstorage.common.support.direction.DirectionType;
 import com.refinedmods.refinedstorage.common.util.PlatformUtil;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -31,9 +31,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public abstract class AbstractDirectionalCableBlock extends AbstractDirectionalBlock<Direction>
     implements SimpleWaterloggedBlock {
-    private final Map<DirectionalCacheShapeCacheKey, VoxelShape> shapeCache;
+    private final ConcurrentHashMap<DirectionalCacheShapeCacheKey, VoxelShape> shapeCache;
 
-    protected AbstractDirectionalCableBlock(final Map<DirectionalCacheShapeCacheKey, VoxelShape> shapeCache) {
+    protected AbstractDirectionalCableBlock(final ConcurrentHashMap<DirectionalCacheShapeCacheKey, VoxelShape>
+                                                shapeCache) {
         super(BlockConstants.CABLE_PROPERTIES);
         this.shapeCache = shapeCache;
     }

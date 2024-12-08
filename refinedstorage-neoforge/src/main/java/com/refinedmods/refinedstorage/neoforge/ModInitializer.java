@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.neoforge;
 
+import com.refinedmods.refinedstorage.common.AbstractClientModInitializer;
 import com.refinedmods.refinedstorage.common.AbstractModInitializer;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.PlatformProxy;
@@ -215,6 +216,7 @@ public class ModInitializer extends AbstractModInitializer {
         registerTickHandler();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
+            AbstractClientModInitializer.initializeClientPlatformApi();
             eventBus.addListener(ClientModInitializer::onClientSetup);
             eventBus.addListener(ClientModInitializer::onRegisterCustomModels);
             eventBus.addListener(ClientModInitializer::onRegisterMenuScreens);

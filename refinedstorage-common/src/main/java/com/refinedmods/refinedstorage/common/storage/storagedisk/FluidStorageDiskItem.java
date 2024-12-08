@@ -1,6 +1,7 @@
 package com.refinedmods.refinedstorage.common.storage.storagedisk;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.api.storage.AbstractStorageContainerItem;
 import com.refinedmods.refinedstorage.common.api.storage.SerializableStorage;
 import com.refinedmods.refinedstorage.common.api.storage.StorageRepository;
@@ -53,7 +54,7 @@ public class FluidStorageDiskItem extends AbstractStorageContainerItem implement
 
     @Override
     protected String formatAmount(final long amount) {
-        return RefinedStorageApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(amount);
+        return RefinedStorageClientApi.INSTANCE.getResourceRendering(FluidResource.class).formatAmount(amount);
     }
 
     @Override

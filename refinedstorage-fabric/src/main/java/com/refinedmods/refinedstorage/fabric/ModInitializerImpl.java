@@ -279,7 +279,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 ItemStorage.SIDED,
                 VariantUtil::ofItemVariant,
                 resource -> resource instanceof ItemResource itemResource
-                    ? toItemVariant(itemResource) : null
+                    ? toItemVariant(itemResource) : null,
+                0
             )
         );
         RefinedStorageApi.INSTANCE.addExternalStorageProviderFactory(
@@ -287,7 +288,8 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
                 FluidStorage.SIDED,
                 VariantUtil::ofFluidVariant,
                 resource -> resource instanceof FluidResource fluidResource
-                    ? toFluidVariant(fluidResource) : null
+                    ? toFluidVariant(fluidResource) : null,
+                -1
             )
         );
     }
@@ -828,20 +830,24 @@ public class ModInitializerImpl extends AbstractModInitializer implements ModIni
 
     private void registerEnergyItemProviders() {
         EnergyStorage.ITEM.registerForItems(
-            (stack, context) -> new EnergyStorageAdapter(Items.INSTANCE.getWirelessGrid().createEnergyStorage(stack)),
+            (stack, context) ->
+                new EnergyStorageAdapter(Items.INSTANCE.getWirelessGrid().createEnergyStorage(stack), context),
             Items.INSTANCE.getWirelessGrid()
         );
         Items.INSTANCE.getControllers().forEach(controller -> EnergyStorage.ITEM.registerForItems(
-            (stack, context) -> new EnergyStorageAdapter(controller.get().createEnergyStorage(stack)),
+            (stack, context) ->
+                new EnergyStorageAdapter(controller.get().createEnergyStorage(stack), context),
             controller.get()
         ));
         EnergyStorage.ITEM.registerForItems(
-            (stack, context) -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack)),
+            (stack, context)
+                -> new EnergyStorageAdapter(PortableGridBlockItem.createEnergyStorage(stack), context),
             Items.INSTANCE.getPortableGrid()
         );
         EnergyStorage.ITEM.registerForItems(
             (stack, context) ->
-                new EnergyStorageAdapter(Items.INSTANCE.getWirelessAutocraftingMonitor().createEnergyStorage(stack)),
+                new EnergyStorageAdapter(Items.INSTANCE.getWirelessAutocraftingMonitor().createEnergyStorage(stack),
+                    context),
             Items.INSTANCE.getWirelessAutocraftingMonitor()
         );
     }

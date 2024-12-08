@@ -2,8 +2,10 @@ package com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager;
 
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -13,13 +15,18 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 class SearchModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "autocrafter_manager.search_mode");
-    private static final MutableComponent SUBTEXT_ALL = createTranslation("gui", "autocrafter_manager.search_mode.all");
-    private static final MutableComponent SUBTEXT_PATTERN_INPUTS =
-        createTranslation("gui", "autocrafter_manager.search_mode.pattern_inputs");
-    private static final MutableComponent SUBTEXT_PATTERN_OUTPUTS =
-        createTranslation("gui", "autocrafter_manager.search_mode.pattern_outputs");
-    private static final MutableComponent SUBTEXT_AUTOCRAFTER_NAMES =
-        createTranslation("gui", "autocrafter_manager.search_mode.autocrafter_names");
+    private static final List<MutableComponent> SUBTEXT_ALL = List.of(
+        createTranslation("gui", "autocrafter_manager.search_mode.all").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_PATTERN_INPUTS = List.of(
+        createTranslation("gui", "autocrafter_manager.search_mode.pattern_inputs").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_PATTERN_OUTPUTS = List.of(
+        createTranslation("gui", "autocrafter_manager.search_mode.pattern_outputs").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_AUTOCRAFTER_NAMES = List.of(
+        createTranslation("gui", "autocrafter_manager.search_mode.autocrafter_names").withStyle(ChatFormatting.GRAY)
+    );
     private static final ResourceLocation SPRITE_ALL =
         createIdentifier("widget/side_button/autocrafter_manager/search_mode/all");
     private static final ResourceLocation SPRITE_PATTERN_INPUTS =
@@ -59,7 +66,7 @@ class SearchModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (containerMenu.getSearchMode()) {
             case ALL -> SUBTEXT_ALL;
             case PATTERN_INPUTS -> SUBTEXT_PATTERN_INPUTS;

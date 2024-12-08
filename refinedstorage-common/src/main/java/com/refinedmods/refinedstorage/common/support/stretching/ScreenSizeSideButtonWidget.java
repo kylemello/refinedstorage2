@@ -3,6 +3,9 @@ package com.refinedmods.refinedstorage.common.support.stretching;
 import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -11,11 +14,21 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public class ScreenSizeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "screen_size");
-    private static final MutableComponent SUBTEXT_STRETCH = createTranslation("gui", "screen_size.stretch");
-    private static final MutableComponent SUBTEXT_SMALL = createTranslation("gui", "screen_size.small");
-    private static final MutableComponent SUBTEXT_MEDIUM = createTranslation("gui", "screen_size.medium");
-    private static final MutableComponent SUBTEXT_LARGE = createTranslation("gui", "screen_size.large");
-    private static final MutableComponent SUBTEXT_EXTRA_LARGE = createTranslation("gui", "screen_size.extra_large");
+    private static final List<MutableComponent> SUBTEXT_STRETCH = List.of(
+        createTranslation("gui", "screen_size.stretch").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_SMALL = List.of(
+        createTranslation("gui", "screen_size.small").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_MEDIUM = List.of(
+        createTranslation("gui", "screen_size.medium").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_LARGE = List.of(
+        createTranslation("gui", "screen_size.large").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_EXTRA_LARGE = List.of(
+        createTranslation("gui", "screen_size.extra_large").withStyle(ChatFormatting.GRAY)
+    );
     private static final ResourceLocation STRETCH = createIdentifier("widget/side_button/screen_size/stretch");
     private static final ResourceLocation SMALL = createIdentifier("widget/side_button/screen_size/small");
     private static final ResourceLocation MEDIUM = createIdentifier("widget/side_button/screen_size/medium");
@@ -49,7 +62,7 @@ public class ScreenSizeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         final ScreenSize screenSize = Platform.INSTANCE.getConfig().getScreenSize();
         return switch (screenSize) {
             case STRETCH -> SUBTEXT_STRETCH;

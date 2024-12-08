@@ -2,6 +2,8 @@ package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
 import com.refinedmods.refinedstorage.common.api.RefinedStorageApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
+import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApiProxy;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeMapping;
 import com.refinedmods.refinedstorage.common.autocrafting.autocrafter.AutocrafterScreen;
 import com.refinedmods.refinedstorage.common.autocrafting.autocraftermanager.AutocrafterManagerScreen;
@@ -36,8 +38,6 @@ import com.refinedmods.refinedstorage.common.storage.diskdrive.DiskDriveScreen;
 import com.refinedmods.refinedstorage.common.storage.diskinterface.DiskInterfaceScreen;
 import com.refinedmods.refinedstorage.common.storage.externalstorage.ExternalStorageScreen;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridScreen;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockScreen;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockScreen;
 import com.refinedmods.refinedstorage.common.storagemonitor.StorageMonitorScreen;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResourceRendering;
@@ -57,6 +57,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -65,10 +66,17 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
 public abstract class AbstractClientModInitializer {
+    public static void initializeClientPlatformApi() {
+        ((RefinedStorageClientApiProxy) RefinedStorageClientApi.INSTANCE).setDelegate(
+            new RefinedStorageClientApiImpl()
+        );
+    }
+
     protected static void registerScreens(final ScreenRegistration registration) {
         registration.register(Menus.INSTANCE.getDiskDrive(), DiskDriveScreen::new);
         registration.register(Menus.INSTANCE.getGrid(), GridScreen<GridContainerMenu>::new);
@@ -76,8 +84,26 @@ public abstract class AbstractClientModInitializer {
         registration.register(Menus.INSTANCE.getPatternGrid(), PatternGridScreen::new);
         registration.register(Menus.INSTANCE.getWirelessGrid(), GridScreen<WirelessGridContainerMenu>::new);
         registration.register(Menus.INSTANCE.getController(), ControllerScreen::new);
-        registration.register(Menus.INSTANCE.getItemStorage(), ItemStorageBlockScreen::new);
-        registration.register(Menus.INSTANCE.getFluidStorage(), FluidStorageBlockScreen::new);
+        registration.register(Menus.INSTANCE.getItemStorage(),
+            new ScreenConstructor<AbstractContainerMenu, AbstractContainerScreen<AbstractContainerMenu>>() {
+                @Override
+                public AbstractContainerScreen<AbstractContainerMenu> create(final AbstractContainerMenu menu,
+                                                                             final Inventory inventory,
+                                                                             final Component title) {
+                    return RefinedStorageClientApi.INSTANCE.createStorageBlockScreen(menu, inventory, title,
+                        ItemResource.class);
+                }
+            });
+        registration.register(Menus.INSTANCE.getFluidStorage(),
+            new ScreenConstructor<AbstractContainerMenu, AbstractContainerScreen<AbstractContainerMenu>>() {
+                @Override
+                public AbstractContainerScreen<AbstractContainerMenu> create(final AbstractContainerMenu menu,
+                                                                             final Inventory inventory,
+                                                                             final Component title) {
+                    return RefinedStorageClientApi.INSTANCE.createStorageBlockScreen(menu, inventory, title,
+                        FluidResource.class);
+                }
+            });
         registration.register(Menus.INSTANCE.getImporter(), ImporterScreen::new);
         registration.register(Menus.INSTANCE.getExporter(), ExporterScreen::new);
         registration.register(Menus.INSTANCE.getInterface(), InterfaceScreen::new);
@@ -112,12 +138,12 @@ public abstract class AbstractClientModInitializer {
     }
 
     protected static void registerAlternativeGridHints() {
-        RefinedStorageApi.INSTANCE.addAlternativeGridInsertionHint(new FluidGridInsertionHint());
+        RefinedStorageClientApi.INSTANCE.addAlternativeGridInsertionHint(new FluidGridInsertionHint());
     }
 
     protected static void registerResourceRendering() {
-        RefinedStorageApi.INSTANCE.registerResourceRendering(ItemResource.class, new ItemResourceRendering());
-        RefinedStorageApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering(
+        RefinedStorageClientApi.INSTANCE.registerResourceRendering(ItemResource.class, ItemResourceRendering.INSTANCE);
+        RefinedStorageClientApi.INSTANCE.registerResourceRendering(FluidResource.class, new FluidResourceRendering(
             Platform.INSTANCE.getBucketAmount()
         ));
     }
@@ -156,18 +182,13 @@ public abstract class AbstractClientModInitializer {
     protected static void registerDiskModels() {
         final ResourceLocation diskModel = createIdentifier("block/disk/disk");
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
-            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
-                Items.INSTANCE.getItemStorageDisk(variant),
-                diskModel
-            );
+            final Item item = Items.INSTANCE.getItemStorageDisk(variant);
+            RefinedStorageClientApi.INSTANCE.registerDiskModel(item, diskModel);
         }
-
         final ResourceLocation fluidDiskModel = createIdentifier("block/disk/fluid_disk");
         for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
-            RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().registerDiskModel(
-                Items.INSTANCE.getFluidStorageDisk(variant),
-                fluidDiskModel
-            );
+            final Item item = Items.INSTANCE.getFluidStorageDisk(variant);
+            RefinedStorageClientApi.INSTANCE.registerDiskModel(item, fluidDiskModel);
         }
     }
 

@@ -6,7 +6,6 @@ import com.refinedmods.refinedstorage.common.support.AbstractBaseScreen;
 import com.refinedmods.refinedstorage.common.support.AbstractFilterScreen;
 import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.support.widget.History;
-import com.refinedmods.refinedstorage.common.support.widget.PrioritySideButtonWidget;
 import com.refinedmods.refinedstorage.common.support.widget.SearchFieldWidget;
 import com.refinedmods.refinedstorage.common.support.widget.TextMarquee;
 
@@ -108,7 +107,7 @@ public class AutocrafterScreen extends AbstractBaseScreen<AutocrafterContainerMe
         });
 
         addSideButton(new LockModeSideButtonWidget(getMenu().getProperty(AutocrafterPropertyTypes.LOCK_MODE)));
-        addSideButton(PrioritySideButtonWidget.forCrafter(
+        addSideButton(new AutocrafterPrioritySideButtonWidget(
             getMenu().getProperty(AutocrafterPropertyTypes.PRIORITY),
             playerInventory,
             this

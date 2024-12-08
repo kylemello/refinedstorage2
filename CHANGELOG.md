@@ -7,6 +7,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.11] - 2024-12-08
+
+### Added
+
+-   Ability to differentiate between insert and extract storage priorities. By default, the extract priority will match the insert priority unless configured otherwise.
+
+### Fixed
+
+-   Fixed External Fluid not connecting properly to fluid storages.
+-   Fixed Interface filter not respecting maximum stack size of a resource.
+-   Fixed potential crash when trying to build cable shapes.
+-   Fixed storage disk upgrade recipes not showing properly in recipe viewers.
+-   Protect against crashes from other mods when trying to build the cached Grid tooltip.
+-   Fixed charging energy items not working on Fabric.
+
 ## [2.0.0-milestone.4.10] - 2024-11-24
 
 ### Added
@@ -814,7 +829,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.10...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.11...HEAD
+
+[2.0.0-milestone.4.11]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.10...v2.0.0-milestone.4.11
 
 [2.0.0-milestone.4.10]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.9...v2.0.0-milestone.4.10
 

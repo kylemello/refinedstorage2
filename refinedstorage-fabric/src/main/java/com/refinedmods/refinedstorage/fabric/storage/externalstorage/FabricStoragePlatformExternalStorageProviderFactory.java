@@ -19,20 +19,26 @@ public class FabricStoragePlatformExternalStorageProviderFactory<T>
     private final BlockApiLookup<Storage<T>, Direction> lookup;
     private final Function<T, ResourceKey> fromPlatformMapper;
     private final Function<ResourceKey, @NullableType T> toPlatformMapper;
+    private final int priority;
 
     public FabricStoragePlatformExternalStorageProviderFactory(final BlockApiLookup<Storage<T>, Direction> lookup,
                                                                final Function<T, ResourceKey> fromPlatformMapper,
                                                                @NullableType final Function<ResourceKey, T>
-                                                                   toPlatformMapper) {
+                                                                   toPlatformMapper,
+                                                               final int priority) {
         this.lookup = lookup;
         this.fromPlatformMapper = fromPlatformMapper;
         this.toPlatformMapper = toPlatformMapper;
+        this.priority = priority;
     }
 
     @Override
     public Optional<ExternalStorageProvider> create(final ServerLevel level,
                                                     final BlockPos pos,
                                                     final Direction direction) {
+        if (lookup.find(level, pos, direction) == null) {
+            return Optional.empty();
+        }
         return Optional.of(new FabricStorageExternalStorageProvider<>(
             lookup,
             fromPlatformMapper,
@@ -41,5 +47,10 @@ public class FabricStoragePlatformExternalStorageProviderFactory<T>
             pos,
             direction
         ));
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 }

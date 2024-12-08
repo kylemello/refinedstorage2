@@ -28,15 +28,22 @@ public class StorageContainerUpgradeRecipe<T extends StorageVariant> extends Sha
             "",
             CraftingBookCategory.MISC,
             containerProvider.apply(to).asItem().getDefaultInstance(),
-            NonNullList.of(
-                Ingredient.of(getValidSourceContainers(to, variants, containerProvider)
-                    .stream().map(ItemLike::asItem).map(Item::getDefaultInstance)),
-                Ingredient.of(to.getStoragePart())
-            )
+            getIngredients(variants, to, containerProvider)
         );
         this.validSourceContainers = getValidSourceContainers(to, variants, containerProvider);
         this.variants = variants;
         this.to = to;
+    }
+
+    private static <T extends StorageVariant> NonNullList<Ingredient> getIngredients(
+        final T[] variants,
+        final T to,
+        final Function<T, ItemLike> containerProvider
+    ) {
+        final NonNullList<Ingredient> ingredients = NonNullList.create();
+        ingredients.add(Ingredient.of(getValidSourceContainers(to, variants, containerProvider).toArray(new Item[0])));
+        ingredients.add(Ingredient.of(to.getStoragePart()));
+        return ingredients;
     }
 
     public T[] getVariants() {

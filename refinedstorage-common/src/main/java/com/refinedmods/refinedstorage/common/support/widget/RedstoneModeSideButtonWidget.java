@@ -3,8 +3,10 @@ package com.refinedmods.refinedstorage.common.support.widget;
 import com.refinedmods.refinedstorage.common.support.RedstoneMode;
 import com.refinedmods.refinedstorage.common.support.containermenu.ClientProperty;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +16,15 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 public class RedstoneModeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "redstone_mode");
-    private static final MutableComponent SUBTEXT_IGNORE = createTranslation("gui", "redstone_mode.ignore");
-    private static final MutableComponent SUBTEXT_HIGH = createTranslation("gui", "redstone_mode.high");
-    private static final MutableComponent SUBTEXT_LOW = createTranslation("gui", "redstone_mode.low");
+    private static final List<MutableComponent> SUBTEXT_IGNORE = List.of(
+        createTranslation("gui", "redstone_mode.ignore").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_HIGH = List.of(
+        createTranslation("gui", "redstone_mode.high").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_LOW = List.of(
+        createTranslation("gui", "redstone_mode.low").withStyle(ChatFormatting.GRAY)
+    );
     private static final Component HELP_IGNORE = createTranslation("gui", "redstone_mode.ignore.help");
     private static final Component HELP_HIGH = createTranslation("gui", "redstone_mode.high.help");
     private static final Component HELP_LOW = createTranslation("gui", "redstone_mode.low.help");
@@ -61,7 +69,7 @@ public class RedstoneModeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (property.getValue()) {
             case IGNORE -> SUBTEXT_IGNORE;
             case HIGH -> SUBTEXT_HIGH;

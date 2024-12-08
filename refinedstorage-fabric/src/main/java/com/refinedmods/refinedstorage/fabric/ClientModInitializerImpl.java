@@ -72,6 +72,7 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -88,6 +89,7 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
 
     @Override
     public void onInitializeClient() {
+        initializeClientPlatformApi();
         setRenderLayers();
         registerEmissiveModels();
         registerPacketHandlers();
@@ -460,27 +462,27 @@ public class ClientModInitializerImpl extends AbstractClientModInitializer imple
     }
 
     private void registerCustomTooltips() {
-        TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof AbstractUpgradeItem.UpgradeDestinationTooltipComponent component) {
+        TooltipComponentCallback.EVENT.register(d -> {
+            if (d instanceof AbstractUpgradeItem.UpgradeDestinationTooltipComponent(var destinations, var helpText)) {
                 return new CompositeClientTooltipComponent(List.of(
-                    new UpgradeDestinationClientTooltipComponent(component.destinations()),
-                    HelpClientTooltipComponent.create(component.helpText())
+                    new UpgradeDestinationClientTooltipComponent(destinations),
+                    HelpClientTooltipComponent.create(helpText)
                 ));
             }
             return null;
         });
         TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof HelpTooltipComponent component) {
-                return HelpClientTooltipComponent.create(component.text());
+            if (data instanceof HelpTooltipComponent(Component text)) {
+                return HelpClientTooltipComponent.create(text);
             }
             return null;
         });
-        TooltipComponentCallback.EVENT.register(data -> {
-            if (data instanceof RegulatorUpgradeItem.RegulatorTooltipComponent component) {
+        TooltipComponentCallback.EVENT.register(d -> {
+            if (d instanceof RegulatorUpgradeItem.RegulatorTooltipComponent(var destinations, var helpText, var r)) {
                 return createRegulatorUpgradeClientTooltipComponent(
-                    component.destinations(),
-                    component.configuredResource(),
-                    component.helpText()
+                    destinations,
+                    r,
+                    helpText
                 );
             }
             return null;

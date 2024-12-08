@@ -4,6 +4,9 @@ import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.grid.GridViewType;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -12,11 +15,15 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "grid.view_type");
-    private static final MutableComponent SUBTEXT_ALL = createTranslation("gui", "grid.view_type.all");
-    private static final MutableComponent SUBTEXT_AUTOCRAFTABLE =
-        createTranslation("gui", "grid.view_type.autocraftable");
-    private static final MutableComponent SUBTEXT_NON_AUTOCRAFTABLE =
-        createTranslation("gui", "grid.view_type.non_autocraftable");
+    private static final List<MutableComponent> SUBTEXT_ALL = List.of(
+        createTranslation("gui", "grid.view_type.all").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_AUTOCRAFTABLE = List.of(
+        createTranslation("gui", "grid.view_type.autocraftable").withStyle(ChatFormatting.GRAY)
+    );
+    private static final List<MutableComponent> SUBTEXT_NON_AUTOCRAFTABLE = List.of(
+        createTranslation("gui", "grid.view_type.non_autocraftable").withStyle(ChatFormatting.GRAY)
+    );
     private static final ResourceLocation ALL = createIdentifier("widget/side_button/grid/view_type/all");
     private static final ResourceLocation CRAFTABLE =
         createIdentifier("widget/side_button/grid/view_type/autocraftable");
@@ -57,7 +64,7 @@ class ViewTypeSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (menu.getViewType()) {
             case ALL -> SUBTEXT_ALL;
             case AUTOCRAFTABLE -> SUBTEXT_AUTOCRAFTABLE;

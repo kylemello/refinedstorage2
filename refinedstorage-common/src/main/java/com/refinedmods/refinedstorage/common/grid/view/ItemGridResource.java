@@ -13,6 +13,7 @@ import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
 import com.refinedmods.refinedstorage.common.support.tooltip.MouseClientTooltipComponent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,11 +29,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.format;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.formatWithUnits;
 
 public class ItemGridResource extends AbstractPlatformGridResource<ItemResource> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemGridResource.class);
+
     private final int id;
     private final ItemStack itemStack;
     private final ItemResource itemResource;
@@ -106,8 +111,12 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     @Override
     public void render(final GuiGraphics graphics, final int x, final int y) {
         final Font font = Minecraft.getInstance().font;
-        graphics.renderItem(itemStack, x, y);
-        graphics.renderItemDecorations(font, itemStack, x, y, null);
+        try {
+            graphics.renderItem(itemStack, x, y);
+            graphics.renderItemDecorations(font, itemStack, x, y, null);
+        } catch (final Throwable t) {
+            LOGGER.warn("Failed to render item {}", itemStack, t);
+        }
     }
 
     @Override
@@ -128,7 +137,12 @@ public class ItemGridResource extends AbstractPlatformGridResource<ItemResource>
     @Override
     public List<Component> getTooltip() {
         final Minecraft minecraft = Minecraft.getInstance();
-        return Screen.getTooltipFromItem(minecraft, itemStack);
+        try {
+            return Screen.getTooltipFromItem(minecraft, itemStack);
+        } catch (final Throwable t) {
+            LOGGER.warn("Failed to get tooltip for item {}", itemStack, t);
+            return Collections.emptyList();
+        }
     }
 
     @Override

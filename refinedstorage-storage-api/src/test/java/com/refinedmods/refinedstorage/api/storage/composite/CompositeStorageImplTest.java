@@ -127,11 +127,11 @@ class CompositeStorageImplTest {
     }
 
     @Test
-    void shouldRespectPriorityWhenAddingNewSources() {
+    void shouldRespectInsertPriorityWhenAddingNewSources() {
         // Arrange
-        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20);
-        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10);
-        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30);
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20, 30);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10, 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30, 20);
 
         // Act
         sut.addSource(storage1);
@@ -152,11 +152,37 @@ class CompositeStorageImplTest {
     }
 
     @Test
-    void shouldRespectPriorityWhenRemovingSources() {
+    void shouldRespectExtractPriorityWhenAddingNewSources() {
         // Arrange
-        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20);
-        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10);
-        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30);
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20, 30);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10, 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30, 20);
+
+        // Act
+        sut.addSource(storage1);
+        sut.addSource(storage2);
+        sut.addSource(storage3);
+        sut.insert(A, 30, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        final long extracted = sut.extract(A, 12, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        // Assert
+        assertThat(sut.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            new ResourceAmount(A, 18)
+        );
+        assertThat(sut.getSources()).containsExactly(storage3, storage1, storage2);
+        assertThat(extracted).isEqualTo(12);
+        assertThat(storage1.getStored()).isZero();
+        assertThat(storage3.getStored()).isEqualTo(8);
+        assertThat(storage2.getStored()).isEqualTo(10);
+    }
+
+    @Test
+    void shouldRespectInsertPriorityWhenRemovingSources() {
+        // Arrange
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20, 30);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10, 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30, 20);
 
         sut.addSource(storage1);
         sut.addSource(storage2);
@@ -178,10 +204,37 @@ class CompositeStorageImplTest {
     }
 
     @Test
-    void shouldOnlyRespectPriorityWhenSortingSourcesExplicitlyWhenChangingPriorityAfterAddingSource() {
+    void shouldRespectExtractPriorityWhenRemovingSources() {
         // Arrange
-        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 1);
-        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 2);
+        final Storage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 20, 30);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 10, 10);
+        final Storage storage3 = PriorityStorage.of(new LimitedStorageImpl(10), 30, 20);
+
+        sut.addSource(storage1);
+        sut.addSource(storage2);
+        sut.addSource(storage3);
+        sut.insert(A, 30, Action.EXECUTE, EmptyActor.INSTANCE);
+        sut.removeSource(storage3);
+
+        // Act
+        final long extracted = sut.extract(A, 12, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        // Assert
+        assertThat(sut.getAll()).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(
+            new ResourceAmount(A, 8)
+        );
+        assertThat(sut.getSources()).containsExactly(storage1, storage2);
+        assertThat(extracted).isEqualTo(12);
+        assertThat(storage1.getStored()).isZero();
+        assertThat(storage2.getStored()).isEqualTo(8);
+        assertThat(storage3.getStored()).isEqualTo(10);
+    }
+
+    @Test
+    void shouldOnlyRespectInsertPriorityWhenSortingSourcesExplicitlyWhenChangingPriorityAfterAddingSource() {
+        // Arrange
+        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 1, 2);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 2, 1);
 
         sut.addSource(storage1);
         sut.addSource(storage2);
@@ -191,7 +244,7 @@ class CompositeStorageImplTest {
         assertThat(storage1.getStored()).isZero();
         assertThat(storage2.getStored()).isEqualTo(1);
 
-        storage1.setPriority(3);
+        storage1.setInsertPriority(3);
 
         sut.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
         assertThat(storage1.getStored()).isZero();
@@ -202,6 +255,34 @@ class CompositeStorageImplTest {
         sut.insert(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
         assertThat(storage1.getStored()).isEqualTo(1);
         assertThat(storage2.getStored()).isEqualTo(2);
+    }
+
+    @Test
+    void shouldOnlyRespectExtractPriorityWhenSortingSourcesExplicitlyWhenChangingPriorityAfterAddingSource() {
+        // Arrange
+        final PriorityStorage storage1 = PriorityStorage.of(new LimitedStorageImpl(10), 1, 2);
+        final Storage storage2 = PriorityStorage.of(new LimitedStorageImpl(10), 2, 1);
+
+        sut.addSource(storage1);
+        sut.addSource(storage2);
+        sut.insert(A, 20, Action.EXECUTE, EmptyActor.INSTANCE);
+
+        // Act & assert
+        sut.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
+        assertThat(storage1.getStored()).isEqualTo(9);
+        assertThat(storage2.getStored()).isEqualTo(10);
+
+        storage1.setExtractPriority(0);
+
+        sut.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
+        assertThat(storage1.getStored()).isEqualTo(8);
+        assertThat(storage2.getStored()).isEqualTo(10);
+
+        sut.sortSources();
+
+        sut.extract(A, 1, Action.EXECUTE, EmptyActor.INSTANCE);
+        assertThat(storage1.getStored()).isEqualTo(8);
+        assertThat(storage2.getStored()).isEqualTo(9);
     }
 
     @SuppressWarnings("AssertBetweenInconvertibleTypes") // intellij bug

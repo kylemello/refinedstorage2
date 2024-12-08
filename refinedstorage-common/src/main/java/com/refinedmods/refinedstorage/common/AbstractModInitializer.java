@@ -44,6 +44,7 @@ import com.refinedmods.refinedstorage.common.constructordestructor.ItemPickupDes
 import com.refinedmods.refinedstorage.common.constructordestructor.PlaceBlockConstructorStrategy;
 import com.refinedmods.refinedstorage.common.constructordestructor.PlaceFireworksConstructorStrategy;
 import com.refinedmods.refinedstorage.common.constructordestructor.PlaceFluidConstructorStrategy;
+import com.refinedmods.refinedstorage.common.content.BlockConstants;
 import com.refinedmods.refinedstorage.common.content.BlockEntities;
 import com.refinedmods.refinedstorage.common.content.BlockEntityProviders;
 import com.refinedmods.refinedstorage.common.content.BlockEntityTypeFactory;
@@ -116,15 +117,10 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridBl
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridItemContainerMenu;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridLootItemFunction;
 import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridType;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlock;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockBlockEntity;
 import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockBlockItem;
-import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlock;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockBlockEntity;
+import com.refinedmods.refinedstorage.common.storage.storageblock.FluidStorageBlockProvider;
 import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockBlockItem;
-import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockContainerMenu;
-import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockData;
+import com.refinedmods.refinedstorage.common.storage.storageblock.ItemStorageBlockProvider;
 import com.refinedmods.refinedstorage.common.storage.storageblock.StorageBlockLootItemFunction;
 import com.refinedmods.refinedstorage.common.storage.storagedisk.FluidStorageDiskItem;
 import com.refinedmods.refinedstorage.common.storage.storagedisk.ItemStorageDiskItem;
@@ -308,13 +304,19 @@ public abstract class AbstractModInitializer {
         for (final ItemStorageVariant variant : ItemStorageVariant.values()) {
             Blocks.INSTANCE.setItemStorageBlock(variant, callback.register(
                 ContentIds.forItemStorageBlock(variant),
-                () -> new ItemStorageBlock(variant)
+                () -> RefinedStorageApi.INSTANCE.createStorageBlock(
+                    BlockConstants.PROPERTIES,
+                    new ItemStorageBlockProvider(variant)
+                )
             ));
         }
         for (final FluidStorageVariant variant : FluidStorageVariant.values()) {
             Blocks.INSTANCE.setFluidStorageBlock(variant, callback.register(
                 ContentIds.forFluidStorageBlock(variant),
-                () -> new FluidStorageBlock(variant)
+                () -> RefinedStorageApi.INSTANCE.createStorageBlock(
+                    BlockConstants.PROPERTIES,
+                    new FluidStorageBlockProvider(variant)
+                )
             ));
         }
         Blocks.INSTANCE.getController().registerBlocks(callback);
@@ -420,8 +422,8 @@ public abstract class AbstractModInitializer {
         if (variant != ItemStorageVariant.CREATIVE) {
             Items.INSTANCE.setItemStoragePart(variant, callback.register(
                 ContentIds.forItemStoragePart(variant),
-                SimpleItem::new)
-            );
+                SimpleItem::new
+            ));
         }
         Items.INSTANCE.setItemStorageDisk(variant, callback.register(
             ContentIds.forStorageDisk(variant),
@@ -573,7 +575,9 @@ public abstract class AbstractModInitializer {
             BlockEntities.INSTANCE.setItemStorageBlock(variant, callback.register(
                 ContentIds.forItemStorageBlock(variant),
                 () -> typeFactory.create(
-                    (pos, state) -> new ItemStorageBlockBlockEntity(pos, state, variant),
+                    (pos, state) -> RefinedStorageApi.INSTANCE.createStorageBlockEntity(
+                        pos, state, new ItemStorageBlockProvider(variant)
+                    ),
                     Blocks.INSTANCE.getItemStorageBlock(variant)
                 )
             ));
@@ -582,7 +586,9 @@ public abstract class AbstractModInitializer {
             BlockEntities.INSTANCE.setFluidStorageBlock(variant, callback.register(
                 ContentIds.forFluidStorageBlock(variant),
                 () -> typeFactory.create(
-                    (pos, state) -> new FluidStorageBlockBlockEntity(pos, state, variant),
+                    (pos, state) -> RefinedStorageApi.INSTANCE.createStorageBlockEntity(
+                        pos, state, new FluidStorageBlockProvider(variant)
+                    ),
                     Blocks.INSTANCE.getFluidStorageBlock(variant)
                 )
             ));
@@ -709,12 +715,22 @@ public abstract class AbstractModInitializer {
         ));
         Menus.INSTANCE.setItemStorage(callback.register(
             ContentIds.ITEM_STORAGE_BLOCK,
-            () -> extendedMenuTypeFactory.create(ItemStorageBlockContainerMenu::new, StorageBlockData.STREAM_CODEC)
-        ));
+            () -> extendedMenuTypeFactory.create((syncId, playerInventory, data) ->
+                RefinedStorageApi.INSTANCE.createStorageBlockContainerMenu(
+                    syncId,
+                    playerInventory.player,
+                    data,
+                    RefinedStorageApi.INSTANCE.getItemResourceFactory(),
+                    Menus.INSTANCE.getItemStorage()), RefinedStorageApi.INSTANCE.getStorageBlockDataStreamCodec())));
         Menus.INSTANCE.setFluidStorage(callback.register(
             ContentIds.FLUID_STORAGE_BLOCK,
-            () -> extendedMenuTypeFactory.create(FluidStorageBlockContainerMenu::new, StorageBlockData.STREAM_CODEC)
-        ));
+            () -> extendedMenuTypeFactory.create((syncId, playerInventory, data) ->
+                RefinedStorageApi.INSTANCE.createStorageBlockContainerMenu(
+                    syncId,
+                    playerInventory.player,
+                    data,
+                    RefinedStorageApi.INSTANCE.getFluidResourceFactory(),
+                    Menus.INSTANCE.getFluidStorage()), RefinedStorageApi.INSTANCE.getStorageBlockDataStreamCodec())));
         Menus.INSTANCE.setImporter(callback.register(
             ContentIds.IMPORTER,
             () -> extendedMenuTypeFactory.create(ImporterContainerMenu::new, ResourceContainerData.STREAM_CODEC)
@@ -817,10 +833,8 @@ public abstract class AbstractModInitializer {
         ));
         Menus.INSTANCE.setWirelessAutocraftingMonitor(callback.register(
             ContentIds.WIRELESS_AUTOCRAFTING_MONITOR,
-            () -> extendedMenuTypeFactory.create(
-                WirelessAutocraftingMonitorContainerMenu::new,
-                AutocraftingMonitorData.STREAM_CODEC
-            )
+            () -> extendedMenuTypeFactory.create(WirelessAutocraftingMonitorContainerMenu::new,
+                AutocraftingMonitorData.STREAM_CODEC)
         ));
     }
 

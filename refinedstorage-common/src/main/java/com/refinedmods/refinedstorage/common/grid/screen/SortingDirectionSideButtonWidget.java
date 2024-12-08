@@ -4,6 +4,9 @@ import com.refinedmods.refinedstorage.api.grid.view.GridSortingDirection;
 import com.refinedmods.refinedstorage.common.grid.AbstractGridContainerMenu;
 import com.refinedmods.refinedstorage.common.support.widget.AbstractSideButtonWidget;
 
+import java.util.List;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -12,10 +15,10 @@ import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTr
 
 class SortingDirectionSideButtonWidget extends AbstractSideButtonWidget {
     private static final MutableComponent TITLE = createTranslation("gui", "grid.sorting.direction");
-    private static final MutableComponent SUBTEXT_ASCENDING =
-        createTranslation("gui", "grid.sorting.direction.ascending");
-    private static final MutableComponent SUBTEXT_DESCENDING =
-        createTranslation("gui", "grid.sorting.direction.descending");
+    private static final List<MutableComponent> SUBTEXT_ASCENDING = List.of(
+        createTranslation("gui", "grid.sorting.direction.ascending").withStyle(ChatFormatting.GRAY));
+    private static final List<MutableComponent> SUBTEXT_DESCENDING = List.of(
+        createTranslation("gui", "grid.sorting.direction.descending").withStyle(ChatFormatting.GRAY));
     private static final ResourceLocation ASCENDING =
         createIdentifier("widget/side_button/grid/sorting_direction/ascending");
     private static final ResourceLocation DESCENDING =
@@ -49,7 +52,7 @@ class SortingDirectionSideButtonWidget extends AbstractSideButtonWidget {
     }
 
     @Override
-    protected MutableComponent getSubText() {
+    protected List<MutableComponent> getSubText() {
         return switch (menu.getSortingDirection()) {
             case ASCENDING -> SUBTEXT_ASCENDING;
             case DESCENDING -> SUBTEXT_DESCENDING;
