@@ -18,6 +18,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   Fixed potential crash when trying to build cable shapes.
 -   Fixed storage disk upgrade recipes not showing properly in recipe viewers.
 -   Protect against crashes from other mods when trying to build the cached Grid tooltip.
+-   Fixed charging energy items not working on Fabric.
 
 ## [2.0.0-milestone.4.10] - 2024-11-24
 
