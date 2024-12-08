@@ -7,9 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0-milestone.4.11] - 2024-12-08
+
 ### Added
 
--  Ability to differentiate between insert and extract storage priorities. By default, the extract priority will match the insert priority unless configured otherwise.
+-   Ability to differentiate between insert and extract storage priorities. By default, the extract priority will match the insert priority unless configured otherwise.
 
 ### Fixed
 
@@ -827,7 +829,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 -   The Grid can now use smooth scrolling.
 -   The Grid now has syntax highlighting for the search query.
 
-[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.10...HEAD
+[Unreleased]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.11...HEAD
+
+[2.0.0-milestone.4.11]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.10...v2.0.0-milestone.4.11
 
 [2.0.0-milestone.4.10]: https://github.com/refinedmods/refinedstorage2/compare/v2.0.0-milestone.4.9...v2.0.0-milestone.4.10
 
