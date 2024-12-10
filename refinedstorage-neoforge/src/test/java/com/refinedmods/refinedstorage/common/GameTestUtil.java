@@ -2,6 +2,7 @@ package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
@@ -224,6 +225,16 @@ public final class GameTestUtil {
         return () -> {
             if (!container.isEmpty()) {
                 throw new GameTestAssertException(displayName.getString() + " should be empty");
+            }
+        };
+    }
+
+    public static Runnable energyStoredExactly(final EnergyStorage storage,
+                                               final long energyAmount) {
+        return () -> {
+            if (storage.getStored() != energyAmount) {
+                throw new GameTestAssertException("Energy stored should be: " + energyAmount
+                    + " but is " + storage.getStored());
             }
         };
     }
