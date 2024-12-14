@@ -21,6 +21,7 @@ import static com.refinedmods.refinedstorage.common.GameTestUtil.getItemAsDamage
 import static com.refinedmods.refinedstorage.common.GameTestUtil.insert;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.networkIsAvailable;
 import static com.refinedmods.refinedstorage.common.GameTestUtil.storageContainsExactly;
+import static com.refinedmods.refinedstorage.common.networking.RelayTestPlots.preparePlot;
 import static net.minecraft.world.item.Items.DIAMOND_CHESTPLATE;
 import static net.minecraft.world.item.Items.DIRT;
 import static net.minecraft.world.item.Items.STONE;
@@ -33,7 +34,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThrough(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -62,7 +63,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldNotPassThrough(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -89,7 +90,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughEnergy(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -117,7 +118,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorage(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -150,7 +151,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageBlocklist(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -183,7 +184,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageFuzzyBlocklist(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
@@ -224,7 +225,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageAllowlist(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -258,7 +259,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageFuzzyAllowlist(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             final ItemStack damagedDiamondChestplate = getItemAsDamaged(DIAMOND_CHESTPLATE.getDefaultInstance(), 500);
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
@@ -299,7 +300,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageAndInsertExtract(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -349,7 +350,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageAndInsert(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
@@ -399,7 +400,7 @@ public final class RelayTest {
 
     @GameTest(template = "empty_15x15")
     public static void shouldPassThroughStorageAndExtract(final GameTestHelper helper) {
-        RelayTestPlots.preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
+        preparePlot(helper, (relay, pos, subnetworkPos, sequence) -> {
             // Arrange
             sequence.thenWaitUntil(networkIsAvailable(helper, pos, network -> {
                 insert(helper, network, DIRT, 10);
