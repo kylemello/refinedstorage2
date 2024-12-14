@@ -2,7 +2,7 @@ package com.refinedmods.refinedstorage.common;
 
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.Network;
-import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
+import com.refinedmods.refinedstorage.api.network.energy.EnergyNetworkComponent;
 import com.refinedmods.refinedstorage.api.network.node.NetworkNode;
 import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
 import com.refinedmods.refinedstorage.api.resource.ResourceAmount;
@@ -17,6 +17,8 @@ import com.refinedmods.refinedstorage.common.content.Blocks;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.iface.ExportedResourcesContainer;
 import com.refinedmods.refinedstorage.common.iface.InterfaceBlockEntity;
+import com.refinedmods.refinedstorage.common.support.AbstractActiveColoredDirectionalBlock;
+import com.refinedmods.refinedstorage.common.support.network.AbstractBaseNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -69,6 +72,19 @@ public final class GameTestUtil {
             helper.assertTrue(network != null, "Network is not available");
             networkConsumer.accept(network);
         };
+    }
+
+    public static void checkBlockEntityActiveness(final GameTestHelper helper,
+                                                  final BlockPos pos,
+                                                  final boolean expectedActive) {
+        final var blockEntity = requireBlockEntity(
+            helper,
+            pos,
+            AbstractBaseNetworkNodeContainerBlockEntity.class
+        );
+        final boolean actualActive = blockEntity.getBlockState().getValue(AbstractActiveColoredDirectionalBlock.ACTIVE);
+        helper.assertTrue(actualActive == expectedActive, "Activeness of Block Entity should be " + expectedActive
+            + " but is " + actualActive);
     }
 
     public static void insert(final GameTestHelper helper,
@@ -229,14 +245,25 @@ public final class GameTestUtil {
         };
     }
 
-    public static Runnable energyStoredExactly(final EnergyStorage storage,
-                                               final long energyAmount) {
-        return () -> {
-            if (storage.getStored() != energyAmount) {
-                throw new GameTestAssertException("Energy stored should be: " + energyAmount
-                    + " but is " + storage.getStored());
-            }
-        };
+    public static Runnable checkEnergyInNetwork(final GameTestHelper helper,
+                                                final BlockPos pos,
+                                                final Function<Long, Long> storedConsumer) {
+        return networkIsAvailable(helper, pos, network -> {
+            final EnergyNetworkComponent energyComponent = network.getComponent(EnergyNetworkComponent.class);
+
+            long storedEnergy = energyComponent.getStored();
+            storedEnergy = storedConsumer.apply(storedEnergy);
+
+            energyStoredExactly(storedEnergy, energyComponent.getCapacity());
+        });
+    }
+
+    public static void energyStoredExactly(final long storedEnergy,
+                                           final long energyAmount) {
+        if (storedEnergy != energyAmount) {
+            throw new GameTestAssertException("Energy stored should be: " + energyAmount
+                + " but is " + storedEnergy);
+        }
     }
 
     public static Runnable interfaceContainsExactly(final GameTestHelper helper,

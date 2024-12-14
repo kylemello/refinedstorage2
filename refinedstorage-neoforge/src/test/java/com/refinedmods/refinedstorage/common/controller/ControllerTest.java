@@ -34,16 +34,16 @@ public final class ControllerTest {
             // Assert
             sequence
                 .thenIdle(20)
-                .thenExecute(energyStoredExactly(energyStorage, energyStorage.getCapacity()))
+                .thenExecute(() -> energyStoredExactly(energyStorage.getStored(), energyStorage.getCapacity()))
                 .thenWaitUntil(() -> helper.setBlock(pos.above(), RSBLOCKS.getGrid().getDefault()))
                 .thenIdle(1)
-                .thenExecute(energyStoredExactly(
-                    energyStorage,
+                .thenExecute(() -> energyStoredExactly(
+                    energyStorage.getStored(),
                     energyStorage.getCapacity() - Platform.INSTANCE.getConfig().getGrid().getEnergyUsage()
                 ))
                 .thenIdle(9)
-                .thenExecute(energyStoredExactly(
-                    energyStorage,
+                .thenExecute(() -> energyStoredExactly(
+                    energyStorage.getStored(),
                     energyStorage.getCapacity() - Platform.INSTANCE.getConfig().getGrid().getEnergyUsage() * 10
                 ))
                 .thenSucceed();
@@ -62,10 +62,10 @@ public final class ControllerTest {
             // Assert
             sequence
                 .thenIdle(20)
-                .thenExecute(energyStoredExactly(energyStorage, energyStorage.getCapacity()))
+                .thenExecute(() -> energyStoredExactly(energyStorage.getStored(), energyStorage.getCapacity()))
                 .thenWaitUntil(() -> helper.setBlock(pos.above(), RSBLOCKS.getGrid().getDefault()))
                 .thenIdle(20)
-                .thenExecute(energyStoredExactly(energyStorage, energyStorage.getCapacity()))
+                .thenExecute(() -> energyStoredExactly(energyStorage.getStored(), energyStorage.getCapacity()))
                 .thenSucceed();
         });
     }
