@@ -61,6 +61,24 @@ public abstract class AbstractControllerBlock<I extends BlockItem>
     }
 
     @Override
+    public boolean hasAnalogOutputSignal(final BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
+            if (state.getValue(ENERGY_TYPE) == ControllerEnergyType.OFF || controller.getEnergyStorage().getStored() <= 0) {
+                return 0;
+            }
+            long energy = controller.getEnergyStorage().getStored();
+            long maxEnergy = controller.getEnergyStorage().getCapacity();
+            return Math.max(1, (int) ((energy * 14L) / maxEnergy) + 1);
+        }
+        return 0;
+    }
+
+    @Override
     public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
         return new ControllerBlockEntity(type, pos, state);
     }
